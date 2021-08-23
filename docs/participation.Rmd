@@ -1,0 +1,181 @@
+---
+title: "Participation in Financial Rulemaking"
+#subtitle: "Appendix and Replication Code" 
+output:
+    bookdown::html_document2:
+      highlight: zenburn
+      toc: true
+      toc_float: true
+      code_folding: hide
+---
+
+
+
+```{r options}
+# rmarkdown::render("docs/participation.Rmd")
+
+## Sets defaults for R chunks
+knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
+                      cache = FALSE,
+                      #cache = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.show="hold",
+                      fig.pos= "htbp",
+                      fig.path = "figs/",
+                      fig.align='center',
+                      fig.cap = '   ',
+                      fig.retina = 6,
+                      fig.height = 3,
+                      fig.width = 7,
+                      out.width = "100%",
+                      out.extra = "")
+```
+
+```{r setup}
+options(scipen=999)
+
+
+library(scales)
+library(magrittr)
+library(broom)
+library(dotwhisker)
+library(here)
+library(knitr)
+library(kableExtra)
+library(lmerTest)
+library(fixest)
+library(modelsummary)
+library(tidyverse)
+
+# defaults for plots
+library(ggplot2); theme_set(theme_minimal());
+options(
+  ggplot2.continuous.color = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_color_discrete <- function(...){
+  scale_color_viridis_d(..., direction = -1, 
+                        begin = 0, end = .6, option = "plasma")}
+scale_fill_discrete <- function(...){
+  scale_fill_viridis_d(..., direction = -1, 
+                       begin = 0, end = .6, option = "plasma")}
+
+scale_color_continuous <- function(...){
+  scale_color_viridis_c(..., direction = -1, 
+                        option = "plasma")}
+scale_fill_continuous <- function(...){
+  scale_fill_viridis_c(..., direction = -1, 
+                       option = "plasma")}
+
+# Table formatting
+library(kableExtra)
+kablebox <- . %>% 
+  slice_head(n = 100) %>%
+  knitr::kable() %>% 
+  kable_styling() %>% 
+  scroll_box(height = "400px")
+```
+
+
+```{r match_data}
+load(here("data", "match_data_clean.Rdata"))
+
+d <- match_data_clean
+
+# 2k
+ paste("Credit Union matches: ", sum(!is.na(d$CreditUnions_name)) )
+
+d %>% filter(!is.na(CreditUnions_name)) %>% select(ends_with("name")) %>% kablebox()
+
+# 5k
+ paste("CIK matches: ", sum(!is.na(d$CIK_name)) )
+
+d %>% filter(!is.na(CIK_name)) %>% select(ends_with("name"))  %>% kablebox()
+
+# 1k
+ paste("FDIC_Institutions matches: ", sum(!is.na(d$FDIC_Institutions_name)) )
+
+d %>% filter(!is.na(FDIC_Institutions_name)) %>% select(ends_with("name")) %>% kablebox()
+
+# 0
+ paste("FFIECInstitutions matches: ", sum(!is.na(d$FFIECInstitutions_name)) )
+
+#d %>% filter(!is.na(FFIECInstitutions_name)) %>% select(ends_with("name")) %>% kablebox()
+
+# 18k
+ paste("NonProfitTax matches: ", sum(!is.na(d$NonProfitTax_name)) )
+
+d %>% filter(!is.na(NonProfitTax_name)) %>% select(ends_with("name")) %>% kablebox()
+
+# 4k
+ paste("OpenSecrets matches: ", sum(!is.na(d$OpenSecretsOrgs_name)) )
+
+d %>% filter(!is.na(OpenSecretsOrgs_name)) %>% select(ends_with("name")) %>% kablebox()
+
+# 0
+ paste("SEC matches: ", sum(!is.na(d$SEC_Institutions_name)))
+
+# d %>% filter(!is.na(SEC_Institutions_name)) %>% select(ends_with("name"))  %>% kablebox()
+```
+
+
+```{r, eval=FALSE}
+#Example urls
+
+d %>% group_by(comment_agency) %>% 
+  slice(1) %>% 
+  select(comment_url)
+```
+
+---
+
+# Number of comments by type 
+```{r org_count_type}
+d %<>% mutate(org_comment = ifelse(is_likely_org == 1, "Likely Org", "Likely Not Org"),
+              Agency = str_to_upper(comment_agency))
+
+d %>% group_by(Agency, type, org_comment) %>% 
+  count() %>% 
+  ggplot() +
+  aes(x = Agency, y = n, fill = type) + 
+  geom_col() + 
+  facet_wrap("org_comment", scales = "free") +
+  labs(fill = "")
+
+org_count <- d %>% filter(is_likely_org ==1) %>% 
+  count(org_name, org_type, org_resources, Agency)
+```
+
+
+# Counts by commenting organization
+
+## FDIC Assets
+```{r org_count, fig.width=4, out.width= "50%"}
+max <- org_count %>%   filter(org_type == "FDIC") %>% pull(n) %>% max()
+
+org_count %>% 
+  filter(org_type == "FDIC") %>% 
+  ggplot() +
+  aes(x = org_resources,
+      y = n) + 
+  geom_point(alpha = .5) + 
+  geom_smooth() +
+  labs(x = "Assets",
+       y = "Number of Comments") +
+  lims(y =c(0, max))+ 
+  scale_x_log10(breaks = breaks_log())
+
+org_count %>% 
+  filter(org_type == "FDIC") %>% 
+  ggplot() +
+  aes(x = org_resources,
+      y = n) + 
+  geom_point(alpha = .5) + 
+  geom_smooth() +
+  labs(x = "Assets",
+       y = "Number of Comments") +
+  lims(y =c(0, max)) + 
+    facet_wrap("Agency") + 
+  scale_x_log10(breaks = breaks_log())
+```
