@@ -7,6 +7,7 @@ output:
       toc: true
       toc_float: true
       code_folding: hide
+      number_sections: false 
 ---
 
 
@@ -77,6 +78,9 @@ kablebox <- . %>%
   scroll_box(height = "400px")
 ```
 
+# Data
+
+# Commenters matched to other datasets of known organizations
 
 ```{r match_data}
 load(here("data", "match_data_clean.Rdata"))
@@ -130,7 +134,8 @@ d %>% group_by(comment_agency) %>%
 
 ---
 
-# Number of comments by type 
+# Number of comments by organization type 
+
 ```{r org_count_type}
 d %<>% mutate(org_comment = ifelse(is_likely_org == 1, "Likely Org", "Likely Not Org"),
               Agency = str_to_upper(comment_agency))
@@ -148,9 +153,14 @@ org_count <- d %>% filter(is_likely_org ==1) %>%
 ```
 
 
-# Counts by commenting organization
+#  Number of comments by organization resources
 
-## FDIC Assets
+## By Assets
+
+(FDIC data)
+
+### Among organizations that commented on a Dodd Frank rule
+
 ```{r org_count, fig.width=4, out.width= "50%"}
 max <- org_count %>%   filter(org_type == "FDIC") %>% pull(n) %>% max()
 
@@ -179,3 +189,20 @@ org_count %>%
     facet_wrap("Agency") + 
   scale_x_log10(breaks = breaks_log())
 ```
+
+### Comparing organizations that did and did not comment on Dodd Frank rules
+
+> TODO
+
+## By Lobbying Spending
+
+(OpenSecrets data)
+
+> TODO
+
+## By Market Cap
+
+(Computstat data)
+
+
+
