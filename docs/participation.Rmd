@@ -175,8 +175,11 @@ d %>% group_by(Agency, type, org_comment) %>%
   facet_wrap("org_comment", scales = "free") +
   labs(fill = "")
 
-org_count <- d %>% filter(is_likely_org ==1) %>% 
+org_count_agency <- d %>% filter(is_likely_org ==1) %>% 
   count(org_name, org_type, org_resources, Agency)
+
+org_count <- d %>% filter(is_likely_org ==1) %>% 
+  count(org_name, org_type, org_resources)
 ```
 
 ---
@@ -189,14 +192,12 @@ org_count <- d %>% filter(is_likely_org ==1) %>%
 
 (FDIC data)
 
-### Among organizations that commented on a Dodd Frank rule
+### Among firms that commented on a Dodd Frank rule
 
-```{r org_count, fig.width=4, out.width= "50%"}
+```{r fdic_count, fig.width=4, out.width= "50%"}
 max <- org_count %>%   filter(org_type == "FDIC") %>% pull(n) %>% max()
 
 org_count %>% 
-  group_by(org_name, org_type, org_resources) %>% 
-  summarise(n = sum(n)) %>% 
   filter(org_type == "FDIC") %>% 
   ggplot() +
   aes(x = org_resources,
@@ -208,7 +209,10 @@ org_count %>%
   lims(y =c(0, max))+ 
   scale_x_log10(breaks = breaks_log())
 
-org_count %>% 
+# by agency
+max <- org_count_agency %>%   filter(org_type == "FDIC") %>% pull(n) %>% max()
+
+org_count_agency %>% 
   filter(org_type == "FDIC") %>% 
   ggplot() +
   aes(x = org_resources,
@@ -224,9 +228,77 @@ org_count %>%
 
 ---
 
-### Comparing organizations that did and did not comment on Dodd Frank rules
+### Comparing firms that did and did not comment on Dodd-Frank rules
 
-> TODO
+
+```{r FDIC-density, fig.width=6, out.width="70%"}
+load(here("data", "FDIC_resources.Rdata"))
+
+FDIC_resources %>% 
+  #filter(assets > 100) %>% 
+  mutate(Commented = ifelse(commented, "Commented", "Did not comment")) %>%
+  ggplot() + 
+  aes(x = ASSET, fill = Commented) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(fill = "", x = "Assets")
+```
+
+---
+
+### Among nonprofits that commented on Dodd-Frank rules
+
+```{r nonprofit-count, fig.width=4, out.width="50%"}
+load(here("data", "nonprofit_resources.Rdata"))
+
+nonprofit_resources %>% 
+  filter(commented, assets > 100) %>% 
+  ggplot() + 
+  aes(x = assets, y = n) + 
+  geom_point(alpha = .5) + 
+  geom_smooth() + 
+    labs(x = "Assets",
+       y = "Number of Comments") +
+  scale_x_log10()
+
+
+nonprofit_resources %>% 
+  filter(commented, assets > 100) %>% 
+  ggplot() + 
+  aes(x = revenue, y = n) + 
+  geom_point(alpha = .5) + 
+  geom_smooth() + 
+    labs(x = "Revenue",
+       y = "Number of Comments") +
+  scale_x_log10() 
+```
+
+---
+
+### Comparing nonprofits that did and did not comment on Dodd-Frank rules
+
+```{r nonprofit-density, fig.width=6, out.width="70%"}
+load(here("data", "nonprofit_resources.Rdata"))
+
+nonprofit_resources %>% 
+  #filter(assets > 100) %>% 
+  mutate(Commented = ifelse(commented, "Commented", "Did not comment")) %>%
+  ggplot() + 
+  aes(x = assets, fill = Commented) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(fill = "", x = "Assets")
+
+nonprofit_resources %>% 
+  #filter(assets > 100) %>% 
+  mutate(Commented = ifelse(commented, "Commented", "Did not comment")) %>%
+  ggplot() + 
+  aes(x = revenue, fill = Commented) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(fill = "", x = "Revenue")
+```
+
 
 ---
 

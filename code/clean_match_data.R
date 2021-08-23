@@ -1,7 +1,5 @@
+source("code/setup.R")
 library(tidyverse)
-library(magrittr)
-library(here)
-library(knitr)
 
 d_raw <- here("data", "match_data", "finreg_commenter_covariates_df_20210812.csv") %>%
 read_csv()
@@ -9,11 +7,15 @@ read_csv()
 names(d_raw)
 
 # identify needed cols
-d_raw %>% select(contains("FDIC_Institutions-orgMatch:A")) %>%
-  filter(!is.na(`FDIC_Institutions-orgMatch:ASSET`))
+d_raw %>%
+  dplyr::select(contains("FDIC_Institutions-orgMatch:")) %>%
+  filter(!is.na(`FDIC_Institutions-orgMatch:ASSET`))  %>% kablebox()
 
-d <-  d_raw %>% select(starts_with("comment"), contains("orgMatch:best_match_name"), is_likely_org,
-                       `FDIC_Institutions-orgMatch:ASSET`)
+d <-  d_raw %>% dplyr::select(dplyr::starts_with("comment"),
+                       dplyr::contains("orgMatch:best_match_name"),
+                       is_likely_org,
+                       `FDIC_Institutions-orgMatch:ASSET`,
+                       `FDIC_Institutions-orgMatch:STNAME`)
 
 names(d)
 
@@ -81,14 +83,3 @@ match_data_clean <- d
 
 # save comment-level match data
 save(match_data_clean, file = here("data", "match_data_clean.Rdata"))
-
-
-
-
-org_count <- d %>%
-  filter(is_likely_org ==1) %>%
-  count(org_name, org_type, org_resources, Agency)
-
-# nonprofit data
-nonprofit_resources <- read_csv(here("data", "merged_resources", "nonprofits_resources.csv"))
-
