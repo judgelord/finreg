@@ -82,3 +82,9 @@ match_data_clean <- d
 # save
 save(match_data_clean, file = here("data", "match_data_clean.Rdata"))
 
+
+
+
+org_count <- d %>% filter(is_likely_org ==1) %>%
+  count(org_name, org_type, org_resources, Agency)
+

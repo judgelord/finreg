@@ -165,6 +165,8 @@ org_count <- d %>% filter(is_likely_org ==1) %>%
 max <- org_count %>%   filter(org_type == "FDIC") %>% pull(n) %>% max()
 
 org_count %>% 
+  group_by(org_name, org_type, org_resources) %>% 
+  summarise(n = sum(n)) %>% 
   filter(org_type == "FDIC") %>% 
   ggplot() +
   aes(x = org_resources,
