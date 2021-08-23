@@ -231,7 +231,7 @@ org_count_agency %>%
 ### Comparing firms that did and did not comment on Dodd-Frank rules
 
 
-```{r FDIC-density, fig.width=6, out.width="70%"}
+```{r FDIC-density, fig.width=6, out.width="50%"}
 load(here("data", "FDIC_resources.Rdata"))
 
 FDIC_resources %>% 
@@ -277,7 +277,7 @@ nonprofit_resources %>%
 
 ### Comparing nonprofits that did and did not comment on Dodd-Frank rules
 
-```{r nonprofit-density, fig.width=6, out.width="70%"}
+```{r nonprofit-density, fig.width=6, out.width="50%"}
 load(here("data", "nonprofit_resources.Rdata"))
 
 nonprofit_resources %>% 
