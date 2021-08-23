@@ -7,12 +7,21 @@ output:
       toc: true
       toc_float: true
       code_folding: hide
-      number_sections: false 
+      number_sections: false
+# output:
+#   xaringan::moon_reader:
+#     lib_dir: libs
+#     mathjax: "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"
+#     css: xaringan-themer.css
+#     nature:
+#       highlightStyle: github
+#       highlightLines: true
+#       countIncrementalSlides: false
 ---
 
 
 
-```{r options}
+```{r options, include=FALSE}
 # rmarkdown::render("docs/participation.Rmd")
 
 ## Sets defaults for R chunks
@@ -31,6 +40,24 @@ knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
                       fig.width = 7,
                       out.width = "100%",
                       out.extra = "")
+
+library("xaringan")
+library("xaringanthemer")
+library("here")
+
+
+style_mono_light(base_color = "#3b444b",
+          link_color = "#B7E4CF",
+          #background_color = "#FAF0E6", # linen
+          header_font_google = google_font("PT Sans"), 
+          text_font_google = google_font("Old Standard"), 
+          text_font_size = "18px",
+          padding = "10px",
+          code_font_google = google_font("Inconsolata"), 
+          code_inline_background_color    = "#F5F5F5", 
+          table_row_even_background_color = "#ddede5",
+          extra_css = 
+            list(".remark-slide-number" = list("display" = "none")))
 ```
 
 ```{r setup}
@@ -152,8 +179,11 @@ org_count <- d %>% filter(is_likely_org ==1) %>%
   count(org_name, org_type, org_resources, Agency)
 ```
 
+---
 
 #  Number of comments by organization resources
+
+---
 
 ## By Assets
 
@@ -192,15 +222,21 @@ org_count %>%
   scale_x_log10(breaks = breaks_log())
 ```
 
+---
+
 ### Comparing organizations that did and did not comment on Dodd Frank rules
 
 > TODO
+
+---
 
 ## By Lobbying Spending
 
 (OpenSecrets data)
 
 > TODO
+
+---
 
 ## By Market Cap
 

@@ -79,12 +79,16 @@ d$org_type %>% unique()
 
 match_data_clean <- d
 
-# save
+# save comment-level match data
 save(match_data_clean, file = here("data", "match_data_clean.Rdata"))
 
 
 
 
-org_count <- d %>% filter(is_likely_org ==1) %>%
+org_count <- d %>%
+  filter(is_likely_org ==1) %>%
   count(org_name, org_type, org_resources, Agency)
+
+# nonprofit data
+nonprofit_resources <- read_csv(here("data", "merged_resources", "nonprofits_resources.csv"))
 
