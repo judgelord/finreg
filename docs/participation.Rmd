@@ -150,11 +150,7 @@ d %>% filter(!is.na(OpenSecretsOrgs_name)) %>% select(ends_with("name"), comment
 
 # d %>% filter(!is.na(SEC_Institutions_name)) %>% select(ends_with("name"))  %>% kablebox()
  
- d %>% filter(!is.na(org_name)) %>% count(org_type, comment_agency) %>% arrange(org_type) %>% 
-   ggplot() +
-   aes(x = comment_agency, y = n, fill = org_type) + 
-   geom_col() + 
-   labs(x = "Agency")
+
 ```
 
 
