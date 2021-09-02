@@ -1,7 +1,8 @@
 source("code/setup.R")
 library(tidyverse)
 
-d_raw <- here("data", "match_data", "finreg_commenter_covariates_df_20210812.csv") %>%
+d_raw <- here("data", #"match_data", # old in match_data
+              "finreg_commenter_covariates_df_20210812.csv") %>%
 read_csv()
 
 names(d_raw)
@@ -11,11 +12,33 @@ d_raw %>%
   dplyr::select(contains("FDIC_Institutions-orgMatch:")) %>%
   filter(!is.na(`FDIC_Institutions-orgMatch:ASSET`))  %>% kablebox()
 
-d <-  d_raw %>% dplyr::select(dplyr::starts_with("comment"),
-                       dplyr::contains("orgMatch:best_match_name"),
-                       is_likely_org,
-                       `FDIC_Institutions-orgMatch:ASSET`,
-                       `FDIC_Institutions-orgMatch:STNAME`)
+d <-  d_raw %>% dplyr::select(
+  # comment vars
+  dplyr::starts_with("comment"),
+  # general org vars
+  dplyr::contains("orgMatch:best_match_name"),
+  match_in_sample,
+  is_likely_org,
+  # matched data:
+  # FDIC
+  `FDIC_Institutions-orgMatch:ASSET`,
+  `FDIC_Institutions-orgMatch:STNAME` # ,
+  # # CIK
+  # #`CIK-bestMatch:marketcap`,
+  # `CIK-bestMatch:netinc`,
+  # # COMPUTSTAT
+  # `compustat_resources-bestMatch:marketcap`,
+  # `compustat_resources-bestMatch:netinc`,
+  # # nonprofits
+  # `nonprofits_resources-bestMatch:assets`,
+  # `nonprofits_resources-bestMatch:revenue`,
+  # # opensecrets
+  # `opensecrets_resources_jwVersion-bestMatch:MeanContribAmountPerYearContributed`,
+  # `opensecrets_resources_jwVersion-bestMatch:TotalContribAmount`
+  )
+
+d %<>% filter(match_in_sample)
+
 
 names(d)
 
@@ -83,3 +106,4 @@ match_data_clean <- d
 
 # save comment-level match data
 save(match_data_clean, file = here("data", "match_data_clean.Rdata"))
+

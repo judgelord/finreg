@@ -117,17 +117,17 @@ d <- match_data_clean
 # 2k
  paste("Credit Union matches: ", sum(!is.na(d$CreditUnions_name)) )
 
-d %>% filter(!is.na(CreditUnions_name)) %>% select(ends_with("name")) %>% kablebox()
+d %>% filter(!is.na(CreditUnions_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
 
 # 5k
  paste("CIK matches: ", sum(!is.na(d$CIK_name)) )
 
-d %>% filter(!is.na(CIK_name)) %>% select(ends_with("name"))  %>% kablebox()
+d %>% filter(!is.na(CIK_name)) %>% select(ends_with("name"), comment_url)  %>% kablebox()
 
 # 1k
  paste("FDIC_Institutions matches: ", sum(!is.na(d$FDIC_Institutions_name)) )
 
-d %>% filter(!is.na(FDIC_Institutions_name)) %>% select(ends_with("name")) %>% kablebox()
+d %>% filter(!is.na(FDIC_Institutions_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
 
 # 0
  paste("FFIECInstitutions matches: ", sum(!is.na(d$FFIECInstitutions_name)) )
@@ -137,17 +137,24 @@ d %>% filter(!is.na(FDIC_Institutions_name)) %>% select(ends_with("name")) %>% k
 # 18k
  paste("NonProfitTax matches: ", sum(!is.na(d$NonProfitTax_name)) )
 
-d %>% filter(!is.na(NonProfitTax_name)) %>% select(ends_with("name")) %>% kablebox()
+d %>% filter(!is.na(NonProfitTax_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
 
 # 4k
  paste("OpenSecrets matches: ", sum(!is.na(d$OpenSecretsOrgs_name)) )
 
-d %>% filter(!is.na(OpenSecretsOrgs_name)) %>% select(ends_with("name")) %>% kablebox()
+d %>% filter(!is.na(OpenSecretsOrgs_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
+
 
 # 0
  paste("SEC matches: ", sum(!is.na(d$SEC_Institutions_name)))
 
 # d %>% filter(!is.na(SEC_Institutions_name)) %>% select(ends_with("name"))  %>% kablebox()
+ 
+ d %>% filter(!is.na(org_name)) %>% count(org_type, comment_agency) %>% arrange(org_type) %>% 
+   ggplot() +
+   aes(x = comment_agency, y = n, fill = org_type) + 
+   geom_col() + 
+   labs(x = "Agency")
 ```
 
 
@@ -167,10 +174,10 @@ d %>% group_by(comment_agency) %>%
 d %<>% mutate(org_comment = ifelse(is_likely_org == 1, "Likely Org", "Likely Not Org"),
               Agency = str_to_upper(comment_agency))
 
-d %>% group_by(Agency, type, org_comment) %>% 
+d %>% group_by(Agency, org_type, org_comment) %>% 
   count() %>% 
   ggplot() +
-  aes(x = Agency, y = n, fill = type) + 
+  aes(x = Agency, y = n, fill = org_type) + 
   geom_col() + 
   facet_wrap("org_comment", scales = "free") +
   labs(fill = "")
@@ -297,7 +304,21 @@ nonprofit_resources %>%
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(fill = "", x = "Revenue")
+
+# CHARTS 
+# - who comments, who does not 
+# - 
+
+
+# TODO 
+# - biggest nonprofits by assets and revenue (e.eg. chamber )
+# - compartaitve ratios at key levels
+# - percent nonprofits 
+# - side by side histograms
+# missing fed in matching, but could compare FDIC regulator to agency commented on
+# - scholzman and verba, gilens and bartels 
 ```
+
 
 
 ---
