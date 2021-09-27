@@ -32,7 +32,7 @@ knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
                       message = FALSE,
                       fig.show="hold",
                       fig.pos= "htbp",
-                      fig.path = "figs/",
+                      fig.path = "../figs/",
                       fig.align='center',
                       fig.cap = '   ',
                       fig.retina = 6,
@@ -62,6 +62,9 @@ style_mono_light(base_color = "#3b444b",
 
 ```{r setup}
 options(scipen=999)
+
+
+source(here::here("code", "setup.R"))
 
 
 library(scales)
@@ -106,13 +109,112 @@ kablebox <- . %>%
 ```
 
 # Data
+```{r}
+# actions 
+actions <- read_csv(here("data" , "actions.csv"))
+
+actions %>% distinct(docket_id) %>% nrow
+
+# clean match data from finreg_commenter_covariates
+load(here("data", "match_data_clean.Rdata"))
+
+d <- match_data_clean  %>% distinct()
+
+d %<>% mutate(NonProfitTax_name= nonprofits_resources_name,
+              # compustat_resources_name,
+              OpenSecretsOrgs_name = opensecrets_resources_jwVersion_name)
+
+# data from finreg org level covariates
+orgs <- here("data", #"match_data", # old in match_data
+              "finreg_org_level_covariates_df_20210908.csv") %>% 
+read_csv()
+
+```
+# Number of comments by organization type 
+
+```{r org_count_type, fig.width=5, fig.height=2.3}
+d %<>% mutate(org_comment = ifelse(is_likely_org == 1, "Likely Org", "Likely Not Org"),
+              Agency = str_to_upper(comment_agency))
+
+d %<>% mutate(Org_type = org_type %>% 
+                str_replace("CIK", "Filed with SEC (CIK Data)") %>% 
+                str_replace("compustat", "Wharton Compustat Company Database") %>% 
+                str_replace("FDIC", "FDIC-Insured Bank") %>% 
+                str_replace("Nonprofit", "Nonprofit (IRS Data)") %>% 
+                str_replace("FFIEC", "FFIEC Bank/Bank-like Entity") %>% 
+                str_replace("OpenSecrets", "PAC Donor (CRP Data)"))
+
+# comments 
+d %>% group_by(Agency, Org_type) %>% 
+  count() %>% 
+  ggplot() +
+  aes(x = Agency, y = n, fill = Org_type) + 
+  geom_col() + 
+  labs(fill = "Type of Organanization",
+       y = "Number of Comments")
+
+
+# unique orgs
+d %>% distinct(Agency, Org_type, org_name) %>% 
+  group_by(Agency, Org_type) %>% 
+  count() %>%
+  ggplot() +
+  aes(x = Agency, y = n, fill = Org_type) + 
+  geom_col() + 
+  labs(fill = "Type of Organanization",
+       y = "Number of Organizations")
+
+# with the data Jacob collapsed
+orgs %>% 
+  mutate(Agency = str_spl(comment_agency, "\\|"),
+         org_type = best_match_type %>% str_remove("_.*")) %>% 
+  unnest(Agency) %>%
+  group_by(Agency, org_type) %>% 
+  count() %>% 
+  ggplot() +
+  aes(x = Agency, y = n, fill = org_type) + 
+  geom_col() + 
+  #facet_wrap("org_comment", scales = "free") +
+  labs(fill = "Type of Organanization",
+       y = "Number of Organizations")
+
+org_count_agency <- d %>% filter(is_likely_org ==1) %>% 
+  count(org_name, org_type, org_resources, Agency)
+
+org_count <- d %>% filter(is_likely_org ==1) %>% 
+  count(org_name, org_type, org_resources)
+```
+
+### Payday loan rule
+```{r org_count_type-payday, fig.width=7, fig.height=2.5}
+d %<>% mutate(payday = ifelse(str_detect(comment_url, "CFPB-2016-0025|CFPB-2019-0006"), "Payday Loan Rules", "Other Rules"))
+
+d %>% group_by(Agency, Org_type, payday) %>% 
+  count() %>% 
+  ggplot() +
+  aes(x = Agency, y = n, fill = Org_type) + 
+  geom_col() + 
+  labs(fill = "Type of Organanization",
+       y = "Number of Comments") + 
+  facet_wrap("payday")
+
+d %>% 
+  filter(payday == "Payday Loan Rules") %>% 
+  count(comment_org_name, sort = T) 
+
+orgs %>% 
+  filter(str_dct(best_match_name, "financial")) %>% 
+  arrange(-num_comments)
+```
+
+---
+
+
 
 # Commenters matched to other datasets of known organizations
 
 ```{r match_data}
-load(here("data", "match_data_clean.Rdata"))
-
-d <- match_data_clean
+d %<>% filter(is_likely_org == 1)
 
 # 2k
  paste("Credit Union matches: ", sum(!is.na(d$CreditUnions_name)) )
@@ -164,29 +266,6 @@ d %>% group_by(comment_agency) %>%
 
 ---
 
-# Number of comments by organization type 
-
-```{r org_count_type}
-d %<>% mutate(org_comment = ifelse(is_likely_org == 1, "Likely Org", "Likely Not Org"),
-              Agency = str_to_upper(comment_agency))
-
-d %>% group_by(Agency, org_type, org_comment) %>% 
-  count() %>% 
-  ggplot() +
-  aes(x = Agency, y = n, fill = org_type) + 
-  geom_col() + 
-  facet_wrap("org_comment", scales = "free") +
-  labs(fill = "")
-
-org_count_agency <- d %>% filter(is_likely_org ==1) %>% 
-  count(org_name, org_type, org_resources, Agency)
-
-org_count <- d %>% filter(is_likely_org ==1) %>% 
-  count(org_name, org_type, org_resources)
-```
-
----
-
 #  Number of comments by organization resources
 
 ---
@@ -234,28 +313,86 @@ org_count_agency %>%
 ### Comparing firms that did and did not comment on Dodd-Frank rules
 
 
-```{r FDIC-density, fig.width=6, out.width="50%"}
+```{r FDIC-density, fig.height=1.5, fig.width=4, out.width="50%"}
 load(here("data", "FDIC_resources.Rdata"))
 
+# old match data 
 FDIC_resources %>% 
   #filter(assets > 100) %>% 
   mutate(Commented = ifelse(commented, "Commented", "Did not comment")) %>%
   ggplot() + 
-  aes(x = ASSET, fill = Commented) + 
+  aes(x = ASSET/1000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(fill = "", x = "Assets")
+  labs(title = "FDIC-Insured Banks",
+       fill = "", y = "", x = "Assets ($1,000s)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+# new data 
+FDIC_resources %<>% 
+  mutate(Commented = ifelse(
+    org_name %in% orgs$best_match_name,
+    "Commented", 
+    "Did not comment")) 
+
+FDIC_resources%>% 
+  ggplot() + 
+  aes(x = ASSET/1000, fill = Commented) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "FDIC-Insured Banks",
+       fill = "", y = "", x = "Assets ($1,000s)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
 ```
+
+
+```{r fdic-map}
+states <- map_data("state")
+
+FDIC_state_n <- FDIC_resources %>% 
+  mutate(region = STNAME %>% str_to_lower()) %>% 
+  group_by(region) %>% 
+  summarise(n = n() )
+
+states %>% 
+  left_join(FDIC_state_n) %>% 
+  ggplot() +
+  aes(long, lat, group = group, fill = n) +
+  geom_polygon(color = "white") + 
+  labs(fill = "FDIC-Insured Banks") +
+  theme_void()
+
+
+FDIC_state_n <- FDIC_resources %>% 
+  mutate(region = STNAME %>% str_to_lower()) %>% 
+  group_by(region) %>% 
+  summarise(n = sum(Commented == "Commented"))
+
+states %>% 
+  left_join(FDIC_state_n) %>% 
+  ggplot() +
+  aes(long, lat, group = group, fill = n) +
+  geom_polygon(color = "white") + 
+  labs(fill = "FDIC-Insured Banks \nCommenting On\n Dodd-Frank Rules") +
+  theme_void()
+
+
+```
+
 
 ---
 
 ### Among nonprofits that commented on Dodd-Frank rules
 
-```{r nonprofit-count, fig.width=4, out.width="50%"}
+```{r nonprofit-count, fig.height=1.5, fig.width=4, out.width="50%"}
 load(here("data", "nonprofit_resources.Rdata"))
 
 nonprofit_resources %>% 
-  filter(commented, assets > 100) %>% 
+  #filter(commented, assets > 100) %>% 
   ggplot() + 
   aes(x = assets, y = n) + 
   geom_point(alpha = .5) + 
@@ -280,11 +417,11 @@ nonprofit_resources %>%
 
 ### Comparing nonprofits that did and did not comment on Dodd-Frank rules
 
-```{r nonprofit-density, fig.width=6, out.width="50%"}
+```{r nonprofit-density-old, fig.height= 1.5, fig.width=4, out.width="50%"}
 load(here("data", "nonprofit_resources.Rdata"))
 
 nonprofit_resources %>% 
-  #filter(assets > 100) %>% 
+  filter(assets > 10) %>% 
   mutate(Commented = ifelse(commented, "Commented", "Did not comment")) %>%
   ggplot() + 
   aes(x = assets, fill = Commented) + 
@@ -299,7 +436,10 @@ nonprofit_resources %>%
   aes(x = revenue, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(fill = "", x = "Revenue")
+  labs(fill = "", y = "", x = "Revenue")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
 
 # CHARTS 
 # - who comments, who does not 
@@ -315,6 +455,57 @@ nonprofit_resources %>%
 # - scholzman and verba, gilens and bartels 
 ```
 
+Same plots with new data (finreg_org_level_covariates_df_20210908.csv)
+
+```{r nonprofit-density, fig.height=1.5, fig.width=4, out.width="50%", cache=FALSE}
+load(here("data", "nonprofit_resources.Rdata"))
+
+nonprofit_resources %<>% 
+  mutate(Commented = ifelse(
+    org_name %in% orgs$best_match_name,
+    "Commented", 
+    "Did not comment")) 
+
+nonprofit_resources %>% 
+  group_by(Commented) %>% 
+  summarise(mean_assets = mean(assets, na.rm = T))
+
+nonprofit_resources %>% 
+  filter(assets > 10) %>% 
+  ggplot() + 
+  aes(x = assets/1000, fill = Commented) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Nonprofits",
+       fill = "", y = "", x = "Assets ($1,000s)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+nonprofit_resources %>% 
+  filter(assets > 10) %>% 
+  ggplot() + 
+  aes(x = assets/1000, fill = Commented) + 
+  geom_histogram(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Nonprofits",fill = "", x = "Assets ($1,000s)") + 
+  facet_grid(Commented ~ ., scales = "free_y")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank())
+
+
+nonprofit_resources %>% 
+  filter(revenue > 10) %>% 
+  mutate(Commented = ifelse(commented, "Commented", "Did not comment")) %>%
+  ggplot() + 
+  aes(x = revenue/1000, fill = Commented) + 
+  geom_histogram(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Nonprofits",fill = "", x = "Revenue ($1,000s)")+ 
+  facet_grid(Commented ~ ., scales = "free_y")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank())
+```
 
 
 ---
@@ -323,7 +514,68 @@ nonprofit_resources %>%
 
 (OpenSecrets data)
 
-> TODO
+```{r opensecrets-density, fig.height=1.5, fig.width=4, out.width="50%"}
+opensecrets <- read_csv(here("data" , "merged_resources", 
+"opensecrets_resources_JwVersion.csv") )
+
+
+opensecrets %<>% 
+  mutate(org_name = orgName %>% str_to_lower(),
+         Commented = ifelse(
+    org_name %in% orgs$best_match_name,
+    "Commented", 
+    "Did not comment"))
+
+opensecrets %>% 
+  group_by(Commented) %>% 
+  summarise(mean_MeanContribAmount = mean(MeanContribAmount, na.rm = T),
+            mean_MeanContribAmountPerYearContributed = mean(MeanContribAmountPerYearContributed, na.rm = T),
+            MeanTotalContribAmount = mean(TotalContribAmount, na.rm = T))
+
+opensecrets %>% 
+  #filter(assets > 10) %>% 
+  ggplot() + 
+  aes(x = MeanContribAmount/1000, fill = Commented) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(fill = "",  
+       y = "",
+       title = "Campaign Spending",
+       x = "Mean Contribution
+       ($1,000s, 2010-2017)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+opensecrets %>% 
+  #filter(assets > 10) %>% 
+  ggplot() + 
+  aes(x = MeanContribAmountPerYearContributed/1000, fill = Commented) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Campaign Spending",
+       fill = "", 
+       y = "",
+       x = "Mean Contribution\n($1,000s, 2010-2017)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+opensecrets %>% 
+  #filter(assets > 10) %>% 
+  ggplot() + 
+  aes(x = TotalContribAmount/1000, fill = Commented) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(fill = "", 
+       title = "Campaign Spending",
+       y = "",
+       x = "Total Contributions\n($1,000s, 2010-2017)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+```
+
 
 ---
 
@@ -331,5 +583,164 @@ nonprofit_resources %>%
 
 (Computstat data)
 
+```{r compustat-density, fig.height=1.5, fig.width=4, out.width="50%"}
+compustat <- read_csv(here("data/merged_resources/compustat_resources.csv"))
 
+
+compustat %<>% 
+  mutate(org_name = conm %>% str_to_lower(),
+         Commented = ifelse(
+    org_name %in% orgs$best_match_name,
+    "Commented", 
+    "Did not comment")) %>% 
+  mutate(marketcap2 = ifelse(str_detect(marketcap, "k"),
+                             marketcap %>% str_remove("k") %>% as.numeric() * 1000,
+                             marketcap),
+         marketcap2 = ifelse(str_detect(marketcap, "M"),
+                             marketcap %>% str_remove("M") %>% as.numeric() * 1000000,
+                             marketcap2),
+         marketcap2 = ifelse(str_detect(marketcap, "B"),
+                             marketcap %>% str_remove("B") %>% as.numeric() * 1000000000,
+                             marketcap2),
+         marketcap2 = ifelse(str_detect(marketcap, "T"),
+                             marketcap %>% str_remove("T") %>% as.numeric() * 1000000000000,
+                             marketcap2),
+         marketcap2 = marketcap2 %>% str_remove(",") %>%  as.numeric(marketcap2))
+
+#compustat %>% filter(is.na(marketcap2), !is.na(marketcap)) %>% pull(marketcap)
+
+compustat %>% 
+  group_by(Commented) %>%
+  #mutate(mean = mean(marketcap2/1000, na.rm = T)) %>% 
+  #filter(assets > 10) %>% 
+  ggplot() + 
+  aes(x = marketcap2/1000, fill = Commented) + 
+  labs(fill = "", 
+       y = "",
+       title = "Banks and Bank-like Entities",
+       x = "Market Capitalization\n($1,000s)") + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  #geom_vline(aes(xintercept = mean)) +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+```
+
+
+# Combine asset data with commenting behavior
+
+```{r}
+d %<>% left_join(opensecrets) %>% 
+  left_join(nonprofit_resources) %>% 
+  left_join(compustat %>% select(-index)) 
+
+d %<>% mutate(org_resources = 
+                coalesce(org_resources,
+                         MeanContribAmount,
+                         assets,
+                         marketcap2))
+
+#d$org_resources
+```
+
+# Comments per rule
+
+```{r}
+# comments 
+# of the matched sample 
+# 90% of credit union comments, half of nonprofits, and 75% campaig
+d %>% 
+    add_count(org_type, name = "dataset total") %>% 
+  filter(comment_agency == "cfpb") %>% 
+  mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
+  count(org_type, docket_id, `dataset total`, sort = T) %>%
+  kablebox()
+
+# orgs (15% of nonprifits on payday loan rule, 30% of opensecrets)
+d %>% 
+  filter(comment_agency == "cfpb") %>% 
+  mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
+  distinct(org_name, docket_id, org_type) %>% 
+  add_count(org_type, name = "dataset total") %>% 
+  count(org_type, docket_id, `dataset total`, sort = T) %>%
+  kablebox()
+
+# 
+d %>% 
+  filter(comment_agency == "cfpb") %>% 
+  mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
+  count(org_name, org_type, docket_id, sort = T) %>% kablebox()
+```
+
+
+# Sophistication 
+
+```{r assets-sophistication}
+load(here("data", "bluebook.Rdata"))
+
+# names(bluebook)
+# bluebook %>% count(comment_url, sort = T)
+
+d %>% select(comment_url) %>% kablebox()
+
+bluebook %>%  select(comment_url) %>% kablebox()
+
+# 6 k in both sets 
+d %>% filter(comment_url %in% bluebook$comment_url)
+
+bluebook %>% filter(comment_url %in% d$comment_url)
+
+# bluebook %>% count(is.na(Total_Legal_Citations))
+
+# 400 from FDIC data, 400 from other data
+b <- bluebook %>% 
+  left_join(d %>% 
+  select(comment_url, org_name, comment_agency, org_resources, MeanContribAmount,
+                         assets,
+                         marketcap2) %>% 
+    distinct() 
+) %>% 
+  drop_na(Total_Legal_Citations, org_resources)
+# d %>% count(comment_url, sort = T) 
+
+b %>% select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  kablebox()
+
+# FDIC ASSTS 
+b %>% 
+  ggplot() +
+  aes(x = org_resources, # %>% log(), 
+      y = Total_Legal_Citations) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+# nonprofits
+b %>% 
+  ggplot() +
+  aes(x = assets, 
+      y = Total_Legal_Citations) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+# contribution
+b %>% 
+  ggplot() +
+  aes(x = MeanContribAmount, 
+      y = Total_Legal_Citations) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+b %>% 
+  ggplot() +
+  aes(x = marketcap2, 
+      y = Total_Legal_Citations) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+b %>% filter(Total_Legal_Citations>10) %>% select(Total_Legal_Citations, comment_url) %>% arrange(-Total_Legal_Citations) %>% kablebox()
+```
 

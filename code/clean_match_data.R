@@ -1,11 +1,16 @@
 source("code/setup.R")
 library(tidyverse)
 
+
 d_raw <- here("data", #"match_data", # old in match_data
-              "finreg_commenter_covariates_df_20210812.csv") %>%
-read_csv()
+              "finreg_commenter_covariates_df_20210824.csv") %>%
+  read_csv()
+
+
+head(d_raw)
 
 names(d_raw)
+
 
 # identify needed cols
 d_raw %>%
@@ -66,27 +71,28 @@ d %>% filter(!is.na(FDIC_Institutions_name)) %>% select(ends_with("name"))
 d %>% filter(!is.na(FFIECInstitutions_name)) %>% select(ends_with("name"))
 
 # 18k
-d %>% filter(!is.na(NonProfitTax_name)) %>% select(ends_with("name"))
+d %>% filter(!is.na(nonprofits_resources_name)) %>% select(ends_with("name"))
 
 # 4k
-d %>% filter(!is.na(OpenSecretsOrgs_name)) %>% select(ends_with("name"))
+d %>% filter(!is.na(opensecrets_resources_jwVersion_name)) %>% select(ends_with("name"))
 
 # 0
 d %>% filter(!is.na(SEC_Institutions_name)) %>% select(ends_with("name"))
 
 # combine matches across datasets
 d %<>% mutate(matches = paste0(CIK_name,"-CIK;",
-                               CompustatNames_name,"-Computstat;",
+                               compustat_resources_name,"-Computstat;",
                                CreditUnions_name, "-Credit Union;",
                                FDIC_Institutions_name,"-FDIC;",
                                FFIECInstitutions_name,"-FFIEC;",
-                               NonProfitTax_name,"-Nonprofit;",
-                               OpenSecretsOrgs_name,"-OpenSecrets;",
+                               nonprofits_resources_name,"-Nonprofit;",
+                               opensecrets_resources_jwVersion_name,"-OpenSecrets;",
                                SEC_Institutions_name,"-SEC") %>%
-                str_remove_all("NA-.*?;|;NA-SEC") %>%
-                str_remove(";NA-SEC"))
+                str_remove_all("NA-.*?;|;NA-SEC|NA-SEC") %>%
+                str_remove(";NA-SEC")) %>%
+  filter(matches != "")
 
-d$matches %>% head
+d$matches %>% head()
 
 # drop non matches
 d %<>% filter(matches != "")
@@ -96,7 +102,7 @@ d %>% filter(matches %>% str_detect(";"))
 
 # make org_type and org_name
 d %<>% mutate(org_name = matches %>% str_remove("-.*"),
-              org_type = matches %>% str_remove(".*-"),
+              org_type = matches %>% str_remove(".*-") %>% str_remove(";"),
               org_resources = coalesce(`FDIC_Institutions-orgMatch:ASSET`))
 
 # check
