@@ -25,7 +25,7 @@ output:
 # rmarkdown::render("docs/participation.Rmd")
 
 ## Sets defaults for R chunks
-knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
+knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       cache = FALSE,
                       #cache = TRUE,
                       warning = FALSE,
@@ -682,9 +682,9 @@ load(here("data", "bluebook.Rdata"))
 # names(bluebook)
 # bluebook %>% count(comment_url, sort = T)
 
-d %>% select(comment_url) %>% kablebox()
+d %>% filter(Agency != "CFPB") %>% select(comment_url) %>% kablebox()
 
-bluebook %>%  select(comment_url) %>% kablebox()
+bluebook%>%  select(comment_url) %>% kablebox()
 
 # 6 k in both sets 
 d %>% filter(comment_url %in% bluebook$comment_url)
