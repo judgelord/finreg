@@ -139,7 +139,9 @@ d %>% select(comment_title,
 
 # Validation
 
-Of `r nrow(d)` hand-coded comments on these rules, `r nrow(d %>% filter(asset_data == "asset data"))` are currently matched with asset data. Of the `r nrow(d %>% filter(comment_type == "org"))` comments hand-coded as sophisticated comments from an organization (excluding mass comments, individuals, or comments from elected officials), `r nrow(d %>% filter(comment_type == "org", asset_data == "asset data"))` are currently matched with asset data. 
+## Of `r nrow(d)` hand-coded comments on these rules, `r nrow(d %>% filter(asset_data == "asset data"))` are currently matched with asset data. 
+
+Of the `r nrow(d %>% filter(comment_type == "org"))` comments hand-coded as sophisticated comments from an organization (excluding mass comments, individuals, or comments from elected officials), `r nrow(d %>% filter(comment_type == "org", asset_data == "asset data"))` are currently matched with asset data. 
 
 ## Asset data completeness by hand-coded org type
 
@@ -148,7 +150,10 @@ Of `r nrow(d)` hand-coded comments on these rules, `r nrow(d %>% filter(asset_da
 ```{r validation, fig.width=4, out.width="50%"}
 # drop org type details, focus on main catagories
 d %<>% 
-  mutate(org_type_hand = org_type_hand %>%
+  mutate(subtype = org_type_hand %>% 
+           str_remove("[A-z]*;") %>%
+           str_remove(";.*"),
+         org_type_hand = org_type_hand %>%
            str_remove(";.*") %>% 
            str_remove("s$")
          )
@@ -172,10 +177,76 @@ d %>%
       fill = org_type_hand) + 
   geom_bar() + 
   coord_flip() + 
-  labs(x = "",
-       y = "Data Source")
+  labs(x = "Data Source",
+       y = "")
 ```
 
+```{r validation-type, fig.height=5, out.width="90%"}
+
+d %>% 
+  filter(comment_type == "org",
+         org_type_hand == "ngo") %>%
+  mutate(org_type_auto = org_type_auto %>% replace_na(" no asset data")) %>% 
+  ggplot() +
+  aes(x = subtype, 
+      fill = org_type_auto) + 
+  geom_bar() + 
+  coord_flip() + 
+  labs(title = "NGOs",
+       x = "",
+       fill = "Data Source",
+       y = "Hand-coded ngo subtypes")+ 
+  scale_fill_viridis_d()
+
+d %>% 
+  filter(comment_type == "org",
+         org_type_hand == "corp") %>%
+  mutate(org_type_auto = org_type_auto %>% replace_na(" no asset data")) %>% 
+  ggplot() +
+  aes(x = subtype, 
+      fill = org_type_auto) + 
+  geom_bar() + 
+  coord_flip() + 
+  labs(title = "Corps",
+       x = "",
+       fill = "Data Source",
+       y = "Hand-coded corp subtypes")+ 
+  scale_fill_viridis_d()
+
+d %>% 
+  filter(comment_type == "org",
+         org_type_hand == "corp group") %>%
+  mutate(org_type_auto = org_type_auto %>% replace_na(" no asset data")) %>% 
+  ggplot() +
+  aes(x = subtype, 
+      fill = org_type_auto) + 
+  geom_bar() + 
+  coord_flip() + 
+  labs(title = "Corp groups (business associations)",
+       x = "",
+       fill = "Data Source",
+       y = "Hand-coded corp group subtypes")+ 
+  scale_fill_viridis_d()
+
+d %>% 
+  filter(comment_type == "org",
+         org_type_hand == "gov") %>%
+  mutate(org_type_auto = org_type_auto %>% replace_na(" no asset data")) %>% 
+  ggplot() +
+  aes(x = subtype, 
+      fill = org_type_auto) + 
+  geom_bar() + 
+  coord_flip() + 
+  labs(title = "Governments (should not have asset data?)",
+       x = "",
+       fill = "Data Source",
+       y = "Hand-coded government subtypes")+ 
+  scale_fill_viridis_d()
+```
+
+We are capturing credit unions fairly well and seem to be capturing a high percentage of unions, think tanks, philanthropy, legal, and financial services NGOs. 
+
+We are undercounting corporations, especially law firms and, surprisingly, banks (these are probably small banks).
 
 ## By hand-coaded "coalition"
 
@@ -194,6 +265,51 @@ d %>%
   theme_bw() +
   theme(strip.text = element_text(hjust = 0)) + 
   labs(x = "",
+       y = "") 
+
+```
+
+---
+
+By hand-coded coalition type
+
+```{r validation-by-coalition-type, fig.width=5, fig.height=2, out.width= "70%"}
+d %>% 
+  filter(comment_type == "org") %>%
+  ggplot() +
+  aes(x = asset_data, 
+      fill = org_type_hand) + 
+  geom_bar() + 
+  coord_flip() + 
+  facet_wrap(#scales = "free_y",
+             "coalition_type") +
+  theme_bw() +
+  theme(strip.text = element_text(hjust = 0)) + 
+  labs(x = "",
        y = "")
 
+```
+
+
+We are capturing almost none of the businesses that are lobbying public interest coalitions (many of these are small law firms). For example, we are not capturing the businesses that lobby alongside the ABA or the Center for Responsible Lending.
+
+
+## Lobbying success by assets of coalition members
+
+```{r validation-success}
+d %>% 
+  ggplot(  ) + 
+  aes(y = coalition_success, x = assets,
+      label = coalition) + 
+  geom_jitter(alpha = .3, aes(size = coalition_size) ) + 
+  geom_text(color = "blue") + 
+  geom_smooth()
+
+d %>% 
+  ggplot(  ) + 
+  aes(y = coalition_success, x = revenue,
+      label = coalition) + 
+  geom_jitter(alpha = .3, aes(size = coalition_size) ) + 
+  geom_text(color = "blue") + 
+  geom_smooth()
 ```
