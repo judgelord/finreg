@@ -104,7 +104,10 @@ d %<>% mutate(NonProfitTax_name= nonprofits_resources_name,
 
 # data from finreg org level covariates
 orgs <- here("data", #"match_data", # old in match_data
-              "finreg_org_level_covariates_df_20210908.csv") %>% 
+              #"finreg_org_level_covariates_df_20210908.csv"
+              "finreg_org_level_covariates_df_20211118.csv"
+
+             ) %>% 
 read_csv()
 
 ```
@@ -239,7 +242,7 @@ Example URLs
 
 d %>% group_by(comment_agency) %>% 
   slice(1) %>% 
-  select(comment_url)
+  select(comment_url) 
 ```
 
 ---

@@ -1,0 +1,199 @@
+---
+title: "Validating FinReg Comment Data"
+#subtitle: "Appendix and Replication Code" 
+output:
+    bookdown::html_document2:
+      highlight: zenburn
+      toc: true
+      toc_float: true
+      code_folding: hide
+      number_sections: false
+# output:
+#   xaringan::moon_reader:
+#     lib_dir: libs
+#     mathjax: "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"
+#     css: xaringan-themer.css
+#     nature:
+#       highlightStyle: github
+#       highlightLines: true
+#       countIncrementalSlides: false
+---
+
+
+
+```{r options, include=FALSE}
+# rmarkdown::render("docs/participation.Rmd")
+
+## Sets defaults for R chunks
+knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
+                      cache = FALSE,
+                      #cache = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.show="hold",
+                      fig.pos= "htbp",
+                      fig.path = "../figs/",
+                      fig.align='center',
+                      fig.cap = '   ',
+                      fig.retina = 6,
+                      fig.height = 3,
+                      fig.width = 7,
+                      out.width = "100%",
+                      out.extra = "")
+
+library("xaringan")
+library("xaringanthemer")
+library("here")
+
+
+style_mono_light(base_color = "#3b444b",
+          link_color = "#B7E4CF",
+          #background_color = "#FAF0E6", # linen
+          header_font_google = google_font("PT Sans"), 
+          text_font_google = google_font("Old Standard"), 
+          text_font_size = "18px",
+          padding = "10px",
+          code_font_google = google_font("Inconsolata"), 
+          code_inline_background_color    = "#F5F5F5", 
+          table_row_even_background_color = "#ddede5",
+          extra_css = 
+            list(".remark-slide-number" = list("display" = "none")))
+```
+
+```{r setup}
+options(scipen=999)
+
+source(here::here("code", "setup.R"))
+
+# defaults for plots
+library(ggplot2); theme_set(theme_minimal());
+options(
+  ggplot2.continuous.color = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_color_discrete <- function(...){
+  scale_color_viridis_d(..., direction = -1, 
+                        begin = 0, end = .9, option = "plasma")}
+scale_fill_discrete <- function(...){
+  scale_fill_viridis_d(..., direction = -1, 
+                       begin = 0, end = .9, option = "plasma")}
+
+scale_color_continuous <- function(...){
+  scale_color_viridis_c(..., direction = -1, 
+                        option = "plasma")}
+scale_fill_continuous <- function(...){
+  scale_fill_viridis_c(..., direction = -1, 
+                       option = "plasma")}
+```
+
+# Data
+
+This document uses the same data we use to generate our tables and figures: https://judgelord.github.io/finreg/participation#Save_data
+
+```{r data}
+load( here::here("data", "commenter_assets.Rdata"))
+
+commenter_assets %<>% mutate(document_id = comment_url %>% str_extract("CFPB.*")) %>% select(-comment_url)
+```
+
+The validation set includes hand-coded comments on the CFPB payday loan and debt collection rules.
+```{r data-validation}
+#FIXME move to another script and save CFPB comment to make this replicate
+load(here::here("data", "comments_coded.Rdata") %>% str_replace("finreg", "dissertation")) 
+
+# FIXME Correction to some elected comments miscoded as org comments 
+comments_coded %<>% mutate(
+  comment_type = ifelse(
+    str_dct(org_type, "assembly|house|senate|governor"),
+    "elected",
+    comment_type))
+
+# comments_coded %>% filter(comment_type == "org") %>% distinct(org_type %>% str_remove(";.*"), comment_type)
+
+
+d <- comments_coded %>% 
+  #select dockets in Dodd-Frank data 
+  filter(docket_id %in% commenter_assets$docket_id) %>%
+  # join in Dodd-Frank data
+  left_join(commenter_assets,
+            by = c("docket_id", "document_id"),
+            suffix = c("_hand", "_auto")) %>% 
+  # indicator
+  mutate(asset_data = ifelse(is.na(org_name_auto),
+                             "no asset data",
+                             "asset data"))
+
+d %>% distinct(docket_id) %>% kable()
+
+
+d %>% select(comment_title,
+             ends_with("auto"),
+             comment_type_hand = comment_type,
+             ends_with("_hand"),
+             coalition_hand = coalition,
+             comment_url) %>%
+  kablebox()
+```
+
+---
+
+# Validation
+
+Of `r nrow(d)` hand-coded comments on these rules, `r nrow(d %>% filter(asset_data == "asset data"))` are currently matched with asset data. Of the `r nrow(d %>% filter(comment_type == "org"))` comments hand-coded as sophisticated comments from an organization (excluding mass comments, individuals, or comments from elected officials), `r nrow(d %>% filter(comment_type == "org", asset_data == "asset data"))` are currently matched with asset data. 
+
+## Asset data completeness by hand-coded org type
+
+(high-level org type coding only)
+
+```{r validation, fig.width=4, out.width="50%"}
+# drop org type details, focus on main catagories
+d %<>% 
+  mutate(org_type_hand = org_type_hand %>%
+           str_remove(";.*") %>% 
+           str_remove("s$")
+         )
+
+# overall
+d %>% 
+  filter(comment_type == "org") %>%
+  ggplot() +
+  aes(x = asset_data, 
+      fill = org_type_hand) + 
+  coord_flip() + 
+  geom_bar()+ 
+  labs(x = "",
+       y = "")
+
+
+d %>% 
+  filter(comment_type == "org") %>%
+  ggplot() +
+  aes(x = org_type_auto, 
+      fill = org_type_hand) + 
+  geom_bar() + 
+  coord_flip() + 
+  labs(x = "",
+       y = "Data Source")
+```
+
+
+## By hand-coaded "coalition"
+
+*A few of these "coalitions" include organizations lobbying alone, without coalition partners. 
+
+```{r validation-by-coalition, fig.width=10, fig.height=7}
+d %>% 
+  filter(comment_type == "org") %>%
+  ggplot() +
+  aes(x = asset_data, 
+      fill = org_type_hand) + 
+  geom_bar() + 
+  coord_flip() + 
+  facet_wrap(#scales = "free_y",
+             "coalition") +
+  theme_bw() +
+  theme(strip.text = element_text(hjust = 0)) + 
+  labs(x = "",
+       y = "")
+
+```
