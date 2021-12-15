@@ -96,7 +96,7 @@ load( here::here("data", "commenter_assets.Rdata"))
 commenter_assets %<>% mutate(document_id = comment_url %>% str_extract("CFPB.*")) %>% select(-comment_url)
 ```
 
-The validation set includes hand-coded comments on the CFPB payday loan and debt collection rules.
+The [validation data](https://github.com/judgelord/finreg/blob/main/data/validation.csv) includes hand-coded comments on the CFPB payday loan and debt collection rules.
 ```{r data-validation}
 #FIXME move to another script and save CFPB comment to make this replicate
 load(here::here("data", "comments_coded.Rdata") %>% str_replace("finreg", "dissertation")) 
@@ -133,6 +133,14 @@ d %>% select(comment_title,
              coalition_hand = coalition,
              comment_url) %>%
   kablebox()
+
+d %>% select(comment_title,
+             ends_with("auto"),
+             comment_type_hand = comment_type,
+             ends_with("_hand"),
+             coalition_hand = coalition,
+             comment_url) %>%
+  write_csv(here("data", "validation.csv"))
 ```
 
 ---
