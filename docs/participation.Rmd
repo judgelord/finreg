@@ -63,21 +63,7 @@ style_mono_light(base_color = "#3b444b",
 ```{r setup}
 options(scipen=999)
 
-
 source(here::here("code", "setup.R"))
-
-
-library(scales)
-library(magrittr)
-library(broom)
-library(dotwhisker)
-library(here)
-library(knitr)
-library(kableExtra)
-library(lmerTest)
-library(fixest)
-library(modelsummary)
-library(tidyverse)
 
 # defaults for plots
 library(ggplot2); theme_set(theme_minimal());
@@ -98,14 +84,6 @@ scale_color_continuous <- function(...){
 scale_fill_continuous <- function(...){
   scale_fill_viridis_c(..., direction = -1, 
                        option = "plasma")}
-
-# Table formatting
-library(kableExtra)
-kablebox <- . %>% 
-  slice_head(n = 100) %>%
-  knitr::kable() %>% 
-  kable_styling() %>% 
-  scroll_box(height = "400px")
 ```
 
 # Data
@@ -255,7 +233,7 @@ d %>% filter(!is.na(OpenSecretsOrgs_name)) %>% select(ends_with("name"), comment
 
 ```
 
-
+Example URLs
 ```{r, eval=FALSE}
 #Example urls
 
@@ -631,9 +609,15 @@ compustat %>%
 # Combine asset data with commenting behavior
 
 ```{r}
+nrow(d)
+
 d %<>% left_join(opensecrets) %>% 
   left_join(nonprofit_resources) %>% 
   left_join(compustat %>% select(-index)) 
+
+d %<>% distinct()
+
+nrow(d)
 
 d %<>% mutate(org_resources = 
                 coalesce(org_resources,
@@ -642,7 +626,48 @@ d %<>% mutate(org_resources =
                          marketcap2))
 
 #d$org_resources
+
+d %>% distinct(comment_url) %>% nrow()
+
+
 ```
+
+## Duplicates
+
+(more than one match per comment URL)
+
+Orgs in multiple states are one problem:
+
+```{r duplicates}
+# duplicates
+d %>% 
+  add_count(comment_url, name = "n_per_url") %>% 
+  ungroup() %>% 
+  filter(n_per_url > 1) %>% distinct() %>% 
+  arrange(comment_url) %>%
+  kablebox()
+```
+
+But we still have almost as many duplicates when we drop `state`, partially because assets vary for the same "org" registered in different states: 
+
+```{r duplicates2}
+# duplicates after removing state
+d %>% 
+  select(-state) %>%
+  add_count(comment_url, name = "n_per_url") %>% 
+  ungroup() %>% 
+  filter(n_per_url > 1) %>% distinct() %>% 
+  arrange(comment_url) %>%
+  kablebox()
+```
+
+## Save data
+```{r save}
+commenter_assets <- d
+
+save(commenter_assets, file = here::here("data", "commenter_assets.Rdata"))
+```
+
 
 # Comments per rule
 
@@ -652,14 +677,14 @@ d %<>% mutate(org_resources =
 # 90% of credit union comments, half of nonprofits, and 75% campaig
 d %>% 
     add_count(org_type, name = "dataset total") %>% 
-  filter(comment_agency == "cfpb") %>% 
+  filter(comment_agency == "CFPB") %>% 
   mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
   count(org_type, docket_id, `dataset total`, sort = T) %>%
   kablebox()
 
 # orgs (15% of nonprifits on payday loan rule, 30% of opensecrets)
 d %>% 
-  filter(comment_agency == "cfpb") %>% 
+  filter(comment_agency == "CFPB") %>% 
   mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
   distinct(org_name, docket_id, org_type) %>% 
   add_count(org_type, name = "dataset total") %>% 
@@ -668,7 +693,7 @@ d %>%
 
 # 
 d %>% 
-  filter(comment_agency == "cfpb") %>% 
+  filter(comment_agency == "CFPB") %>% 
   mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
   count(org_name, org_type, docket_id, sort = T) %>% kablebox()
 ```

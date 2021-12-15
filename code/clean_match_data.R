@@ -3,7 +3,9 @@ library(tidyverse)
 
 
 d_raw <- here("data", #"match_data", # old in match_data
-              "finreg_commenter_covariates_df_20210824.csv") %>%
+              #"finreg_commenter_covariates_df_20210824.csv"
+              "finreg_commenter_covariates_df_20211118.csv"
+              ) %>%
   read_csv()
 
 
@@ -19,6 +21,7 @@ d_raw %>%
 
 d <-  d_raw %>% dplyr::select(
   # comment vars
+  dplyr::starts_with("docket"),
   dplyr::starts_with("comment"),
   # general org vars
   dplyr::contains("orgMatch:best_match_name"),

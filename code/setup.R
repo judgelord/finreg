@@ -15,7 +15,7 @@ requires <- c("bookdown",
               "fixest",
               "flextable",
               "magick",
-              "equatiomatic", 
+              "equatiomatic",
               "latex2exp",
               "tidytext",
               "latex2exp")
@@ -41,7 +41,7 @@ library(tidyverse)
 fig.path <- here("figs/")
 
 ## Sets defaults for R chunks
-knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
+knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       cache = FALSE,
                       #cache = TRUE,
                       warning = FALSE,
@@ -64,31 +64,31 @@ options(
   ggplot2.continuous.fill = "viridis"
 )
 scale_color_discrete <- function(...){
-  scale_color_viridis_d(..., direction = -1, 
+  scale_color_viridis_d(..., direction = -1,
                         begin = 0, end = .6, option = "plasma")}
 scale_fill_discrete <- function(...){
-  scale_fill_viridis_d(..., direction = -1, 
+  scale_fill_viridis_d(..., direction = -1,
                        begin = 0, end = .6, option = "plasma")}
 
 scale_color_continuous <- function(...){
-  scale_color_viridis_c(..., direction = -1, 
+  scale_color_viridis_c(..., direction = -1,
                         option = "plasma")}
 scale_fill_continuous <- function(...){
-  scale_fill_viridis_c(..., direction = -1, 
+  scale_fill_viridis_c(..., direction = -1,
                        option = "plasma")}
 
 # Table formatting
 library(kableExtra)
-kablebox <- . %>% 
+kablebox <- . %>%
   slice_head(n = 100) %>%
-  knitr::kable() %>% 
-  kable_styling() %>% 
+  knitr::kable() %>%
+  kable_styling() %>%
   scroll_box(height = "400px")
 
-# a function to format kables for different output formats 
+# a function to format kables for different output formats
 kable2 <- function(x, file){
   if(knitr:::is_html_output() | knitr::is_latex_output() ){
-      x %>% row_spec(row = 1, bold = T, hline_after = TRUE) %>% 
+      x %>% row_spec(row = 1, bold = T, hline_after = TRUE) %>%
       kable_styling(font_size = 9, full_width = TRUE, latex_options = c("repeat_header"))
   } else{
     kableExtra::as_image(x, width = 6.5, file = paste0("figs/", file, ".png"))
@@ -100,26 +100,26 @@ library(flextable)
 
 
 
-# A function to trim and format tables for different outputs 
-kable3 <- function(x, 
-                   caption = "", 
+# A function to trim and format tables for different outputs
+kable3 <- function(x,
+                   caption = "",
                    height = '400px',
                    full_width = F,
                    align = 'l',
                    font_size = 11,
                    latex_options = "repeat_header"){
   if(knitr:::is_html_output()) {
-    x %>% 
-      ungroup() %>% 
+    x %>%
+      ungroup() %>%
       slice_head(n = 100) %>%
       mutate(across(where(is.numeric), pretty_num)  ) %>%
-      knitr::kable(caption = caption) %>% 
-      kable_styling() %>% 
+      knitr::kable(caption = caption) %>%
+      kable_styling() %>%
       scroll_box(height = height)
   } else{
     if(knitr::is_latex_output() ){
-      x %>% 
-        ungroup() %>% 
+      x %>%
+        ungroup() %>%
         slice_head(n = 20) %>%
         mutate(across(where(is.numeric), pretty_num)  ) %>%
         knitr::kable(format = "latex",# "pipe", # "latex"?
@@ -127,17 +127,17 @@ kable3 <- function(x,
                      booktabs = T,
                      align = align,
                      linesep = "\\addlinespace") %>%
-        kable_styling(font_size = font_size, 
+        kable_styling(font_size = font_size,
                       full_width = full_width,
                       latex_options = latex_options)
-    } else{x %>% 
-        ungroup() %>% 
+    } else{x %>%
+        ungroup() %>%
         slice_head(n = 20) %>%
-        flextable() %>% 
-        set_caption(caption) %>% 
-        autofit() %>% 
+        flextable() %>%
+        set_caption(caption) %>%
+        autofit() %>%
         fit_to_width(max_width = 6)
-      #knitr::kable(caption = caption) %>% 
+      #knitr::kable(caption = caption) %>%
       #kableExtra::as_image(file = paste0("figs", caption, ".png"))
     }
   }
@@ -151,34 +151,34 @@ smart_number <- function(n, ...) {
   # if non-int below ten, return as is
   if ( (n != as.numeric(n)) ) {
     return(n)
-  } else 
+  } else
     # if non-int above ten, return number()
     if (abs(n) >= 10 | as.numeric(n) != as.integer(n) ) {
       return( prettyNum(n, big.mark = ",") )#scales::number(n, big.mark = ",", ...))
-    } else 
+    } else
       # if int below 10, print english
       if (abs(n) < 10 & as.numeric(n) == as.integer(n) ) {
         return(english::english(n, ...))
-      } else 
+      } else
         stop("??")
 }
 
 
 
-# inline formatting 
+# inline formatting
 knit_hooks$set(inline = function(x) {
   if (is.na(as.numeric(x))) {
     return(x)
-    } else 
+    } else
       x <- as.numeric(x)
-      # omit years 
+      # omit years
     if (x > 2021 | x < 1980)  {
       return(smart_number(x))
-      } else 
-        return(x) #prettyNum(x, big.mark = ",") # 
+      } else
+        return(x) #prettyNum(x, big.mark = ",") #
 })
 
-# number formatting 
+# number formatting
 pretty_num <- . %>% prettyNum(big.mark = ",")
 
 
