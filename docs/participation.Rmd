@@ -166,7 +166,13 @@ org_count <- d %>% filter(is_likely_org ==1) %>%
   count(org_name, org_type, org_resources)
 ```
 
+---
+
 ### Payday loan rule
+
+The payday loan rule accounts for 90% of credit union comments and 50% of nonprofit comments, and 75% of open secrets matched comments in the current data.
+15% of nonprofits and 30% of opensecrets matches commented only on the payday loan rule
+
 ```{r org_count_type-payday, fig.width=7, fig.height=2.5}
 d %<>% mutate(payday = ifelse(str_detect(comment_url, "CFPB-2016-0025|CFPB-2019-0006"), "Payday Loan Rules", "Other Rules"))
 

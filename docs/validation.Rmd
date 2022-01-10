@@ -93,7 +93,7 @@ This document uses the same data we use to generate our tables and figures: http
 ```{r data}
 load( here::here("data", "commenter_assets.Rdata"))
 
-commenter_assets %<>% mutate(document_id = comment_url %>% str_extract("CFPB.*")) %>% select(-comment_url)
+commenter_assets %<>% mutate(document_id = comment_url %>% str_extract("CFPB.*"))
 ```
 
 The [validation data](https://github.com/judgelord/finreg/blob/main/data/validation.csv) includes hand-coded comments on the CFPB payday loan and debt collection rules.
@@ -115,7 +115,7 @@ d <- comments_coded %>%
   #select dockets in Dodd-Frank data 
   filter(docket_id %in% commenter_assets$docket_id) %>%
   # join in Dodd-Frank data
-  left_join(commenter_assets,
+  full_join(commenter_assets,
             by = c("docket_id", "document_id"),
             suffix = c("_hand", "_auto")) %>% 
   # indicator
@@ -123,11 +123,51 @@ d <- comments_coded %>%
                              "no asset data",
                              "asset data"))
 
+concat <- . %>% unique() %>% str_c(collapse = "\n")
+
+# extract orgs for hand coding
+orgs <- d %>% add_count(org_name_auto, name = "comment_count") %>%
+  group_by(org_name_auto) %>% 
+  mutate(across(everything(), concat)) %>% distinct()
+
+orgs %<>% select(comment_title,
+             ends_with("_auto"),
+             comment_type_hand = comment_type,
+             ends_with("_hand"),
+             starts_with("org_"),
+             assets,
+             revenue,
+             starts_with("comment_"))  %>%
+  select(-starts_with("comment_txt"),
+         -comment_url_hand,
+         -org_lead)
+
+replace_na_strings <- . %>% replace_na("")
+
+orgs %>% #arrange(-org_resources) %>%
+  mutate(across(everything(), replace_na_strings)) %>% mutate(comment_count = comment_count %>% as.numeric())  %>% write_csv(file = here("data","finreg_orgs_to_code.csv"))
+
+```
+
+```{r, eval=FALSE}
+library(googlesheets4)
+ss <- gs4_get("1AYWnfp3DK99FGS4hncQEvw4lUWgK0iwb-xHWOYx_uew") 
+1
+
+sheet_write(orgs %>% 
+              mutate(comment_count = comment_count %>% as.numeric()) %>%  
+              filter(comment_count < 1000), ss, sheet = str_c("finreg_orgs_to_code", Sys.Date() )
+
+```
+
+```{r}
+# filter to hand-coded cases
+d %<>% drop_na(comment_type)
+
 d %>% distinct(docket_id) %>% kable()
 
-
 d %>% select(comment_title,
-             ends_with("auto"),
+             ends_with("_auto"),
              comment_type_hand = comment_type,
              ends_with("_hand"),
              coalition_hand = coalition,
