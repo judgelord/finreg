@@ -13,6 +13,34 @@ head(d_raw)
 
 names(d_raw)
 
+d_raw %>% select(contains("name")) %>% names()
+
+d_raw %>% select(contains("asset")) %>% names()
+
+d_raw %>% select(contains("revenue")) %>% names()
+
+d_raw %>% select(contains("tic")) %>% names()
+
+d_raw %>% select(contains("ein")) %>% names()
+
+d_raw %>% select(contains("contrib")) %>% names()
+
+d_raw %>% select(contains("cap")) %>% names()
+
+d_raw %>% select(contains("rssd")) %>% names()
+
+
+look <- d_raw %>% filter(!is.na(`nonprofits_resources-bestMatch:name`)) %>%
+  count(`nonprofits_resources-bestMatch:name`,
+        `nonprofits_resources-bestMatch:ein`, sort = T)
+
+look <- d_raw %>% filter(!is.na(`CreditUnions-bestMatch:best_match_name`) ) %>%
+                 count(`CreditUnions-bestMatch:RSSD`, sort = T)
+
+d_raw %>%
+  filter(!is.na(`compustat_resources-bestMatch:best_match_name`) ) %>%
+  count(`compustat_resources-bestMatch:tic`, sort = T)
+
 
 # identify needed cols
 d_raw %>%
@@ -26,23 +54,27 @@ d <-  d_raw %>% dplyr::select(
   # general org vars
   dplyr::contains("orgMatch:best_match_name"),
   match_in_sample,
-  is_likely_org,
   # matched data:
   # FDIC
   `FDIC_Institutions-orgMatch:ASSET`,
-  `FDIC_Institutions-orgMatch:STNAME` # ,
+  `FDIC_Institutions-orgMatch:STNAME`,
   # # CIK
   # #`CIK-bestMatch:marketcap`,
   # `CIK-bestMatch:netinc`,
+  # SEC
+  `SEC_Institutions-bestMatch:Ticker`,
   # # COMPUTSTAT
   # `compustat_resources-bestMatch:marketcap`,
   # `compustat_resources-bestMatch:netinc`,
+  `compustat_resources-bestMatch:naics`,
   # # nonprofits
   # `nonprofits_resources-bestMatch:assets`,
   # `nonprofits_resources-bestMatch:revenue`,
+  `nonprofits_resources-bestMatch:ein`,
   # # opensecrets
   # `opensecrets_resources_jwVersion-bestMatch:MeanContribAmountPerYearContributed`,
   # `opensecrets_resources_jwVersion-bestMatch:TotalContribAmount`
+  is_likely_org
   )
 
 d %<>% filter(match_in_sample)
@@ -61,6 +93,10 @@ names(d) %<>%  str_remove("-orgMatch:best_match")
 
 d %>% select(ends_with("name")) %>% names()
 
+
+
+
+
 # 2k
 d %>% filter(!is.na(CreditUnions_name)) %>% select(ends_with("name"))
 
@@ -75,6 +111,7 @@ d %>% filter(!is.na(FFIECInstitutions_name)) %>% select(ends_with("name"))
 
 # 18k
 d %>% filter(!is.na(nonprofits_resources_name)) %>% select(ends_with("name"))
+
 
 # 4k
 d %>% filter(!is.na(opensecrets_resources_jwVersion_name)) %>% select(ends_with("name"))
