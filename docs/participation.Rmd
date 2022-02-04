@@ -84,6 +84,14 @@ scale_color_continuous <- function(...){
 scale_fill_continuous <- function(...){
   scale_fill_viridis_c(..., direction = -1, 
                        option = "plasma")}
+
+# Table formatting
+library(kableExtra)
+kablebox <- . %>% 
+  slice_head(n = 100) %>%
+  knitr::kable() %>% 
+  kable_styling() %>% 
+  scroll_box(height = "400px")
 ```
 
 # Data
@@ -187,11 +195,13 @@ d %>% group_by(Agency, Org_type, payday) %>%
 
 d %>% 
   filter(payday == "Payday Loan Rules") %>% 
-  count(comment_org_name, sort = T) 
+  count(comment_org_name, sort = T) %>% 
+  kablebox() 
 
 orgs %>% 
   filter(str_dct(best_match_name, "financial")) %>% 
-  arrange(-num_comments)
+  arrange(-num_comments) %>% 
+  kablebox()
 ```
 
 ---
@@ -710,6 +720,8 @@ d %>%
 
 # Sophistication 
 
+
+Fixing comment urls to merge data
 ```{r assets-bluebook}
 load(here("data", "bluebook.Rdata"))
 load(here("data", "tech_iterations.RData"))
@@ -719,7 +731,10 @@ technical_terms %<>% mutate(comment_url = doc_id)
 # names(bluebook)
 # bluebook %>% count(comment_url, sort = T)
 
-d %>% filter(Agency != "CFPB") %>% select(comment_url) %>% kablebox()
+d %>% #filter(Agency != "CFPB") %>%
+  group_by(Agency) %>% 
+  slice_head(n = 1) %>%
+  select(comment_url) %>% kablebox()
 
   
 fix_url <- . %>%
@@ -743,15 +758,29 @@ bluebook %<>% fix_url()
 
 technical_terms %<>% fix_url()
 
-bluebook%>%  select(comment_url) %>% kablebox()
+bluebook %>% kablebox()
 
-d %>% filter(comment_url %in% technical_terms$comment_url)
+technical_terms %>% kablebox()
+```
 
+Technical terms N = 
+```{r techical}
+# matches 
+d %>% filter(comment_url %in% technical_terms$comment_url) %>% 
+  count(Agency) %>% kablebox()
+```
+
+Bluebook terms N = 
+```{r bluebook}
 # 6 k in both sets 
-d %>% filter(comment_url %in% bluebook$comment_url)
+d %>% filter(comment_url %in% bluebook$comment_url) %>%
+  count(Agency) %>% kablebox()
 
-bluebook %>% filter(comment_url %in% d$comment_url)
+bluebook %>% filter(comment_url %in% d$comment_url) %>% nrow()
+```
 
+## Assets x bluebook terms
+```{r}
 # bluebook %>% count(is.na(Total_Legal_Citations))
 
 # 400 from FDIC data, 400 from other data
@@ -765,7 +794,11 @@ b <- bluebook %>%
   drop_na(Total_Legal_Citations)
 # d %>% count(comment_url, sort = T) 
 
-b %>% select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  kablebox()
+b %<>% distinct()
+
+b %>% select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  
+  filter(!is.na(org_name)) %>%
+  kablebox()
 
 # FDIC ASSTS 
 b %>% 
@@ -802,8 +835,11 @@ b %>%
   geom_smooth(method = "lm"
   ) 
 
-b %>% filter(Total_Legal_Citations>10) %>% select(Total_Legal_Citations, comment_url) %>% arrange(-Total_Legal_Citations) %>% kablebox()
+b %>% filter(Total_Legal_Citations>10,
+             !is.na(org_name)) %>% select(org_name,Total_Legal_Citations, comment_url, everything()) %>% arrange(-Total_Legal_Citations) %>% kablebox()
 ```
+
+## Assets x technical terms
 
 ```{r assets-tech, fig.height=2, fig.width=3}
 t <- technical_terms %>% 
@@ -832,6 +868,11 @@ t %>%
   labs(x = "Assets",
        y = "Legal and Technial Terms", 
        title = "FDIC-Insured Banks")
+
+t %>% 
+  filter(!is.na(`FDIC_Institutions-orgMatch:ASSET`), dictionary_terms == 0) %>%
+  select(org_name, everything(), -doc_id) %>% 
+  kablebox()
 
 # nonprofits
 t %>% 
