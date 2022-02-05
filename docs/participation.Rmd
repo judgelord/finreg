@@ -88,7 +88,7 @@ scale_fill_continuous <- function(...){
 # Table formatting
 library(kableExtra)
 kablebox <- . %>% 
-  slice_head(n = 100) %>%
+  slice_head(n = 300) %>%
   knitr::kable() %>% 
   kable_styling() %>% 
   scroll_box(height = "400px")
@@ -101,6 +101,71 @@ actions <- read_csv(here("data" , "actions.csv"))
 
 actions %>% distinct(docket_id) %>% nrow
 
+library("readxl")
+
+rins <- read_excel(here::here("data", "dodd-frank-rulemaking-directory_doc_oriented_wdescription.xls")) %>% 
+  rename(docket_id = identifier)  %>% 
+  select(-"...1")
+
+lookup <- read_csv(here::here("data", "docket_related_rin_lookup.csv")) %>% 
+  select(-"...1") %>% 
+  mutate(across(everything(), str_squish))
+
+rin_lookup <- full_join(rins, lookup, by = "docket_id", suffix = c(".directory", ".lookup")) %>% 
+  mutate(title = str_to_title(title) %>% str_squish()) %>% 
+  mutate(across(everything(), str_squish))
+
+```
+
+Some dockets don't have related rins in lookup table 
+```{r}
+# ~35/2 with different comment counts per docket 
+# ~325/2 with different titles per docket 
+# ~98/2 with different related RINS / lowest related rin per docket 
+# 115/2 with different docket_urls
+
+# missing related RINs
+rin_lookup %>% 
+  select(# title, 
+    docket_id,
+    RIN.directory, RIN.lookup,
+         related.rins, 
+         lowest.sorted.rin.of.related.rins, 
+         docket_url.directory, docket_url.lookup,
+             comment_count) %>%
+  distinct() %>% 
+  filter(is.na(related.rins)) %>% 
+  kablebox()
+```
+
+### Dockets with more than one RIN
+```{r}
+rin_lookup %>% 
+  select(# title, 
+    docket_id,
+    RIN.directory, RIN.lookup,
+         related.rins, 
+         lowest.sorted.rin.of.related.rins, 
+         docket_url.directory, docket_url.lookup,
+             comment_count) %>%
+  distinct() %>% 
+  filter(!is.na(related.rins)) %>% 
+  add_count( docket_id) %>%
+  arrange(docket_id) %>% 
+  filter(n > 1) %>%   
+  distinct() %>% 
+  kablebox()
+
+rin_lookup %<>% 
+  select(-RIN.directory,
+         -docket_url.directory) %>% distinct()
+
+names(rin_lookup) %<>% str_remove(".lookup")
+```
+
+
+I changed a few names from Jacob's data: 
+```{r}
 # clean match data from finreg_commenter_covariates
 load(here("data", "match_data_clean.Rdata"))
 
@@ -117,13 +182,15 @@ orgs <- here("data", #"match_data", # old in match_data
 
              ) %>% 
 read_csv()
-
 ```
+
 # Number of comments by organization type 
 
 ```{r org_count_type, fig.width=5, fig.height=2.3}
 d %<>% mutate(org_comment = ifelse(is_likely_org == 1, "Likely Org", "Likely Not Org"),
               Agency = str_to_upper(comment_agency))
+
+d %<>% filter(is_likely_org == 1)
 
 d %<>% mutate(Org_type = org_type %>% 
                 str_replace("CIK", "Filed with SEC (CIK Data)") %>% 
@@ -176,6 +243,44 @@ org_count <- d %>% filter(is_likely_org ==1) %>%
 
 ---
 
+# Comments per docket
+
+```{r rins-table}
+d_rin_lookup <- d %>% full_join(rin_lookup) %>% 
+  distinct(docket_id,
+         #  RIN,
+         related.rins, 
+         lowest.sorted.rin.of.related.rins, 
+         #docket_url,  
+         comment_count,
+         comment_url) %>% 
+  group_by(docket_id) %>%
+  add_count(name = "comments_matched") %>% 
+  mutate(comment_count = as.numeric(comment_count)) %>% 
+  select(docket_id, comment_count,comments_matched, everything()) %>% 
+  arrange(docket_id) %>% 
+  filter(!is.na(docket_id))
+
+d_rin_lookup  %>% 
+  select(-comment_url) %>% 
+  distinct() %>% 
+  kablebox()
+```
+
+Some of these appear to be over-matched, but it is also possible that the comment counts are wrong. 
+
+```{r rins-table-comments-counts}
+# 6 over matched 
+d_rin_lookup %>% 
+  filter(comment_count < comments_matched) %>%
+  #arrange(comment_url) %>% 
+  select(-comment_url) %>% 
+  distinct() %>% 
+  kablebox()
+```
+
+---
+
 ### Payday loan rule
 
 The payday loan rule accounts for 90% of credit union comments and 50% of nonprofit comments, and 75% of open secrets matched comments in the current data.
@@ -211,8 +316,6 @@ orgs %>%
 # Commenters matched to other datasets of known organizations
 
 ```{r match_data}
-d %<>% filter(is_likely_org == 1)
-
 # 2k
  paste("Credit Union matches: ", sum(!is.na(d$CreditUnions_name)) )
 
@@ -914,7 +1017,7 @@ d %>%
 ```
 
 
-# Steve's code 
+# Steve's code for reference
 ```{r, eval=FALSE}
 # Steve's code
 # https://www.dropbox.com/s/dt7n0a771jngpte/Efficacy_Plots.R?dl=0
