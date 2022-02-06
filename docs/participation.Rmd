@@ -255,7 +255,7 @@ d_rin_lookup <- d %>% full_join(rin_lookup) %>%
          comment_count,
          comment_url) %>% 
   group_by(docket_id) %>%
-  add_count(name = "comments_matched") %>% 
+  mutate(comments_matched = sum(!is.na(comment_url) ) ) %>% 
   mutate(comment_count = as.numeric(comment_count)) %>% 
   select(docket_id, comment_count,comments_matched, everything()) %>% 
   arrange(docket_id) %>% 
@@ -264,6 +264,7 @@ d_rin_lookup <- d %>% full_join(rin_lookup) %>%
 d_rin_lookup  %>% 
   select(-comment_url) %>% 
   distinct() %>% 
+  #filter(comments_matched > 0)
   kablebox()
 ```
 
@@ -750,8 +751,6 @@ d %<>% mutate(org_resources =
 #d$org_resources
 
 d %>% distinct(comment_url) %>% nrow()
-
-
 ```
 
 ## Duplicates
@@ -782,6 +781,49 @@ d %>%
   arrange(comment_url) %>%
   kablebox()
 ```
+
+
+# Asset data coverage by docket
+
+```{r}
+is_not_na <- . %>% is.na() %>% isFALSE()
+
+
+t <- d_rin_lookup %>%
+  ungroup() %>% 
+  full_join(d %>% select(docket_id, comment_url, ends_with("_name"))) %>%
+  ungroup() %>% 
+  # add_count(docket_id) %>% 
+  group_by(comment_url) %>% 
+  mutate(across(ends_with("name"), is_not_na)) %>% 
+  mutate(asset_data_name = sum( CIK_name, CreditUnions_name, FDIC_Institutions_name,	FFIECInstitutions_name,	SEC_Institutions_name,	compustat_resources_name,	nonprofits_resources_name) > 0#,
+         #unique_orgs_name = org_name %>% unique() %>% length() 
+         ) %>% 
+  select(docket_id, comment_count, comments_matched, lowest.sorted.rin.of.related.rins,related.rins,
+         comment_url, ends_with("_name")) %>% 
+  distinct() %>% 
+  group_by(docket_id, comment_count, comments_matched, lowest.sorted.rin.of.related.rins,related.rins) %>% 
+  # tally up matches
+  summarise(across(ends_with("name"), sum)) %>% 
+  # select vars for table 
+  select(docket_id,  lowest.sorted.rin.of.related.rins,related.rins, comment_count, comments_matched, asset_data_name,
+         #unique_orgs_name,
+        nonprofits_resources_name,
+         CIK_name, CreditUnions_name, FDIC_Institutions_name,	FFIECInstitutions_name,	SEC_Institutions_name,	compustat_resources_name) %>% 
+  ungroup() %>%
+  distinct() %>% 
+  arrange(-asset_data_name) 
+
+names(t) %<>% str_remove("_name") %>% str_remove("_resources")
+
+t %>%
+  filter(asset_data > 0) %>% 
+  #distinct(docket_id)
+  kablebox()
+
+t %>% write_csv(here::here("data", "matches_per_rin.csv"))
+```
+
 
 ## Save data
 ```{r save}
