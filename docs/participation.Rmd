@@ -1115,7 +1115,7 @@ FDIC_resources %<>% mutate(Class = str_c(" ", BKCLASS),
 
 cm = c("ASSET" = "Assets")
 
-mpFDIC <- glm(commented ~ Assets,
+mpFDIC <- glm(commented ~ Assets + Class,
            data = FDIC_resources, 
              family=binomial(link="logit"))
 
@@ -1138,7 +1138,7 @@ equatiomatic::extract_eq(models[[1]])
 
 modelsummary(models)
 
-# modelplot(models)
+modelplot(models[[1]])
 ```
 
 
@@ -1246,6 +1246,8 @@ modelsummary(models)
 
 
 ## Sophistication
+
+> NOTE: I'm using OLS for now, but will switch to Poisson or Negative Binomial. 
 
 ### Bluebook
 These models have the prefix `mb_`. The dependent variable is a count of technical terms per comment.
