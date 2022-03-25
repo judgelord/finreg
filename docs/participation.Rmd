@@ -35,7 +35,7 @@ knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       fig.path = "../figs/",
                       fig.align='center',
                       fig.cap = '   ',
-                      fig.retina = 6,
+                      fig.retina = 1, #6, #FIXME for publication quality images
                       fig.height = 3,
                       fig.width = 7,
                       out.width = "100%",
@@ -44,7 +44,19 @@ knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
 library("xaringan")
 library("xaringanthemer")
 library("here")
+library("modelsummary")
 
+# table defaults
+modelsummary <- function(...) modelsummary::modelsummary(..., 
+                                                         stars = T, 
+                                                         add_rows = rows,
+                                                         coef_rename = cm,
+                                                         coef_omit = "(Intercept)") %>% 
+  row_spec(row = 1, bold = T)
+
+# coeficient plot defaults
+modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)") + 
+  geom_vline(xintercept = 0, linetype = 2, alpha = .5)
 
 style_mono_light(base_color = "#3b444b",
           link_color = "#B7E4CF",
@@ -164,7 +176,7 @@ names(rin_lookup) %<>% str_remove(".lookup")
 ```
 
 
-I changed a few names from Jacob's data: 
+I changed a few names from Jacob's asset data: 
 ```{r}
 # clean match data from finreg_commenter_covariates
 load(here("data", "match_data_clean.Rdata"))
@@ -729,6 +741,7 @@ compustat %>%
 ```
 
 
+
 # Combine asset data with commenting behavior
 
 ```{r}
@@ -751,6 +764,15 @@ d %<>% mutate(org_resources =
 #d$org_resources
 
 d %>% distinct(comment_url) %>% nrow()
+```
+
+This is fishy
+```{r}
+# fishy
+d %>% 
+  ggplot() +
+  aes(x = marketcap2) + 
+  geom_histogram()
 ```
 
 ## Duplicates
@@ -789,7 +811,7 @@ d %>%
 is_not_na <- . %>% is.na() %>% isFALSE()
 
 
-t <- d_rin_lookup %>%
+dtable <- d_rin_lookup %>%
   ungroup() %>% 
   full_join(d %>% select(docket_id, comment_url, ends_with("_name"))) %>%
   ungroup() %>% 
@@ -814,14 +836,13 @@ t <- d_rin_lookup %>%
   distinct() %>% 
   arrange(-asset_data_name) 
 
-names(t) %<>% str_remove("_name") %>% str_remove("_resources")
 
-t %>%
-  filter(asset_data > 0) %>% 
-  #distinct(docket_id)
-  kablebox()
 
-t %>% write_csv(here::here("data", "matches_per_rin.csv"))
+sum2 <- . %>% sum(na.rm = TRUE)
+
+dtable %>% summarise(across(where(is.numeric), sum2))
+  
+dtable %>% write_csv(here::here("data", "matches_per_rin.csv"))
 ```
 
 
@@ -925,7 +946,7 @@ bluebook %>% filter(comment_url %in% d$comment_url) %>% nrow()
 ```
 
 ## Assets x bluebook terms
-```{r}
+```{r assets-blue, fig.height=2, fig.width=3, out.width="50%"}
 # bluebook %>% count(is.na(Total_Legal_Citations))
 
 # 400 from FDIC data, 400 from other data
@@ -986,7 +1007,7 @@ b %>% filter(Total_Legal_Citations>10,
 
 ## Assets x technical terms
 
-```{r assets-tech, fig.height=2, fig.width=3}
+```{r assets-tech, fig.height=2, fig.width=3, out.width="50%"}
 t <- technical_terms %>% 
   left_join(d %>% 
               select(comment_url, org_name,
@@ -1047,19 +1068,275 @@ t %>%
   geom_jitter() + 
   geom_smooth(method = "lm"
   ) 
+
+## CRROSSWALK ASSET DATA  WITH TECHNICAL TERMS
+# names(t) %<>% str_remove("_name") %>% str_remove("_resources")
+
+dtable %>%
+  #filter(asset_data > 0) %>% 
+  #distinct(docket_id)
+  kablebox()
+
+# sum(t$asset_data[1:6])
+
+# t %>% tally(comments_matched)
+# d %>% distinct(comment_url)
+
+# t %>% tally(asset_data)
+
+# dtable %>% 
+#   ggplot() + 
+#   aes(x = docket_id) + 
+#   geom_col(aes(y = asset_data)) 
+
 ```
 
-This is fishy
-```{r}
-# fishy
-d %>% 
-  ggplot() +
-  aes(x = marketcap2) + 
-  geom_histogram()
+
+
+# Regressions
+
+## Probability of Commenting
+
+These models have the prefix `mp_`. The dependent variable is probability that the organization comments.
+
+### FDIC-insured Banks
+
+SM = Comptroller of the Currency (OCC). National Charter and a Fed member.
+
+NM = Commercial Bank. Bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State charter and Fed non-member
+
+SB =Savings Bank. Bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State Charter.
+
+OI = Bank is an insured United States branch of a foreign chartered institution (IBA)
+
+```{r mpFDIC}
+FDIC_resources %<>% mutate(Class = str_c(" ", BKCLASS),
+                           Assets = ASSET)
+
+cm = c("ASSET" = "Assets")
+
+mpFDIC <- glm(commented ~ Assets,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDIC_BKCLASS <- glm(commented ~ Assets*Class,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Comment",
+  `2` = "Comment"
+)
+
+attr(rows, 'position') <- c(0)
+
+models <- list(mpFDIC, mpFDIC_BKCLASS)
+
+equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+# modelplot(models)
 ```
 
 
-# Steve's code for reference
+### Nonprofits
+
+```{r mpNonprofit}
+nonprofit_resources %<>% mutate(Assets = assets)
+
+mpNonprofit <- glm(commented ~ assets,
+           data = nonprofit_resources , 
+             family=binomial(link="logit"))
+
+mpNonprofit_revenue <- glm(commented ~ assets + revenue,
+           data = nonprofit_resources, 
+             family=binomial(link="logit"))
+
+models <- list(mpNonprofit, mpNonprofit_revenue)
+
+equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+modelplot(models)
+```
+
+### Campaign Donors
+
+```{r mpOpensecrets}
+opensecrets %<>% mutate(commented = Commented == "Commented")
+
+mpOpensecrets <- glm(commented ~ MeanContribAmount,
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+mpOpensecrets_total <- glm(commented ~ TotalContribAmount,
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+models <- list(mpOpensecrets, mpOpensecrets_total)
+
+equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+# modelplot(models)
+```
+
+### By Market Cap
+```{r mpCompustat}
+compustat %<>% mutate(commented = Commented == "Commented")
+
+cm = c("marketcap2" = "Market Capitalization")
+
+mpCompustat <- glm(commented ~ marketcap2,
+           data = compustat, 
+             family=binomial(link="logit"))
+
+top_naics <- compustat %>% count(naics, sort = T) %>% 
+  drop_na(naics) %>% 
+  top_n(10, wt = n) %>% 
+  pull(naics)
+
+mpCompustat_naics <- glm(commented ~ NAICS_,
+           data = compustat %>% mutate(NAICS_ = ifelse(naics %in% top_naics, naics, "other")), 
+             family=binomial(link="logit"))
+
+models <- list(mpCompustat, mpCompustat_naics)
+
+equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+# modelplot(models)
+```
+
+---
+
+### Variation Within and Across Types of Commenters 
+
+```{r mp}
+# Pr(Commenting) ~ assets + org_type + assets*org_type 
+
+d %<>% mutate(org_is_ = org_type)
+
+cm = c("marketcap2" = "Market Capitalization")
+
+mp <- glm(commented ~ org_resources,
+           data = d %>% mutate(org_resources = org_resources/10000), 
+             family=binomial(link="logit"))
+
+mp_type <- glm(commented ~ org_resources*org_is_,
+           data = d  %>% mutate(org_resources = org_resources/10000), 
+             family=binomial(link="logit"))
+
+models <- list(mp, mp_type)
+
+equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+# modelplot(models)
+```
+
+---
+
+
+## Sophistication
+
+### Bluebook
+These models have the prefix `mb_`. The dependent variable is a count of technical terms per comment.
+
+
+```{r mb}
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Sophistication",
+  `2` = "Sophistication",
+  `3` = "Sophistication"
+)
+
+# mb <- lm(Total_Legal_Citations ~ org_resources,
+#            data = b)
+# 
+# mb_agency_only <- glm(Total_Legal_Citations ~ comment_agency,
+#            data = b)
+# 
+# mb_agency <- glm(Total_Legal_Citations ~ org_resources*comment_agency,
+#            data = b)
+# 
+# models <- list(mb, mb_agency, mb_agency_only)
+# 
+# equatiomatic::extract_eq(models[[1]]) 
+# 
+# modelsummary(models)
+# 
+# # modelplot(models)
+
+
+# broken out by org type 
+
+mb_assets <- lm(Total_Legal_Citations ~ assets,
+           data = b  %>% mutate(assets = assets/10000))
+
+mb_opensecrets <- glm(Total_Legal_Citations ~ MeanContribAmount,
+           data = b %>% mutate(MeanContribAmount = MeanContribAmount/10000))
+
+mb_compustat <- glm(Total_Legal_Citations ~ marketcap2,
+           data = b  %>% mutate(marketcap2 = marketcap2/10000))
+
+models <- list(mb_assets, mb_opensecrets, mb_compustat)
+
+modelsummary(models)
+
+modelplot(models) + 
+  labs(x = "Additional Bluebook Terms per Ten Thousand Dollars")
+```
+
+### Technical Terms
+
+These models have the prefix `mt_`. The dependent variable is a count of technical terms per comment.
+
+```{r mt}
+# t %<>% select(-org)
+# broken out by org type 
+
+mt_assets <- lm(dictionary_terms ~ assets,
+           data = t  %>% mutate(assets = assets/10000))
+
+mt_opensecrets <- glm(dictionary_terms ~ MeanContribAmount,
+           data = t %>% mutate(MeanContribAmount = MeanContribAmount/10000))
+
+mt_compustat <- glm(dictionary_terms ~ marketcap2,
+           data = t  %>% mutate(marketcap2 = marketcap2/10000))
+
+models <- list(mt_assets, mt_opensecrets, mt_compustat)
+
+modelsummary(models)
+
+modelplot(models) + 
+  labs(x = "Additional Technical and Legal Terms per Ten Thousand Dollars")
+```
+
+---
+
+## Efficacy
+
+These models have the prefix `me_`. The dependent variable is efficacy score.
+
+---
+
+### Efficacy Mediated by Technical Terms
+
+These models have the prefix `memt-`. The dependent variable is efficacy score. The mediator is technical terms.
+
+
+---
+
+# Steve's old code for reference
 ```{r, eval=FALSE}
 # Steve's code
 # https://www.dropbox.com/s/dt7n0a771jngpte/Efficacy_Plots.R?dl=0

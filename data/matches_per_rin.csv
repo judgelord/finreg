@@ -1,4 +1,4 @@
-docket_id,lowest.sorted.rin.of.related.rins,related.rins,comment_count,comments_matched,asset_data,nonprofits,CIK,CreditUnions,FDIC_Institutions,FFIECInstitutions,SEC_Institutions,compustat
+docket_id,lowest.sorted.rin.of.related.rins,related.rins,comment_count,comments_matched,asset_data_name,nonprofits_resources_name,CIK_name,CreditUnions_name,FDIC_Institutions_name,FFIECInstitutions_name,SEC_Institutions_name,compustat_resources_name
 CFPB-2016-0025,3170-AA40,3170-AA40,211997,6335,3547,1092,194,2140,121,0,0,0
 CFPB-2012-0028,3170-AA19,3170-AA19,3000,779,683,234,354,17,78,0,0,0
 CFTC-2011-0013,NA,NA,NA,459,403,305,89,1,8,0,0,0
