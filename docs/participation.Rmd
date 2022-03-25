@@ -1001,6 +1001,8 @@ b %>%
   geom_smooth(method = "lm"
   ) 
 
+b %>% count(comment_agency, is.na( assets))
+
 b %>% filter(Total_Legal_Citations>10,
              !is.na(org_name)) %>% select(org_name,Total_Legal_Citations, comment_url, everything()) %>% arrange(-Total_Legal_Citations) %>% kablebox()
 ```
@@ -1138,7 +1140,11 @@ equatiomatic::extract_eq(models[[1]])
 
 modelsummary(models)
 
-modelplot(models[[1]])
+modelplot(models[[1]] ) +
+  labs(title  = "SM = State Bank
+SB = Savings Bank
+SA = Savings Association
+NM = Commercial Bank")
 ```
 
 
