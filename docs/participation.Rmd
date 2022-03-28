@@ -1144,7 +1144,8 @@ modelplot(models[[1]] ) +
   labs(title  = "SM = State Bank
 SB = Savings Bank
 SA = Savings Association
-NM = Commercial Bank")
+NM = Commercial Bank",
+x = "Effect on Log Odds of Commenting")
 ```
 
 
