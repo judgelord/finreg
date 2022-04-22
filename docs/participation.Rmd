@@ -1259,6 +1259,10 @@ equatiomatic::extract_eq(models[[1]])
 modelsummary(models)
 
 # modelplot(models)
+
+# modelplot(mpCompustat)
+ 
+# modelplot(mpCompustat_naics)
 ```
 
 ---
@@ -1273,11 +1277,16 @@ d %<>% mutate(org_is_ = org_type)
 cm = c("marketcap2" = "Market Capitalization")
 
 mp <- glm(commented ~ org_resources,
-           data = d %>% mutate(org_resources = org_resources/10000), 
+           data = d  %>% 
+            # dropping FDIC due to extreme variance
+            #filter(org_is_ != "FDIC") %>%
+            mutate(org_resources = org_resources/10000), 
              family=binomial(link="logit"))
 
 mp_type <- glm(commented ~ org_resources*org_is_,
-           data = d  %>% mutate(org_resources = org_resources/10000), 
+           data = d  %>% 
+            #filter(org_is_ != "FDIC") %>%
+             mutate(org_resources = org_resources/10000) , 
              family=binomial(link="logit"))
 
 models <- list(mp, mp_type)
@@ -1286,7 +1295,7 @@ equatiomatic::extract_eq(models[[1]])
 
 modelsummary(models)
 
-# modelplot(models)
+#  modelplot(models)
 ```
 
 ---
