@@ -176,16 +176,51 @@ names(rin_lookup) %<>% str_remove(".lookup")
 ```
 
 
-I changed a few names from Jacob's asset data: 
+## Asset data
+
+Summary table data here: 
+
+```{r docket_table, fig.height=5.5, fig.width=5.4, out.width="80%"}
+# clean match data from finreg_commenter_covariates
+docket_table <- read_csv(here::here("data", "matches_per_docket.csv"))
+
+
+docket_table %>% 
+  add_count(Agency) %>% 
+  mutate(Agency = paste(n, "dockets from", Agency)) %>% 
+  select(- Percent, - Docket, -`Any Resources Measure`) %>% 
+  group_by(Agency) %>% 
+  summarise_all(sum) %>% 
+  group_by(Agency) %>% 
+  pivot_longer(cols = c("Comments", contains(" ") ))  %>% 
+  mutate(Matched = ifelse(name == "Comments", "Total","Matched"),
+         name = ifelse(name == "Comments", "Total", name)) %>% 
+  ggplot() + 
+  aes(fill = name,
+      y = Matched, 
+      x = value) + 
+    geom_col(position = "stack", alpha = .7) + 
+  labs(x = "Comments", y = "", fill = "Resource\nData Type",
+       title = "Comments Matched to Organizational Resources Data") + 
+  facet_wrap("Agency", ncol = 1, scales = "free") + 
+  theme(legend.position = "bottom",
+        panel.grid.major.y = element_blank(),
+        strip.text = element_text(size = 12)) 
+  
+
+docket_table %>% 
+  knitr::kable() %>% 
+  kable_paper(full_width = F) %>%
+  column_spec(5, color = "white",
+              background = spec_color(docket_table$Comments/ docket_table$`Any Resources Measure`, begin = .1, end = .9, direction = 1, option = 3) ) %>% 
+  scroll_box(height = "400px")
+```
+
 ```{r}
 # clean match data from finreg_commenter_covariates
 load(here("data", "match_data_clean.Rdata"))
 
-d <- match_data_clean  %>% distinct()
-
-d %<>% mutate(NonProfitTax_name= nonprofits_resources_name,
-              # compustat_resources_name,
-              OpenSecretsOrgs_name = opensecrets_resources_jwVersion_name)
+d <- match_data_clean  
 ```
 
 # Number of comments by organization type 
@@ -202,14 +237,6 @@ d %<>% mutate(org_type = best_match_type)
 d %<>% mutate(Org_type = org_type %>% 
                 str_replace("CIK", "Filed with SEC (CIK Data)") %>% 
                 str_replace("Compustat", "Wharton Compustat Company Database") %>% 
-                str_replace("FDIC", "FDIC-Insured Bank") %>% 
-                str_replace("Nonprofit", "Nonprofit (IRS Data)") %>% 
-                str_replace("FFIEC", "FFIEC Bank/Bank-like Entity") %>% 
-                str_replace("OpenSecrets", "PAC Donor (CRP Data)"))
-
-d %<>% mutate(Best_match_type = best_match_type %>% 
-                str_replace("CIK", "Filed with SEC (CIK Data)") %>% 
-                str_replace("compustat", "Wharton Compustat Company Database") %>% 
                 str_replace("FDIC", "FDIC-Insured Bank") %>% 
                 str_replace("Nonprofit", "Nonprofit (IRS Data)") %>% 
                 str_replace("FFIEC", "FFIEC Bank/Bank-like Entity") %>% 
@@ -383,14 +410,14 @@ d %>% filter(!is.na(FDIC_Institutions_name)) %>% select(ends_with("name"), comme
 #d %>% filter(!is.na(FFIECInstitutions_name)) %>% select(ends_with("name")) %>% kablebox()
 
 # 18k
- paste("NonProfitTax matches: ", sum(!is.na(d$NonProfitTax_name)) )
+ paste("NonProfitTax matches: ", sum(!is.na(d$nonprofits_resources_name)) )
 
-d %>% filter(!is.na(NonProfitTax_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
+d %>% filter(!is.na(nonprofits_resources_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
 
 # 4k
- paste("OpenSecrets matches: ", sum(!is.na(d$OpenSecretsOrgs_name)) )
+ paste("OpenSecrets matches: ", sum(!is.na(d$opensecrets_resources_name)) )
 
-d %>% filter(!is.na(OpenSecretsOrgs_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
+d %>% filter(!is.na(opensecrets_resources_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
 
 
 # 0
@@ -661,10 +688,11 @@ nonprofit_resources %>%
 (OpenSecrets data)
 
 ```{r opensecrets-density, fig.height=1.5, fig.width=4, out.width="50%"}
+# load the full population of campaign donors 
 opensecrets <- read_csv(here("data" , "merged_resources", 
 "opensecrets_resources_JwVersion.csv") )
 
-
+# indicator for whether they commented
 opensecrets %<>% 
   mutate(org_name = orgName %>% str_to_lower(),
          Commented = ifelse(
@@ -780,14 +808,33 @@ compustat %>%
 ```{r}
 nrow(d)
 
-d %<>% left_join(opensecrets) %>% 
-  left_join(nonprofit_resources) %>% 
-  left_join(compustat %>% select(-index)) 
+d  %<>% 
+  mutate(marketcap = coalesce(`CIK-bestMatch:marketcap`, `compustat_resources-bestMatch:marketcap`),
+         marketcap2 = ifelse(str_detect(marketcap, "k"),
+                             marketcap %>% str_remove("k") %>% as.numeric() * 1000,
+                             marketcap),
+         marketcap2 = ifelse(str_detect(marketcap, "M"),
+                             marketcap %>% str_remove("M") %>% as.numeric() * 1000000,
+                             marketcap2),
+         marketcap2 = ifelse(str_detect(marketcap, "B"),
+                             marketcap %>% str_remove("B") %>% as.numeric() * 1000000000,
+                             marketcap2),
+         marketcap2 = ifelse(str_detect(marketcap, "T"),
+                             marketcap %>% str_remove("T") %>% as.numeric() * 1000000000000,
+                             marketcap2),
+         marketcap2 = marketcap2 %>% str_remove(",") %>%  as.numeric(marketcap2))
+
+# d %<>% left_join(opensecrets) %>% 
+#   left_join(nonprofit_resources) %>% 
+#   left_join(compustat %>% select(-index)) 
 
 d %<>% distinct()
 
-nrow(d)
+d %<>% mutate(MeanContribAmount = `opensecrets_resources_jwVersion-bestMatch:MeanContribAmountPerYearContributed`,
+              assets = coalesce( `FDIC_Institutions-bestMatch:ASSET`, `nonprofits_resources-bestMatch:assets`) )
 
+
+#FIXME This is dumb
 d %<>% mutate(org_resources = 
                 coalesce(org_resources,
                          MeanContribAmount,
@@ -799,7 +846,7 @@ d %<>% mutate(org_resources =
 d %>% distinct(comment_url) %>% nrow()
 ```
 
-We only have market cap for 10 firms?
+We only have market cap for  `r d %>% filter(!is.na(marketcap)) %>% count(best_match_name)  %>% nrow()` firms that submitted `r nrow(d %>% filter(!is.na(marketcap)))` comments.
 ```{r}
 # fishy
 d %>% 
@@ -831,9 +878,10 @@ d %>%
   kablebox()
 ```
 
+<!--
 But we still have almost as many duplicates when we drop `state`, partially because assets vary for the same "org" registered in different states: 
 
-```{r duplicates2}
+```{r duplicates2, eval = FALSE }
 # duplicates after removing state
 d %>% 
   select(-state) %>%
@@ -844,6 +892,7 @@ d %>%
   kablebox()
 ```
 
+--> 
 
 # Asset data coverage by docket
 
@@ -886,7 +935,7 @@ dtable %>% write_csv(here::here("data", "matches_per_rin.csv"))
 ```
 
 
-## Save data
+## Save asset data
 ```{r save}
 commenter_assets <- d
 
@@ -894,33 +943,47 @@ save(commenter_assets, file = here::here("data", "commenter_assets.Rdata"))
 ```
 
 
-# Comments per rule
+## Comments per rule
 
+### Percent of comments by each organization type on any one rule
 ```{r}
 # comments 
 # of the matched sample 
 # 90% of credit union comments, half of nonprofits, and 75% campaig
 d %>% 
-    add_count(org_type, name = "dataset total") %>% 
-  filter(comment_agency == "CFPB") %>% 
-  mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
-  count(org_type, docket_id, `dataset total`, sort = T) %>%
+  mutate(docket_id = str_split(docket_id, ";")) %>% 
+  unnest(docket_id) %>% 
+    add_count(org_type, name = "dataset_total") %>% 
+  count(org_type, docket_id, dataset_total, sort = T) %>%
+  mutate(percent = percent( n / dataset_total , accuracy = 1)) %>% 
   kablebox()
+```
 
+
+### Percent of each organization type on any one rule
+
+```{r}
 # orgs (15% of nonprifits on payday loan rule, 30% of opensecrets)
 d %>% 
-  filter(comment_agency == "CFPB") %>% 
-  mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
+ mutate(docket_id = str_split(docket_id, ";")) %>% 
+  unnest(docket_id) %>% 
+  # org rather than comment level counts now
   distinct(org_name, docket_id, org_type) %>% 
-  add_count(org_type, name = "dataset total") %>% 
-  count(org_type, docket_id, `dataset total`, sort = T) %>%
+  # total orgs of each type  in dataset 
+  add_count(org_type, name = "dataset_total") %>% 
+  # number of each org type by docket 
+  count(org_type, docket_id, `dataset_total`, sort = T) %>%
+  mutate(percent = percent( n / dataset_total , accuracy = 1)) %>% 
   kablebox()
+```
 
+### Most Frequently Commeting Orgs
+```{r}
 # 
 d %>% 
-  filter(comment_agency == "CFPB") %>% 
-  mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
-  count(org_name, org_type, docket_id, sort = T) %>% kablebox()
+  # filter(comment_agency == "CFPB") %>% 
+  # mutate(docket_id = comment_url %>% str_extract("CFPB-[0-9]*-[0-9]*")) %>% 
+  count(org_name, best_match_name, org_type, docket_id, sort = T) %>% kablebox()
 ```
 
 
@@ -1338,20 +1401,23 @@ rows <- tibble(
 # broken out by org type 
 
 mb_assets <- lm(Total_Legal_Citations ~ assets,
-           data = b  %>% mutate(assets = assets/10000))
+           data = b  %>% mutate(assets = assets/10000000))
 
 mb_opensecrets <- glm(Total_Legal_Citations ~ MeanContribAmount,
            data = b %>% mutate(MeanContribAmount = MeanContribAmount/10000))
 
 mb_compustat <- glm(Total_Legal_Citations ~ marketcap2,
-           data = b  %>% mutate(marketcap2 = marketcap2/10000))
+           data = b  %>% mutate(marketcap2 = marketcap2/10000000))
 
-models <- list(mb_assets, mb_opensecrets, mb_compustat)
+models <- list(mb_assets, mb_compustat)
 
 modelsummary(models)
 
-modelplot(models) + 
+modelplot(mb_opensecrets) + 
   labs(x = "Additional Bluebook Terms per Ten Thousand Dollars")
+
+modelplot(models) + 
+  labs(x = "Additional Bluebook Terms per Ten Million Dollars")
 ```
 
 ### Technical Terms
@@ -1363,20 +1429,25 @@ These models have the prefix `mt_`. The dependent variable is a count of technic
 # broken out by org type 
 
 mt_assets <- lm(dictionary_terms ~ assets,
-           data = t  %>% mutate(assets = assets/10000))
+           data = t  %>% mutate(assets = assets/10000000))
 
 mt_opensecrets <- glm(dictionary_terms ~ MeanContribAmount,
            data = t %>% mutate(MeanContribAmount = MeanContribAmount/10000))
 
 mt_compustat <- glm(dictionary_terms ~ marketcap2,
-           data = t  %>% mutate(marketcap2 = marketcap2/10000))
+           data = t  %>% mutate(marketcap2 = marketcap2/10000000))
 
-models <- list(mt_assets, mt_opensecrets, mt_compustat)
+models <- list(mt_assets, mt_compustat)
 
 modelsummary(models)
 
-modelplot(models) + 
+modelplot( mt_opensecrets) + 
   labs(x = "Additional Technical and Legal Terms per Ten Thousand Dollars")
+
+modelplot(models) + 
+  labs(x = "Additional Technical and Legal Terms per Ten Million Dollars")
+
+
 ```
 
 ---
