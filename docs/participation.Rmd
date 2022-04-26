@@ -108,7 +108,7 @@ kablebox <- . %>%
 
 # Data
 
-The root for this script is `finreg`. Most of the data are in `finreg/data`, but some are up one level in `FINREGRULEMAKE2/Data`. This can and should be streamlined significantly. 
+The root for this script is `finreg`. Most of the data are in `finreg/data` (some in a subfolder `merged_resources`). Others are up one level in `FINREGRULEMAKE2/Data`. This can and should be streamlined significantly. 
 
 Rules and comments: 
 
@@ -126,7 +126,7 @@ Resource data for full population of organizations, including non-commmenters:
 - FDIC `finreg/data/FDIC_resources.Rdata`
 - Credit unions: `Data/creditunions.csv` (up one level, not in finreg)
 - Campaign donations: `finreg/data/merged_resources/opensecrets_resources_JwVersion.csv`
-- Market cap: from compustat `data/merged_resources/compustat_resources.csv` and SEC's CIK database `Data/CIK.csv` 
+- Market cap: from compustat `finreg/data/merged_resources/compustat_resources.csv` and SEC's CIK database `Data/CIK.csv` 
 
 Sophistication Measures 
 
@@ -475,7 +475,7 @@ d %>% group_by(comment_agency) %>%
 
 (FDIC data)
 
-### Among firms that commented on a Dodd Frank rule
+### Among firms that commented on a Dodd-Frank rule
 
 ```{r fdic_count, fig.width=4, out.width= "50%"}
 max <- org_count %>%   filter(org_type == "FDIC") %>% pull(n) %>% max()
@@ -522,11 +522,11 @@ FDIC_resources %>%
   #filter(assets > 100) %>% 
   mutate(Commented = ifelse(commented, "Commented", "Did not comment")) %>%
   ggplot() + 
-  aes(x = ASSET/1000, fill = Commented) + 
+  aes(x = ASSET/1000000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = "FDIC-Insured Banks",
-       fill = "", y = "", x = "Assets ($1,000s)")+
+       fill = "", y = "", x = "Assets (millions)")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -540,11 +540,11 @@ FDIC_resources %<>%
 
 FDIC_resources%>% 
   ggplot() + 
-  aes(x = ASSET/1000, fill = Commented) + 
+  aes(x = ASSET/1000000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = "FDIC-Insured Banks",
-       fill = "", y = "", x = "Assets ($1,000s)")+
+       fill = "", y = "", x = "Assets (Millions)")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -591,6 +591,14 @@ states %>%
 
 ```{r nonprofit-count, fig.height=1.5, fig.width=4, out.width="50%"}
 load(here("data", "nonprofit_resources.Rdata"))
+
+# make unique ( there are nearly 5k different rotary internationals, and sevarl APIs )
+# select org entry with highest assets 
+nonprofit_resources %<>% group_by(org_name) %>% 
+  top_n(1, assets) %>% 
+  ungroup()
+
+
 
 nonprofit_resources %>% 
   filter(org_name %in% d$best_match_name) %>% 
@@ -663,11 +671,11 @@ nonprofit_resources %>% distinct(Commented, mean_assets, mean_revenue)
 nonprofit_resources %>% 
   filter(assets > 10) %>% 
   ggplot() + 
-  aes(x = assets/1000, fill = Commented, color = Commented) + 
+  aes(x = assets/1000000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_assets/1000)) + 
+  geom_vline( aes(xintercept = mean_assets/1000000)) + 
   scale_x_log10() + 
-  labs(title = "Nonprofits",fill = "", x = "Assets ($1,000s)") + 
+  labs(title = "Nonprofits",fill = "", x = "Assets (Millions)") + 
   facet_grid(Commented ~ ., scales = "free_y")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank())
@@ -743,11 +751,11 @@ creditunions %>% distinct(Commented, mean_assets)
 creditunions %>% 
   filter(assets > 10) %>% 
   ggplot() + 
-  aes(x = assets/1000, fill = Commented, color = Commented) + 
+  aes(x = assets/1000000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_assets/1000)) + 
+  geom_vline( aes(xintercept = mean_assets/1000000)) + 
   scale_x_log10() + 
-  labs(title = "Credit Unions",fill = "", x = "Assets ($1,000s)") + 
+  labs(title = "Credit Unions",fill = "", x = "Assets (Millions)") + 
   facet_grid(Commented ~ ., scales = "free_y")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank())
@@ -886,8 +894,13 @@ compustat %>%
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
+```
 
 
+
+# Temporarily merging in data where matches are NA
+
+```{r merge}
 #FIXME 
 # TO GET NON-COMMENTERS, WE NEED TO JOIN IN THE OTHERS, BUT WE MIGHT NOT NEED THIS?
 # Until the asset data are fixed to include matches in multiple datasets. 
@@ -895,6 +908,8 @@ d %<>% left_join(opensecrets %>% select(org_name, MeanContribAmount, TotalContri
   left_join(nonprofit_resources %>% select(org_name, assets, revenue) ) %>%
   left_join(compustat %>% select(-index) %>% select(org_name, marketcap, naics) ) %>% 
   left_join(creditunions %>% select(org_name, `Total Assets`))
+
+d %<>% distinct()
 
 ##### 
 # Instead, just keeping d limited to commenters and using matched data vars 
@@ -904,19 +919,26 @@ d %<>% left_join(opensecrets %>% select(org_name, MeanContribAmount, TotalContri
 # COMBINE matched and unmatched opensecrets 
 d %<>% mutate(
   MeanContribAmount = coalesce(
-    `opensecrets_resources_jwVersion-bestMatch:MeanContribAmountPerYearContributed`,
-    MeanContribAmount
+    `opensecrets_resources_jwVersion-bestMatch:MeanContribAmountPerYearContributed`, # matched 
+    MeanContribAmount # from opensecrets 
     ),
   TotalContribAmount = coalesce(
-    `opensecrets_resources_jwVersion-bestMatch:TotalContribAmount`,
-    TotalContribAmount)
+    `opensecrets_resources_jwVersion-bestMatch:TotalContribAmount`, # matched 
+    TotalContribAmount     # from open secrets 
+
+    )
 )
 
 
 # combine matched and unmatched nonprofits 
 d %<>% mutate(
-  assets = coalesce(`nonprofits_resources-bestMatch:assets`, assets),
-  revenue = coalesce(`nonprofits_resources-bestMatch:revenue`, revenue)
+  assets = coalesce(`nonprofits_resources-bestMatch:assets`, #matched
+                    assets, # from nonprofits
+                    `Total Assets` # from credit unions 
+                    ),
+  revenue = coalesce(`nonprofits_resources-bestMatch:revenue`, #matched 
+                     # from nonprofits
+                     revenue)
 )
 
 # combine matched and unmatched marketcap
@@ -964,7 +986,7 @@ d %>% arrange(-marketcap2) %>% count(marketcap, marketcap2, best_match_name, sor
 
 (more than one match per comment URL)
 
-Orgs in multiple states were one problem. For example, the API incorporated in DC has \$128,273,933 in assets while API in TX has \$15,368. Yale University had \$27,801,734,697 in assets (must include the endowment) and another Yale University had $4,858,646, both in CT.
+Orgs in multiple states were one problem. For example, the API incorporated in DC has \$128,273,933 in assets while API in TX has \$15,368. Yale University had \$27,801,734,697 in assets (must include the endowment), and another Yale University had $4,858,646, both in CT.
 
 ```{r duplicates}
 
@@ -983,8 +1005,11 @@ We solved this by selecting the entry with the highest assets. For example, the 
 However, in the prior version of the data, the American Petroleum Institute and Yale University were both matched to nonprofit asset data and to opensecrets. Now, Yale Law has opensecrets data but no asset data, while API has asset data but no campaign donations. Yale University has neither---it is matched in CIK data, but its marketcap is NA, so we now have nothing for it. 
 
 ```{r}
-d %>% filter(str_detect(best_match_name, "petroleum inst|yale uni")) %>%
-  select(comment_url, best_match_name, org_resources, #opensecrets_resources_name,
+d %<>% distinct()
+
+d %>% filter(str_detect(best_match_name, "petroleum inst|yale uni")) %>% # view
+  select(comment_url, best_match_name, 
+         assets, 
          `nonprofits_resources-bestMatch:assets`, 
          `nonprofits_resources-bestMatch:revenue`,
          `nonprofits_resources-bestMatch:ein`,
@@ -1095,7 +1120,7 @@ d %>%
   kablebox()
 ```
 
-### Most Frequently Commeting Orgs
+### Most Frequently Commenting Orgs
 ```{r}
 # 
 d %>% 
@@ -1320,23 +1345,26 @@ dtable %>%
 
 ## Probability of Commenting
 
-These models have the prefix `mp_`. The dependent variable is probability that the organization comments.
+These models have the prefix `mp_`. The dependent variable is the probability that the organization comments.
 
 ### FDIC-insured Banks
 
 SM = Comptroller of the Currency (OCC). National Charter and a Fed member.
 
-NM = Commercial Bank. Bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State charter and Fed non-member
+NM = Commercial Bank. The bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State charter and Fed non-member
 
-SB =Savings Bank. Bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State Charter.
+SB =Savings Bank. The bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State Charter.
 
 OI = Bank is an insured United States branch of a foreign chartered institution (IBA)
 
+Assets in millions 
+
 ```{r mpFDIC}
 FDIC_resources %<>% mutate(Class = str_c(" ", BKCLASS),
-                           Assets = ASSET)
+                           Assets = ASSET/1000000)
 
-cm = c("ASSET" = "Assets")
+cm = c("ASSET" = "Assets",
+       "Assets" = "Assets (Millions)")
 
 mpFDIC <- glm(commented ~ Assets + Class,
            data = FDIC_resources, 
@@ -1372,14 +1400,16 @@ x = "Effect on Log Odds of Commenting")
 
 ### Nonprofits
 
-```{r mp-nonprofits}
-nonprofit_resources %<>% mutate(Assets = assets)
+Assets in millions
 
-mpNonprofit <- glm(commented ~ assets,
+```{r mp-nonprofits}
+nonprofit_resources %<>% mutate(Assets = assets/1000000)
+
+mpNonprofit <- glm(commented ~ Assets,
            data = nonprofit_resources , 
              family=binomial(link="logit"))
 
-mpNonprofit_revenue <- glm(commented ~ assets + revenue,
+mpNonprofit_revenue <- glm(commented ~ Assets + revenue,
            data = nonprofit_resources, 
              family=binomial(link="logit"))
 
@@ -1394,12 +1424,15 @@ modelplot(models)
 
 ### Credit Unions
 
-TODO 
-```{r mp-credit-unions, eval=FALSE}
-creditunions %<>% mutate(Assets = assets)
+Assets in millions.
 
-mp_creditunions <- glm(commented ~ assets,
-           data = nonprofit_resources , 
+ 
+```{r mp-credit-unions}
+creditunions %<>% mutate(Assets = assets/1000000)
+
+
+mp_creditunions <- glm(commented ~ Assets,
+           data = creditunions, 
              family=binomial(link="logit"))
 
 models <- list(mp_creditunions)
@@ -1407,7 +1440,7 @@ models <- list(mp_creditunions)
 
 rows <- tibble(
   term = c("Dependent Variable"),
-  `1` = "Comment",
+  `1` = "Commented",
 )
 
 attr(rows, 'position') <- c(0)
@@ -1433,6 +1466,15 @@ mpOpensecrets_total <- glm(commented ~ TotalContribAmount,
              family=binomial(link="logit"))
 
 models <- list(mpOpensecrets, mpOpensecrets_total)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
 
 equatiomatic::extract_eq(models[[1]]) 
 
@@ -1511,7 +1553,7 @@ modelsummary(models)
 
 ## Sophistication
 
-> NOTE: I'm using OLS for now, but will switch to Poisson or Negative Binomial. 
+> NOTE: I'm using OLS for now but will switch to Poisson or Negative Binomial. 
 
 ### Bluebook
 These models have the prefix `mb_`. The dependent variable is a count of technical terms per comment.
@@ -1598,13 +1640,13 @@ modelplot(mt_compustat) +
 
 ## Efficacy
 
-These models have the prefix `me_`. The dependent variable is efficacy score.
+These models have the prefix `me_`. The dependent variable is the efficacy score.
 
 ---
 
 ### Efficacy Mediated by Technical Terms
 
-These models have the prefix `memt-`. The dependent variable is efficacy score. The mediator is technical terms.
+These models have the prefix `memt-`. The dependent variable is the efficacy score. The mediator is technical terms.
 
 
 ---
@@ -2012,7 +2054,7 @@ dev.off()
 rm(all, fuzzy_length_variables,fuzzy_number_variables,
    plagiarism_length_variables,plagiarism_number_variables)
 
-# Create two dataframes, one wide and one long ####
+# Create two data frames, one wide and one long ####
 
 wide<- all_repeated_language %>%
   inner_join(commenter_covariates, by = "comment_url")
