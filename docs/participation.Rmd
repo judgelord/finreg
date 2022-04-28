@@ -388,7 +388,7 @@ d %>%
 false_match <- "nknown|private investor|private individual|self employed|american citizen|us citizen|advance america|b d | store 7|debt trap|financial 3|united states congress|lending bear|check city partnership|plan nevada|clarity services|title cash|st louis community credit union|antipoverty coalition greater dallas|faith fair lending|south carolina state senate|florida alliance consumer protection|minneapolis grain exchange|asset management group securities industry financial markets association|american title escrow|ssociation financial guaranty insurers|american financial services association|credit union association dakotas|working group commercial energy firms|center capital markets competitiveness|chelsea title nature coast|kendall county|california nevada credit union leagues|futures industry association fia|national rural electric cooperative association|pennsylvania housing finance agency|members congress|new york portfolio clearing|check city partnership|central title|committee on investment employee benefit assets|futures industry association|national association independent housing professionals"
 
 # possible false positives
-d %>% filter(str_detect(comment_org_name, false_match)) %>% nrow() %>% paste(" potential false matches")
+d %>% filter(str_detect(comment_org_name, false_match)) %>% nrow() %>% paste("potential false matches")
 
 # false positive orgs 
 d %>% filter(str_detect(comment_org_name, false_match)) %>% 
@@ -397,7 +397,11 @@ d %>% filter(str_detect(comment_org_name, false_match)) %>%
   kablebox()
 
 # false positive comments 
-d %>% filter(str_detect(comment_org_name, false_match)) %>% 
+d %>% filter(str_detect(comment_org_name,  false_match)) %>% 
+  select(#starts_with("docket"), 
+    starts_with("comment"),
+         starts_with("best"), everything() ) %>% 
+  select(-comment_docket_count, -comment_agency) %>% 
   kablebox()
 
 
