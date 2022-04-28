@@ -2,9 +2,9 @@ source("code/setup.R")
 library(tidyverse)
 
 
-d_raw <- here(#"data", #"match_data", # old in match_data
+d_raw <- here(#"data", "match_data", # old in match_data
               #"finreg_commenter_covariates_df_20210824.csv"
-              # "finreg_commenter_covariates_df_20211118.csv"
+              #"finreg_commenter_covariates_df_20211118.csv"
               "Data", # new copied from JLW-FINREG-PARTICIPATION/data to FINREGRULEMAKE2/Data
               "finreg_commenter_covariates_df_20220405.csv"
               ) %>%
@@ -51,13 +51,15 @@ d_raw %>% select(contains("cap")) %>% names()
 # no compustat data
 d_raw$`compustat_resources-bestMatch:marketcap` %>% unique()
 d_raw$`compustat_resources-bestMatch:best_match_name` %>% unique()
+
+# but we have marketcap for CIK matches that came from compustat, so all of these must also be in compustat
 d_raw$`CIK-bestMatch:marketcap` %>% unique()
 
 
 look <- d_raw %>% select(contains("estmatch:marketcap")) %>% distinct()
 
 
-d_raw %>% select(contains("union")) %>% filter(!is.na(`CreditUnions-bestMatch:best_match_name`)) %>% view()
+# d_raw %>% select(contains("union")) %>% filter(!is.na(`CreditUnions-bestMatch:best_match_name`)) %>% view()
 
 
 d_raw %>%

@@ -133,6 +133,8 @@ Sophistication Measures
 
 Efficacy measures
 
+- `Data/attachment_efficacy_w_docket.csv`
+
 ```{r}
 # actions 
 actions <- read_csv(here("data" , "actions.csv"))
@@ -1132,8 +1134,55 @@ d %>%
 
 # Sophistication 
 
+- `Data/Dictionary_Terms.RData`
 
-Fixing comment urls to merge data
+1. Dictionary counts of technical terms used in comments and attachments
+
+`technical_terms_comments` and `technical_terms_attachment`
+
+Variables:
+
+- `doc_id` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
+- `uk_law` - UK law terms - this is in the file as I was curious how many of the terms would be in a UK law dictionary.
+- `banking` - US banking terms in Merriam Webster’s banking dictionary
+- `us_law` - US law terms terms in Merriam Webster’s US law dictionary. We didn’t use Black’s law dictionary because it’s incomplete as shown in the beginning of the `dictionary_and_bluebook.R` file
+- `overlap` - terms in both banking and us_law
+- `dictionary_term`s - banking + us_law - overlap
+- `Comment` - 1 if from the comments file in Master, 0 if from attachments
+
+2. Tables and Figures
+
+- Counts of Tables and Figures. Looks at the maximum number of tables, with large jumps excluded. For example, a document with table 1, 2, 3 and 99 would treat 99 as an error and say there were 3 tables. This mostly comes from bad OCRing or documents that have footnotes in between the word “table” and the table number.
+
+`Tables_and_Figures_attachments` and `Tables_and_Figures_comments`
+
+Variables:
+
+- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
+- `Figures` - counts of figures
+- `Tables`- counts of tables
+- `Comment` - 1 if from comments, 0 if from attachments
+- `Visualizations` - sum of figures + tables
+
+3. Bluebook
+
+A file that has counts of citations to US code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register
+
+`bluebok_comments` and `bluebook_attachments`
+
+Variables:
+
+- `Comment` - 1 if from comments, 0 if from attachments
+- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
+- `US_Code` - counts of US code citations
+- `Supreme_Court_Cases` - counts of Supreme Court cases
+- `Appeals_and_District_Court_Cases` - counts of citations to Appeals and district court cases
+- `Code_of_Federal_Regulations` - counts of citations to CFR
+- `Federal_Register_Total` - counts of citations to federal register
+- `Total_Legal_Citations` - sum of above except comment dummy
+
+
+
 ```{r assets-bluebook}
 load(here("data", "bluebook.Rdata"))
 load(here("data", "tech_iterations.RData"))
@@ -1148,7 +1197,8 @@ d %>% #filter(Agency != "CFPB") %>%
   slice_head(n = 1) %>%
   select(comment_url) %>% kablebox()
 
-  
+# Fixing comment urls to merge data
+#FIXME THIS SHOULD NOT BE NECESSARY ANYMORE 
 fix_url <- . %>%
   mutate(
   comment_url = gsub(pattern = "https:/www.sec.gov", 
@@ -1340,6 +1390,9 @@ dtable %>%
 ```
 
 
+# Efficacy 
+
+- `Data/attachment_efficacy_w_docket.csv.`
 
 # Regressions
 
@@ -1353,24 +1406,32 @@ SM = Comptroller of the Currency (OCC). National Charter and a Fed member.
 
 NM = Commercial Bank. The bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State charter and Fed non-member
 
-SB =Savings Bank. The bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State Charter.
+SB = Savings Bank. The bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State Charter.
 
 OI = Bank is an insured United States branch of a foreign chartered institution (IBA)
 
-Assets in millions 
+Assets in billions
 
 ```{r mpFDIC}
 FDIC_resources %<>% mutate(Class = str_c(" ", BKCLASS),
-                           Assets = ASSET/1000000)
+                           Assets = ASSET/1000000000)
 
 cm = c("ASSET" = "Assets",
-       "Assets" = "Assets (Millions)")
+       "Assets" = "Assets (Billions)")
 
-mpFDIC <- glm(commented ~ Assets + Class,
+mpFDIC <- glm(commented ~ Assets,
            data = FDIC_resources, 
              family=binomial(link="logit"))
 
-mpFDIC_BKCLASS <- glm(commented ~ Assets*Class,
+mpFDIC_BKCLASSonly <- glm(commented ~ Class,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDIC_BKCLASS <- glm(commented ~ Assets + Class,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDICxBKCLASS <- glm(commented ~ Assets*Class,
            data = FDIC_resources, 
              family=binomial(link="logit"))
 
@@ -1378,18 +1439,19 @@ mpFDIC_BKCLASS <- glm(commented ~ Assets*Class,
 rows <- tibble(
   term = c("Dependent Variable"),
   `1` = "Comment",
-  `2` = "Comment"
+  `2` = "Comment"#,  `3` = "Comment"
 )
 
 attr(rows, 'position') <- c(0)
 
-models <- list(mpFDIC, mpFDIC_BKCLASS)
+models <- list(mpFDIC,# mpFDIC_BKCLASSonly,
+               mpFDIC_BKCLASS)
 
 equatiomatic::extract_eq(models[[1]]) 
 
 modelsummary(models)
 
-modelplot(models[[1]] ) +
+modelplot(models ) +
   labs(title  = "SM = State Bank
 SB = Savings Bank
 SA = Savings Association
@@ -1400,10 +1462,10 @@ x = "Effect on Log Odds of Commenting")
 
 ### Nonprofits
 
-Assets in millions
+Assets in billions
 
 ```{r mp-nonprofits}
-nonprofit_resources %<>% mutate(Assets = assets/1000000)
+nonprofit_resources %<>% mutate(Assets = assets/1000000000)
 
 mpNonprofit <- glm(commented ~ Assets,
            data = nonprofit_resources , 
@@ -1424,11 +1486,11 @@ modelplot(models)
 
 ### Credit Unions
 
-Assets in millions.
+Assets in billions
 
  
 ```{r mp-credit-unions}
-creditunions %<>% mutate(Assets = assets/1000000)
+creditunions %<>% mutate(Assets = assets/100000000)
 
 
 mp_creditunions <- glm(commented ~ Assets,
@@ -1485,11 +1547,12 @@ modelsummary(models)
 
 ### By Market Cap
 ```{r mp-compustat}
-compustat %<>% mutate(commented = Commented == "Commented")
+compustat %<>% mutate(commented = Commented == "Commented",
+                      marketcapB = marketcap2/1000000000)
 
-cm = c("marketcap2" = "Market Capitalization")
+cm = c("marketcapB" = "Market Capitalization (Billions)")
 
-mpCompustat <- glm(commented ~ marketcap2,
+mpCompustat <- glm(commented ~ marketcapB,
            data = compustat, 
              family=binomial(link="logit"))
 
@@ -1508,45 +1571,13 @@ equatiomatic::extract_eq(models[[1]])
 
 modelsummary(models)
 
-# modelplot(models)
+#modelplot(models)
 
-# modelplot(mpCompustat)
+ modelplot(mpCompustat)
  
 # modelplot(mpCompustat_naics)
 ```
 
----
-
-### Variation Within and Across Types of Commenters 
-
-```{r mp, eval=FALSE}
-# Pr(Commenting) ~ assets + org_type + assets*org_type 
-
-d %<>% mutate(org_is_ = org_type)
-
-cm = c("marketcap2" = "Market Capitalization")
-
-mp <- glm(commented ~ org_resources,
-           data = d  %>% 
-            # dropping FDIC due to extreme variance
-            #filter(org_is_ != "FDIC") %>%
-            mutate(org_resources = org_resources/10000), 
-             family=binomial(link="logit"))
-
-mp_type <- glm(commented ~ org_resources*org_is_,
-           data = d  %>% 
-            #filter(org_is_ != "FDIC") %>%
-             mutate(org_resources = org_resources/10000) , 
-             family=binomial(link="logit"))
-
-models <- list(mp, mp_type)
-
-equatiomatic::extract_eq(models[[1]]) 
-
-modelsummary(models)
-
-#  modelplot(models)
-```
 
 ---
 
