@@ -15,6 +15,10 @@ d_raw <- here(#"data", "match_data", # old in match_data
 d_raw %<>%
   select(-`...1`)
 
+
+# how many exact match
+d_raw %>% count(best_match_name == comment_org_name)
+
 # where comments were on multiple dockets, combine docket ids into one cell to get unique rows
 d_raw %<>% group_by(comment_url) %>%
   add_count(docket_id, name = "comment_docket_count", sort = T) %>%
