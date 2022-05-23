@@ -32,7 +32,7 @@ knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       message = FALSE,
                       fig.show="hold",
                       fig.pos= "htbp",
-                      fig.path = "figs/",
+                      fig.path = "../figs/", # figs folder at root (up one from /docs)
                       fig.align='center',
                       fig.cap = '   ',
                       fig.retina = 1, #6, #FIXME for publication quality images
@@ -453,10 +453,10 @@ efficacy <- efficacy_raw %>%
          efficacy = cumulative_sequence_length_over_10) %>% 
   distinct() 
 
-# check for OCC comments
+# check for OCC comments (missing as of May 2022)
 # efficacy %>% filter(str_detect(comment_url, "OCC"))
 
-# check for CFPB comments
+# check for CFPB comments (not missing, but failing to merge with d on URL?)
 # efficacy %>% filter(str_detect(comment_url, "CFPB"))
 
 
@@ -477,6 +477,10 @@ efficacy$comment_url %in% d$comment_url %>% sum
 efficacy %>% filter(str_detect(comment_url, "CFPB")) %>%  kablebox()
 
 d  %>% left_join(efficacy) %>% drop_na(efficacy) %>% count(Agency)
+
+d  %<>% left_join(efficacy) 
+
+d$efficacy %<>% as.numeric()
 
 d %>% drop_na(efficacy)
 ```
@@ -501,7 +505,7 @@ e %>%
        title = "FDIC-Insured Banks")
 
 e %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`), dictionary_terms == 0) %>%
+  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`), efficacy == 0) %>%
   select(org_name, everything() ) %>% 
   kablebox()
 
@@ -510,7 +514,7 @@ e %>%
   filter(!is.na(assets)) %>% 
   ggplot() +
   aes(x = assets, 
-      y = dictionary_terms) + 
+      y = efficacy) + 
   geom_point() + 
   geom_smooth(method = "lm"
   )
@@ -520,7 +524,7 @@ e %>%
   filter(!is.na(MeanContribAmount)) %>%
   ggplot() +
   aes(x = MeanContribAmount, 
-      y = dictionary_terms) + 
+      y = efficacy) + 
   geom_point() + 
   geom_smooth(method = "lm"
   )
@@ -529,7 +533,7 @@ e %>%
   filter(!is.na(marketcap2)) %>% 
   ggplot() +
   aes(x = marketcap2, 
-      y = dictionary_terms) + 
+      y = efficacy) + 
   geom_jitter() + 
   geom_smooth(method = "lm"
   ) 
@@ -631,7 +635,7 @@ modelplot(mt_compustat) +
 
 These models have the prefix `me_`. The dependent variable is the efficacy score.
 
-```{r mt}
+```{r mea}
 
 
 ```
@@ -640,9 +644,9 @@ These models have the prefix `me_`. The dependent variable is the efficacy score
 
 ### Efficacy by Sophistication  
 
-These models have the prefix `me_`. The dependent variable is the efficacy score.
+These models have the prefix `mes_`. The dependent variable is the efficacy score.
 
-```{r mt}
+```{r mes}
 
 
 ```
@@ -652,7 +656,7 @@ These models have the prefix `me_`. The dependent variable is the efficacy score
 
 ### Efficacy by Assets Mediated by Sophistication
 
-These models have the prefix `memt-`. The dependent variable is the efficacy score. The mediator is technical terms.
+These models have the prefix `memt_`. The dependent variable is the efficacy score. The mediator is technical terms.
 
 ```{r memt}
 
