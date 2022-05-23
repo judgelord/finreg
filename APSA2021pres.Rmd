@@ -1,0 +1,183 @@
+---
+title: "Inequality in Administrative Democracy: Large-Sample Evidence from American Financial Regulation"
+author: "Daniel P. Carpenter,  Angelo Dagonel,  Devin Judge-Lord,  Christopher T. Kenny, Brian Libgober,  Steven Rashin,  Jacob Waggoner, and Susan Webb Yackee"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      ratio: '16:9'
+---
+
+```{r setup, include = FALSE}
+source("code/slide_options.R")
+```
+
+## Motivation
+
+- Recent research on inequality stops in Congress
+
+- Existing datasets are insufficient to study policy implementation
+--
+
+# When policymaking occurs in the executive branch, do inequalities persist or morph? Are they magnified or reduced?
+
+---
+
+## What we're up to
+
+Objective: Assess inequality in post-Dodd-Frank policymaking
+
+Approach: A novel dataset of all organizations that submit comments on Dodd-Frank regulations across multiple agencies 
+
+--
+
+Preliminary Findings:
+
+1. Nonprofit & PAC donors that participate in rulemaking are wealthier than average
+
+2. Repeat players have more resources than less frequent commenters
+
+3. The most sophisticated and influential comments were from wealthier organizations
+
+---
+
+## Inequality in American Politics 
+
+- The influence of affluence (Gilens 2012) 
+
+-  Impressive evidence, mostly from the legislative realm (Bartels 2008, Baumgartner et al. 2009, Hacker & Pierson 2010, Skocpol 2004,  Schlozman, Verba, & Brady 2012, Piketty 2014, among others)
+
+---
+
+## Inequality in American Politics, *Post-legislation*
+
+
+- Firms spend millions lobbying after a bill has passed (You 2017, Libgober 2020)
+
+- Legislators who receive more money from companies are more likely to lobby federal agencies on behalf of those companies (Powell et al. 2022)
+
+- Evidence of bias toward business in agency rulemaking (Yackee & Yackee 2006)
+
+- Johnson and Kwak (2010) and Kwak (2013) pinpoint industry influence in financial regulation as a cause of the financial crisis
+
+- Rulemaking presents opportunities to study inequalities in policy influence (Carpenter et al. 2020)
+
+
+---
+
+## Theory
+
+- Wealthy organizations can hire experts and lawyers. Policymakers privilege expertise (Wagner 2011, McCarty 2017, Libgober 2020). <!--Thus, legal and technical expertise is a mechanism for policy influence.-->
+
+- Concentrated private costs and diffuse public benefits create collective action problems for public interests, advantaging private interests.
+
+- Regulators spend time with banks, possess status, sophistication, and resource advantages, causing regulators to adopt the regulated industry's frames, assumptions, vocabularies, and methods (Kwak 2013).
+
+---
+
+## Hypotheses 
+
+*H1. Mobilization of Expertise*: Wealthier entities will utilize greater expertise and sophistication in their comments. 
+
+*H2. Differential Participation*: The organizations that comment on more rules will be wealthier than organizations that comment on fewer rules.
+
+*H3. Differential Commenting Influence*: The comments that suggest language the most similar to the policy language added to the final rule will be from wealthier organizations.
+
+*H4. The Dividends of Sophistication*: The language suggested by comments with more legal and technical language will be more likely to appear in text added between draft and final rules.
+
+
+
+---
+
+class: inverse middle center
+
+# Data 
+
+---
+
+239 rulemakings by 21 regulators involving 802 regulatory actions
+
+
+
+```{r actions, out.width="87%", fig.cap= "Dodd-Frank Act Implimenting Actions by Agency, Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)", cache=FALSE}
+knitr::include_graphics("Figures/actions-1.png")
+```
+
+---
+
+<!--## Types of Organizations-->
+
+Over 300,000 comments from over 3,500 organizations
+
+```{r org-types, fig.cap="Comments by Type and Agency to which they Commented, Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)", out.width = "70%"}
+knitr::include_graphics("Figures/org_count_type-2.png")
+```
+
+---
+
+class: inverse center middle 
+
+# Findings 
+
+---
+
+✓ *H1. Mobilization of Expertise*: Wealthier entities utilize greater expertise and sophistication in their comments.
+
+```{r, fig.cap = "", out.width = "70%"}
+knitr::include_graphics("Figures/assets-tech-1.png")
+```
+
+---
+
+✓/x  *H2. Differential Participation*: **Nonprofits** and **PAC Donors** that comment are wealthier than average, but evidence for inequality **among banks** is mixed.
+
+```{r, commenters-noncommenters, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%", fig.show='hold'}
+knitr::include_graphics("Figures/nonprofit-density-1.png")
+
+knitr::include_graphics("Figures/opensecrets-density-1.png")
+
+
+knitr::include_graphics("Figures/FDIC-density-1.png")
+
+
+knitr::include_graphics(
+"Figures/compustat-density-1.png")
+```
+
+---
+
+✓  *H2. Differential Participation*: Organizations that comment **on more rules** are wealthier than organizations that comment on fewer rules.
+
+```{r, dockets-percentile, fig.cap="Frequent and infrequent commenters (By Percentile of the Number of Dockets on which the Organization Commented) by Resources (Log Scale)", out.width="60%"}
+knitr::include_graphics(
+"Figures/ridgeline_plot_of_financialResources_by_Quantiles_of_numRulesCommentedOn.png"
+)
+```
+
+---
+
+*H3. Differential Commenting Influence*: The comments that suggest language most aligned with language added to the final rule will be from wealthier organizations.
+
+```{r repeated-text-assets, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width = "85%"}
+#TODO Would be better to this not broken out by agency for the body text.
+knitr::include_graphics("Figures/Repeated_text_agency_assets_cumulative_over10.png")
+```
+
+---
+
+*H4. The Dividends of Sophistication*: Language suggested by comments with more legal and technical language is more likely to appear in text added between draft and final rules.
+
+
+```{r repeated-text-bluebook, fig.cap="Amount of Text Repeated in Final Rules by Comment Sophistication", out.width = "85%"}
+#TODO Would be better to have this not be broken out by agency for the body text.
+
+# dictionary words
+knitr::include_graphics("Figures/Repeated_text_agency_dictionary_cumulative_over10.png")
+
+# bluebook words 
+# knitr::include_graphics("Figures/Repeated_text_agency_bluebook_cumulative_over10.png")
+```
+
+
+

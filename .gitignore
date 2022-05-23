@@ -28,3 +28,8 @@ vignettes/*.pdf
 .Renviron
 finreg.Rproj
 .DS_Store
+dictionary_terms_missing.csv
+xaringan-themer.css
+participatory-inequality.tex
+participatory-inequality.pdf
+participatory-inequality.log

@@ -1,0 +1,662 @@
+---
+title: "Efficacy  in Financial Rulemaking"
+#subtitle: "Appendix and Replication Code" 
+output:
+    bookdown::html_document2:
+      highlight: zenburn
+      toc: true
+      toc_float: true
+      code_folding: hide
+      number_sections: false
+# output:
+#   xaringan::moon_reader:
+#     lib_dir: libs
+#     mathjax: "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"
+#     css: xaringan-themer.css
+#     nature:
+#       highlightStyle: github
+#       highlightLines: true
+#       countIncrementalSlides: false
+---
+
+
+
+```{r options, include=FALSE}
+# rmarkdown::render("docs/participation.Rmd")
+
+## Sets defaults for R chunks
+knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
+                      cache = FALSE,
+                      #cache = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.show="hold",
+                      fig.pos= "htbp",
+                      fig.path = "figs/",
+                      fig.align='center',
+                      fig.cap = '   ',
+                      fig.retina = 1, #6, #FIXME for publication quality images
+                      fig.height = 3,
+                      fig.width = 7,
+                      out.width = "100%",
+                      out.extra = "")
+
+library("xaringan")
+library("xaringanthemer")
+library("here")
+library("modelsummary")
+
+library(scales)
+library(magrittr)
+# library(broom)
+library(here)
+library(knitr)
+options(kableExtra.latex.load_packages = FALSE)
+library(kableExtra)
+#library(mediation)
+#library(lme4)
+#library(lmerTest)
+#library(fixest)
+#library(modelsummary)
+library(tidyverse)
+
+# table defaults
+modelsummary <- function(...) modelsummary::modelsummary(..., 
+                                                         stars = T, 
+                                                         add_rows = rows,
+                                                         coef_rename = cm,
+                                                         coef_omit = "(Intercept)") %>% 
+  row_spec(row = 1, bold = T)
+
+# coeficient plot defaults
+modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)") + 
+  geom_vline(xintercept = 0, linetype = 2, alpha = .5) + 
+  aes(shape = model)
+
+style_mono_light(base_color = "#3b444b",
+          link_color = "#B7E4CF",
+          #background_color = "#FAF0E6", # linen
+          header_font_google = google_font("PT Sans"), 
+          text_font_google = google_font("Old Standard"), 
+          text_font_size = "18px",
+          padding = "10px",
+          code_font_google = google_font("Inconsolata"), 
+          code_inline_background_color    = "#F5F5F5", 
+          table_row_even_background_color = "#ddede5",
+          extra_css = 
+            list(".remark-slide-number" = list("display" = "none")))
+```
+
+```{r setup}
+options(scipen=999)
+
+# source(here::here("code", "setup.R"))
+
+# defaults for plots
+library(ggplot2); theme_set(theme_minimal());
+options(
+  ggplot2.continuous.color = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_color_discrete <- function(...){
+  scale_color_viridis_d(..., direction = -1, 
+                        begin = 0, end = .6, option = "viridis")}
+scale_fill_discrete <- function(...){
+  scale_fill_viridis_d(..., direction = -1, 
+                       begin = 0, end = .6, option = "viridis")}
+
+scale_color_continuous <- function(...){
+  scale_color_viridis_c(..., direction = -1, 
+                        option = "viridis")}
+scale_fill_continuous <- function(...){
+  scale_fill_viridis_c(..., direction = -1, 
+                       option = "viridis")}
+
+# Table formatting
+library(kableExtra)
+kablebox <- . %>% 
+  slice_head(n = 300) %>%
+  knitr::kable() %>% 
+  kable_styling() %>% 
+  scroll_box(height = "400px")
+```
+
+# Data
+
+The root for this script is `finreg`. Most of the data are in `finreg/data` (some in a subfolder `merged_resources`). Others are up one level in `FINREGRULEMAKE2/Data`. This can and should be streamlined significantly. 
+
+
+## Sophistication 
+
+- `Data/Dictionary_Terms.RData`
+
+1. Dictionary counts of technical terms used in comments and attachments
+
+`technical_terms_comments` and `technical_terms_attachment`
+
+Variables:
+
+- `doc_id` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
+- `uk_law` - UK law terms - this is in the file as I was curious how many of the terms would be in a UK law dictionary.
+- `banking` - US banking terms in Merriam Webster’s banking dictionary
+- `us_law` - US law terms terms in Merriam Webster’s US law dictionary. We didn’t use Black’s law dictionary because it’s incomplete as shown in the beginning of the `dictionary_and_bluebook.R` file
+- `overlap` - terms in both banking and us_law
+- `dictionary_term`s - banking + us_law - overlap
+- `Comment` - 1 if from the comments file in Master, 0 if from attachments
+
+2. Tables and Figures
+
+- Counts of Tables and Figures. Looks at the maximum number of tables, with large jumps excluded. For example, a document with table 1, 2, 3 and 99 would treat 99 as an error and say there were 3 tables. This mostly comes from bad OCRing or documents that have footnotes in between the word “table” and the table number.
+
+`Tables_and_Figures_attachments` and `Tables_and_Figures_comments`
+
+Variables:
+
+- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
+- `Figures` - counts of figures
+- `Tables`- counts of tables
+- `Comment` - 1 if from comments, 0 if from attachments
+- `Visualizations` - sum of figures + tables
+
+3. Bluebook
+
+A file that has counts of citations to US code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register
+
+`bluebok_comments` and `bluebook_attachments`
+
+Variables:
+
+- `Comment` - 1 if from comments, 0 if from attachments
+- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
+- `US_Code` - counts of US code citations
+- `Supreme_Court_Cases` - counts of Supreme Court cases
+- `Appeals_and_District_Court_Cases` - counts of citations to Appeals and district court cases
+- `Code_of_Federal_Regulations` - counts of citations to CFR
+- `Federal_Register_Total` - counts of citations to federal register
+- `Total_Legal_Citations` - sum of above except comment dummy
+
+
+
+```{r asset-data}
+load(here::here("data", "commenter_assets.Rdata"))
+
+d <- commenter_assets
+
+#FIXME MOVE TO TOP 
+d$comment_url %<>% str_replace("document\\?D=", "comment/")
+```
+
+```{r sophistication}
+# sophistication 
+load(here("data", "Dictionary_Terms.Rdata")  %>% str_remove("finreg")  )
+
+technical_terms_comments %<>% 
+  distinct() %>% 
+  rename(comment_url = doc_id)
+
+technical_terms_attachments %<>% 
+  distinct() %>% 
+  rename(comment_url = doc_id)
+
+
+# not unique to dockets, uniqe to pairs of draft and final, which there may be more than one of per docket
+# proposed_final_pairs %>% count(fr_document_id.proposed, fr_document_id.final, sort = T)
+
+
+
+# check number of NAs 
+# bluebook_comments %>% 
+#   summarise_all(is.na) %>% 
+#   summarise_all(sum)
+
+bluebook_comments %>% distinct() %>% count(comment_url, sort = T)
+
+bluebook_attachments %>% distinct() %>%  count(comment_url, sort = T)
+
+# # example 
+# bluebook_attachments %>% filter(comment_url == "https://www.regulations.gov/comment/OCC-2011-0008-0126") %>% kablebox()
+# 
+# bluebook_comments %>% filter(comment_url == "https://www.regulations.gov/comment/OCC-2011-0008-0126") %>% kablebox()
+
+technical_terms_comments %>% count(comment_url, sort = T)
+
+technical_terms_attachments %>% count(comment_url, sort = T)
+
+
+# summarize and merge term counts from comment text boxes and attachments
+max <- . %>% base::max(na.rm = TRUE)
+
+# sum by comment url 
+#FIXME, why are these not unique! 
+bluebook_c <- bluebook_comments %>% 
+  group_by(comment_url) %>% 
+  select(-comment) %>% 
+  summarise_all(max)
+
+# whereas these should not be uniqe to comment url 
+bluebook_a <- bluebook_attachments %>% 
+  group_by(comment_url) %>% 
+  select(-comment) %>% 
+  summarise_all(max)
+
+# join both and max again 
+bluebook <- full_join(bluebook_a,
+                      bluebook_c) %>% 
+  group_by(comment_url) %>% 
+  summarise_all(max)
+
+# # check for unique comment_url
+# bluebook %>% count(comment_url, sort = T)
+
+
+
+# sum by comment url 
+#FIXME, why are these not unique! 
+technical_terms_c <- technical_terms_comments %>% 
+  group_by(comment_url) %>% 
+  select(-comment) %>% 
+  summarise_all(max)
+
+# whereas these should not be uniqe to comment url 
+technical_terms_a <- technical_terms_attachments %>% 
+  group_by(comment_url) %>% 
+  select(-comment) %>% 
+  summarise_all(max)
+
+# join both and sum again 
+technical_terms <- full_join(technical_terms_a,
+                             technical_terms_c) %>% 
+  group_by(comment_url) %>% 
+  summarise_all(max)
+
+# # check for unique comment_url
+# technical_terms %>% count(comment_url, sort = T)
+
+full_join(technical_terms, bluebook) %>% kablebox()
+
+# check that they are the same 
+# full_join(bluebook, technical_terms)
+
+
+
+d %<>% 
+  left_join(bluebook%>% select(comment_url, Total_Legal_Citations)) %>% 
+  left_join(technical_terms %>% select(comment_url, dictionary_terms)) 
+
+d %>% 
+  select(comment_url, org_name, Total_Legal_Citations, dictionary_terms) %>% 
+  filter(!is.na(dictionary_terms)) %>% 
+  kablebox()
+
+# write out missing comment urls
+d %>% 
+  filter(is.na(dictionary_terms)) %>% select(comment_url) %>% write_csv(file = "dictionary_terms_missing.csv")
+
+# FIXME Missing as of May 2022
+# bluebook %>% filter(str_detect(comment_url, "CFPB-2019-0021-0406"))
+# technical_terms %>% filter(str_detect(comment_url, "CFPB-2019-0021-0406"))
+
+```
+
+---
+
+### Number of comments per agency measured
+
+Technical terms measured for `r d %>% filter(comment_url %in% technical_terms$comment_url) %>% nrow()` of `r nrow(d)` comments.
+
+```{r techical}
+# matches
+d %>% 
+  count(Agency) %>%
+  left_join(
+    d %>% 
+      filter(comment_url %in% technical_terms$comment_url) %>% 
+      count(Agency, name = "n with dictionary terms measured") 
+    )  %>% 
+  kablebox()
+```
+
+---
+
+
+### Assets x bluebook terms
+```{r assets-blue, fig.height=2, fig.width=3, out.width="50%"}
+# bluebook %>% count(is.na(Total_Legal_Citations))
+
+# 400 from FDIC data, 400 from other data
+b <- d %>% filter(!is.na(dictionary_terms))
+
+b %>% select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  
+  filter(!is.na(org_name)) %>%
+  kablebox()
+
+# FDIC ASSTS 
+b %>% 
+  ggplot() +
+  aes(x = org_resources, # %>% log(), 
+      y = Total_Legal_Citations) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+# nonprofits
+b %>% 
+  ggplot() +
+  aes(x = assets, 
+      y = Total_Legal_Citations) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+# contribution
+b %>% 
+  ggplot() +
+  aes(x = MeanContribAmount, 
+      y = Total_Legal_Citations) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+b %>% 
+  ggplot() +
+  aes(x = marketcap2, 
+      y = Total_Legal_Citations) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm"
+  ) 
+
+# b %>% count(comment_agency, is.na( assets))
+
+b %>% filter(Total_Legal_Citations>10,
+             !is.na(org_name)) %>% select(org_name,Total_Legal_Citations, comment_url, everything()) %>% arrange(-Total_Legal_Citations) %>% kablebox()
+```
+
+### Assets x technical terms
+
+```{r assets-tech, fig.height=2, fig.width=3, out.width="50%"}
+t <- d %>% drop_na(dictionary_terms)
+
+
+# FDIC ASSTS 
+t %>% 
+  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
+  ggplot() +
+  aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
+      y = dictionary_terms ) + 
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  scale_y_log10() +
+  scale_x_log10() + 
+  labs(x = "Assets",
+       y = "Legal and Technial Terms", 
+       title = "FDIC-Insured Banks")
+
+t %>% 
+  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`), dictionary_terms == 0) %>%
+  select(org_name, everything() ) %>% 
+  kablebox()
+
+# nonprofits
+t %>% 
+  filter(!is.na(assets)) %>% 
+  ggplot() +
+  aes(x = assets, 
+      y = dictionary_terms) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+# contribution
+t %>% 
+  filter(!is.na(MeanContribAmount)) %>%
+  ggplot() +
+  aes(x = MeanContribAmount, 
+      y = dictionary_terms) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+t %>% 
+  filter(!is.na(marketcap2)) %>% 
+  ggplot() +
+  aes(x = marketcap2, 
+      y = dictionary_terms) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm"
+  ) 
+```
+
+
+## Efficacy 
+
+- `Data/attachment_efficacy_w_docket.csv.`
+
+
+```{r efficacy}
+# efficacy
+efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.csv")  %>% str_remove("finreg")  )
+
+# inspect 
+# efficacy_raw %>% distinct() %>% select(attachment_url, fr_document_id_final) %>% add_count(attachment_url) %>% arrange(-n) %>%   kablebox()
+
+# select needed vars. url is comment url (even for attachments)
+efficacy <- efficacy_raw %>% 
+  # make comment url 
+  mutate(comment_url2 = attachment_url %>% 
+           str_replace("https://downloads.regulations.gov/", 
+                       "https://www.regulations.gov/comment/" ) %>% 
+           str_remove("/attachment_.*"),
+         comment_url = coalesce(comment_url, comment_url2)
+         ) %>% 
+  select(comment_url,
+         efficacy = cumulative_sequence_length_over_10) %>% 
+  distinct() 
+
+# check for OCC comments
+# efficacy %>% filter(str_detect(comment_url, "OCC"))
+
+# check for CFPB comments
+# efficacy %>% filter(str_detect(comment_url, "CFPB"))
+
+
+
+max <- . %>% base::max(na.rm = TRUE)
+
+efficacy %>% drop_na(efficacy) %>% nrow()
+
+# take max
+efficacy %<>% 
+  group_by(comment_url) %>% 
+  summarise_all(max)
+
+d$comment_url %in% efficacy$comment_url %>% sum
+
+efficacy$comment_url %in% d$comment_url %>% sum
+
+efficacy %>% filter(str_detect(comment_url, "CFPB")) %>%  kablebox()
+
+d  %>% left_join(efficacy) %>% drop_na(efficacy) %>% count(Agency)
+
+d %>% drop_na(efficacy)
+```
+
+```{r assets-efficacy}
+e <- d %>% drop_na(efficacy)
+
+
+# FDIC ASSTS 
+e %>% 
+  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
+  ggplot() +
+  aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
+      y = efficacy ) + 
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  scale_y_log10() +
+  scale_x_log10() + 
+  labs(x = "Assets",
+       y = "Legal and Technial Terms", 
+       title = "FDIC-Insured Banks")
+
+e %>% 
+  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`), dictionary_terms == 0) %>%
+  select(org_name, everything() ) %>% 
+  kablebox()
+
+# nonprofits
+e %>% 
+  filter(!is.na(assets)) %>% 
+  ggplot() +
+  aes(x = assets, 
+      y = dictionary_terms) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+# contribution
+e %>% 
+  filter(!is.na(MeanContribAmount)) %>%
+  ggplot() +
+  aes(x = MeanContribAmount, 
+      y = dictionary_terms) + 
+  geom_point() + 
+  geom_smooth(method = "lm"
+  )
+
+e %>% 
+  filter(!is.na(marketcap2)) %>% 
+  ggplot() +
+  aes(x = marketcap2, 
+      y = dictionary_terms) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm"
+  ) 
+```
+
+# Regressions
+
+
+## Sophistication
+
+> NOTE: I'm using OLS for now but will switch to Poisson or Negative Binomial. 
+
+### Bluebook
+These models have the prefix `mb_`. The dependent variable is a count of technical terms per comment.
+
+
+```{r mb}
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Sophistication",
+  `2` = "Sophistication"
+)
+
+# mb <- lm(Total_Legal_Citations ~ org_resources,
+#            data = b)
+# 
+# mb_agency_only <- glm(Total_Legal_Citations ~ comment_agency,
+#            data = b)
+# 
+# mb_agency <- glm(Total_Legal_Citations ~ org_resources*comment_agency,
+#            data = b)
+# 
+# models <- list(mb, mb_agency, mb_agency_only)
+# 
+# equatiomatic::extract_eq(models[[1]]) 
+# 
+# modelsummary(models)
+# 
+# # modelplot(models)
+
+
+# broken out by org type 
+
+mb_assets <- lm(Total_Legal_Citations ~ assets,
+           data = b  %>% mutate(assets = assets/10000000000))
+
+mb_opensecrets <- glm(Total_Legal_Citations ~ MeanContribAmount,
+           data = b %>% mutate(MeanContribAmount = MeanContribAmount/10000))
+
+mb_compustat <- glm(Total_Legal_Citations ~ marketcap2,
+           data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
+
+models <- list(mb_assets, mb_compustat)
+
+modelsummary(models)
+
+modelplot(mb_opensecrets) + 
+  labs(x = "Additional Bluebook Terms per Ten Thousand Dollars")
+
+modelplot(mb_compustat) + 
+  labs(x = "Additional Bluebook Terms per Ten Billion Dollars")
+```
+
+### Technical Terms
+
+These models have the prefix `mt_`. The dependent variable is a count of technical terms per comment.
+
+```{r mt}
+# t %<>% select(-org)
+# broken out by org type 
+
+mt_assets <- lm(dictionary_terms ~ assets,
+           data = t  %>% mutate(assets = assets/10000000000))
+
+mt_opensecrets <- glm(dictionary_terms ~ MeanContribAmount,
+           data = t %>% mutate(MeanContribAmount = MeanContribAmount/10000))
+
+mt_compustat <- glm(dictionary_terms ~ marketcap2,
+           data = t  %>% mutate(marketcap2 = marketcap2/10000000000))
+
+models <- list(mt_assets, mt_compustat)
+
+modelsummary(models)
+
+modelplot( mt_opensecrets) + 
+  labs(x = "Additional Technical and Legal Terms per Ten Thousand Dollars")
+
+modelplot(mt_compustat) + 
+  labs(x = "Additional Technical and Legal Terms per Ten Billion Dollars")
+
+
+```
+
+---
+
+## Efficacy
+
+### Efficacy by Assets 
+
+These models have the prefix `me_`. The dependent variable is the efficacy score.
+
+```{r mt}
+
+
+```
+
+
+
+### Efficacy by Sophistication  
+
+These models have the prefix `me_`. The dependent variable is the efficacy score.
+
+```{r mt}
+
+
+```
+
+
+---
+
+### Efficacy by Assets Mediated by Sophistication
+
+These models have the prefix `memt-`. The dependent variable is the efficacy score. The mediator is technical terms.
+
+```{r memt}
+
+
+```
+
+---

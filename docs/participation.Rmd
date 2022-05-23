@@ -32,7 +32,7 @@ knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       message = FALSE,
                       fig.show="hold",
                       fig.pos= "htbp",
-                      fig.path = "figs/",
+                      fig.path = "../figs/",
                       fig.align='center',
                       fig.cap = '   ',
                       fig.retina = 1, #6, #FIXME for publication quality images
@@ -336,7 +336,7 @@ org_count <- d  %>%
 
 ---
 
-# Comments per docket
+## Comments per docket
 
 ```{r rins-table}
 d_rin_lookup <- d %>% full_join(rin_lookup) %>% 
@@ -400,7 +400,7 @@ d %>%
 
 ```
 
-# Potential false matches
+## Potential false matches
 
 ```{r false-matches}
 
@@ -439,7 +439,7 @@ d %>%
 
 
 
-# Commenters matched to other datasets of known organizations
+## Commenters matched to other datasets of known organizations
 
 ```{r match_data}
 # 2k
@@ -492,7 +492,7 @@ d %>% group_by(comment_agency) %>%
 
 ---
 
-#  Number of comments by organization resources
+#  By organization resources
 
 ---
 
@@ -552,7 +552,7 @@ FDIC_resources %>%
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = "FDIC-Insured Banks",
-       fill = "", y = "", x = "Assets (millions)")+
+       fill = "", y = "", x = "Assets (Millions)")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -688,7 +688,7 @@ FDIC_resources %>%
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = "FDIC-Insured Banks",
-       fill = "", y = "", x = "Assets (millions)")+
+       fill = "", y = "", x = "Assets (Millions)")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -840,8 +840,6 @@ nonprofit_resources %<>% group_by(org_name) %>%
   top_n(1, assets) %>% 
   ungroup()
 
-
-
 nonprofit_resources %>% 
   filter(org_name %in% d$best_match_name) %>% 
   #filter(commented, assets > 100) %>% 
@@ -870,7 +868,7 @@ nonprofit_resources %>%
 
 ### Comparing nonprofits that did and did not comment on Dodd-Frank rules
 
-```{r nonprofit-density-old, fig.height= 1.7, fig.width=4, out.width="50%"}
+```{r nonprofit-density, fig.height= 1.5, fig.width=4, out.width="50%"}
 # counts 
 nonprofit_resources %<>% 
   mutate(Commented = ifelse(
@@ -882,10 +880,14 @@ nonprofit_resources %<>%
 nonprofit_resources %>% 
   filter(assets > 10) %>% 
   ggplot() + 
-  aes(x = assets, fill = Commented) + 
+  aes(x = assets/1000000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(fill = "", x = "Assets")
+  labs(title = "Nonprofits",
+       fill = "", y = "", x = "Assets (Millions)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
 
 nonprofit_resources %>% 
   #filter(assets > 100) %>% 
@@ -893,7 +895,8 @@ nonprofit_resources %>%
   aes(x = revenue, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(fill = "", y = "", x = "Revenue")+
+  labs(fill = "", y = "", x = "Revenue",
+       title = "Nonprofits") +
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1003,11 +1006,15 @@ creditunions %>%
   aes(x = assets/1000000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(fill = "", x = "Assets (Millions)", title = "Credit Unions")
+  labs(fill = "", x = "Assets (Millions)", title = "Credit Unions", fill = "", y = "")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
 ```
 
 
-```{r creditunion-count, fig.height= 2.5, fig.width=4, out.width="50%"}
+```{r creditunion-count, fig.height= 3, fig.width=4, out.width="50%"}
 # creditunion-count 
 creditunions %<>% 
   group_by(Commented) %>% 
@@ -1022,8 +1029,8 @@ creditunions %>% distinct(Commented, mean_assets) %>% kable
 creditunions %>% 
     filter(assets > 100000) %>% 
   mutate(Commented = Commented %>% paste0(
-    "\n(median = $", round(median_assets/10000000, 2), " million, ",
-    "mean = $", round(mean_assets/10000000, 1), " million)"
+    "\n(median = $", round(median_assets/1000000, 0), " million, ",
+    "mean = $", round(mean_assets/1000000, 0), " million)"
     )) %>% 
   ggplot() + 
   aes(x = assets/1000000, fill = Commented, color = Commented) + 
@@ -1120,6 +1127,37 @@ opensecrets %>%
 ```
 
 
+```{r opensecrets-count, fig.height= 3, fig.width=4, out.width="50%"}
+# opensecrets-count 
+opensecrets %<>% 
+  group_by(Commented) %>% 
+  mutate(mean_MeanContribAmount = mean(MeanContribAmount, na.rm = T),
+         median_MeanContribAmount = median(MeanContribAmount, na.rm = T) ) %>% 
+  ungroup()
+
+opensecrets %>% distinct(Commented, mean_MeanContribAmount) %>% kable
+
+
+# count histograms
+opensecrets %>% 
+    filter(MeanContribAmount > 100) %>% 
+  mutate(Commented = Commented %>% paste0(
+    "\n(median = $", round(median_MeanContribAmount/1000, 2), " million, ",
+    "mean = $", round(mean_MeanContribAmount/1000, 1), " million)"
+    )) %>% 
+  ggplot() + 
+  aes(x = MeanContribAmount/1000, fill = Commented, color = Commented) + 
+  geom_histogram(alpha = .5, color = NA) + 
+  geom_vline( aes(xintercept = mean_MeanContribAmount/1000)) + 
+    geom_vline( aes(xintercept = median_MeanContribAmount/1000), linetype = 2) + 
+  scale_x_log10() + 
+  labs(title = "Campaign Spending",fill = "", y = "", x = "Political Action Committee Donations (Thousands)") + 
+  facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "none")
+```
+
 ---
 
 ## By Market Cap
@@ -1160,14 +1198,13 @@ compustat %<>% group_by(org_name) %>%
 
 compustat %>% 
   group_by(Commented) %>%
-  #mutate(mean = mean(marketcap2/1000, na.rm = T)) %>% 
-  #filter(assets > 10) %>% 
+  filter(marketcap2 > 1000) %>% 
   ggplot() + 
-  aes(x = marketcap2/1000, fill = Commented) + 
+  aes(x = marketcap2/1000000, fill = Commented) + 
   labs(fill = "", 
        y = "",
        title = "Banks and Bank-like Entities",
-       x = "Market Capitalization\n($1,000s)") + 
+       x = "Market Capitalization (Millions)") + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   #geom_vline(aes(xintercept = mean)) +
@@ -1176,9 +1213,38 @@ compustat %>%
         axis.text.y = element_blank())
 ```
 
+```{r compustat-count, fig.height= 3, fig.width=4, out.width="50%"}
+# compustat-count 
+compustat %<>% 
+  group_by(Commented) %>% 
+  mutate(mean_marketcap2 = mean(marketcap2, na.rm = T),
+         median_marketcap2 = median(marketcap2, na.rm = T) ) %>% 
+  ungroup()
+
+compustat %>% distinct(Commented, mean_marketcap2) %>% kable
 
 
-# Temporarily merging in data where matches are NA
+# count histograms
+compustat %>% 
+    filter(marketcap2 > 1000) %>% 
+  mutate(Commented = Commented %>% paste0(
+    "\n(median = $", round(median_marketcap2/1000000, 2), " million, ",
+    "mean = $", round(mean_marketcap2/1000000, 1), " million)"
+    )) %>% 
+  ggplot() + 
+  aes(x = marketcap2/1000000, fill = Commented, color = Commented) + 
+  geom_histogram(alpha = .5, color = NA) + 
+  geom_vline( aes(xintercept = mean_marketcap2/1000000)) + 
+    geom_vline( aes(xintercept = median_marketcap2/1000000), linetype = 2) + 
+  scale_x_log10() + 
+  labs(title = "Banks and Bank-like Entities",fill = "", y = "", x = "Market Cap (Millions)") + 
+  facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "none")
+```
+
+## Temporarily merging in data where matches are NA
 
 ```{r merge}
 #FIXME 
@@ -1262,7 +1328,7 @@ d %>% arrange(-marketcap2) %>% count(marketcap, marketcap2, best_match_name, sor
 
 ---
 
-# Duplicates
+## Duplicates
 
 (more than one match per comment URL)
 
@@ -1410,277 +1476,8 @@ d %>%
 ```
 
 
-# Sophistication 
-
-- `Data/Dictionary_Terms.RData`
-
-1. Dictionary counts of technical terms used in comments and attachments
-
-`technical_terms_comments` and `technical_terms_attachment`
-
-Variables:
-
-- `doc_id` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
-- `uk_law` - UK law terms - this is in the file as I was curious how many of the terms would be in a UK law dictionary.
-- `banking` - US banking terms in Merriam Webster’s banking dictionary
-- `us_law` - US law terms terms in Merriam Webster’s US law dictionary. We didn’t use Black’s law dictionary because it’s incomplete as shown in the beginning of the `dictionary_and_bluebook.R` file
-- `overlap` - terms in both banking and us_law
-- `dictionary_term`s - banking + us_law - overlap
-- `Comment` - 1 if from the comments file in Master, 0 if from attachments
-
-2. Tables and Figures
-
-- Counts of Tables and Figures. Looks at the maximum number of tables, with large jumps excluded. For example, a document with table 1, 2, 3 and 99 would treat 99 as an error and say there were 3 tables. This mostly comes from bad OCRing or documents that have footnotes in between the word “table” and the table number.
-
-`Tables_and_Figures_attachments` and `Tables_and_Figures_comments`
-
-Variables:
-
-- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
-- `Figures` - counts of figures
-- `Tables`- counts of tables
-- `Comment` - 1 if from comments, 0 if from attachments
-- `Visualizations` - sum of figures + tables
-
-3. Bluebook
-
-A file that has counts of citations to US code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register
-
-`bluebok_comments` and `bluebook_attachments`
-
-Variables:
-
-- `Comment` - 1 if from comments, 0 if from attachments
-- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
-- `US_Code` - counts of US code citations
-- `Supreme_Court_Cases` - counts of Supreme Court cases
-- `Appeals_and_District_Court_Cases` - counts of citations to Appeals and district court cases
-- `Code_of_Federal_Regulations` - counts of citations to CFR
-- `Federal_Register_Total` - counts of citations to federal register
-- `Total_Legal_Citations` - sum of above except comment dummy
-
-
-
-```{r assets-bluebook}
-load(here("data", "bluebook.Rdata"))
-load(here("data", "tech_iterations.RData"))
-
-technical_terms %<>% mutate(comment_url = doc_id)
-
-# names(bluebook)
-# bluebook %>% count(comment_url, sort = T)
-
-# what do urls look like 
-# d %>% #filter(Agency != "CFPB") %>%
-#   group_by(Agency) %>% 
-#   slice_head(n = 1) %>%
-#   select(comment_url) %>% kablebox()
-
-# Fixing comment urls to merge data
-#FIXME THIS SHOULD NOT BE NECESSARY ANYMORE 
-fix_url <- . %>%
-  mutate(
-  comment_url = gsub(pattern = "https:/www.sec.gov", 
-                     replacement = "https://www.sec.gov", 
-                     x = comment_url),
-  comment_url = gsub(pattern = "S7-", 
-                   replacement = "s7-", 
-                   x = comment_url),
-  # Federal Reserve Fix
-  comment_url = gsub(pattern = "https:\\/\\/www\\.federalreserve\\.gov\\/SECRS\\/\\d{4}\\/\\w+/\\d{1,}/", 
-                   replacement = "",
-                   x = comment_url)
-  )
-
-
-d %<>% fix_url()
-
-bluebook %<>% fix_url()
-
-technical_terms %<>% fix_url()
-
-bluebook %>% kablebox()
-
-technical_terms %>% kablebox()
-```
-
----
-
-## Number of comments per agency measured
-
-Technical terms N = 
-```{r techical}
-# matches 
-d %>% filter(comment_url %in% technical_terms$comment_url) %>% 
-  count(Agency) %>% kablebox()
-```
-
----
-
-Bluebook terms N = 
-```{r bluebook}
-# 6 k in both sets 
-d %>% filter(comment_url %in% bluebook$comment_url) %>%
-  count(Agency) %>% kablebox()
-
-bluebook %>% filter(comment_url %in% d$comment_url) %>% nrow()
-```
-
-
-## Assets x bluebook terms
-```{r assets-blue, fig.height=2, fig.width=3, out.width="50%"}
-# bluebook %>% count(is.na(Total_Legal_Citations))
-
-# 400 from FDIC data, 400 from other data
-b <- bluebook %>% 
-  left_join(d %>% 
-  select(comment_url, org_name, comment_agency, org_resources, MeanContribAmount,
-                         assets,
-                         marketcap2) %>% 
-    distinct() 
-) %>% 
-  drop_na(Total_Legal_Citations)
-# d %>% count(comment_url, sort = T) 
-
-b %<>% distinct()
-
-b %>% select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  
-  filter(!is.na(org_name)) %>%
-  kablebox()
-
-# FDIC ASSTS 
-b %>% 
-  ggplot() +
-  aes(x = org_resources, # %>% log(), 
-      y = Total_Legal_Citations) + 
-  geom_point() + 
-  geom_smooth(method = "lm"
-  )
-
-# nonprofits
-b %>% 
-  ggplot() +
-  aes(x = assets, 
-      y = Total_Legal_Citations) + 
-  geom_point() + 
-  geom_smooth(method = "lm"
-  )
-
-# contribution
-b %>% 
-  ggplot() +
-  aes(x = MeanContribAmount, 
-      y = Total_Legal_Citations) + 
-  geom_point() + 
-  geom_smooth(method = "lm"
-  )
-
-b %>% 
-  ggplot() +
-  aes(x = marketcap2, 
-      y = Total_Legal_Citations) + 
-  geom_jitter() + 
-  geom_smooth(method = "lm"
-  ) 
-
-# b %>% count(comment_agency, is.na( assets))
-
-b %>% filter(Total_Legal_Citations>10,
-             !is.na(org_name)) %>% select(org_name,Total_Legal_Citations, comment_url, everything()) %>% arrange(-Total_Legal_Citations) %>% kablebox()
-```
-
-## Assets x technical terms
-
-```{r assets-tech, fig.height=2, fig.width=3, out.width="50%"}
-t <- technical_terms %>% 
-  left_join(d %>% 
-              select(comment_url, org_name,
-                     comment_agency, org_resources, MeanContribAmount,
-                         assets,
-                         marketcap2,
-                     `FDIC_Institutions-bestMatch:ASSET`) %>% 
-    distinct() 
-) %>% 
-  drop_na(dictionary_terms)
-
-
-# FDIC ASSTS 
-t %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
-  ggplot() +
-  aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
-      y = dictionary_terms ) + 
-  geom_point(alpha = .5) + 
-  geom_smooth(method = "lm"
-  ) + 
-  scale_y_log10() +
-  scale_x_log10() + 
-  labs(x = "Assets",
-       y = "Legal and Technial Terms", 
-       title = "FDIC-Insured Banks")
-
-t %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`), dictionary_terms == 0) %>%
-  select(org_name, everything(), -doc_id) %>% 
-  kablebox()
-
-# nonprofits
-t %>% 
-  filter(!is.na(assets)) %>% 
-  ggplot() +
-  aes(x = assets, 
-      y = dictionary_terms) + 
-  geom_point() + 
-  geom_smooth(method = "lm"
-  )
-
-# contribution
-t %>% 
-  filter(!is.na(MeanContribAmount)) %>%
-  ggplot() +
-  aes(x = MeanContribAmount, 
-      y = dictionary_terms) + 
-  geom_point() + 
-  geom_smooth(method = "lm"
-  )
-
-t %>% 
-  filter(!is.na(marketcap2)) %>% 
-  ggplot() +
-  aes(x = marketcap2, 
-      y = dictionary_terms) + 
-  geom_jitter() + 
-  geom_smooth(method = "lm"
-  ) 
-
-## CRROSSWALK ASSET DATA  WITH TECHNICAL TERMS
-# names(t) %<>% str_remove("_name") %>% str_remove("_resources")
-
-dtable %>%
-  #filter(asset_data > 0) %>% 
-  #distinct(docket_id)
-  kablebox()
-
-# sum(t$asset_data[1:6])
-
-# t %>% tally(comments_matched)
-# d %>% distinct(comment_url)
-
-# t %>% tally(asset_data)
-
-# dtable %>% 
-#   ggplot() + 
-#   aes(x = docket_id) + 
-#   geom_col(aes(y = asset_data)) 
-
-```
-
-
-# Efficacy 
-
-- `Data/attachment_efficacy_w_docket.csv.`
-
 # Regressions
+
 
 ## Probability of Commenting
 
@@ -1920,908 +1717,3 @@ modelsummary(models)
 # modelplot(mpCompustat_naics)
 ```
 
-
----
-
-
-## Sophistication
-
-> NOTE: I'm using OLS for now but will switch to Poisson or Negative Binomial. 
-
-### Bluebook
-These models have the prefix `mb_`. The dependent variable is a count of technical terms per comment.
-
-
-```{r mb}
-rows <- tibble(
-  term = c("Dependent Variable"),
-  `1` = "Sophistication",
-  `2` = "Sophistication"
-)
-
-# mb <- lm(Total_Legal_Citations ~ org_resources,
-#            data = b)
-# 
-# mb_agency_only <- glm(Total_Legal_Citations ~ comment_agency,
-#            data = b)
-# 
-# mb_agency <- glm(Total_Legal_Citations ~ org_resources*comment_agency,
-#            data = b)
-# 
-# models <- list(mb, mb_agency, mb_agency_only)
-# 
-# equatiomatic::extract_eq(models[[1]]) 
-# 
-# modelsummary(models)
-# 
-# # modelplot(models)
-
-
-# broken out by org type 
-
-mb_assets <- lm(Total_Legal_Citations ~ assets,
-           data = b  %>% mutate(assets = assets/10000000000))
-
-mb_opensecrets <- glm(Total_Legal_Citations ~ MeanContribAmount,
-           data = b %>% mutate(MeanContribAmount = MeanContribAmount/10000))
-
-mb_compustat <- glm(Total_Legal_Citations ~ marketcap2,
-           data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
-
-models <- list(mb_assets, mb_compustat)
-
-modelsummary(models)
-
-modelplot(mb_opensecrets) + 
-  labs(x = "Additional Bluebook Terms per Ten Thousand Dollars")
-
-modelplot(mb_compustat) + 
-  labs(x = "Additional Bluebook Terms per Ten Billion Dollars")
-```
-
-### Technical Terms
-
-These models have the prefix `mt_`. The dependent variable is a count of technical terms per comment.
-
-```{r mt}
-# t %<>% select(-org)
-# broken out by org type 
-
-mt_assets <- lm(dictionary_terms ~ assets,
-           data = t  %>% mutate(assets = assets/10000000000))
-
-mt_opensecrets <- glm(dictionary_terms ~ MeanContribAmount,
-           data = t %>% mutate(MeanContribAmount = MeanContribAmount/10000))
-
-mt_compustat <- glm(dictionary_terms ~ marketcap2,
-           data = t  %>% mutate(marketcap2 = marketcap2/10000000000))
-
-models <- list(mt_assets, mt_compustat)
-
-modelsummary(models)
-
-modelplot( mt_opensecrets) + 
-  labs(x = "Additional Technical and Legal Terms per Ten Thousand Dollars")
-
-modelplot(mt_compustat) + 
-  labs(x = "Additional Technical and Legal Terms per Ten Billion Dollars")
-
-
-```
-
----
-
-## Efficacy
-
-These models have the prefix `me_`. The dependent variable is the efficacy score.
-
----
-
-### Efficacy Mediated by Technical Terms
-
-These models have the prefix `memt-`. The dependent variable is the efficacy score. The mediator is technical terms.
-
-
----
-
-# Steve's old code for reference
-```{r, eval=FALSE}
-# Steve's code
-# https://www.dropbox.com/s/dt7n0a771jngpte/Efficacy_Plots.R?dl=0
-######################################
-
-'%!in%' <- function(x,y)!('%in%'(x,y))
-
-library(scales) # to access break formatting functions
-library(DBI)
-library(RSQLite)
-library(quanteda)
-library(tidyverse)
-library(magrittr)
-library(tidylog)
-library(stargazer)
-library(corrplot)
-
-
-
-all_repeated_language <- read.csv(here("data/repeated_language.csv"), stringsAsFactors = F, 
-                                  strip.white = T, sep = ",")
-
-all_repeated_language %<>% as_tibble()
-
-commenter_covariates <- read.csv(file = here("data/finreg_commenter_covariates_df_20210824.csv"), 
-                                 strip.white = T, stringsAsFactors = F)
-
-# federal reserve weird in sqlite and that translates to this frame
-commenter_covariates %<>%
-  mutate(
-  comment_url = gsub(pattern = "https:/www.sec.gov", 
-                     replacement = "https://www.sec.gov", 
-                     x = comment_url),
-  comment_url = gsub(pattern = "S7-", 
-                   replacement = "s7-", 
-                   x = comment_url),
-  # Federal Reserve Fix
-  comment_url = gsub(pattern = "https:\\/\\/www\\.federalreserve\\.gov\\/SECRS\\/\\d{4}\\/\\w+/\\d{1,}/", 
-                   replacement = "",
-                   x = comment_url)
-  )
-  
-load(here("data", "tech_iterations.RData"))
-load(here("data", "bluebook.RData"))
-
-
-
-# Efficacy Measure Summary Stats and Plots ####
-technical_terms %<>%
-  mutate(  comment_url = doc_id) %>%
-  left_join(Tables_and_Figures, by = "comment_url") %>%
-  left_join(bluebook, by = "comment_url") %>%
-  mutate(
-  # SEC fix
-  comment_url = gsub(pattern = "https:/www.sec.gov", 
-                     replacement = "https://www.sec.gov", 
-                     x = comment_url),
-  comment_url = gsub(pattern = "S7-", 
-                   replacement = "s7-", 
-                   x = comment_url),
-  # Federal Reserve Fix
-  comment_url = gsub(pattern = "https:\\/\\/www\\.federalreserve\\.gov\\/SECRS\\/\\d{4}\\/\\w+/\\d{1,}/", 
-                   replacement = "",
-                   x = comment_url)
-  )
-  
-technical_terms %>%
-  filter(grepl(pattern = "sec.gov",x = comment_url))
-
-missing_from_all_repeated <- all_repeated_language %>%
-  anti_join(technical_terms, by = "comment_url")
-
-missing_from_technical_terms <- technical_terms %>%
-  anti_join(all_repeated_language, by = "comment_url")
-
-missing_from_technical_terms
-  
-all_repeated_language %>%
-  left_join(technical_terms, by = "comment_url")
-
-
-
-
-## Rename Efficacy Measure variables for plots ####
-all_repeated_language %<>%
-  
-  # Plag sequences
-  rename("Num. Seq. Over 5" = "difference_plagiarised_number_of_other_sequences_over_5") %>%
-  rename("Num. Seq. Over 10" = "difference_plagiarised_number_of_other_sequences_over_10") %>%
-  rename("Num. Seq. Over 25" = "difference_plagiarised_number_of_other_sequences_over_25") %>%
-  rename("Num. Seq. Over 50" = "difference_plagiarised_number_of_other_sequences_over_50") %>%
-  rename("Num. Seq. Over 100" = "difference_plagiarised_number_of_other_sequences_over_100") %>%
-  
-  # Plag length
-  rename("Seq. Leng. Over 5" = "difference_plagiarised_cumulative_sequence_length_over_5") %>%
-  rename("Seq. Leng. Over 10" = "difference_plagiarised_cumulative_sequence_length_over_10") %>%
-  rename("Seq. Leng. Over 25" = "difference_plagiarised_cumulative_sequence_length_over_25") %>%
-  rename("Seq. Leng. Over 50" = "difference_plagiarised_cumulative_sequence_length_over_50") %>%
-  rename("Seq. Leng. Over 100" = "difference_plagiarised_cumulative_sequence_length_over_100") %>%
-  
-  # Fuzzy sequences
-  rename("Fuzzy Num. Seq. Over 10" = "differece_fuzzy_number_of_other_sequences_over_10") %>%
-  rename("Fuzzy Num. Seq. Over 25" = "differece_fuzzy_number_of_other_sequences_over_25") %>%
-  rename("Fuzzy Num. Seq. Over 50" = "differece_fuzzy_number_of_other_sequences_over_50") %>%
-  rename("Fuzzy Num. Seq. Over 100" = "differece_fuzzy_number_of_other_sequences_over_100") %>%
-  
-  # Fuzzy length
-  rename("Fuzzy Seq. Leng. Over 10" = "differece_fuzzy_cumulative_sequence_length_over_10") %>%
-  rename("Fuzzy Seq. Leng. Over 25" = "differece_fuzzy_cumulative_sequence_length_over_25") %>%
-  rename("Fuzzy Seq. Leng. Over 50" = "differece_fuzzy_cumulative_sequence_length_over_50") %>%
-  rename("Fuzzy Seq. Leng. Over 100" = "differece_fuzzy_cumulative_sequence_length_over_100") %>%
-  
-  # Other terms
-  rename("Unique Tokens" = "Types") %>%
-  rename("Total Tokens" = "Tokens") %>%
-  rename("Total Sentences" = "Sentences") %>%
-  rename("Words" = "words") 
-
-order_of_terms_for_plots <- c(
-  "Unique Tokens", "Total Tokens", "Total Sentences", "Words",
-  "Num. Seq. Over 5", "Num. Seq. Over 10",
-  "Num. Seq. Over 25", "Num. Seq. Over 50",
-  "Num. Seq. Over 100",
-  "Seq. Leng. Over 5", "Seq. Leng. Over 10",
-  "Seq. Leng. Over 25", "Seq. Leng. Over 50",
-  "Seq. Leng. Over 100",
-  "Fuzzy Num. Seq. Over 10","Fuzzy Num. Seq. Over 25",
-  "Fuzzy Num. Seq. Over 50", "Fuzzy Num. Seq. Over 100",
-  "Fuzzy Seq. Leng. Over 10", "Fuzzy Seq. Leng. Over 25",
-  "Fuzzy Seq. Leng. Over 50", "Fuzzy Seq. Leng. Over 100")
-
-data_for_plots <- all_repeated_language %>%
-  gather(terms, val, -comment_url) %>%
-  mutate(val = as.numeric(val)) %>%
-  group_by(terms) %>%
-  filter(terms %in% order_of_terms_for_plots) %>%
-  mutate(terms = factor(terms, levels=c(
-    "Unique Tokens",
-    "Total Tokens",
-    "Total Sentences",
-    "Words",
-    "Num. Seq. Over 5",
-    "Num. Seq. Over 10",
-    "Num. Seq. Over 25",
-    "Num. Seq. Over 50",
-    "Num. Seq. Over 100",
-    "Seq. Leng. Over 5",
-    "Seq. Leng. Over 10",
-    "Seq. Leng. Over 25",
-    "Seq. Leng. Over 50",
-    "Seq. Leng. Over 100",
-    "Fuzzy Num. Seq. Over 10",
-    "Fuzzy Num. Seq. Over 25",
-    "Fuzzy Num. Seq. Over 50",
-    "Fuzzy Num. Seq. Over 100",
-    "Fuzzy Seq. Leng. Over 10",
-    "Fuzzy Seq. Leng. Over 25",
-    "Fuzzy Seq. Leng. Over 50", 
-    "Fuzzy Seq. Leng. Over 100")))
-
-#### Summary Stats ####
-summary_stats <- data_for_plots %>%
-  summarise(
-    n = n(),
-    min = fivenum(val)[1],
-    #Q1 = fivenum(val)[2],
-    median = fivenum(val)[3],
-    #Q3 = fivenum(val)[4],
-    Q90 = quantile(val, 0.9, na.rm = T),
-    Q95 = quantile(val, 0.95, na.rm = T),
-    Q99 = quantile(val, 0.99, na.rm = T),
-    max = fivenum(val)[5]
-  ) 
-
-summary_stats %>%
-  pander::pandoc.table()
-
-#### Export Summary Stats to Latex ####
-print(xtable::xtable(summary_stats, digits = 0), include.rownames = F)
-
-# Violin Plots ####
-
-#### Length ####
-comment_length <- data_for_plots %>% 
-  filter(terms %in% c("Total Sentences","Words")) %>%
-  mutate(val = val + 1) %>%
-  group_by(terms) %>%
-  ggplot( aes(x=terms, y=val)) + #, fill=terms)) +
-  geom_violin(width=1) +
-  facet_wrap(~terms, scales = "free") +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_minimal() +
-  geom_boxplot(width=0.2, color="grey", alpha=0.2) +
-  labs(title = "Comment Length",
-       caption = "Sentences measured from capital letter to period; Words measured as characters between spaces") +  
-  theme(legend.position="none",
-        plot.title = element_text(size = 12, face = "bold",hjust = 0.5)) +  
-  xlab("") +
-  ylab("Count")
-
-#### Exact Matches: Number ####
-plag_seq <- data_for_plots %>%
-  filter(terms %in% c(                        "Num. Seq. Over 5",
-                                              "Num. Seq. Over 10",
-                                              "Num. Seq. Over 25",
-                                              "Num. Seq. Over 50",
-                                              "Num. Seq. Over 100")) %>%
-  group_by(terms) %>%
-  ggplot( aes(x=terms, y=val)) + #, fill=terms)) +
-  geom_violin(width=1) +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  geom_boxplot(width=0.2, color="grey", alpha=0.2) +
-  labs(title = "Exact Matches: Number of Sequences over Length n in Comment and Final Rule",
-       caption = "These are counts; a 1 where n = 5 represents 5 words in the comment and final rule") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5)) +  
-  xlab("") +
-  ylab("Count of Exact Sequences")
-
-#### Exact Matches: Length ####
-plag_len <- data_for_plots %>%  
-  filter(terms %in% c("Seq. Leng. Over 5",
-                      "Seq. Leng. Over 10",
-                      "Seq. Leng. Over 25",
-                      "Seq. Leng. Over 50",
-                      "Seq. Leng. Over 100")) %>%
-  group_by(terms) %>%
-  ggplot( aes(x=terms, y=val)) + #, fill=terms)) +
-  geom_violin(width=1) +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  geom_boxplot(width=0.2, color="grey", alpha=0.2) +
-  labs(title = "Exact Matches: Total Length of Matched Sequences",
-       caption = "These are the cumulative lengths of the sequences above per document") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5)) +  
-  xlab("") +
-  ylab("Total Amount of Repeated Text")
-
-#### Fuzzy Matches: Number ####
-fuzzy_seq <- data_for_plots %>%  
-  filter(terms %in% c("Fuzzy Num. Seq. Over 10",
-                      "Fuzzy Num. Seq. Over 25",
-                      "Fuzzy Num. Seq. Over 50",
-                      "Fuzzy Num. Seq. Over 100")) %>%
-  group_by(terms) %>%
-  ggplot( aes(x=terms, y=val)) + #, fill=terms)) +
-  geom_violin(width=1) +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  geom_boxplot(width=0.2, color="grey", alpha=0.2) +
-  labs(title = "Fuzzy Matches: Number of Sequences over Length n in Comment and Final Rule",
-       caption = "These are counts; a 1 where n = 5 represents 5 words in the comment and final rule") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5)) +  
-  xlab("") +
-  ylab("Count of Fuzzy Mathed Sequences")
-
-#### Fuzzy Matches: Length ####
-fuzzy_len <- data_for_plots %>%  
-  filter(terms %in% c("Fuzzy Seq. Leng. Over 10",
-                      "Fuzzy Seq. Leng. Over 25",
-                      "Fuzzy Seq. Leng. Over 50", 
-                      "Fuzzy Seq. Leng. Over 100")) %>%
-  group_by(terms) %>%
-  ggplot( aes(x=terms, y=val)) + #, fill=terms)) +
-  geom_violin(width=1) +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  geom_boxplot(width=0.2, color="grey", alpha=0.2) +
-  labs(title = "Fuzzy Matches: Total Length of Matched Sequences",
-       caption = "These are the cumulative lengths of the sequences above per document") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5)) +  
-  xlab("") +
-  ylab("Total Amount of Repeated Text")
-
-## Save Distribution Plots ####
-plag_seq
-plag_len
-fuzzy_seq
-fuzzy_len
-
-# ggsave(plot = plag_seq, "violin_plag_seq.pdf", width = 9, height = 6.5)
-# ggsave(plot = plag_seq, "violin_plag_len.pdf", width = 9, height = 6.5)
-# ggsave(plot = fuzzy_len, "violin_fuzzy_seq.pdf", width = 9, height = 6.5)
-# ggsave(plot = fuzzy_seq, "violin_fuzzy_seq.pdf", width = 9, height = 6.5)
-
-# Correlation Plots ####
-cor.mtest <- function(mat, ...) {
-  mat <- as.matrix(mat)
-  n <- ncol(mat)
-  p.mat<- matrix(NA, n, n)
-  diag(p.mat) <- 0
-  for (i in 1:(n - 1)) {
-    for (j in (i + 1):n) {
-      tmp <- cor.test(mat[, i], mat[, j], ...)
-      p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
-    }
-  }
-  colnames(p.mat) <- rownames(p.mat) <- colnames(mat)
-  return(p.mat)
-}
-
-assemble_corr_plots <- function(tbl){
-  # tbl = data_for_correlation_plot 
-  
-  #names(tbl) <- base::tolower(substring(names(tbl), 1,5))
-  
-  corrs <- tbl %>%
-    cor()
-  
-  p.mat <-  tbl %>%
-    cor.mtest()
-  
-  col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
-  
-  c_plot <- function() {
-    corrplot(corrs, method="color", col=col(200),  
-             type="upper", order="hclust", 
-             addCoef.col = "black", # Add coefficient of correlation
-             tl.col="black", tl.srt=45, #Text label color and rotation
-             # Combine with significance
-             p.mat = p.mat, sig.level = 0.01, insig = "blank", 
-             # hide correlation coefficient on the principal diagonal
-             diag=FALSE)
-  }
-  list(c_plot = c_plot)
-}
-
-## Length ####
-length_variables <- all_repeated_language %>%
-  select(`Unique Tokens`,`Total Tokens`,
-         `Total Sentences`, `Words`) 
-
-pdf(file = "Length_Correlations.pdf")
-assemble_corr_plots(length_variables)$c_plot()
-dev.off()
-
-plagiarism_number_variables <- all_repeated_language %>%
-  select(`Num. Seq. Over 5`,`Num. Seq. Over 10`,`Num. Seq. Over 25`,
-         `Num. Seq. Over 50`, `Num. Seq. Over 100`) 
-
-pdf(file = "Plagiarism_Number_Correlations.pdf")
-assemble_corr_plots(plagiarism_number_variables)$c_plot()
-dev.off()
-
-plagiarism_length_variables <- all_repeated_language %>%
-  select(`Seq. Leng. Over 5`, `Seq. Leng. Over 10`,
-         `Seq. Leng. Over 25`,`Seq. Leng. Over 50`,
-         `Seq. Leng. Over 100`) 
-
-#pdf(file = "Plagiarism_Length_Correlations.pdf")
-#assemble_corr_plots(plagiarism_length_variables)$c_plot()
-dev.off()
-
-fuzzy_number_variables <- all_repeated_language %>%
-  select(`Fuzzy Num. Seq. Over 10`,
-         `Fuzzy Num. Seq. Over 25`,
-         `Fuzzy Num. Seq. Over 50`,
-         `Fuzzy Num. Seq. Over 100`) 
-
-pdf(file = "Fuzzy_Number_Correlations.pdf")
-#assemble_corr_plots(fuzzy_number_variables)$c_plot()
-dev.off()
-
-### Fuzzy Length of Sequences ###
-fuzzy_length_variables <- all_repeated_language %>%
-  select(`Fuzzy Seq. Leng. Over 10`,
-         `Fuzzy Seq. Leng. Over 25`,
-         `Fuzzy Seq. Leng. Over 50`,
-         `Fuzzy Seq. Leng. Over 100`) 
-
-pdf(file = "Fuzzy_Length_Correlations.pdf")
-#assemble_corr_plots(fuzzy_length_variables)$c_plot()
-dev.off()
-
-all <- all_repeated_language %>%
-  select(`Unique Tokens`,`Total Tokens`,
-         `Total Sentences`, `Words`,
-    `Num. Seq. Over 5`,`Num. Seq. Over 10`,`Num. Seq. Over 25`,
-         `Num. Seq. Over 50`, `Num. Seq. Over 100`,
-         `Seq. Leng. Over 5`, `Seq. Leng. Over 10`,
-         `Seq. Leng. Over 25`,`Seq. Leng. Over 50`,
-         `Seq. Leng. Over 100`,
-         `Fuzzy Num. Seq. Over 10`,
-         `Fuzzy Num. Seq. Over 25`,
-         `Fuzzy Num. Seq. Over 50`,
-         `Fuzzy Num. Seq. Over 100`,
-         `Fuzzy Seq. Leng. Over 10`,
-         `Fuzzy Seq. Leng. Over 25`,
-         `Fuzzy Seq. Leng. Over 50`,
-         `Fuzzy Seq. Leng. Over 100`) 
-
-pdf(file = "All_Correlations.pdf",width=11, height=8.5, paper = "USr")
-#assemble_corr_plots(all)$c_plot()
-dev.off()
-
-rm(all, fuzzy_length_variables,fuzzy_number_variables,
-   plagiarism_length_variables,plagiarism_number_variables)
-
-# Create two data frames, one wide and one long ####
-
-wide<- all_repeated_language %>%
-  inner_join(commenter_covariates, by = "comment_url")
-
-### Lots of missing comments in commenter_covariates
-missing <- all_repeated_language %>%
-  anti_join(commenter_covariates, by = "comment_url") 
-
-# missing %>% View()
-
-commenter_covariates$comment_url[201316]
-
-### see one example here:
-grep(pattern = "CFPB-2016-0020-0044", x = all_repeated_language$comment_url)
-grep(pattern = "CFPB-2016-0020-0044", x = commenter_covariates$comment_url)
-
-#### Asset Scatterplots ####
-mdc_and_efficacy <- all_repeated_language %>%
-  inner_join(match_data_clean, by = "comment_url") 
-
-Words <- mdc_and_efficacy %>%
-  ggplot( aes(x=org_resources, y=Words)) + #, fill=terms)) +
-  geom_point() +
-  geom_smooth() +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  labs(title = "Comment Length and Organizational Resources",
-       caption = "") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5)) +  
-  xlab("Assets") +
-  ylab("Words")
-
-
-Plag_Count_Over_10 <- mdc_and_efficacy %>%
-  ggplot( aes(x=org_resources, y=`Num. Seq. Over 10`)) + #, fill=terms)) +
-  geom_point() +
-  geom_smooth() +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  labs(title = "Number of Repeated Sequences over 10 and Organizational Resources",
-       caption = "The depentend variable is count") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5)) +  
-  xlab("Assets") +
-  ylab("Total Amount of Repeated Text")
-
-Plag_Count_Over_25 <- mdc_and_efficacy %>%
-  ggplot( aes(x=org_resources, y=`Num. Seq. Over 25`)) + #, fill=terms)) +
-  geom_point() +
-  geom_smooth() +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  labs(title = "Number of Repeated Sequences over 25 and Organizational Resources",
-       caption = "The depentend variable is count") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5)) +  
-  xlab("Assets") +
-  ylab("Total Amount of Repeated Text")
-
-Plag_Length_Over_10 <- mdc_and_efficacy %>%
-  ggplot( aes(x=org_resources, y=`Seq. Leng. Over 10`)) + #, fill=terms)) +
-  geom_point() +
-  geom_smooth() +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  labs(title = "Cumulative Length and Organizational Resources",
-       caption = "The depentend variable is based on sequences of over 10 words") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5)) +  
-  xlab("Assets") +
-  ylab("Total Amount of Repeated Text")
-
-Plag_Length_Over_25 <- mdc_and_efficacy %>%
-  ggplot( aes(x=org_resources, y=`Seq. Leng. Over 25`)) + #, fill=terms)) +
-  geom_point() +
-  geom_smooth() +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  labs(title = "Cumulative Length and Organizational Resources",
-       caption = "The depentend variable is based on sequences of over 25 words") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5)) +  
-  xlab("Assets") +
-  ylab("Total Amount of Repeated Text")
-
-
-# master_location <- "/Users/stevenrashin/Dropbox/FINREG-RULEMAKE/attachments.sqlite"
-# con = dbConnect(SQLite(), dbname=master_location)
-# myQuery <- dbSendQuery(con, "SELECT * FROM attachments")
-# All_comment_text <- dbFetch(myQuery, n = -1) %>% as_tibble()
-
-# All_comment_text %<>%  arrange(comment_url)
-
-check_no_words <- mdc_and_efficacy %>%
-  select(comment_url, Words, org_resources) %>%
-  filter(Words == 0) %>%
-  select(comment_url) %>%
-  pull()
-
-# All_comment_text %>%
-#   filter(comment_url %in% check_no_words)
-
-# rm(All_comment_text)
-
-Words
-Plag_Count_Over_10
-Plag_Count_Over_25
-Plag_Length_Over_10
-Plag_Length_Over_25
-# ggsave(plot = Words, "Assets_Words.pdf", width = 9, height = 6.5)
-# ggsave(plot = Plag_Count_Over_10, "Assets_Plag_Count_10.pdf", width = 9, height = 6.5)
-# ggsave(plot = Plag_Count_Over_25, "Assets_Plag_Count_25.pdf",width = 9, height = 6.5)
-# ggsave(plot = Plag_Length_Over_10, "Assets_Plag_Length_10.pdf", width = 9, height = 6.5)
-# ggsave(plot = Plag_Length_Over_25, "Assets_Plag_Length_25.pdf", width = 9, height = 6.5)
-
-
-repeated_text_scatter <- wide %>%
-  select(comment_url, best_match_type, matches("bestMatch.financial_measure"),
-         `Seq. Leng. Over 10`, Words) %>%
-  filter(Words > 0) %>%
-  distinct() %>%
-  rename("CIK" = "CIK.bestMatch.financial_measure") %>%
-  rename("FDIC" = "FDIC_Institutions.bestMatch.financial_measure") %>%
-  rename("Compustat" = "compustat_resources.bestMatch.financial_measure") %>%
-  rename("Nonprofits" = "nonprofits_resources.bestMatch.financial_measure") %>%
-  rename("Open Secrets" = "opensecrets_resources_jwVersion.bestMatch.financial_measure") %>%
-  rename("Repeated Text" = `Seq. Leng. Over 10`) %>%
-  gather(match_type, resources, -comment_url, -best_match_type, 
-         -`Repeated Text`,
-         -Words) %>%
-  ggplot( aes(x=resources, y=`Repeated Text`)) + #fill = best_match_type, color = best_match_type
-  geom_point() +
-  geom_smooth(method = "lm") +
-  facet_wrap(~match_type, scales = "fixed") +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  labs(title = "Cumulative Repeated Text and Organizational Resources",
-       caption = "The depentend variable is based on sequences of over 10 words") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5),
-        strip.background = element_rect(colour=NA, fill=NA),
-        panel.border = element_rect(fill = NA, color = "black")) +  
-  xlab("Resources") +
-  ylab("Total Amount of Repeated Text")
-
-repeated_text_by_agency <- wide %>%
-  select(comment_url, best_match_type, matches("bestMatch.financial_measure"),
-         comment_agency,
-         `Seq. Leng. Over 10`, Words) %>%
-  filter(Words > 0) %>%
-  distinct() %>%
-  rename("CIK" = "CIK.bestMatch.financial_measure") %>%
-  rename("FDIC" = "FDIC_Institutions.bestMatch.financial_measure") %>%
-  rename("Compustat" = "compustat_resources.bestMatch.financial_measure") %>%
-  rename("Nonprofits" = "nonprofits_resources.bestMatch.financial_measure") %>%
-  rename("Open Secrets" = "opensecrets_resources_jwVersion.bestMatch.financial_measure") %>%
-  rename("Repeated Text" = `Seq. Leng. Over 10`) %>%
-  gather(match_type, resources, -comment_url, -best_match_type, 
-         -`Repeated Text`,-comment_agency,
-         -Words) %>%
-  ggplot( aes(x=resources, y=`Repeated Text`)) + #fill = best_match_type, color = best_match_type
-  geom_point() +
-  geom_smooth(method = "lm") +
-  facet_wrap(~comment_agency, scales = "fixed") +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=10)) +
-  theme_bw() +
-  labs(title = "Cumulative Repeated Text and Organizational Resources",
-       caption = "The dependent variable is based on sequences of over 10 words") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5),
-        strip.background = element_rect(colour=NA, fill=NA),
-        panel.border = element_rect(fill = NA, color = "black")) +  
-  xlab("Resources") +
-  ylab("Total Amount of Repeated Text (Words)")
-
-# Plots for paper ####
-
-# ggsave(plot = repeated_text_by_agency, "/Users/stevenrashin/Dropbox/FINREG-RULEMAKE/Drafts/Participatory Inequality and Rulemaking: Evidence from Financial Regulation/Figures/Repeated_text_agency_assets_cumulative_over10.pdf", width = 13, height = 6.5)
-
-# ggsave(plot = repeated_text_scatter, "Repeated_text_assets_cumulative_over10.pdf", width = 9, height = 6.5)
-
-rpt_naive <- lm(formula = "log(`Seq. Leng. Over 10`+1) ~ log_p1_financial_measure", data = wide)
-rpt_w_control <- lm(formula = "log(`Seq. Leng. Over 10`+1) ~ log_p1_financial_measure + log(Words+1)", data = wide)
-rpt_w_control_w_fex <- lm(formula = "log(`Seq. Leng. Over 10`+1) ~ log_p1_financial_measure + log(Words+1)+
-                          comment_agency + rin", data = wide)
-rpt_w_control_w_full_fex <- lm(formula = "log(`Seq. Leng. Over 10`+1) ~ log_p1_financial_measure + log(Words+1)+
-                          comment_agency + rin + best_match_type", data = wide)
-
-# library(miceadds)
-
-#rpt_w_control_se <- lm.cluster(formula = "log(`Seq. Leng. Over 10`+1) ~ log_p1_financial_measure + log(Words+1)", data = wide,cluster = 'rin')
-#rpt_w_control_w_fex_se <- lm.cluster(formula = "log(`Seq. Leng. Over 10`+1) ~ log_p1_financial_measure + log(Words+1)+
-#                          comment_agency + rin", data = wide,cluster = 'rin')
-#rpt_w_control_w_full_fex_se <- lm.cluster(formula = "log(`Seq. Leng. Over 10`+1) ~ log_p1_financial_measure + log(Words+1)+
-#                          comment_agency + rin + #best_match_type", data = wide,cluster = 'rin')
-# 
-# stargazer::stargazer(rpt_naive,rpt_w_control,rpt_w_control_w_fex, rpt_w_control_w_full_fex,
-#                      title="Text Reuse and Organizational Assets", type="latex", 
-#                      digits=3, 
-#                      se = list(NULL, 
-#                                sqrt(diag(vcov(rpt_w_control_se))), 
-#                                sqrt(diag(vcov(rpt_w_control_w_fex_se))), 
-#                                sqrt(diag(vcov(rpt_w_control_w_full_fex_se))) 
-#                                ),
-#                      dep.var.labels=c("Cumulative Repeated Text"),
-#                      omit = c("comment_agency","rin","best_match_type"),
-#                      covariate.labels=c("Log Org. Resources",
-#                                         "Log Comment Length"),
-#                      omit.stat=c("LL","ser","f","adj.rsq"), no.space=TRUE,
-#                      add.lines = list(
-#                        c("Clustering", "No", "Rule","Rule","Rule"),
-#                        c("Fixed effects?", "No", "No","Agency, RIN","Agency, RIN, Source")),
-#                      #out="/Users/stevenrashin/Dropbox/FINREG-RULEMAKE/Drafts/Participatory Inequality and Rulemaking: Evidence from Financial Regulation/Tables/efficacy_and_resources.txt"
-)
-
-# Complexity plots ####
-tables_and_figures <- wide %>%
-  left_join(technical_terms, by = c("comment_url")) %>%
-  filter(Words > 0) %>%
-  distinct() %>%
-  rename("CIK" = "CIK.bestMatch.financial_measure") %>%
-  rename("FDIC" = "FDIC_Institutions.bestMatch.financial_measure") %>%
-  rename("Compustat" = "compustat_resources.bestMatch.financial_measure") %>%
-  rename("Nonprofits" = "nonprofits_resources.bestMatch.financial_measure") %>%
-  rename("Open Secrets" = "opensecrets_resources_jwVersion.bestMatch.financial_measure") %>%
-  rename("Repeated Text" = `Seq. Leng. Over 10`) %>%
-  ggplot( aes(x=Visualizations, y=`Repeated Text`)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  facet_wrap(~comment_agency, scales = "fixed") +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  theme_bw() +
-  labs(title = "Log Cumulative Repeated Text and Data",
-       caption = "The dependent variable is based on sequences of over 10 words") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5),
-        strip.background = element_rect(colour=NA, fill=NA),
-        panel.border = element_rect(fill = NA, color = "black")) +  
-  xlab("Tables and Figures") +
-  ylab("Total Amount of Repeated Text (Words)")
-  
-# Dictionary Term plots ####
-dict_terms <- wide %>%
-  left_join(technical_terms, by = c("comment_url")) %>%
-  filter(Words > 0) %>%
-  distinct() %>%
-  rename("CIK" = "CIK.bestMatch.financial_measure") %>%
-  rename("FDIC" = "FDIC_Institutions.bestMatch.financial_measure") %>%
-  rename("Compustat" = "compustat_resources.bestMatch.financial_measure") %>%
-  rename("Nonprofits" = "nonprofits_resources.bestMatch.financial_measure") %>%
-  rename("Open Secrets" = "opensecrets_resources_jwVersion.bestMatch.financial_measure") %>%
-  rename("Repeated Text" = `Seq. Leng. Over 10`) %>%
-  ggplot( aes(x=dictionary_terms, y=`Repeated Text`)) +
-  #dictionary_terms = banking + us_law - overlap
-  geom_point() +
-  geom_smooth(method = "lm") +
-  facet_wrap(~comment_agency, scales = "fixed") +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=10)) +
-  theme_bw() +
-  labs(title = "Log Cumulative Repeated Text and Legal and Banking Terms",
-       caption = "The dependent variable is based on sequences of over 10 words \n 
-       Dictionary terms are the sum of banking and legal terms") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5),
-        strip.background = element_rect(colour=NA, fill=NA),
-        panel.border = element_rect(fill = NA, color = "black")) +  
-  xlab("Legal and Banking Terms") +
-  ylab("Total Amount of Repeated Text (Words)")
-
-bluebook <- wide %>%
-  left_join(technical_terms, by = c("comment_url")) %>%
-  filter(Words > 0) %>%
-  distinct() %>%
-  rename("CIK" = "CIK.bestMatch.financial_measure") %>%
-  rename("FDIC" = "FDIC_Institutions.bestMatch.financial_measure") %>%
-  rename("Compustat" = "compustat_resources.bestMatch.financial_measure") %>%
-  rename("Nonprofits" = "nonprofits_resources.bestMatch.financial_measure") %>%
-  rename("Open Secrets" = "opensecrets_resources_jwVersion.bestMatch.financial_measure") %>%
-  rename("Repeated Text" = `Seq. Leng. Over 10`) %>%
-  ggplot( aes(x=Total_Legal_Citations, y=`Repeated Text`)) +
-  #Total_Legal_Citations = US_Code + Supreme_Court_Cases + 
-  #Appeals_and_District_Court_Cases + Code_of_Federal_Regulations +
-  #Federal_Register_Total
-  #dictionary_terms = banking + us_law - overlap
-  geom_point() +
-  geom_smooth(method = "lm") +
-  facet_wrap(~comment_agency, scales = "fixed") +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=10)) +
-  theme_bw() +
-  labs(title = "Log Cumulative Repeated Text and Bluebook Citations",
-       caption = "The dependent variable is based on sequences of over 10 words \n
-       Bluebook terms are include US Code, Federal Court Cases, the CFR") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5),
-        strip.background = element_rect(colour=NA, fill=NA),
-        panel.border = element_rect(fill = NA, color = "black")) +  
-  xlab("Bluebook Citations") +
-  ylab("Total Amount of Repeated Text (Words)")
-
-# ggsave(plot = dict_terms, "/Users/stevenrashin/Dropbox/FINREG-RULEMAKE/Drafts/Participatory Inequality and Rulemaking: Evidence from Financial Regulation/Figures/Repeated_text_agency_dictionary_cumulative_over10.pdf", width = 13, height = 6.5)
-# ggsave(plot = bluebook, "/Users/stevenrashin/Dropbox/FINREG-RULEMAKE/Drafts/Participatory Inequality and Rulemaking: Evidence from Financial Regulation/Figures/Repeated_text_agency_bluebook_cumulative_over10.pdf", width = 13, height = 6.5)
-
-big_dict_resources <- wide %>%
-  left_join(technical_terms, by = c("comment_url")) %>%
-  filter(Words > 0) %>%
-  select(comment_url, best_match_type, matches("bestMatch.financial_measure"),
-         comment_agency,
-         `Seq. Leng. Over 10`,dictionary_terms) %>%
-  distinct() %>%
-  rename("CIK" = "CIK.bestMatch.financial_measure") %>%
-  rename("FDIC" = "FDIC_Institutions.bestMatch.financial_measure") %>%
-  rename("Compustat" = "compustat_resources.bestMatch.financial_measure") %>%
-  rename("Nonprofits" = "nonprofits_resources.bestMatch.financial_measure") %>%
-  rename("Open Secrets" = "opensecrets_resources_jwVersion.bestMatch.financial_measure") %>%
-  gather(match_type, resources, -dictionary_terms,-comment_url, -best_match_type, 
-         -comment_agency) %>%
-  filter(resources>10000) %>%
-  ggplot( aes(x=resources, y=dictionary_terms)) +
-  #Total_Legal_Citations = US_Code + Supreme_Court_Cases + 
-  #Appeals_and_District_Court_Cases + Code_of_Federal_Regulations +
-  #Federal_Register_Total
-  #dictionary_terms = banking + us_law - overlap
-  geom_point() +
-  geom_smooth(method = "lm") +
-  facet_wrap(~comment_agency, scales = "fixed") +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=10)) +
-  theme_bw() +
-  labs(title = "Log Dictionary Terms and Resources",
-       caption = "") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5),
-        strip.background = element_rect(colour=NA, fill=NA),
-        panel.border = element_rect(fill = NA, color = "black")) +  
-  xlab("Resources") +
-  ylab("Comment Sophistication (Dictionary Terms)")
-
-all_dict_resources <- wide %>%
-  left_join(technical_terms, by = c("comment_url")) %>%
-  filter(Words > 0) %>%
-  select(comment_url, best_match_type, matches("bestMatch.financial_measure"),
-         comment_agency,
-         `Seq. Leng. Over 10`,dictionary_terms) %>%
-  distinct() %>%
-  rename("CIK" = "CIK.bestMatch.financial_measure") %>%
-  rename("FDIC" = "FDIC_Institutions.bestMatch.financial_measure") %>%
-  rename("Compustat" = "compustat_resources.bestMatch.financial_measure") %>%
-  rename("Nonprofits" = "nonprofits_resources.bestMatch.financial_measure") %>%
-  rename("Open Secrets" = "opensecrets_resources_jwVersion.bestMatch.financial_measure") %>%
-  gather(match_type, resources, -dictionary_terms,-comment_url, -best_match_type, 
-         -comment_agency) %>%
-  ggplot( aes(x=resources, y=dictionary_terms)) +
-  #Total_Legal_Citations = US_Code + Supreme_Court_Cases + 
-  #Appeals_and_District_Court_Cases + Code_of_Federal_Regulations +
-  #Federal_Register_Total
-  #dictionary_terms = banking + us_law - overlap
-  geom_point() +
-  geom_smooth(method = "lm") +
-  facet_wrap(~comment_agency, scales = "fixed") +
-  scale_y_log10(labels = scales::comma_format(accuracy=1)) +
-  scale_x_log10(labels = scales::comma_format(accuracy=10)) +
-  theme_bw() +
-  labs(title = "Log Dictionary Terms and Resources",
-       caption = "") +  
-  theme(legend.position="none",
-        plot.title = element_text(hjust = 0.5),
-        strip.background = element_rect(colour=NA, fill=NA),
-        panel.border = element_rect(fill = NA, color = "black")) +  
-  xlab("Resources") +
-  ylab("Comment Sophistication (Dictionary Terms)")
-
-
-names(technical_terms)
-
-#'4. @Steve and @Chris, I’d recommend some scatters (colored by data source: “best_match_type”) 
-#'and regressions of comment sophistication by log_p1_financial_measure 
-#'(and in the organization-level dataset, by num_comments submitted and by 
-#'num_venues_commenting_in)
-
-
-#### DEAL WITH THIS LATER ####
-long <- all_repeated_language %>%
-  inner_join(commenter_covariates, by = "comment_url") 
-
-
-
-```
