@@ -190,6 +190,7 @@ d$comment_url %<>% str_replace("document\\?D=", "comment/")
 # sophistication 
 load(here("data", "Dictionary_Terms.Rdata")  %>% str_remove("finreg")  )
 
+# drop duplicates 
 technical_terms_comments %<>% 
   distinct() %>% 
   rename(comment_url = doc_id)
@@ -198,31 +199,36 @@ technical_terms_attachments %<>%
   distinct() %>% 
   rename(comment_url = doc_id)
 
+bluebook_comments %<>% 
+  distinct() 
 
-# not unique to dockets, uniqe to pairs of draft and final, which there may be more than one of per docket
-# proposed_final_pairs %>% count(fr_document_id.proposed, fr_document_id.final, sort = T)
+bluebook_attachments %<>% 
+  distinct()  
+```
 
-
-
+```{r testing, eval = FALSE}
 # check number of NAs 
-# bluebook_comments %>% 
-#   summarise_all(is.na) %>% 
-#   summarise_all(sum)
+bluebook_comments %>%
+  summarise_all(is.na) %>%
+  summarise_all(sum)
 
-bluebook_comments %>% distinct() %>% count(comment_url, sort = T)
+# multiple per url? 
+bluebook_comments %>%  count(comment_url, sort = T)
 
-bluebook_attachments %>% distinct() %>%  count(comment_url, sort = T)
+bluebook_attachments %>%  count(comment_url, sort = T)
 
-# # example 
-# bluebook_attachments %>% filter(comment_url == "https://www.regulations.gov/comment/OCC-2011-0008-0126") %>% kablebox()
-# 
-# bluebook_comments %>% filter(comment_url == "https://www.regulations.gov/comment/OCC-2011-0008-0126") %>% kablebox()
+# example
+bluebook_attachments %>% filter(comment_url == "https://www.regulations.gov/comment/OCC-2011-0008-0126") %>% kablebox()
+
+bluebook_comments %>% filter(comment_url == "https://www.regulations.gov/comment/OCC-2011-0008-0126") %>% kablebox()
 
 technical_terms_comments %>% count(comment_url, sort = T)
 
 technical_terms_attachments %>% count(comment_url, sort = T)
+```
 
 
+```{r sophistication-join}
 # summarize and merge term counts from comment text boxes and attachments
 max <- . %>% base::max(na.rm = TRUE)
 
@@ -248,10 +254,8 @@ bluebook <- full_join(bluebook_a,
 # # check for unique comment_url
 # bluebook %>% count(comment_url, sort = T)
 
-
-
 # sum by comment url 
-#FIXME, why are these not unique! 
+#FIXME, why are these not unique!? 
 technical_terms_c <- technical_terms_comments %>% 
   group_by(comment_url) %>% 
   select(-comment) %>% 
@@ -278,7 +282,7 @@ full_join(technical_terms, bluebook) %>% kablebox()
 # full_join(bluebook, technical_terms)
 
 
-
+# Join 
 d %<>% 
   left_join(bluebook%>% select(comment_url, Total_Legal_Citations)) %>% 
   left_join(technical_terms %>% select(comment_url, dictionary_terms)) 
@@ -295,7 +299,6 @@ d %>%
 # FIXME Missing as of May 2022
 # bluebook %>% filter(str_detect(comment_url, "CFPB-2019-0021-0406"))
 # technical_terms %>% filter(str_detect(comment_url, "CFPB-2019-0021-0406"))
-
 ```
 
 ---
@@ -482,7 +485,7 @@ d  %<>% left_join(efficacy)
 
 d$efficacy %<>% as.numeric()
 
-d %>% drop_na(efficacy)
+# d %>% drop_na(efficacy)
 ```
 
 ```{r assets-efficacy}
@@ -555,7 +558,7 @@ cm = c("ASSET" = "Assets",
        "ASSETS:Class SA" = "Assets x Savings Association",
        "ASSETS:Class NM" = "Assets x Commercial Bank")
 ```
-```
+
 
 ## Sophistication
 
@@ -571,24 +574,6 @@ rows <- tibble(
   `1` = "Sophistication",
   `2` = "Sophistication"
 )
-
-# mb <- lm(Total_Legal_Citations ~ org_resources,
-#            data = b)
-# 
-# mb_agency_only <- glm(Total_Legal_Citations ~ comment_agency,
-#            data = b)
-# 
-# mb_agency <- glm(Total_Legal_Citations ~ org_resources*comment_agency,
-#            data = b)
-# 
-# models <- list(mb, mb_agency, mb_agency_only)
-# 
-# equatiomatic::extract_eq(models[[1]]) 
-# 
-# modelsummary(models)
-# 
-# # modelplot(models)
-
 
 # broken out by org type 
 b %>% 
