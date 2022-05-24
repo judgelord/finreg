@@ -541,6 +541,21 @@ e %>%
 
 # Regressions
 
+```{r coef_mapping}
+# rename coeficients for tables and plots 
+cm = c("ASSET" = "Assets",
+       "ASSETS" = "Assets (Hundreds of Millions)",
+       "Assets" = "Assets (Billions)",
+       "Class SM" = "State Bank",
+       "Class SB" = "Savings Bank",
+       "Class SA" = "Savings Association",
+       "Class NM" = "Commercial Bank",
+       "ASSETS:Class SM" = "Assets x State Bank",
+       "ASSETS:Class SB" = "Assets x Savings Bank",
+       "ASSETS:Class SA" = "Assets x Savings Association",
+       "ASSETS:Class NM" = "Assets x Commercial Bank")
+```
+```
 
 ## Sophistication
 
@@ -550,7 +565,7 @@ e %>%
 These models have the prefix `mb_`. The dependent variable is a count of technical terms per comment.
 
 
-```{r mb}
+```{r mb, eval=FALSE}
 rows <- tibble(
   term = c("Dependent Variable"),
   `1` = "Sophistication",
@@ -576,9 +591,12 @@ rows <- tibble(
 
 
 # broken out by org type 
+b %>% 
+  ggplot() + 
+  aes(x = assets, y = Total_Legal_Citations) + 
+  geom_point()
 
-mb_assets <- lm(Total_Legal_Citations ~ assets,
-           data = b  %>% mutate(assets = assets/10000000000))
+mb_assets <- lm(Total_Legal_Citations ~ assets,  data = b  %>% mutate(assets = assets/10000000000))
 
 mb_opensecrets <- glm(Total_Legal_Citations ~ MeanContribAmount,
            data = b %>% mutate(MeanContribAmount = MeanContribAmount/10000))
@@ -616,7 +634,8 @@ mt_compustat <- glm(dictionary_terms ~ marketcap2,
 
 models <- list(mt_assets, mt_compustat)
 
-modelsummary(models)
+# FIXME 
+#modelsummary(models)
 
 modelplot( mt_opensecrets) + 
   labs(x = "Additional Technical and Legal Terms per Ten Thousand Dollars")
@@ -636,8 +655,30 @@ modelplot(mt_compustat) +
 These models have the prefix `me_`. The dependent variable is the efficacy score.
 
 ```{r mea}
+# broken out by org type 
 
+mea_assets <- lm(efficacy ~ assets,
+           data = e  %>% mutate(assets = assets/1000000))
 
+mea_opensecrets <- glm(efficacy ~ MeanContribAmount,
+           data = e %>% mutate(MeanContribAmount = MeanContribAmount/1000))
+
+mea_compustat <- glm(efficacy ~ marketcap2,
+           data = e  %>% mutate(marketcap2 = marketcap2/1000000))
+
+models <- list(mea_assets, mea_opensecrets, mea_compustat)
+
+# FIXME 
+#modelsummary(models)
+
+modelplot( mea_assets) + 
+  labs(x = "Additional Words Added to Final Rule per Million Dollars")
+
+modelplot( mea_opensecrets) + 
+  labs(x = "Additional Words Added to Final Rule per Thousand Dollars")
+
+modelplot(mea_compustat) + 
+  labs(x = "Additional Words Added to Final Rule per Million Dollars")
 ```
 
 
