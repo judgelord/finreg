@@ -6,7 +6,8 @@ d_raw <- here(#"data", "match_data", # old in match_data
               #"finreg_commenter_covariates_df_20210824.csv"
               #"finreg_commenter_covariates_df_20211118.csv"
               "Data", # new copied from JLW-FINREG-PARTICIPATION/data to FINREGRULEMAKE2/Data
-              "finreg_commenter_covariates_df_20220405.csv"
+              #"finreg_commenter_covariates_df_20220405.csv"
+              "finreg_commenter_covariates_df_20220510.csv"
               ) %>%
   str_remove("finreg") %>% # up a level to root
   read_csv()
@@ -14,6 +15,8 @@ d_raw <- here(#"data", "match_data", # old in match_data
 # remove extraneous column
 d_raw %<>%
   select(-`...1`)
+
+d_raw %>% count(comment_agency, name = "covariates_20220510")
 
 
 # how many exact match

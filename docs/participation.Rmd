@@ -138,11 +138,11 @@ Resource data:
 
 Resource data for full population of organizations, including non-commmenters: 
 
-- Nonprofit assets and revenue: `finreg/data/nonprofit_resources.Rdata`
-- FDIC `finreg/data/FDIC_resources.Rdata`
-- Credit unions: `Data/creditunions.csv` (up one level, not in finreg)
-- Campaign donations: `finreg/data/merged_resources/opensecrets_resources_JwVersion.csv`
-- Market cap: from compustat `finreg/data/merged_resources/compustat_resources.csv` and SEC's CIK database `Data/CIK.csv` 
+- Nonprofit `assets` and `revenue` from 990 data from https://www.irs.gov/charities-non-profits/form-990-series-downloads: `finreg/data/nonprofit_resources.Rdata` or `finreg/data/merged_resources/nonprofit_resources.csv`
+- FDIC assets (`ASSET`) and bank class (`BKCLASS`): `finreg/data/FDIC_resources.Rdata` or `finreg/data/merged_resources/FDIC_Institutions.csv`
+- Credit unions `Total Assets` scraped from consolidated call report files scraped from https://www.ncua.gov/analysis/credit-union-corporate-call-report-data by `acquisition/get_credit-Unions.py`: `Data/creditunions.csv` (up one level, not in finreg)
+- Campaign donations (`MeanContribAmount` and `MeanContribAmount`) from https://www.opensecrets.org/: `finreg/data/merged_resources/opensecrets_resources_JwVersion.csv`
+- Market capitalization (`marketcap`) from compustat? `Data/compustat_names.csv` and SEC's CIK database `Data/CIK.csv`: `finreg/data/merged_resources/compustat_resources.csv`
 
 Sophistication Measures 
 
@@ -264,6 +264,8 @@ docket_table %>%
 ```{r data-match-clean}
 # clean match data from finreg_commenter_covariates
 load(here("data", "match_data_clean.Rdata"))
+
+match_data_clean %>% count(comment_agency)
 
 d <- match_data_clean  
 ```
@@ -541,9 +543,15 @@ org_count_agency %>%
 
 ```{r FDIC-density, fig.height=1.5, fig.width=4, out.width="50%"}
 #FDIC-density
-load(here("data", "FDIC_resources.Rdata"))
+# load(here("data", "FDIC_resources.Rdata"))
 
-# old match data 
+# CSVs for simplicity 
+FDIC_resources <- read_csv(here::here("data", "merged_resources", "FDIC_Institutions.csv"))  %>%
+  select(NAME, NAMEHCR, STALP, STNAME, BKCLASS, ASSET) %>% 
+  mutate(org_name = str_to_lower(NAME)) %>% 
+  mutate(commented = org_name %in% d$best_match_name | org_name %in% d$FDIC_Institutions_name)
+
+
 FDIC_resources %>% 
   #filter(assets > 100) %>% 
   mutate(Commented = ifelse(commented, "Commented", "Did not comment")) %>%
