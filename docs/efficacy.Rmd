@@ -192,12 +192,10 @@ load(here("data", "Dictionary_Terms.Rdata")  %>% str_remove("finreg")  )
 
 # drop duplicates 
 technical_terms_comments %<>% 
-  distinct() %>% 
-  rename(comment_url = doc_id)
+  distinct() 
 
 technical_terms_attachments %<>% 
-  distinct() %>% 
-  rename(comment_url = doc_id)
+  distinct() 
 
 bluebook_comments %<>% 
   distinct() 
