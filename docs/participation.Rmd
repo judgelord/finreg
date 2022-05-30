@@ -144,12 +144,7 @@ Resource data for full population of organizations, including non-commmenters:
 - Campaign donations (`MeanContribAmount` and `MeanContribAmount`) from https://www.opensecrets.org/: `finreg/data/merged_resources/opensecrets_resources_JwVersion.csv`
 - Market capitalization (`marketcap`) from compustat? `Data/compustat_names.csv` and SEC's CIK database `Data/CIK.csv`: `finreg/data/merged_resources/compustat_resources.csv`
 
-Sophistication Measures 
-
-
-Efficacy measures
-
-- `Data/attachment_efficacy_w_docket.csv`
+Sophistication and Efficacy Measures are described here: https://judgelord.github.io/finreg/efficacy
 
 ```{r action-data}
 # actions 
