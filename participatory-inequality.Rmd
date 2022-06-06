@@ -504,6 +504,20 @@ knitr::include_graphics("figs/compustat-count-1.png")
 knitr::include_graphics("figs/FDIC-count-select-1.png")
 ```
 
+## Data Sources
+
+Nonprofit assets and revenue from 990 data from https://www.irs.gov/charities-non-profits/form-990-series-downloads: finreg/data/nonprofit_resources.Rdata or finreg/data/merged_resources/nonprofit_resources.csv
+
+FDIC assets (ASSET) and bank class (BKCLASS): finreg/data/FDIC_resources.Rdata or finreg/data/merged_resources/FDIC_Institutions.csv
+Credit unions Total Assets scraped from consolidated call report files scraped from https://www.ncua.gov/analysis/credit-union-corporate-call-report-data by acquisition/get_credit-Unions.py: Data/creditunions.csv (up one level, not in finreg)
+
+Campaign donations (MeanContribAmount and MeanContribAmount) from https://www.opensecrets.org/: finreg/data/merged_resources/opensecrets_resources_JwVersion.csv
+
+Market capitalization (marketcap) from compustat? Data/compustat_names.csv and SEC’s CIK database Data/CIK.csv: finreg/data/merged_resources/compustat_resources.csv
+
+nevermind: I found it: https://banks.data.fdic.gov/docs/
+
+I sent you a message, Devin, about the FDIC question. As far as the market cap question, the data will be from CRSP. Compustat is like background variables on companies. Market capitalization is derived from price and shares out. It is a frequently changing variable. You would have to look at a script to see where the compustat data you mention was created to see what exact time point is being used to calculate market cap. Sent from my iPad
 
 <!--
 THE APPENDIX DRAFT BELOW NEEDS TO BE PUT IN PLAIN LANGUAGE, BUT IT SHOULD KNIT IF YOU WANT TO SEE THE FIGURES. WE MAY NOT WANT ALL OF THEM, EVEN IN THE APPENDIX-->
