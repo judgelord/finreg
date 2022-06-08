@@ -5,7 +5,7 @@ requires <- c("bookdown",
               "magrittr",
               "broom",
               "here",
-              "msm",
+              #"msm",
               "kableExtra",
               "modelsummary",
               "dotwhisker",
@@ -14,10 +14,10 @@ requires <- c("bookdown",
               "lmerTest",
               "fixest",
               "flextable",
-              "magick",
+              #"magick",
               "equatiomatic",
               "latex2exp",
-              "tidytext",
+              #"tidytext",
               "latex2exp")
 to_install <- c(requires %in% rownames(installed.packages()) == FALSE)
 install.packages(c(requires[to_install], "NA"), repos = "https://cloud.r-project.org/" )
@@ -41,8 +41,8 @@ library(tidyverse)
 fig.path <- here("figs/")
 
 ## Sets defaults for R chunks
-knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
-                      cache = FALSE,
+knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
+                      cache = TRUE,
                       #cache = TRUE,
                       warning = FALSE,
                       message = FALSE,
@@ -56,6 +56,12 @@ knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       fig.width = 7,
                       out.width = "100%",
                       out.extra = "")
+
+library(tidyverse)
+library(ggthemes)
+library(latex2exp)
+theme_set(theme_tufte())
+theme_update(plot.title = element_text(hjust=0.5,size=12))
 
 # defaults for plots
 library(ggplot2); theme_set(theme_bw());

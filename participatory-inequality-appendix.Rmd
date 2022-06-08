@@ -1,0 +1,85 @@
+## Data Sources
+
+Data for this project came from the following sources:
+
+ - Nonprofit assets and revenue from 990 data from https://www.irs.gov/charities-non-profits/form-990-series-downloads
+ 
+ - FDIC assets (ASSET) and bank class (BKCLASS): https://banks.data.fdic.gov/docs/
+
+  - Credit unions Total Assets scraped from consolidated call report files scraped from https://www.ncua.gov/analysis/credit-union-corporate-call-report-data 
+
+  - Campaign donations (MeanContribAmount and MeanContribAmount) from https://www.opensecrets.org/
+
+  - Market capitalization (marketcap) from CRSP via WRDS: https://wrds-www.wharton.upenn.edu/pages/about/data-vendors/center-for-research-in-security-prices-crsp/
+  
+  - SEC’s CIK database Compustat: https://wrds-www.wharton.upenn.edu/pages/get-data/compustat-capital-iq-standard-poors/
+
+<!--
+THE APPENDIX DRAFT BELOW NEEDS TO BE PUT IN PLAIN LANGUAGE, BUT IT SHOULD KNIT IF YOU WANT TO SEE THE FIGURES. WE MAY NOT WANT ALL OF THEM, EVEN IN THE APPENDIX-->
+
+
+```{r ridgeline_plot_of_numRulesCommentedOn_by_Quantiles_of_financialResources, fig.cap="", eval =FALSE}
+knitr::include_graphics(
+"figs/ridgeline_plot_of_numRulesCommentedOn_by_Quantiles_of_financialResources.png"
+)
+```
+
+This shows that as we look at organizations with more and more financial resources, the organizations tend to comment on more and more rules, though moderate-level wealth organizations (Q75-90) often comment on more rules than high-level wealth organizations (Q90-95), so this relationship isn't as clean as the one in ridgeline_plot_of_financialResources_by_Quantiles_of_numRulesCommentedOn.png until we get to the 'tip top' of the resource distribution. Note: I wouldn't be surprised if some of the messiness in this graph is coming from the fact that we may not have comparable measures of financial resources across organization types.
+
+```{r, fig.cap="", eval =FALSE}
+knitr::include_graphics(
+"figs/ridgeline_plot_of_financialResources_by_Quantiles_of_venueBreadth.png"
+)
+```
+
+This shows that as an organization participates in more and more regulatory agencies' notice and comment processes, it tends to be increasingly well-resourced. Note: The Q0-50 and Q50-75 rows are missing because many organizations (>75%) participate in only one agency's notice and comment process. Likewise, the Q90-95 row is missing because many organizations (>5%, the size of the Q90-95 bucket) participate in only two agencies' notice and comment processes.
+
+```{r, fig.cap="", eval =FALSE}
+knitr::include_graphics(
+"figs/ridgeline_plot_of_numRulesCommentedOn_by_Quantiles_of_venueBreadth.png"
+)
+```
+
+This shows that as an organization participates in more and more regulatory agencies' notice and comment processes, it tends to also submit comments on more and more rules. Two Notes: (1) this may in part be a mechanical effect since commenting in two agencies' processes may often entail commenting on at least two rules. (2) the Q0-50 and Q50-75 rows are missing because many organizations (>75%) only participate in only one agency's notice and comment process. Likewise, the Q90-95 row is missing because many organizations (>5%, the size of the Q90-95 bucket) participate in only two agencies' notice and comment processes.
+
+```{r, fig.cap="", eval =FALSE}
+knitr::include_graphics(
+"figs/ridgeline_plot_of_venueBreadth_by_Quantiles_of_financialResources.png"
+)
+```
+
+This shows that as we look at organizations with more and more financial resources, the organizations tend to participate in more agencies' notice and comment processes (the distribution gets 'flatter' moving up the graph). Note: the package that makes this plot is pretty black-boxy, so I don't have fine-grained enough control over the horizontal placement of the bars to make the "4" venues bars appear further to the right as they should.
+
+```{r, fig.cap="", eval =FALSE}
+knitr::include_graphics(
+"figs/ridgeline_plot_of_venueBreadth_by_Quantiles_of_numRulesCommentedOn.png"
+)
+```
+
+Shows that as we look at organizations who've commented on more and more rules, those organizations tend to also participate in more and more agencies' notice and comment process. Note: The Q0-50 quantile is missing because many organizations (>50%) only comment on 1 rule.
+
+
+
+```{r, fig.cap="", eval =FALSE}
+knitr::include_graphics(
+"figs/appendix-jw/[appendix]_log_kdeplot_of_organization-based_commenter_resources_by_organization_type.png")
+```
+
+
+Plots the distributions (on a log scale) of our various financial measures across organization types. E.g., the measure of financial resources we have for nonprofits is "assets," and that measure has a 'middling' distribution compared to the measures we have for other organization types. Note: this graph is probably the best evidence that our financial measures /aren't/ very comparable
+
+
+```{r, fig.cap="", eval =FALSE}
+knitr::include_graphics(
+"figs/appendix-jw/[appendix]_log_kdeplot_of_organization-based_commenter_resources_by_regulatory_venue.png")
+```
+
+Shows the distribution (on a log scale) of the distribution of financial resources of commenters by the agency in which they most frequently comment. Shows that the distribution is broadly pretty similar across agencies, though the FRB and CFPB have more poorly-resourced commenters and the CFTC has more abundantly-resourced commenters.
+
+
+```{r, eval =FALSE}
+read.csv("figs/appendix-jw/[appendix]_statistical_tests_for_difference_between_matches_w_and_wo_financial_data.txt") %>% knitr::kable()
+```
+
+
+Provides various statistical tests of the similarity of the distribution of comments and # rules commented on for organization matches to our comment database that do and don't have valid financial data available. The first test (rule agnostic K.S.) suggests that by the K.S. test, we CAN'T reject the null that the distribution of # comments submitted does not differ between matched organizations that do and don't have valid financial data. The second test (rule agnostic Mann Whitney U test) suggests that by the Mann Whitney U test, we CAN reject the null hypothesis that the distribution of the # comments submitted does not differ between matched organizations that do and don't have valid financial data. The third test (rule agnostic t-test) shows that WE CAN'T reject the null hypothesis that the average number of comments submitted by matched organizations with and without valid financial data is the same. The fourth through sixth tests repeat the first through third but test the distribution of the number of rules commented on rather than simply the number of comments submitted. The results are broadly similar, with the exception of the t-test, where the null hypothesis is rejected.

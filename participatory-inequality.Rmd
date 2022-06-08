@@ -1,102 +1,55 @@
 ---
 title: |
-  Inequality in Administrative Democracy: Large-Sample Evidence from American Financial Regulation 
-#subtitle: \textbf{Preliminary - please do not cite without permission}
+  Inequality in Administrative Democracy: Methods and Evidence from Financial Rulemaking 
 anonymous: false
 author:
   - name: Daniel P. Carpenter
     thanks: Authors are listed alphabetically, and listing does not imply significance of contribution. We thank Larry Bartels, Christine Desan, Sanford Gordon, Howell Jackson, David Moss, and Eric Talley for their conversations and comments. We acknowledge the Russell Sage Foundation, the Washington Center for Equitable Growth, and the Radcliffe Institute for Advanced Study for research support. Please do not cite without permission.
     department: Department of Government and Radcliffe Institute
     affiliation: Harvard University
-    #location: Cambridge, MA
   - name: Angelo Dagonel
     department: Department of Government
     affiliation: Harvard University
-    #location: Cambridge, MA
-    #email: dagonel@g.harvard.edu
   - name: Devin Judge-Lord
     department: Department of Government
     affiliation: Harvard University
-    #location: Cambridge, MA
-    #email: devinjudgelord@fas.harvard.edu
   - name: Christopher T. Kenny
     department: Department of Government
     affiliation: Harvard University
-    #location: Cambridge, MA
-    #email: christopherkenny@fas.harvard.edu
   - name: Brian Libgober
     thanks: "Corresponding author: blibgober@ucsd.edu."
     department: School of Global Policy and Strategy
     affiliation: University of California, San Diego
-    #location: San Diego, CA
-    #email: blibgober@ucsd.edu
   - name: Steven Rashin
     department: McCombs School of Business
     affiliation: University of Texas, Austin 
-    #location: Austin, TX
-    #email: steven.rashin@utexas.edu
   - name: Jacob Waggoner
     department: Government and Social Policy
     affiliation: Harvard University
-    #location: Cambridge, MA
-    #email: jwaggoner@g.harvard.edu
   - name: Susan Webb Yackee
     department: La Follette School of Public Affairs
     affiliation: University of Wisconsin, Madison
-    #location: Madison, Wisconson
 warning: "Preliminary - Do Not Cite Without Permission"
 abstract: |
   Studies in inequality in American democracy typically focus upon the legislative process, largely sidestepping administrative policymaking, where rules have the effect of law and where vast amounts of money and mobilization are involved. Drawing upon an original database of over 300,000 comments submitted to U.S. agencies under the Dodd-Frank Act, we document several patterns: (a) commenting is disproportionately concentrated among wealthier nonprofits but not wealthier for-profits, (b) wealthier organizations generally advance more sophisticated comments (though the disparities emerge differently for nonprofits and for-profits), and (c) comment influence is increasing in the wealth of the commenting organization. While finance is but one case study, its policies affect tens of millions of Americans and trillions of their assets. The results suggest that inequality in the legislative process is reinforced, if not magnified, in administrative government. 
 keywords: "Inequality, Bureaucratic Policymaking, Interest groups, Lobbying, Rulemaking, Financial Regulation"
+spacing: doublespacing
 bibliography: '`r here::here("assets/finreg.bib")`'
 biblio-style: '`r here::here("assets/apsr.bst")`'
 biblio-title: "Refrences"
 link-citations: yes
-citecolor: "black"
+citecolor: black
 urlcolor: black
-#natbib: true
-#biblatex: true
-#biblio-title: "References"
-# output: 
-#   rticles::arxiv_article:
-#     keep_tex: true
 output_file: "docs/paticipatory-inequality.pdf"
 output: 
   pdf_document:
-    #latex_engine: xelatex
     keep_tex: true
     template: assets/article-template.tex 
-    #citation_package: biblatex
-spacing: doublespacing
 ---
 
 
-```{r libraries,echo=F,message=F,warning=F}
-## Sets defaults for R chunks
-knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
-                      cache = TRUE,
-                      #cache = TRUE,
-                      warning = FALSE,
-                      message = FALSE,
-                      fig.show="hold",
-                      fig.pos= "htbp",
-                      fig.path = "figs/",
-                      fig.align='center',
-                      fig.cap = '   ',
-                      fig.retina = 6,
-                      fig.height = 3,
-                      fig.width = 7,
-                      out.width = "100%",
-                      out.extra = "")
-
-library(tidyverse)
-library(lubridate)
-library(ggthemes)
-library(cowplot)
-library(latex2exp)
-theme_set(theme_tufte())
-theme_update(plot.title = element_text(hjust=0.5,size=12))
-
+```{r, echo=F, message=F, warning=F}
+source("code/setup.R")
 ```
 
 
@@ -104,14 +57,10 @@ theme_update(plot.title = element_text(hjust=0.5,size=12))
 
 Studies of political inequality have revealed profound and durable patterns of disproportionate influence of wealthier citizens, which @Gilens2012 calls the influence of affluence. Critical work in American politics by @Bartels2008, @Baumgartner2009, @Hacker2010, @Gilens2012, @Skocpol2004, and @Schlozman2012, among others, documents ties between economic and political inequality. Relatedly, @Piketty2014 and others in economics and the social sciences have demonstrated rising capital-based wealth inequality over the twentieth century, especially in the United States [e.g., @Saez2020]. 
 
-<!-- These studies convey important lessons about inequality and policymaking, especially in the legislative realm of the U.S. Congress. -->
-
 In contrast to the wealth of literature on inequality in lawmaking, however, research on inequality in administrative democracy is sparse, especially when one considers the bureaucracy’s most powerful policy tool: rulemaking [but see, e.g., @Potter2019; @Kerwin2018; @Haeder2015,@YackeeJOP2006]. Research suggests that firms spend hundreds of millions lobbying after a bill has passed, both in the legislature and in the agencies entrusted to implement the legislation [@You2017; @Libgober2020]. Legislators who receive more Corporate Political Action Committee money from companies are much more likely to lobby federal agencies on behalf of those companies [@Powell2022].
 These rules are meaningful to the public, as well as to the courts. Through the writing of rules, agencies convert congressional intent into enforci policies with real human and economic effects.  Given the scale and importance of bureaucratic policymaking and the large volume of data on business and interest group participation, rulemaking presents opportunities to study inequalities in policy influence [@Carpenter2020].
 
 *When policymaking occurs in the administrative realm, do inequalities in the legislative process persist or morph? Are they magnified or reduced?* In this expansive study of financial rulemaking, we draw upon a database of over 300,000 comments submitted to U.S. agencies tasked with implementing the Dodd-Frank Wall Street Reform and Consumer Protection Act of 2010 (hereafter Dodd-Frank). Our data cover over eight hundred regulatory actions^[We define a regulatory action as the publication of a proposed or final rule by one agency. For accounting purposes, we consider a joint rule issued by the SEC and the Federal Reserve as two regulatory actions.] such as proposed and final rules on 239 discrete rulemakings. The Dodd-Frank Act has the advantage of spurring historically abundant and significant rulemaking activity and, correspondingly, significant mobilization of interests to shape those rules. Beyond its provision of granular data, however, financial policymaking offers another reason for studying inequality - finance is perhaps an unparalleled site of interaction between economic inequality and unequal democracy. 
-
-<!-- Financial policymaking concerns core issues of capital allocation, regulation of savings institutions, the institutions where the richest Americans invest and stow much of their wealth, and the instruments whereby middle- and lower-class Americans attempt to save, invest, and protect what they have.  -->
 
 As an indicator of the stakes of these developments, consider how media reporting in 2017 illustrated the political priorities of those at the very upper end of the income and power scale in the United States. During that year, major newspapers documented high-level gatherings between CEOs and officials at the Trump White House. For our purposes, what's interesting about these meetings is that the existing inequality literature would likely have predicted America’s wealthiest business leaders and allocators of capital would direct their lobbying at Congress or at the president in the hope of indirectly influencing congressional lawmaking. As two former financial regulators worried aloud in this case, however, the business leaders and their lobbyists were, instead, targeting the Dodd-Frank rules being written by federal agencies. 
 
@@ -119,8 +68,8 @@ The idea that inequality has affected financial policymaking is far from new. Re
 
 We provide an answer to these questions by drawing on an original database of financial rules and comments between 2010 and 2018. Each rule implemented a component of Dodd-Frank. While our data focus squarely on financial regulation—and the interests involved with its promulgation, this research has considerable breadth. For instance, it spans the rulemaking of **INSERT NUMBER HERE** federal agencies, including independent agencies such as the U.S. Securities and Exchange Commission (SEC) and Consumer Financial Protection Bureau (CFPB), and executive branch units such as the Department of the Treasury. Overall, the data represent the most comprehensive effort to date to understand the role of inequality during financial rulemaking.
 
-<!-- Measuring the wealth of participants in rulemaking is difficult, in part because the kinds of surveys available to @Bartels2008 and @Gilens2014 are not available for participants in rulemaking data.   -->
-We note that this study has several limitiations.  First, our analyses of wealth are limited to organizations, leaving aside many individual commenters.  We find that wealthier organizations are more likely to comment (a pattern restricted to the nonprofit sphere); that conditioned on commenting, wealthier organizations offer more sophisticated comments (as detected in language); and that wealthier organizations’ comments appear to move rules more (as measured by novel text reuse algorithms [see, @Rashin2020]).
+Measuring the wealth of participants in rulemaking is difficult, in part because the kinds of surveys available to @Bartels2008 and @Gilens2014 are not available for participants in rulemaking data.  
+This study has several limitiations.  First, our analyses of wealth are limited to organizations, leaving aside many individual commenters.  We find that wealthier organizations are more likely to comment (a pattern restricted to the nonprofit sphere); that conditioned on commenting, wealthier organizations offer more sophisticated comments (as detected in language); and that wealthier organizations’ comments appear to move rules more (as measured by novel text reuse algorithms [see, @Rashin2020]).
 
 As with the inequality literature pioneered by Bartels and Gilens and others, we are not in a position to comment on the substantive merit or welfare effects of these patterns. On some issues, legislators and administrators may listen to wealthier Americans and organizations because their wealth is correlated with the expertise or value of their information [@McCarty2017; @LibgoberJOP2020]. Yet, in other cases, the disparities we document may reflect patterns where unequal levels of access to power lead to policies that favor wealthier constituents, organizations, and businesses. Our findings should be combined with observations drawn from the legislative policymaking process to provide a fuller—and more accurate picture—of how political inequality manifests across decision-making in America's key political institutions.  
 
@@ -162,8 +111,6 @@ In sum, the existing literature yields mixed results on the question of politica
 
 Overall, our theory leads us to anticipate that among both for-profit and nonprofit organizations, wealthier entities will comment more often, with greater sophistication and with greater influence. These intuitions yield several hypotheses:
 
-<!-- Our theory leads to expectations about variation within the population of organizations that comment on proposed policies.  -->
-
 **H1. Differential Participation** We theorize that larger and wealthier financial sector interests will participate in financial rulemaking more frequently than consumer protection, labor, public interest, and smaller financial groups. Differential levels of participation may be a result of legal and technical complexity of rulemaking processes, which create financial barriers to participation. This is important because unequal levels of participation could lead to unequal influence. Regardless of whether some organizations are more influential than others *when they participate*, differential commenting behavior alone could lead some organizations to be more influential than others, simply by showing up.
 Specific, testable assertions include: 
 
@@ -179,7 +126,8 @@ Specific, testable assertions include:
 
 ### Differential Sophistication and Mobilization of Expertise
 
-Theories about mechanisms of lobbying influence suggest that wealthier organizations are better able to deploy sophisticated legal arguments and technical information [@WagnerALR2011]. We thus expect wealthier entities will utilize greater expertise and sophistication in their comments. <!--Large financial firms and bank-holding companies will comment separately (and in addition) to trade associations and other nonprofits. <!-- when the stakes are larger and when rules have larger distributive effects. When they do so, their comments will differ from their trade associations’ comments in observable ways.--> Large financial firms will marshal legal and technical expertise disproportionately to write complex and sophisticated comments to rules in which they are interested. We expect them to be more highly sophisticated, reflecting greater legal expertise, and more technically supported. Large financial firms may also marshal different mixtures of lobbyists and legal experts in their comments, drawing upon ties to lobbying firms and to other financial institutions.
+Theories about mechanisms of lobbying influence suggest that wealthier organizations are better able to deploy sophisticated legal arguments and technical information [@WagnerALR2011]. We thus expect wealthier entities will utilize greater expertise and sophistication in their comments. 
+Large financial firms will marshal legal and technical expertise disproportionately to write complex and sophisticated comments to rules in which they are interested. We expect them to be more highly sophisticated, reflecting greater legal expertise, and more technically supported. Large financial firms may also marshal different mixtures of lobbyists and legal experts in their comments, drawing upon ties to lobbying firms and to other financial institutions.
 
 Our second hypothesis poses testable assertions about the strategies of commenting upon which different organizations rely: 
 
@@ -504,102 +452,6 @@ knitr::include_graphics("figs/compustat-count-1.png")
 knitr::include_graphics("figs/FDIC-count-select-1.png")
 ```
 
-## Data Sources
-
-Data for this project came from the following sources:
-
- - Nonprofit assets and revenue from 990 data from https://www.irs.gov/charities-non-profits/form-990-series-downloads
- 
- - FDIC assets (ASSET) and bank class (BKCLASS): https://banks.data.fdic.gov/docs/
-
-  - Credit unions Total Assets scraped from consolidated call report files scraped from https://www.ncua.gov/analysis/credit-union-corporate-call-report-data 
-
-  - Campaign donations (MeanContribAmount and MeanContribAmount) from https://www.opensecrets.org/
-
-  - Market capitalization (marketcap) from CRSP via WRDS: https://wrds-www.wharton.upenn.edu/pages/about/data-vendors/center-for-research-in-security-prices-crsp/
-  
-  - SEC’s CIK database Compustat: https://wrds-www.wharton.upenn.edu/pages/get-data/compustat-capital-iq-standard-poors/
-
-<!--
-THE APPENDIX DRAFT BELOW NEEDS TO BE PUT IN PLAIN LANGUAGE, BUT IT SHOULD KNIT IF YOU WANT TO SEE THE FIGURES. WE MAY NOT WANT ALL OF THEM, EVEN IN THE APPENDIX-->
-
-<!--
-
-```{r ridgeline_plot_of_numRulesCommentedOn_by_Quantiles_of_financialResources, fig.cap="", eval =FALSE}
-knitr::include_graphics(
-"figs/ridgeline_plot_of_numRulesCommentedOn_by_Quantiles_of_financialResources.png"
-)
-```
-
-This shows that as we look at organizations with more and more financial resources, the organizations tend to comment on more and more rules, though moderate-level wealth organizations (Q75-90) often comment on more rules than high-level wealth organizations (Q90-95), so this relationship isn't as clean as the one in ridgeline_plot_of_financialResources_by_Quantiles_of_numRulesCommentedOn.png until we get to the 'tip top' of the resource distribution. Note: I wouldn't be surprised if some of the messiness in this graph is coming from the fact that we may not have comparable measures of financial resources across organization types.
-
-```{r, fig.cap="", eval =FALSE}
-knitr::include_graphics(
-"figs/ridgeline_plot_of_financialResources_by_Quantiles_of_venueBreadth.png"
-)
-```
-
-This shows that as an organization participates in more and more regulatory agencies' notice and comment processes, it tends to be increasingly well-resourced. Note: The Q0-50 and Q50-75 rows are missing because many organizations (>75%) participate in only one agency's notice and comment process. Likewise, the Q90-95 row is missing because many organizations (>5%, the size of the Q90-95 bucket) participate in only two agencies' notice and comment processes.
-
-```{r, fig.cap="", eval =FALSE}
-knitr::include_graphics(
-"figs/ridgeline_plot_of_numRulesCommentedOn_by_Quantiles_of_venueBreadth.png"
-)
-```
-
-This shows that as an organization participates in more and more regulatory agencies' notice and comment processes, it tends to also submit comments on more and more rules. Two Notes: (1) this may in part be a mechanical effect since commenting in two agencies' processes may often entail commenting on at least two rules. (2) the Q0-50 and Q50-75 rows are missing because many organizations (>75%) only participate in only one agency's notice and comment process. Likewise, the Q90-95 row is missing because many organizations (>5%, the size of the Q90-95 bucket) participate in only two agencies' notice and comment processes.
-
-```{r, fig.cap="", eval =FALSE}
-knitr::include_graphics(
-"figs/ridgeline_plot_of_venueBreadth_by_Quantiles_of_financialResources.png"
-)
-```
-
-This shows that as we look at organizations with more and more financial resources, the organizations tend to participate in more agencies' notice and comment processes (the distribution gets 'flatter' moving up the graph). Note: the package that makes this plot is pretty black-boxy, so I don't have fine-grained enough control over the horizontal placement of the bars to make the "4" venues bars appear further to the right as they should.
-
-```{r, fig.cap="", eval =FALSE}
-knitr::include_graphics(
-"figs/ridgeline_plot_of_venueBreadth_by_Quantiles_of_numRulesCommentedOn.png"
-)
-```
-
-Shows that as we look at organizations who've commented on more and more rules, those organizations tend to also participate in more and more agencies' notice and comment process. Note: The Q0-50 quantile is missing because many organizations (>50%) only comment on 1 rule.
-
-
-# Appendix
-
-
-
-
-
-```{r, fig.cap="", eval =FALSE}
-knitr::include_graphics(
-"figs/appendix-jw/[appendix]_log_kdeplot_of_organization-based_commenter_resources_by_organization_type.png")
-```
-
-
-Plots the distributions (on a log scale) of our various financial measures across organization types. E.g., the measure of financial resources we have for nonprofits is "assets," and that measure has a 'middling' distribution compared to the measures we have for other organization types. Note: this graph is probably the best evidence that our financial measures /aren't/ very comparable
-
-
-```{r, fig.cap="", eval =FALSE}
-knitr::include_graphics(
-"figs/appendix-jw/[appendix]_log_kdeplot_of_organization-based_commenter_resources_by_regulatory_venue.png")
-```
-
-Shows the distribution (on a log scale) of the distribution of financial resources of commenters by the agency in which they most frequently comment. Shows that the distribution is broadly pretty similar across agencies, though the FRB and CFPB have more poorly-resourced commenters and the CFTC has more abundantly-resourced commenters.
-
-
-```{r, eval =FALSE}
-# read.csv("figs/appendix-jw/[appendix]_statistical_tests_for_difference_between_matches_w_and_wo_financial_data.txt") %>% knitr::kable()
-```
-
-
-Provides various statistical tests of the similarity of the distribution of comments and # rules commented on for organization matches to our comment database that do and don't have valid financial data available. The first test (rule agnostic K.S.) suggests that by the K.S. test, we CAN'T reject the null that the distribution of # comments submitted does not differ between matched organizations that do and don't have valid financial data. The second test (rule agnostic Mann Whitney U test) suggests that by the Mann Whitney U test, we CAN reject the null hypothesis that the distribution of the # comments submitted does not differ between matched organizations that do and don't have valid financial data. The third test (rule agnostic t-test) shows that WE CAN'T reject the null hypothesis that the average number of comments submitted by matched organizations with and without valid financial data is the same. The fourth through sixth tests repeat the first through third but test the distribution of the number of rules commented on rather than simply the number of comments submitted. The results are broadly similar, with the exception of the t-test, where the null hypothesis is rejected.
-
-
-
-
--->
 
 
 #   Refrences {-}
