@@ -22,7 +22,7 @@ output:
 
 
 ```{r options, include=FALSE}
-# rmarkdown::render("docs/participation.Rmd")
+# rmarkdown::render("docs/efficacy.Rmd")
 
 ## Sets defaults for R chunks
 knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
@@ -36,9 +36,10 @@ knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       fig.align='center',
                       fig.cap = '   ',
                       fig.retina = 1, #6, #FIXME for publication quality images
-                      fig.height = 3,
-                      fig.width = 7,
-                      out.width = "100%",
+                      fig.height=2.5, 
+                      fig.width=3, 
+                      out.width="50%",
+                      # out.width = "100%",
                       out.extra = "")
 
 library("xaringan")
@@ -65,13 +66,18 @@ modelsummary <- function(...) modelsummary::modelsummary(...,
                                                          stars = T, 
                                                          add_rows = rows,
                                                          coef_rename = cm,
-                                                         coef_omit = "(Intercept)") %>% 
+                                                         coef_omit = "(Intercept)"#, gof_map = gm
+                                                         ) %>% 
   row_spec(row = 1, bold = T)
 
 # coeficient plot defaults
-modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)") + 
-  geom_vline(xintercept = 0, linetype = 2, alpha = .5) + 
-  aes(shape = model)
+modelplot <- function(...) modelsummary::modelplot(..., 
+                                                   coef_omit = "(Intercept)",
+                                                   coef_rename = cm) + 
+  geom_vline(xintercept = 0, 
+             linetype = 2, 
+             alpha = .5) + 
+  aes(shape = model) 
 
 style_mono_light(base_color = "#3b444b",
           link_color = "#B7E4CF",
@@ -128,11 +134,11 @@ The root for this script is `finreg`. Most of the data are in `finreg/data` (som
 
 ## Sophistication 
 
-- `Data/Dictionary_Terms.RData`
+File: `Data/Dictionary_Terms.RData` contains 6 objects (3 sets of measures for both comments and attachments)
 
 1. Dictionary counts of technical terms used in comments and attachments
 
-`technical_terms_comments` and `technical_terms_attachment`
+Objects: `technical_terms_comments` and `technical_terms_attachment`
 
 Variables:
 
@@ -148,7 +154,7 @@ Variables:
 
 - Counts of Tables and Figures. Looks at the maximum number of tables, with large jumps excluded. For example, a document with table 1, 2, 3 and 99 would treat 99 as an error and say there were 3 tables. This mostly comes from bad OCRing or documents that have footnotes in between the word “table” and the table number.
 
-`Tables_and_Figures_attachments` and `Tables_and_Figures_comments`
+Objects: `Tables_and_Figures_attachments` and `Tables_and_Figures_comments`
 
 Variables:
 
@@ -162,7 +168,7 @@ Variables:
 
 A file that has counts of citations to US code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register
 
-`bluebok_comments` and `bluebook_attachments`
+Objects: `bluebok_comments` and `bluebook_attachments`
 
 Variables:
 
@@ -175,16 +181,6 @@ Variables:
 - `Federal_Register_Total` - counts of citations to federal register
 - `Total_Legal_Citations` - sum of above except comment dummy
 
-
-
-```{r asset-data}
-load(here::here("data", "commenter_assets.Rdata"))
-
-d <- commenter_assets
-
-#FIXME MOVE TO TOP 
-d$comment_url %<>% str_replace("document\\?D=", "comment/")
-```
 
 ```{r sophistication}
 # sophistication 
@@ -203,6 +199,164 @@ bluebook_comments %<>%
 bluebook_attachments %<>% 
   distinct()  
 ```
+
+
+```{r sophistication-join}
+# summarize and merge term counts from comment text boxes and attachments
+# max <- . %>% base::max(na.rm = TRUE)
+
+
+# sum by comment url 
+#FIXME, why are these not unique! 
+bluebook_c <- bluebook_comments %>% 
+  drop_na(Total_Legal_Citations) %>% 
+  group_by(comment_url) %>% 
+  dplyr::select(-comment) %>% 
+  summarise_all(base::max)
+
+# whereas these should not be uniqe to comment url 
+bluebook_a <- bluebook_attachments %>% 
+  drop_na(Total_Legal_Citations) %>% 
+  group_by(comment_url) %>% 
+  dplyr::select(-comment) %>% 
+  summarise_all(base::max)
+
+# join both and max again 
+bluebook <- full_join(bluebook_a,
+                      bluebook_c) %>% 
+  group_by(comment_url) %>% 
+  summarise_all(base::max)
+
+# # check for unique comment_url
+# bluebook %>% count(comment_url, sort = T)
+
+# sum by comment url 
+#FIXME, why are these not unique!? 
+technical_terms_c <- technical_terms_comments %>% 
+  drop_na(dictionary_terms) %>% 
+  group_by(comment_url) %>% 
+  dplyr::select(-comment) %>% 
+  summarise_all(base::max)
+
+# whereas these should not be uniqe to comment url 
+technical_terms_a <- technical_terms_attachments %>% 
+  drop_na(dictionary_terms) %>% 
+  group_by(comment_url) %>% 
+  dplyr::select(-comment) %>% 
+  summarise_all(base::max)
+
+# join both and sum again 
+technical_terms <- full_join(technical_terms_a,
+                             technical_terms_c) %>% 
+  group_by(comment_url) %>% 
+  summarise_all(base::max)
+
+# # check for unique comment_url
+# technical_terms %>% count(comment_url, sort = T)
+
+full_join(technical_terms, bluebook) %>% kablebox()
+
+# check that they are the same 
+# full_join(bluebook, technical_terms)
+```
+
+---
+
+## Assets 
+
+- see https://judgelord.github.io/finreg/participation
+
+```{r asset-data}
+load(here::here("data", "commenter_assets.Rdata"))
+
+d <- commenter_assets
+
+#FIXME MOVE TO TOP 
+d$comment_url %<>% str_replace("document\\?D=", "comment/")
+
+
+d %>% arrange(assets) %>% 
+  dplyr::select(org_name, assets, revenue, comment_url) %>% kablebox()
+
+d %>% arrange(marketcap2) %>% 
+  dplyr::select(org_name, marketcap2, comment_url) %>% kablebox()
+
+d %>% arrange(-MeanContribAmount) %>% 
+  dplyr::select(org_name, MeanContribAmount, comment_url) %>% kablebox()
+```
+
+---
+
+## Efficacy
+
+File: `Data/attachment_efficacy_w_docket.csv.`
+
+Variables: 
+
+- `efficacy` = `cumulative_sequence_length_over_10`
+
+Other efficacy measures that we are not using: 
+
+```{r efficacy}
+# efficacy
+efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.csv")  %>% str_remove("finreg")  )
+
+names(efficacy_raw) %>% kable()
+# inspect 
+# efficacy_raw %>% distinct() %>% dplyr::select(attachment_url, fr_document_id_final) %>% add_count(attachment_url) %>% arrange(-n) %>%   kablebox()
+
+# # look for non-numeric values other than headers
+# efficacy_raw %>% 
+#   filter(!is.na(cumulative_sequence_length_over_10),
+#          comment_url != "comment_url") %>% 
+#   mutate(efficacy = cumulative_sequence_length_over_10 %>% as.numeric() ) %>% 
+#   filter(is.na(efficacy)) %>% 
+#   dplyr::select(comment_url, cumulative_sequence_length_over_10)
+
+# select needed vars. url is comment url (even for attachments)
+efficacy <- efficacy_raw %>% 
+  # make comment url 
+  mutate(comment_url2 = attachment_url %>% 
+           str_replace("https://downloads.regulations.gov/", 
+                       "https://www.regulations.gov/comment/" ) %>% 
+           str_remove("/attachment_.*"),
+         comment_url = coalesce(comment_url, comment_url2),
+         efficacy = cumulative_sequence_length_over_10 %>% as.numeric()
+         ) %>% 
+  dplyr::select(comment_url,
+         efficacy) %>% 
+  distinct() 
+
+# check for OCC comments (missing as of May 2022)
+# efficacy %>% filter(str_detect(comment_url, "OCC"))
+
+# check for CFPB comments (not missing, but failing to merge with d on URL?)
+# efficacy %>% filter(str_detect(comment_url, "CFPB"))
+
+
+
+efficacy %<>% drop_na(efficacy) 
+
+
+# take max
+efficacy %<>% 
+  group_by(comment_url) %>% 
+  summarise_all(base::max)
+
+efficacy %>% arrange(-efficacy) %>% kablebox()
+
+d$comment_url %in% efficacy$comment_url %>% sum
+
+efficacy$comment_url %in% d$comment_url %>% sum
+
+#efficacy %>% filter(str_detect(comment_url, "CFPB")) %>%  kablebox()
+
+d  %>% left_join(efficacy) %>% drop_na(efficacy) %>% count(Agency)
+
+d  %<>% left_join(efficacy) 
+```
+
+
 
 ```{r testing, eval = FALSE}
 # check number of NAs 
@@ -225,74 +379,24 @@ technical_terms_comments %>% count(comment_url, sort = T)
 technical_terms_attachments %>% count(comment_url, sort = T)
 ```
 
+---
 
-```{r sophistication-join}
-# summarize and merge term counts from comment text boxes and attachments
-max <- . %>% base::max(na.rm = TRUE)
+### Join sophistication and asset data
 
-# sum by comment url 
-#FIXME, why are these not unique! 
-bluebook_c <- bluebook_comments %>% 
-  group_by(comment_url) %>% 
-  select(-comment) %>% 
-  summarise_all(max)
-
-# whereas these should not be uniqe to comment url 
-bluebook_a <- bluebook_attachments %>% 
-  group_by(comment_url) %>% 
-  select(-comment) %>% 
-  summarise_all(max)
-
-# join both and max again 
-bluebook <- full_join(bluebook_a,
-                      bluebook_c) %>% 
-  group_by(comment_url) %>% 
-  summarise_all(max)
-
-# # check for unique comment_url
-# bluebook %>% count(comment_url, sort = T)
-
-# sum by comment url 
-#FIXME, why are these not unique!? 
-technical_terms_c <- technical_terms_comments %>% 
-  group_by(comment_url) %>% 
-  select(-comment) %>% 
-  summarise_all(max)
-
-# whereas these should not be uniqe to comment url 
-technical_terms_a <- technical_terms_attachments %>% 
-  group_by(comment_url) %>% 
-  select(-comment) %>% 
-  summarise_all(max)
-
-# join both and sum again 
-technical_terms <- full_join(technical_terms_a,
-                             technical_terms_c) %>% 
-  group_by(comment_url) %>% 
-  summarise_all(max)
-
-# # check for unique comment_url
-# technical_terms %>% count(comment_url, sort = T)
-
-full_join(technical_terms, bluebook) %>% kablebox()
-
-# check that they are the same 
-# full_join(bluebook, technical_terms)
-
-
+```{r sophistication-assets-join}
 # Join 
 d %<>% 
-  left_join(bluebook%>% select(comment_url, Total_Legal_Citations)) %>% 
-  left_join(technical_terms %>% select(comment_url, dictionary_terms)) 
+  left_join(bluebook %>% dplyr::select(comment_url, Total_Legal_Citations)) %>% 
+  left_join(technical_terms %>% dplyr::select(comment_url, dictionary_terms)) 
 
 d %>% 
-  select(comment_url, org_name, Total_Legal_Citations, dictionary_terms) %>% 
+  dplyr::select(comment_url, org_name, Total_Legal_Citations, dictionary_terms) %>% 
   filter(!is.na(dictionary_terms)) %>% 
   kablebox()
 
 # write out missing comment urls
 d %>% 
-  filter(is.na(dictionary_terms)) %>% select(comment_url) %>% write_csv(file = "dictionary_terms_missing.csv")
+  filter(is.na(dictionary_terms)) %>% dplyr::select(comment_url) %>% write_csv(file = "dictionary_terms_missing.csv")
 
 # FIXME Missing as of May 2022
 # bluebook %>% filter(str_detect(comment_url, "CFPB-2019-0021-0406"))
@@ -301,7 +405,11 @@ d %>%
 
 ---
 
-### Number of comments per agency measured
+<!-- DO NOT MODIFY MAIN DATA (d) BELOW---> 
+
+---
+
+### Number of comments per agency
 
 Technical terms measured for `r d %>% filter(comment_url %in% technical_terms$comment_url) %>% nrow()` of `r nrow(d)` comments.
 
@@ -319,67 +427,105 @@ d %>%
 
 ---
 
+# Plots
 
-### Assets x bluebook terms
+## Sophistication x assets
+
+### Legal citations x assets
 ```{r assets-blue, fig.height=2, fig.width=3, out.width="50%"}
 # bluebook %>% count(is.na(Total_Legal_Citations))
 
 # 400 from FDIC data, 400 from other data
 b <- d %>% filter(!is.na(dictionary_terms))
 
-b %>% select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  
-  filter(!is.na(org_name)) %>%
+b %>% dplyr::select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  
+  drop_na(org_name, org_resources) %>%
   kablebox()
 
 # FDIC ASSTS 
-b %>% 
+p <- b %>% 
   ggplot() +
   aes(x = org_resources, # %>% log(), 
       y = Total_Legal_Citations) + 
-  geom_point() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  )
+  ) + 
+  labs(x = "Resources",
+       y = "Legal Citations")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
 
 # nonprofits
-b %>% 
+p <- b %>% 
   ggplot() +
   aes(x = assets, 
       y = Total_Legal_Citations) + 
-  geom_point() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  )
+  )+ 
+  labs(x = "Assets",
+       y = "Legal Citations")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
 
 # contribution
-b %>% 
+p <- b %>% 
   ggplot() +
   aes(x = MeanContribAmount, 
       y = Total_Legal_Citations) + 
-  geom_point() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  )
+  ) + 
+  labs(x = "Average PAC Contribution",
+       y = "Legal Citations")
 
-b %>% 
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
+
+
+p <- b %>% 
   ggplot() +
   aes(x = marketcap2, 
       y = Total_Legal_Citations) + 
-  geom_jitter() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  ) 
+  ) + 
+  labs(x = "Market Capitalization",
+       y = "Legal Citations")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
 
 # b %>% count(comment_agency, is.na( assets))
 
 b %>% filter(Total_Legal_Citations>10,
-             !is.na(org_name)) %>% select(org_name,Total_Legal_Citations, comment_url, everything()) %>% arrange(-Total_Legal_Citations) %>% kablebox()
+             !is.na(org_name)) %>% dplyr::select(org_name,Total_Legal_Citations, comment_url, everything()) %>% arrange(-Total_Legal_Citations) %>% kablebox()
 ```
 
-### Assets x technical terms
+### Technical terms x assets
 
 ```{r assets-tech, fig.height=2, fig.width=3, out.width="50%"}
 t <- d %>% drop_na(dictionary_terms)
 
 
 # FDIC ASSTS 
-t %>% 
+p <- t %>% 
   filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
   ggplot() +
   aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
@@ -387,111 +533,88 @@ t %>%
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  scale_y_log10() +
-  scale_x_log10() + 
   labs(x = "Assets",
        y = "Legal and Technial Terms", 
        title = "FDIC-Insured Banks")
 
+p 
+
+p + 
+  scale_y_log10() + 
+  scale_x_log10()
+
 t %>% 
   filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`), dictionary_terms == 0) %>%
-  select(org_name, everything() ) %>% 
+  dplyr::select(org_name, everything() ) %>% 
   kablebox()
 
 # nonprofits
-t %>% 
+p <- t %>% 
   filter(!is.na(assets)) %>% 
   ggplot() +
   aes(x = assets, 
       y = dictionary_terms) + 
-  geom_point() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  )
+  ) +
+  labs(x = "Assets",
+       y = "Technical Terms",
+       title = "Nonprofits")
+
+p 
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
 
 # contribution
-t %>% 
+p <- t %>% 
   filter(!is.na(MeanContribAmount)) %>%
   ggplot() +
   aes(x = MeanContribAmount, 
       y = dictionary_terms) + 
-  geom_point() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  )
+  ) +
+  labs(x = "Average PAC Contribution",
+       y = "Technical Terms",
+       title = "Campaign Donors")
 
-t %>% 
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
+
+p <- t %>% 
   filter(!is.na(marketcap2)) %>% 
   ggplot() +
   aes(x = marketcap2, 
       y = dictionary_terms) + 
-  geom_jitter() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  ) 
+  ) +
+  labs(x = "Market Capitalization",
+       y = "Technical Terms in Comment",
+       title = "Publically-Traded Companies")
+
+p 
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
 ```
 
+## Efficacy x assets
 
-## Efficacy 
-
-- `Data/attachment_efficacy_w_docket.csv.`
-
-
-```{r efficacy}
-# efficacy
-efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.csv")  %>% str_remove("finreg")  )
-
-# inspect 
-# efficacy_raw %>% distinct() %>% select(attachment_url, fr_document_id_final) %>% add_count(attachment_url) %>% arrange(-n) %>%   kablebox()
-
-# select needed vars. url is comment url (even for attachments)
-efficacy <- efficacy_raw %>% 
-  # make comment url 
-  mutate(comment_url2 = attachment_url %>% 
-           str_replace("https://downloads.regulations.gov/", 
-                       "https://www.regulations.gov/comment/" ) %>% 
-           str_remove("/attachment_.*"),
-         comment_url = coalesce(comment_url, comment_url2)
-         ) %>% 
-  select(comment_url,
-         efficacy = cumulative_sequence_length_over_10) %>% 
-  distinct() 
-
-# check for OCC comments (missing as of May 2022)
-# efficacy %>% filter(str_detect(comment_url, "OCC"))
-
-# check for CFPB comments (not missing, but failing to merge with d on URL?)
-# efficacy %>% filter(str_detect(comment_url, "CFPB"))
-
-
-
-max <- . %>% base::max(na.rm = TRUE)
-
-efficacy %>% drop_na(efficacy) %>% nrow()
-
-# take max
-efficacy %<>% 
-  group_by(comment_url) %>% 
-  summarise_all(max)
-
-d$comment_url %in% efficacy$comment_url %>% sum
-
-efficacy$comment_url %in% d$comment_url %>% sum
-
-efficacy %>% filter(str_detect(comment_url, "CFPB")) %>%  kablebox()
-
-d  %>% left_join(efficacy) %>% drop_na(efficacy) %>% count(Agency)
-
-d  %<>% left_join(efficacy) 
-
-d$efficacy %<>% as.numeric()
-
-# d %>% drop_na(efficacy)
-```
 
 ```{r assets-efficacy}
 e <- d %>% drop_na(efficacy)
 
 
 # FDIC ASSTS 
-e %>% 
+p <- e %>% 
   filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
   ggplot() +
   aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
@@ -499,54 +622,137 @@ e %>%
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  scale_y_log10() +
-  scale_x_log10() + 
   labs(x = "Assets",
-       y = "Legal and Technial Terms", 
+       y = "Number of Words in Comment\nAdded to Final Rule", 
        title = "FDIC-Insured Banks")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
 
 e %>% 
   filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`), efficacy == 0) %>%
-  select(org_name, everything() ) %>% 
+  dplyr::select(org_name, everything() ) %>% 
   kablebox()
 
 # nonprofits
-e %>% 
+p <- e %>% 
   filter(!is.na(assets)) %>% 
   ggplot() +
   aes(x = assets, 
       y = efficacy) + 
-  geom_point() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  )
+  ) + 
+  labs(x = "Assets",
+       y = "Number of Words in Comment\nAdded to Final Rule", 
+       title = "Nonprofits")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
 
 # contribution
-e %>% 
+p <- e %>% 
   filter(!is.na(MeanContribAmount)) %>%
   ggplot() +
   aes(x = MeanContribAmount, 
       y = efficacy) + 
-  geom_point() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  )
+  ) + 
+  labs(x = "Average PAC Contribution",
+       y = "Words in Comment\nAdded to Final Rule",
+       title = "Campaign Donors")
 
-e %>% 
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
+# market cap
+p <- e %>% 
   filter(!is.na(marketcap2)) %>% 
   ggplot() +
   aes(x = marketcap2, 
       y = efficacy) + 
-  geom_jitter() + 
+  geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
-  ) 
+  ) +
+  labs(x = "Market Capitalization",
+       y = "Number of Words in Comment\nAdded to Final Rule",
+       title = "Publically-traded Companies")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
 ```
+
+## Efficacy x sophistication
+
+```{r efficacy-bluebook}
+p <- e %>% 
+  ggplot() +
+  aes(x = Total_Legal_Citations, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  labs(x = "Legal Citations",
+       y = "Number of Words in Comment\nAdded to Final Rule") 
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+```
+  
+```{r efficacy-terms}
+p <- e %>% 
+  #filter(!is.na(marketcap2)) %>% 
+  ggplot() +
+  aes(x = dictionary_terms, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  labs(x = "Technical Terms",
+       y = "Number of Words in Comment\nAdded to Final Rule") 
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+```
+
+---
 
 # Regressions
 
-```{r coef_mapping}
+```{r coef_mapping, cache=FALSE}
+# change knitr defaults 
+knitr::opts_chunk$set(fig.show="show",
+                      fig.height=1, 
+                      fig.width=5, 
+                      out.width = "80%")
+
 # rename coeficients for tables and plots 
 cm = c("ASSET" = "Assets",
        "ASSETS" = "Assets (Hundreds of Millions)",
        "Assets" = "Assets (Billions)",
+       "assets" = "Assets",
+       "marketcap2" = "Market Capitalization",
        "Class SM" = "State Bank",
        "Class SB" = "Savings Bank",
        "Class SA" = "Savings Association",
@@ -554,7 +760,13 @@ cm = c("ASSET" = "Assets",
        "ASSETS:Class SM" = "Assets x State Bank",
        "ASSETS:Class SB" = "Assets x Savings Bank",
        "ASSETS:Class SA" = "Assets x Savings Association",
-       "ASSETS:Class NM" = "Assets x Commercial Bank")
+       "ASSETS:Class NM" = "Assets x Commercial Bank",
+       "dictionary_terms" = "Technical Terms",
+       "Total_Legal_Citations" = "Legal Citations")
+
+gm = list("Num.Obs." = "Number of Comments",
+       "R2" = "R2",
+       "AIC" = "AIC")
 ```
 
 
@@ -563,39 +775,47 @@ cm = c("ASSET" = "Assets",
 > NOTE: I'm using OLS for now but will switch to Poisson or Negative Binomial. 
 
 ### Bluebook
+
+```{r}
+b %>% drop_na(assets, Total_Legal_Citations) %>% 
+  arrange(-Total_Legal_Citations) %>% 
+  dplyr::select(assets, Total_Legal_Citations, comment_url) %>% 
+  kablebox()
+
+```
+
+
 These models have the prefix `mb_`. The dependent variable is a count of technical terms per comment.
 
 
-```{r mb, eval=FALSE}
+```{r mb}
 rows <- tibble(
   term = c("Dependent Variable"),
   `1` = "Sophistication",
-  `2` = "Sophistication"
+  `2` = "Sophistication",
+  `3` = "Sophistication"
 )
 
-# broken out by org type 
-b %>% 
-  ggplot() + 
-  aes(x = assets, y = Total_Legal_Citations) + 
-  geom_point()
+attr(rows, 'position') <- c(0)
+
 
 mb_assets <- lm(Total_Legal_Citations ~ assets,  data = b  %>% mutate(assets = assets/10000000000))
 
 mb_opensecrets <- glm(Total_Legal_Citations ~ MeanContribAmount,
            data = b %>% mutate(MeanContribAmount = MeanContribAmount/10000))
 
-mb_compustat <- glm(Total_Legal_Citations ~ marketcap2,
+mb_marketcap <- glm(Total_Legal_Citations ~ marketcap2,
            data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
 
-models <- list(mb_assets, mb_compustat)
+models <- list(mb_assets, mb_opensecrets, mb_marketcap)
 
 modelsummary(models)
 
 modelplot(mb_opensecrets) + 
-  labs(x = "Additional Bluebook Terms per Ten Thousand Dollars")
+  labs(x = "Additional Legal Citations per Ten Thousand Dollars")
 
-modelplot(mb_compustat) + 
-  labs(x = "Additional Bluebook Terms per Ten Billion Dollars")
+modelplot(mb_marketcap) + 
+  labs(x = "Additional Legal Citations per Ten Billion Dollars")
 ```
 
 ### Technical Terms
@@ -603,7 +823,11 @@ modelplot(mb_compustat) +
 These models have the prefix `mt_`. The dependent variable is a count of technical terms per comment.
 
 ```{r mt}
-# t %<>% select(-org)
+t %>% drop_na(assets, dictionary_terms) %>% 
+  arrange(-dictionary_terms) %>% 
+  dplyr::select(assets, dictionary_terms, comment_url) %>% 
+  kablebox()
+
 # broken out by org type 
 
 mt_assets <- lm(dictionary_terms ~ assets,
@@ -612,21 +836,19 @@ mt_assets <- lm(dictionary_terms ~ assets,
 mt_opensecrets <- glm(dictionary_terms ~ MeanContribAmount,
            data = t %>% mutate(MeanContribAmount = MeanContribAmount/10000))
 
-mt_compustat <- glm(dictionary_terms ~ marketcap2,
+mt_marketcap <- glm(dictionary_terms ~ marketcap2,
            data = t  %>% mutate(marketcap2 = marketcap2/10000000000))
 
-models <- list(mt_assets, mt_compustat)
+models <- list(mt_assets, mt_marketcap)
 
 # FIXME 
-#modelsummary(models)
+# modelsummary(models)
 
-modelplot( mt_opensecrets) + 
+modelplot( mt_opensecrets) + theme(legend.position = "none") +  
   labs(x = "Additional Technical and Legal Terms per Ten Thousand Dollars")
 
-modelplot(mt_compustat) + 
+modelplot(mt_marketcap) + theme(legend.position = "none") + 
   labs(x = "Additional Technical and Legal Terms per Ten Billion Dollars")
-
-
 ```
 
 ---
@@ -634,6 +856,8 @@ modelplot(mt_compustat) +
 ## Efficacy
 
 ### Efficacy by Assets 
+
+
 
 These models have the prefix `me_`. The dependent variable is the efficacy score.
 
@@ -646,10 +870,10 @@ mea_assets <- lm(efficacy ~ assets,
 mea_opensecrets <- glm(efficacy ~ MeanContribAmount,
            data = e %>% mutate(MeanContribAmount = MeanContribAmount/1000))
 
-mea_compustat <- glm(efficacy ~ marketcap2,
+mea_marketcap <- glm(efficacy ~ marketcap2,
            data = e  %>% mutate(marketcap2 = marketcap2/1000000))
 
-models <- list(mea_assets, mea_opensecrets, mea_compustat)
+models <- list(mea_assets, mea_opensecrets, mea_marketcap)
 
 # FIXME 
 #modelsummary(models)
@@ -660,7 +884,7 @@ modelplot( mea_assets) +
 modelplot( mea_opensecrets) + 
   labs(x = "Additional Words Added to Final Rule per Thousand Dollars")
 
-modelplot(mea_compustat) + 
+modelplot(mea_marketcap) + 
   labs(x = "Additional Words Added to Final Rule per Million Dollars")
 ```
 
@@ -671,20 +895,191 @@ modelplot(mea_compustat) +
 These models have the prefix `mes_`. The dependent variable is the efficacy score.
 
 ```{r mes}
+mes_bluebook <- lm(efficacy ~ Total_Legal_Citations,
+           data = d )
+
+mes_terms <- glm(efficacy ~ dictionary_terms,
+           data = d)
+
+mes_terms_bluebook <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations,
+           data = d )
+
+models <- list(mes_terms , mes_bluebook , mes_terms_bluebook )
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Efficacy",
+   `2` = "Efficacy",
+  `3` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
 
 
+# FIXME 
+# modelsummary(models)#, gof_map = gm)
+
+modelplot(mes_terms) + 
+  labs(x = "Additional Words Added to Final Rule per Technical Term")
+
+modelplot( mes_bluebook ) + 
+  labs(x = "Additional Words Added to Final Rule per Legal Citation")
+
+modelplot(mes_terms_bluebook ) + 
+  labs(x = "Additional Words Added to Final Rule")
+
+modelplot(models) + 
+  labs(x = "Additional Words Added to Final Rule")
 ```
 
 
 ---
 
-### Efficacy by Assets Mediated by Sophistication
+## Efficacy by Assets Mediated by Sophistication
 
-These models have the prefix `memt_`. The dependent variable is the efficacy score. The mediator is technical terms.
-
-```{r memt}
+To assess sophistication as a mediator between wealth and the influence of public comments on rules (efficacy), we estimate the average conditional marginal effect (ACME, conditional on the the number of technical terms or legal citations) and average direct effect (ADE) of wealth using mediation analysis. 
 
 
+These models have the prefix `mem_`. The dependent variable is the efficacy score. The mediator is technical terms.
+
+### Assets x legal citations
+```{r mediation-assets-bluebook}
+library(mediation)
+
+
+# model predicting mediator, sophistication 
+model.m <- lm(Total_Legal_Citations ~ assets,  
+              data = b  %>% mutate(assets = assets/10000000000) %>% 
+                drop_na(Total_Legal_Citations, efficacy))
+
+# model predicting DV
+model.y <- glm(efficacy ~ Total_Legal_Citations + assets,  
+               data = b  %>% mutate(assets = assets/10000000000))
+
+models <- list(model.m, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Legal Citations",
+   `2` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+med.cont <- mediate(model.m, model.y, sims=1000, treat = "assets",
+mediator = "Total_Legal_Citations")
+
+summary(med.cont)
 ```
 
----
+### Assets x technical terms
+```{r mediation-assets-terms}
+# model predicting mediator, sophistication 
+model.m <- lm(dictionary_terms ~ assets,  
+              data = b  %>% mutate(assets = assets/10000000000) %>% 
+                drop_na(dictionary_terms, efficacy))
+
+# model predicting DV
+model.y <- glm(efficacy ~ dictionary_terms + assets,  
+               data = b  %>% mutate(assets = assets/10000000000))
+
+models <- list(model.m, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Technical Terms",
+   `2` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+med.cont <- mediate(model.m, model.y, sims=1000, treat = "assets",
+mediator = "dictionary_terms")
+
+summary(med.cont)
+```
+
+### Market cap x legal citations
+```{r mediation-marketcap-bluebook}
+# model predicting mediator, sophistication 
+model.m <- lm(Total_Legal_Citations ~ marketcap2,  
+              data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
+                drop_na(Total_Legal_Citations, efficacy))
+
+# model predicting DV
+model.y <- glm(efficacy ~ Total_Legal_Citations + marketcap2,  
+               data = b  %>% mutate(assets = marketcap2/10000000000))
+
+models <- list(model.m, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Legal Citations",
+   `2` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+med.cont <- mediate(model.m, model.y, sims=1000, treat = "marketcap2",
+mediator = "Total_Legal_Citations")
+
+summary(med.cont)
+```
+
+
+### Market cap x technical terms 
+```{r mediation-marketcap-terms}
+# model predicting mediator, sophistication 
+model.m <- lm(dictionary_terms ~ marketcap2,  
+              data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
+                drop_na(dictionary_terms, efficacy))
+
+# model predicting DV
+model.y <- glm(efficacy ~ dictionary_terms + marketcap2,  
+               data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
+
+models <- list(model.m, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Technical Terms",
+   `2` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+med.cont <- mediate(model.m, model.y, sims=1000, treat = "marketcap2",
+mediator = "dictionary_terms")
+
+summary(med.cont)
+```
+
+# TODO
+
+- [ ] check on status of OCC comments (missing from attachments table as of May 2022)
+
+- [ ] split out FDIC banks and nonprofits in asset mediation analysis? (at the moment, neither type of assets are correlated with efficacy, so mediation analysis is a low priority)
+
+- [ ] Try to get efficacy measures for key obaservations. For example, cases where we have market cap: 
+
+Observations for which we have market cap and sophistication but are missing efficacy measures: 
+
+```{r}
+b %>% drop_na(marketcap, Total_Legal_Citations) %>% 
+  arrange(-Total_Legal_Citations) %>% 
+  filter(is.na(efficacy)) %>% 
+  dplyr::select(efficacy,marketcap, Total_Legal_Citations, org_name, comment_url) %>% 
+  kablebox()
+```

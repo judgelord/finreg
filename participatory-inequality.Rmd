@@ -365,7 +365,7 @@ knitr::include_graphics(
 
 
 
-### The odds are greater that a weathy organization will participate
+### Wealthier organizations are more likely to participate
 
 
 ```{r mp-assets, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Assets", out.width="80%"}
