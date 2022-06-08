@@ -141,7 +141,9 @@ Our second hypothesis poses testable assertions about the strategies of commenti
 
 - H2.3 Nonprofits with greater resources will use more legal language.
 
-- H2.4 Nonprofits with greater resources will use more technical language in their comments.-->
+- H2.4 Nonprofits with greater resources will use more technical language in their comments.
+
+-->
 
 ### Differential Commenting Influence
 
@@ -182,12 +184,10 @@ long %<>%
 
 To assess the extent of inequality in rulemaking implementing the Dodd-Frank Act, we assembled data from the Federal Register, Regulations.gov, Wharton Research Data Services (WRDS), the Internal Revenue Service (IRS), the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and the Securities and Exchange Commission (SEC). **CHECK THIS LIST WHEN WE'RE DONE**.  The expansive data collection effort includes data on comment texts and metadata, Dodd-Frank metadata, agency metadata, and data on for-profit and non-profit organizations.  We define our sampling frame as rules promulgated under the Dodd-Frank Act, as defined by the law firm Davis Polk LLP, which maintained a regulatory tracker for such actions.  We used Davis Polk's tracker as it was the most complete source of regulatory actions under the Dodd-Frank Act. This tracker was scraped throughout 2017 and early 2018 while we collected other data about these rules, most importantly tracking down the web location of dockets and their rule texts. Our final set of rules covers the set of Dodd-Frank rules after enactment on July 20, 2010, and before July 8, 2018. 
 
-<!-- the date when our outside data collection reached currency with Davis Polk's tracker. -->
 
 ## Rules
 
-Rulemaking involves a series of related regulatory actions. Figure \ref{fig:actions} shows policy the number of actions that key agencies took to implement the Dodd-Frank Act from 2009 to 2018. These actions include advance notices of proposed rulemaking (ANPRMs), proposed rules (NPRMs), interim rules, final rules, and others. Multiple of each kind of action may appear in some rulemakings, but none necessarily appears in any rulemaking. The range of possible action sequences creates semantic challenges for social scientists. Defining operationally how many rules were made or in the making by financial regulators sometimes requires complex choices.  In our study, we define a "rulemaking" (or "rule") as a set of regulatory actions that are connected via shared Regulation Identifier Number (RIN).^[RINs are assigned by OIRA to (almost) all actions by each agency and are usually preserved through rulemaking. We consider two RINs to be "directly connected" if there is a regulatory action (i.e., a document like a proposed rule) where those RINs appear together. Two RINs are "indirectly connected" or more simply "connected" if there is a way to start from one RIN and go from direct connection to direct connection and eventually arrive at the other RIN.] Using this definition, we found that between 2010 and July 8, 2018, there were 239 rulemakings by 21 regulators involving 802 regulatory actions. Some agencies, like the Department of Veterans Affairs, were not involved in more than a small number of rules. When they were, they usually engaged in a collaborative fashion with other agencies. Therefore, for the purposes of collecting data on comments, we focused our attention on the primary financial regulators: the Federal Reserve, the Consumer Financial Protection Bureau, the Securities and Exchange Commission, the Commodity Futures Trading Commission, and the National Credit Union Administration **CHECK THIS LIST**. <!-- the Federal Deposit Insurance Corporation, and the Office of the Comptroller of the Currency.
---REMOVED THESE LAST TWO BECAUSE WE CURRENTLY HAVE NO DATA FOR FDIC OR OCC (DEVIN HAS OCC DATA, BUT WE NEVER INTEGRATED IT, NOT SURE ABOUT FDIC)--> 
+Rulemaking involves a series of related regulatory actions. Figure \ref{fig:actions} shows policy the number of actions that key agencies took to implement the Dodd-Frank Act from 2009 to 2018. These actions include advance notices of proposed rulemaking (ANPRMs), proposed rules (NPRMs), interim rules, final rules, and others. Multiple of each kind of action may appear in some rulemakings, but none necessarily appears in any rulemaking. The range of possible action sequences creates semantic challenges for social scientists. Defining operationally how many rules were made or in the making by financial regulators sometimes requires complex choices.  In our study, we define a "rulemaking" (or "rule") as a set of regulatory actions that are connected via shared Regulation Identifier Number (RIN).^[RINs are assigned by OIRA to (almost) all actions by each agency and are usually preserved through rulemaking. We consider two RINs to be "directly connected" if there is a regulatory action (i.e., a document like a proposed rule) where those RINs appear together. Two RINs are "indirectly connected" or more simply "connected" if there is a way to start from one RIN and go from direct connection to direct connection and eventually arrive at the other RIN.] Using this definition, we found that between 2010 and July 8, 2018, there were 239 rulemakings by 21 regulators involving 802 regulatory actions. Some agencies, like the Department of Veterans Affairs, were not involved in more than a small number of rules. When they were, they usually engaged in a collaborative fashion with other agencies. Therefore, for the purposes of collecting data on comments, we focused our attention on the primary financial regulators: the Federal Reserve, the Consumer Financial Protection Bureau, the Securities and Exchange Commission, the Commodity Futures Trading Commission, the Federal Deposit Insurance Corporation, and the Office of the Comptroller of the Currency, and the National Credit Union Administration **TODO: CHECK THIS LIST AFTER JACOB UPDATES THE MATCHED DATA FROM MASTER.SQL**.  
 For each Dodd-Frank rulemaking that reached the stage of a proposed or final rule, we collected draft and final policies from the Federal Register.
 
 
@@ -213,22 +213,20 @@ long %>%
 
 The authors and research assistants scraped all available public comments from each financial regulator's website or regulations.gov for all Dodd-Frank rules. In doing so, we collected key metadata include the name of the individual and organization submitting comments and the date of their submission. We used the open-source software tesseract to OCR comments that were not machine-readable on the Open Science Grid computing cluster.  Comments are posted on agency websites and regulations.gov as either open text boxes or attachments.  We collected collected **NUMBER** open text responses and **NUMBER** comments.  Comments are not distributed uniformly across rules or agencies; for example, our sample included **NUMBER** comments from the CFPB and **SMALLER NUMBER** from **SMALLEST AGENCY**.   
 
-<!-- *Do we want to add some information about the total number of comments we have per agency or wait until the figs showing the number of comments that are matched to a dataset.*-->
-
 We then collected data about the relative resources of potential participants in rulemaking and matched these data to organizations that submitted comments. Given the varied types of organizations that participate in rulemaking (including small nonprofits and large corporations), no single database contains data on the resources available to all types of participants. However, we were able to systematically collect data on organizational resources for particular types of organizations. 
 
 Following @LibgoberQJPS2020, we collect information on public companies listed on U.S. exchanges during this time period and gather commonly reported financial data, for example, market capitalization from the Federal Deposit Insurance Corporation (FDIC). The primary source for these data are various databases from Wharton Research Data Service, especially their Compustat and bank regulatory datasets. From the Compustat data, we selected a key measure of corporate size: the firm's total assets, which represents a company’s reported assets and liabilities.
-For bank and bank-like entities that report to the Federal Financial Institutions Examinations Council (FFIEC), we also collected a measure of their total assets under management from call reports. <!--TODO from *XXXXX*. -->
+For bank and bank-like entities that report to the Federal Financial Institutions Examinations Council (FFIEC), we also collected a measure of their total assets under management from call reports on ncua.gov (see Appendix for data sources).
 
 To capture the resources of nonprofit organizations that do and do not engage in financial rulemaking, we download all Internal Revenue Service (IRS) reports from nonprofits from 2012. 
-We also collect data on Political Action Committee (PAC) donations and lobbying expenses from companies profiled by the Center for Responsive Politics using the Center's bulk data files. <!--TODO CLARIFY CRP VARIABLE USED--> 
+We also collect data on Political Action Committee (PAC) donations and lobbying expenses from companies profiled by the Center for Responsive Politics using the Center's bulk data files and calculate average PAC contributions per year for each organization.
 
 Finally, we use a probabilistic matching algorithm to match comments to organizations in these databases as the names which organizations use to submit comments and the names by which they appear in datasets like Compustat are often different. To do this, we identified comments that were likely from an organization, excluding those that were likely from an individual or public pressure campaign ("mass comments"). Each of the remaining comments was then linked to the organization with the best matching name (or no organization, where the matching algorithm did not identify any high-probability match in any of the datasets discussed above). The vast majority of comments that we did not match to an organization were submitted by individuals and thus beyond the scope of this study.  
 
-Our main dataset includes all comments that matched to either an FDIC-insured bank, a bank or bank-like entity that reports to the FFIEC, an organization that reports to the SEC (i.e. a publicly traded company), additional companies that appear in the Compustat database, and or an IRS compliant nonprofit organization. To some degree, these categories may overlap. For example, some, but not all, banks are publicly traded. <!--Credit unions are a class of nonprofits that also report to the FFIEC.--> At the same time, each data source delimits a category of related entities that plausibly constitutes a sampling frame for making relevant comparisons.
+Our main dataset includes all comments that matched to either an FDIC-insured bank, a bank or bank-like entity that reports to the FFIEC, an organization that reports to the SEC (i.e. a publicly traded company), additional companies that appear in the Compustat database, and or an IRS compliant nonprofit organization. To some degree, these categories may overlap. For example, some, but not all, banks are publicly traded. At the same time, each data source delimits a category of related entities that plausibly constitutes a sampling frame for making relevant comparisons.
 
 This new dataset includes financial data on over 6,378 distinct organizations that submitted 27,601 unique comments on the Dodd-Frank rules in our database. 
-<!--Correct as of May 2022--> 
+<!--AS OF MAY 2022. TODO: CHECK THESE NUMBERS AFTER FINAL DATA UPDATE. --> 
 
 ## Types of Organizations
 
@@ -277,18 +275,34 @@ knitr::include_graphics("figs/FDIC-density-select-1.png")
 
 
 Figure \ref{fig:commenters-noncommenters} shows the distribution (on a log scale) of organizations' financial resources for commenting organizations that matched in our comment database compared to other, similar organizations. 
-<!--NONPROFITS-->
+
+#### Nonprofits
+
 The top left panel in Figure \ref{fig:commenters-noncommenters} shows that nonprofits that comment on proposed financial regulations tend to be significantly better-resourced than we would expect from a random sample of nonprofits. The average nonprofit that did not comment has about \$7.5 million in assets, whereas the average nonprofit that did comment has \$74.1 million in assets. The average assets of commenting nonprofits was ten times larger than nonprofits that did not participate. This supports the *Differential Participation* Hypothesis (H1), specifically H1.1.
-<!--CREDIT UNIONS  -->
+
+#### Credit Unions
+
 Similarly, the top right panel in Figure \ref{fig:commenters-noncommenters} shows that credit unions that comment on proposed financial regulations also tend to be significantly better-resourced than we would expect from a random sample of credit unions. The average nonprofit that did not comment has about \$19.5 million in assets, whereas the average credit union that did comment has \$108.6 million in assets. The average commenting credit union is five times larger than the average credit union that did not comment. This also supports the *Differential Participation* Hypothesis (H1), specifically H1.1.
 
-<!--MARKT CAP--> 
-The bottom left panel in Figure \ref{fig:commenters-noncommenters} shows the same distributions for banks and bank-like entities that file with the Securities and Exchange Commission. The banks that comment on proposed financial regulations are better-resourced than we would expect from a random sample of these organizations. Specifically, they have more capital, as measured by the the totall value of their stock. <!--MORE ON THIS? --> 
+#### Publicly-traded firms
 
-<!--FDIC--> 
-In contrast, the bottom right panel in Figure \ref{fig:commenters-noncommenters} shows that, on average, large (FDIC-insured) banks that comment on proposed financial regulations are not significantly better-resourced, on average, than we would expect from a random sample of large banks. The x-axis shows assets in the (in thousdands of dollars). <!-- FIXME TODO CHECK THAT JACOB DIVIDED BY 100 (IDEALLY RE-DO THIS FIGURE) -->
+The bottom left panel in Figure \ref{fig:commenters-noncommenters} shows the same distributions for banks and bank-like entities that file with the Securities and Exchange Commission. The banks that comment on proposed financial regulations are better-resourced than we would expect from a random sample of these organizations. Specifically, they have more capital, as measured by the the total value of their stock. <!-- TODO: MORE ON THIS? --> 
+
+<!-- TODO: ADD MARKET CAP RESULTS? 
+
+```{r mp-marketcap, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Market Capitalization", out.width="80%"}
+knitr::include_graphics(
+"figs/mp-compustat-1.png")
+```
+
+Similarly \ref(fig:mp-marketcap) shows the results of logit models predicting the log odds of commenting on a Dodd-Frank rules by market capitalization (the total value of stock).
+
+END TODO NOTE -->
+
+#### Banks 
+
+In contrast, the bottom right panel in Figure \ref{fig:commenters-noncommenters} shows that, on average, large (FDIC-insured) banks that comment on proposed financial regulations are not significantly better-resourced, on average, than we would expect from a random sample of large banks. The x-axis shows assets in the (in thousdands of dollars). 
 At first glance, this does not support the *Differential Participation* Hypothesis (H1), specifically H1.3.
-<!--However, the population of large banks that did comment is more likely to contain very large banks (those with over $100,000,000 in assets) than the population that did not comment.   -->
 However, when we look within categories of banks, we see that it is the wealthier banks in each class are more likely to participate. The top-left panel of Figure \ref{fig:FDIC-count-by-class} shows that Commercial banks that comment are wealther than those that did not comment. The top-right panel of Figure \ref{fig:FDIC-count-by-class} shows that Savings Banks banks that comment are wealthier than those that did not comment. The modal savings bank that commented has nearly twice the assets of the modal savings bank that did not comment. The bottom-left panel of Figure \ref{fig:FDIC-count-by-class} shows that state banks banks that comment are wealthier than those that did not comment. The average assets of state banks that commented were three times the average assets of the state banks that did not comment. While savings associations are less likely to comment than more profit-oriented banks (see Figure \ref{fig:mpFDIC}), the bottom-right panel of Figure \ref{fig:FDIC-count-by-class} shows that when savings associations do comment, it tends to be the wealthier ones. 
 
 ```{r, FDIC-count-by-class, fig.cap="Financial Resources of FDIC-Insured Banks that Did and Did Not Comment", out.width= "49%"}
@@ -302,7 +316,6 @@ knitr::include_graphics("figs/FDIC-count-by-class-4.png")
 
 ```
 
-<!-- FDIC REGRESSION--> 
 Moreover, when we assess the odds of commenting among different types of FDIC banks,  we find find that Commercial Banks, State Banks, and Savings Banks are much more likely to comment than Saving Associations. Commercial banks are often large multinational corporations managed by a board selected by shareholders. In contrast Savings Associations are chartered with the narrow purpose of providing affordable residential mortgages. While both types of banks may hold large volumes of assets, Banks and Savings Associations serve different clients. Figure \ref{fig:mpFDIC} shows that banks that serve corporations and wealthier clients were disproportionately represented in Dodd-Frank rulemaking, and that savings associations were less represented. This supports the *Differential Participation* Hypothesis (H1), specifically H1.3.
 
 ```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="80%"}
@@ -324,14 +337,7 @@ knitr::include_graphics(
 
 Figure \ref{fig:mp-assets} shows the results of three logit models predicting the log odds of commenting on a Dodd-Frank rules by assets for FDIC-Insured banks, credit unions, and nonprofits. Aligned with descriptive results above, wealthier organizations of all three types are more likely to comment. Of these three types of organizations, the marginal effect of assets on the log odds of commenting is largest for banks. 
 
-<!-- TODO ADD MARKET CAP RESULTS AFTER WE NAIL DOWN THOSE DATA
-```{r mp-marketcap, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Market Capitalization", out.width="80%"}
-knitr::include_graphics(
-"figs/mp-compustat-1.png")
-```
 
-Similarly \ref(fig:mp-marketcap) shows the results of three logit models predicting the log odds of commenting on a Dodd-Frank rules by market capitalization (the total value of stock).
--->
 
 
 
@@ -343,7 +349,10 @@ knitr::include_graphics(
 "figs/opensecrets-count-1.png")
 ```
 
-Figure \ref{fig:opensecrets-density} shows that organizations profiled by the Center for Responsive Politics (generally, those that donate to Political Action Committees) that comment on Dodd-Frank rules are better-resourced than we would expect from a random sample of political donor organizations. <!--The left panel of Figure \ref{fig:opensecrets-density} shows the average campaign contiributions and the right panel shows the total contributions for the period where Dodd-Frank rules were initially drafted between 2010 and 2017.   <!--Whereas the average non-commenting donor has assets of about XXXXX.--> This aligns with the *Differential Participation* Hypothesis (H1), specifically H1.3. The average campaign spending per 2-year cycle was \$80 thousand for donors organizations that did not comment, and the average for a donor organization that did comment on a Dodd-Frank rule was \$96 thousand. <!--DEVIN UPDATED THESE NUMBERS MAY 2022, BUT WE MAY NEE TO REVIZE THESE NUMBERS WITH NEW DATA--> 
+Figure \ref{fig:opensecrets-density} shows that organizations profiled by the Center for Responsive Politics (generally, those that donate to Political Action Committees) that comment on Dodd-Frank rules are better-resourced than we would expect from a random sample of political donor organizations. This aligns with the *Differential Participation* Hypothesis (H1), specifically H1.3. The average campaign spending per 2-year cycle was \$80 thousand for donors organizations that did not comment, and the average for a donor organization that did comment on a Dodd-Frank rule was \$96 thousand. 
+<!-- TODO NOTE: 
+DEVIN UPDATED THESE NUMBERS MAY 2022, BUT WE MAY NEE TO REVIZE THESE NUMBERS WITH NEW DATA
+END TODO NOTE --> 
 
 
 The main takeaway from this analysis is that resources are correlated with the commenting behavior of nonprofits. That is, wealthy nonprofits are represented more than less wealthy nonprofits. In general, companies with high market capitalization are represented better than companies with lower market capitalization. Additionally, campaign donations are correlated with commenting on Dodd-Frank rules.
@@ -360,20 +369,29 @@ knitr::include_graphics(
 ```
 
 Figure \ref{fig:dockets-percentile} shows that organizations that comment on more rulemaking dockets tend to be wealthier.^[
-Note that this does not necessarily imply that wealthier organizations submit more comments. Many wealthy organizations only submit one comment on a docket, where other organizations may submit many comments on the same rule. For example, Axcess Financial (a payday lending company) and Advance Financial (a credit union) both mobilized over 1000 comments from their stores on the Consumer Financial Protection Bureau's Payday Loan Rule. These are not the wealthiest organizations.]  <!--(see Figure \ref{fig:ridgeline_plot_of_numRulesCommentedOn_by_Quantiles_of_financialResources.png} in the appendix)]--> 
+Note that this does not necessarily imply that wealthier organizations submit more comments. Many wealthy organizations only submit one comment on a docket, where other organizations may submit many comments on the same rule. For example, Axcess Financial (a payday lending company) and Advance Financial (a credit union) both mobilized over 1000 comments from their stores on the Consumer Financial Protection Bureau's Payday Loan Rule. These are not the wealthiest organizations.] 
 More specifically, it shows that organizations that comment infrequently are more likely to have less financial resources (less than a million dollars in assets). In contrast, the top five percent of the most frequent commenters tend to have well over ten million dollars in assets. Organizations in the top percentile of most frequent commenters have assets closer to 100 million dollars on average. A substantial share of organizations that are in the top ten percent of most frequent commenters have over $10 billion in assets, while only a tiny share bottom fifty percent of commenters have that level of wealth. In line with Hypothesis 2.5, frequent commenters tend to be wealthy organizations.
 
 
-### Wealthier organizations are more sophisticated at lobbying
+### Wealthier companies are more sophisticated at lobbying
 
-<!-- TODO I think we still need a figure showing the correlation between assets and sophistication? -->
+<!-- TODO DEVIN insert figures showing the correlation between assets and sophistication -->
 
 Wealthier organizations generally advance more sophisticated comments. 
-<!--Figure \ref{fig:assets-bluebook} shows that comments from wealthier organizations tend to include more legal citations. DEVIN WAS UNABLE TO MERGE THESE DATA  -->
+<!--Figure \ref{fig:assets-bluebook} shows that comments from wealthier organizations tend to include more legal citations.  -->
 Figure \ref{fig:assets-terms} shows that comments from wealthier organizations tend to include more technical language. Specifically, it shows that FDIC-insured banks with more assets use more legal and banking terms. Similarly, Figure \ref{fig:marketcap-terms} shows that a company's comment uses four additional terms, on average, for every additional billion dollars in market capitalization. Both of these patterns align with the *Mobilization of Expertise* Hypothesis (H2) that better resourced companies will utilize greater technical and legal expertise. 
 
-```{r assets-terms, out.width="50%",  fig.cap="Amount of Legal and Technical Language by Assets (Among Comments from FDIC-Insured Banks on Dodd-Frank Rules)"}
-knitr::include_graphics("figs/assets-tech-1.png")
+```{r assets-terms, out.width="49%",  fig.cap="Amount of Legal and Technical Language by Assets (Among Comments from FDIC-Insured Banks on Dodd-Frank Rules)"}
+#FDIC 
+knitr::include_graphics("figs/assets-tech-1.png") 
+knitr::include_graphics("figs/assets-tech-2.png")
+knitr::include_graphics("figs/assets-tech-3.png")
+knitr::include_graphics("figs/assets-tech-4.png")
+knitr::include_graphics("figs/assets-tech-5.png")
+knitr::include_graphics("figs/assets-tech-6.png")
+knitr::include_graphics("figs/assets-tech-7.png")
+knitr::include_graphics("figs/assets-tech-8.png")
+
 ```
 
 
