@@ -134,9 +134,9 @@ The root for this script is `finreg`. Most of the data are in `finreg/data` (som
 
 ## Sophistication 
 
-File: `Data/Dictionary_Terms.RData` contains 6 objects (3 sets of measures for both comments and attachments)
+File: `Data/Dictionary_Terms.RData` contains six objects (3 sets of measures for both comments and attachments)
 
-1. Dictionary counts of technical terms used in comments and attachments
+### 1. Dictionary counts of technical terms used in comments and attachments
 
 Objects: `technical_terms_comments` and `technical_terms_attachment`
 
@@ -144,15 +144,15 @@ Variables:
 
 - `doc_id` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
 - `uk_law` - UK law terms - this is in the file as I was curious how many of the terms would be in a UK law dictionary.
-- `banking` - US banking terms in Merriam Webster’s banking dictionary
-- `us_law` - US law terms terms in Merriam Webster’s US law dictionary. We didn’t use Black’s law dictionary because it’s incomplete as shown in the beginning of the `dictionary_and_bluebook.R` file
+- `banking` - US banking terms in Merriam Webster's banking dictionary
+- `us_law` - US law terms in Merriam Webster's US law dictionary. We didn't use Black's law dictionary because it's incomplete, as shown at the beginning of the `dictionary_and_bluebook.R` file
 - `overlap` - terms in both banking and us_law
 - `dictionary_term`s - banking + us_law - overlap
 - `Comment` - 1 if from the comments file in Master, 0 if from attachments
 
-2. Tables and Figures
+### 2. Tables and Figures
 
-- Counts of Tables and Figures. Looks at the maximum number of tables, with large jumps excluded. For example, a document with table 1, 2, 3 and 99 would treat 99 as an error and say there were 3 tables. This mostly comes from bad OCRing or documents that have footnotes in between the word “table” and the table number.
+Counts of Tables and Figures. Looks at the maximum number of tables, with large jumps excluded. For example, a document with tables 1, 2, 3, and 99 would treat 99 as an error and say there were three tables. This mostly comes from bad OCRing or documents that have footnotes in between the word "table" and the table number.
 
 Objects: `Tables_and_Figures_attachments` and `Tables_and_Figures_comments`
 
@@ -164,9 +164,9 @@ Variables:
 - `Comment` - 1 if from comments, 0 if from attachments
 - `Visualizations` - sum of figures + tables
 
-3. Bluebook
+### 3. Bluebook legal citations
 
-A file that has counts of citations to US code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register
+Counts of citations to US code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register
 
 Objects: `bluebok_comments` and `bluebook_attachments`
 
@@ -279,7 +279,7 @@ d %>% arrange(assets) %>%
   dplyr::select(org_name, assets, revenue, comment_url) %>% kablebox()
 
 d %>% arrange(marketcap2) %>% 
-  dplyr::select(org_name, marketcap2, comment_url) %>% kablebox()
+  dplyr::select(org_name, marketcap, comment_url) %>% kablebox()
 
 d %>% arrange(-MeanContribAmount) %>% 
   dplyr::select(org_name, MeanContribAmount, comment_url) %>% kablebox()
@@ -297,11 +297,21 @@ Variables:
 
 Other efficacy measures that we are not using: 
 
+- number_of_other_sequences_over_10
+- number_of_other_sequences_over_25
+- number_of_other_sequences_over_50
+- number_of_other_sequences_over_100
+- cumulative_sequence_length_over_10
+- cumulative_sequence_length_over_25
+- cumulative_sequence_length_over_50
+- cumulative_sequence_length_over_100
+- longest_sequence_length
+- longest_repeated_text
+
 ```{r efficacy}
 # efficacy
 efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.csv")  %>% str_remove("finreg")  )
 
-names(efficacy_raw) %>% kable()
 # inspect 
 # efficacy_raw %>% distinct() %>% dplyr::select(attachment_url, fr_document_id_final) %>% add_count(attachment_url) %>% arrange(-n) %>%   kablebox()
 
@@ -345,15 +355,15 @@ efficacy %<>%
 
 efficacy %>% arrange(-efficacy) %>% kablebox()
 
-d$comment_url %in% efficacy$comment_url %>% sum
+# d$comment_url %in% efficacy$comment_url %>% sum
 
-efficacy$comment_url %in% d$comment_url %>% sum
+# efficacy$comment_url %in% d$comment_url %>% sum
 
 #efficacy %>% filter(str_detect(comment_url, "CFPB")) %>%  kablebox()
 
-d  %>% left_join(efficacy) %>% drop_na(efficacy) %>% count(Agency)
-
 d  %<>% left_join(efficacy) 
+
+d %>% group_by(Agency) %>% count(is.na(efficacy))
 ```
 
 
@@ -390,7 +400,7 @@ d %<>%
   left_join(technical_terms %>% dplyr::select(comment_url, dictionary_terms)) 
 
 d %>% 
-  dplyr::select(comment_url, org_name, Total_Legal_Citations, dictionary_terms) %>% 
+  dplyr::select(comment_url, org_name, Total_Legal_Citations, dictionary_terms, assets, marketcap, MeanContribAmount) %>% 
   filter(!is.na(dictionary_terms)) %>% 
   kablebox()
 
@@ -409,18 +419,24 @@ d %>%
 
 ---
 
-### Number of comments per agency
+### number of comments per agency
 
 Technical terms measured for `r d %>% filter(comment_url %in% technical_terms$comment_url) %>% nrow()` of `r nrow(d)` comments.
 
 ```{r techical}
 # matches
 d %>% 
-  count(Agency) %>%
+  count(Agency, name = "n comments matched with org") %>%
   left_join(
     d %>% 
       filter(comment_url %in% technical_terms$comment_url) %>% 
       count(Agency, name = "n with dictionary terms measured") 
+    )  %>% 
+  left_join(
+    d %>% 
+      dplyr::select(-efficacy) %>% 
+      filter(comment_url %in% efficacy$comment_url) %>% 
+      count(Agency, name = "n with efficacy measured")  
     )  %>% 
   kablebox()
 ```
@@ -432,7 +448,7 @@ d %>%
 ## Sophistication x assets
 
 ### Legal citations x assets
-```{r assets-blue, fig.height=2, fig.width=3, out.width="50%"}
+```{r assets-blue, fig.height=2.5, fig.width=3, out.width="50%"}
 # bluebook %>% count(is.na(Total_Legal_Citations))
 
 # 400 from FDIC data, 400 from other data
@@ -520,7 +536,7 @@ b %>% filter(Total_Legal_Citations>10,
 
 ### Technical terms x assets
 
-```{r assets-tech, fig.height=2, fig.width=3, out.width="50%"}
+```{r assets-tech, fig.height=2.5, fig.width=3, out.width="50%"}
 t <- d %>% drop_na(dictionary_terms)
 
 
@@ -597,7 +613,7 @@ p <- t %>%
   ) +
   labs(x = "Market Capitalization",
        y = "Technical Terms in Comment",
-       title = "Publically-Traded Companies")
+       title = "Publicly-Traded Companies")
 
 p 
 
@@ -688,7 +704,7 @@ p <- e %>%
   ) +
   labs(x = "Market Capitalization",
        y = "Number of Words in Comment\nAdded to Final Rule",
-       title = "Publically-traded Companies")
+       title = "Publicly-traded Companies")
 
 p
 
@@ -857,8 +873,6 @@ modelplot(mt_marketcap) + theme(legend.position = "none") +
 
 ### Efficacy by Assets 
 
-
-
 These models have the prefix `me_`. The dependent variable is the efficacy score.
 
 ```{r mea}
@@ -937,7 +951,7 @@ modelplot(models) +
 
 ## Efficacy by Assets Mediated by Sophistication
 
-To assess sophistication as a mediator between wealth and the influence of public comments on rules (efficacy), we estimate the average conditional marginal effect (ACME, conditional on the the number of technical terms or legal citations) and average direct effect (ADE) of wealth using mediation analysis. 
+To assess sophistication as a mediator between wealth and the influence of public comments on rules (efficacy), we estimate the average conditional marginal effect (ACME, conditional on the number of technical terms or legal citations) and average direct effect (ADE) of wealth using mediation analysis. 
 
 
 These models have the prefix `mem_`. The dependent variable is the efficacy score. The mediator is technical terms.
@@ -1068,11 +1082,11 @@ summary(med.cont)
 
 # TODO
 
-- [ ] check on status of OCC comments (missing from attachments table as of May 2022)
+- [ ] check on the status of OCC comments (missing from the attachments table as of May 2022)
 
-- [ ] split out FDIC banks and nonprofits in asset mediation analysis? (at the moment, neither type of assets are correlated with efficacy, so mediation analysis is a low priority)
+- [ ] split out FDIC banks and nonprofits in asset mediation analysis? (at the moment, neither type of asset is correlated with efficacy, so mediation analysis is a low priority)
 
-- [ ] Try to get efficacy measures for key obaservations. For example, cases where we have market cap: 
+- [ ] Try to get efficacy measures for key observations. For example, in cases where we have market cap: 
 
 Observations for which we have market cap and sophistication but are missing efficacy measures: 
 
