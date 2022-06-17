@@ -448,10 +448,10 @@ d %>%
 ## Sophistication x assets
 
 ### Legal citations x assets
-```{r assets-blue, fig.height=2.5, fig.width=3, out.width="50%"}
-# bluebook %>% count(is.na(Total_Legal_Citations))
 
-# 400 from FDIC data, 400 from other data
+```{r assets-blue, fig.height=2.5, fig.width=3, out.width="50%"}
+# assets-blue
+
 b <- d %>% filter(!is.na(dictionary_terms))
 
 b %>% dplyr::select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  
@@ -459,15 +459,18 @@ b %>% dplyr::select(org_name, Total_Legal_Citations, org_resources, comment_url)
   kablebox()
 
 # FDIC ASSTS 
+# FDIC ASSTS 
 p <- b %>% 
+  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
   ggplot() +
-  aes(x = org_resources, # %>% log(), 
-      y = Total_Legal_Citations) + 
-  geom_jitter(alpha = .5) + 
+  aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
+      y = Total_Legal_Citations ) + 
+  geom_point(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Resources",
-       y = "Legal Citations")
+  labs(x = "Assets",
+       y = "Legal Citations", 
+       title = "FDIC-Insured Banks")
 
 p
 
@@ -484,7 +487,8 @@ p <- b %>%
   geom_smooth(method = "lm"
   )+ 
   labs(x = "Assets",
-       y = "Legal Citations")
+       y = "Legal Citations",
+       title = "Nonprofits")
 
 p
 
@@ -501,7 +505,8 @@ p <- b %>%
   geom_smooth(method = "lm"
   ) + 
   labs(x = "Average PAC Contribution",
-       y = "Legal Citations")
+       y = "Legal Citations",
+       title = "Campaign Donors")
 
 p
 
@@ -512,20 +517,23 @@ p +
 
 
 p <- b %>% 
+  #filter(marketcap2 > 1000000) %>% 
   ggplot() +
-  aes(x = marketcap2, 
+  aes(x = marketcap2/1000000000, 
       y = Total_Legal_Citations) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Market Capitalization",
-       y = "Legal Citations")
+  labs(x = "Market Capitalization (Billions)",
+       y = "Legal Citations",
+       title = "Publicly-Traded Companies")
 
 p
 
 p + 
   scale_y_log10() +
-  scale_x_log10()
+  scale_x_log10() + 
+  xlim(c(0, 400))
 
 
 # b %>% count(comment_agency, is.na( assets))
@@ -550,7 +558,7 @@ p <- t %>%
   geom_smooth(method = "lm"
   ) + 
   labs(x = "Assets",
-       y = "Legal and Technial Terms", 
+       y = "Technical Terms", 
        title = "FDIC-Insured Banks")
 
 p 
@@ -606,20 +614,21 @@ p +
 p <- t %>% 
   filter(!is.na(marketcap2)) %>% 
   ggplot() +
-  aes(x = marketcap2, 
+  aes(x = marketcap2/1000000000, 
       y = dictionary_terms) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
-  labs(x = "Market Capitalization",
-       y = "Technical Terms in Comment",
+  labs(x = "Market Capitalization (Billions)",
+       y = "Technical Terms",
        title = "Publicly-Traded Companies")
 
 p 
 
 p + 
   scale_y_log10() +
-  scale_x_log10()
+  scale_x_log10() + 
+  xlim(c(0, 400))
 ```
 
 ## Efficacy x assets
@@ -827,10 +836,10 @@ models <- list(mb_assets, mb_opensecrets, mb_marketcap)
 
 modelsummary(models)
 
-modelplot(mb_opensecrets) + 
+modelplot(mb_opensecrets) + theme(legend.position = "none") +  
   labs(x = "Additional Legal Citations per Ten Thousand Dollars")
 
-modelplot(mb_marketcap) + 
+modelplot(mb_marketcap) + theme(legend.position = "none") +  
   labs(x = "Additional Legal Citations per Ten Billion Dollars")
 ```
 
@@ -892,13 +901,13 @@ models <- list(mea_assets, mea_opensecrets, mea_marketcap)
 # FIXME 
 #modelsummary(models)
 
-modelplot( mea_assets) + 
+modelplot( mea_assets) + theme(legend.position = "none") +  
   labs(x = "Additional Words Added to Final Rule per Million Dollars")
 
-modelplot( mea_opensecrets) + 
+modelplot( mea_opensecrets) + theme(legend.position = "none") +  
   labs(x = "Additional Words Added to Final Rule per Thousand Dollars")
 
-modelplot(mea_marketcap) + 
+modelplot(mea_marketcap) + theme(legend.position = "none") +  
   labs(x = "Additional Words Added to Final Rule per Million Dollars")
 ```
 
@@ -933,16 +942,16 @@ attr(rows, 'position') <- c(0)
 # FIXME 
 # modelsummary(models)#, gof_map = gm)
 
-modelplot(mes_terms) + 
+modelplot(mes_terms) + theme(legend.position = "none") +  
   labs(x = "Additional Words Added to Final Rule per Technical Term")
 
-modelplot( mes_bluebook ) + 
+modelplot( mes_bluebook ) + theme(legend.position = "none") +  
   labs(x = "Additional Words Added to Final Rule per Legal Citation")
 
-modelplot(mes_terms_bluebook ) + 
+modelplot(mes_terms_bluebook ) + theme(legend.position = "none") +  
   labs(x = "Additional Words Added to Final Rule")
 
-modelplot(models) + 
+modelplot(models) + theme(legend.position = "none") +  
   labs(x = "Additional Words Added to Final Rule")
 ```
 
@@ -957,7 +966,7 @@ To assess sophistication as a mediator between wealth and the influence of publi
 These models have the prefix `mem_`. The dependent variable is the efficacy score. The mediator is technical terms.
 
 ### Assets x legal citations
-```{r mediation-assets-bluebook}
+```{r mediation-assets-bluebook, fig.width=4, fig.height=3}
 library(mediation)
 
 
@@ -987,10 +996,13 @@ med.cont <- mediate(model.m, model.y, sims=1000, treat = "assets",
 mediator = "Total_Legal_Citations")
 
 summary(med.cont)
+
+plot(med.cont)#, main = "Legal Citations as a Mediator of Assets")
+#modelplot(med.cont) + labs()
 ```
 
 ### Assets x technical terms
-```{r mediation-assets-terms}
+```{r mediation-assets-terms, fig.width=4, fig.height=3}
 # model predicting mediator, sophistication 
 model.m <- lm(dictionary_terms ~ assets,  
               data = b  %>% mutate(assets = assets/10000000000) %>% 
@@ -1017,10 +1029,12 @@ med.cont <- mediate(model.m, model.y, sims=1000, treat = "assets",
 mediator = "dictionary_terms")
 
 summary(med.cont)
+
+plot(med.cont)#, main = "Technical Terms as a Mediator of Assets")
 ```
 
 ### Market cap x legal citations
-```{r mediation-marketcap-bluebook}
+```{r mediation-marketcap-bluebook, fig.width=5, fig.height=4}
 # model predicting mediator, sophistication 
 model.m <- lm(Total_Legal_Citations ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
@@ -1047,11 +1061,13 @@ med.cont <- mediate(model.m, model.y, sims=1000, treat = "marketcap2",
 mediator = "Total_Legal_Citations")
 
 summary(med.cont)
+
+plot(med.cont)#, main = "Legal Citations")
 ```
 
 
 ### Market cap x technical terms 
-```{r mediation-marketcap-terms}
+```{r mediation-marketcap-terms, fig.width=4, fig.height=3}
 # model predicting mediator, sophistication 
 model.m <- lm(dictionary_terms ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
@@ -1078,6 +1094,56 @@ med.cont <- mediate(model.m, model.y, sims=1000, treat = "marketcap2",
 mediator = "dictionary_terms")
 
 summary(med.cont)
+
+plot(med.cont)#, main = "Techical Terms as a Mediator")
+```
+
+### Market cap x technical terms  x legal citations 
+
+```{r mediation-marketcap-terms-bluebook, fig.width=4, fig.height=3}
+# model predicting mediator, sophistication 
+model.m1 <- lm(dictionary_terms ~ marketcap2,  
+              data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
+                drop_na(dictionary_terms, efficacy))
+
+model.m2 <- lm(Total_Legal_Citations ~ marketcap2,  
+              data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
+                drop_na(Total_Legal_Citations, efficacy))
+
+# model predicting DV
+model.y <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations +  marketcap2,  
+               data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
+
+models <- list(model.m1, model.m2, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Technical Terms",
+    `2` = "Legal Citations",
+   `3` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+med.cont <- mediate(model.m1, model.y, sims=1000, treat = "marketcap2",
+mediator = "dictionary_terms")
+
+summary(med.cont)
+
+plot(med.cont)
+
+med.cont <- mediate(model.m2, model.y, sims=1000, treat = "marketcap2",
+mediator = "Total_Legal_Citations")
+
+summary(med.cont)
+
+plot(med.cont)
+
+#FI
+# modelsummary::modelsummary(med.cont)
 ```
 
 # TODO

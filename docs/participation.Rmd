@@ -156,10 +156,10 @@ library("readxl")
 
 rins <- read_excel(here::here("data", "dodd-frank-rulemaking-directory_doc_oriented_wdescription.xls")) %>% 
   rename(docket_id = identifier)  %>% 
-  select(-"...1")
+  dplyr::select(-"...1")
 
 lookup <- read_csv(here::here("data", "docket_related_rin_lookup.csv")) %>% 
-  select(-"...1") %>% 
+  dplyr::select(-"...1") %>% 
   mutate(across(everything(), str_squish))
 
 rin_lookup <- full_join(rins, lookup, by = "docket_id", suffix = c(".directory", ".lookup")) %>% 
@@ -176,7 +176,7 @@ Some dockets don't have related rins in lookup table
 
 # missing related RINs
 rin_lookup %>% 
-  select(# title, 
+  dplyr::select(# title, 
     docket_id,
     RIN.directory, RIN.lookup,
          related.rins, 
@@ -192,7 +192,7 @@ rin_lookup %>%
 
 ```{r rin-lookup}
 rin_lookup %>% 
-  select(# title, 
+  dplyr::select(# title, 
     docket_id,
     RIN.directory, RIN.lookup,
          related.rins, 
@@ -208,7 +208,7 @@ rin_lookup %>%
   kablebox()
 
 rin_lookup %<>% 
-  select(-RIN.directory,
+  dplyr::select(-RIN.directory,
          -docket_url.directory) %>% distinct()
 
 names(rin_lookup) %<>% str_remove(".lookup")
@@ -228,7 +228,7 @@ docket_table <- read_csv(here::here("data", "matches_per_docket.csv"))
 docket_table %>% 
   add_count(Agency) %>% 
   mutate(Agency = paste(n, "dockets from", Agency)) %>% 
-  select(- Percent, - Docket, -`Any Resources Measure`) %>% 
+  dplyr::select(- Percent, - Docket, -`Any Resources Measure`) %>% 
   group_by(Agency) %>% 
   summarise_all(sum) %>% 
   group_by(Agency) %>% 
@@ -347,12 +347,12 @@ d_rin_lookup <- d %>% full_join(rin_lookup) %>%
   group_by(docket_id) %>%
   mutate(comments_matched = sum(!is.na(comment_url) ) ) %>% 
   mutate(comment_count = as.numeric(comment_count)) %>% 
-  select(docket_id, comment_count,comments_matched, everything()) %>% 
+  dplyr::select(docket_id, comment_count,comments_matched, everything()) %>% 
   arrange(docket_id) %>% 
   filter(!is.na(docket_id))
 
 d_rin_lookup  %>% 
-  select(-comment_url) %>% 
+  dplyr::select(-comment_url) %>% 
   distinct() %>% 
   #filter(comments_matched > 0)
   kablebox()
@@ -365,7 +365,7 @@ Some of these appear to be over-matched, but it is also possible that the commen
 d_rin_lookup %>% 
   filter(comment_count < comments_matched) %>%
   #arrange(comment_url) %>% 
-  select(-comment_url) %>% 
+  dplyr::select(-comment_url) %>% 
   distinct() %>% 
   kablebox()
 ```
@@ -414,10 +414,10 @@ d %>% filter(str_detect(comment_org_name, false_match)) %>%
 
 # false positive comments 
 d %>% filter(str_detect(comment_org_name,  false_match)) %>% 
-  select(#starts_with("docket"), 
+  dplyr::select(#starts_with("docket"), 
     starts_with("comment"),
          starts_with("best"), everything() ) %>% 
-  select(-comment_docket_count, -comment_agency) %>% 
+  dplyr::select(-comment_docket_count, -comment_agency) %>% 
   kablebox()
 
 
@@ -428,7 +428,7 @@ d %<>% filter(!str_detect(comment_org_name, false_match))
 d %>% 
   filter(str_detect(best_match_name, "financial")) %>% 
   arrange(-org_comments) %>% 
-  select(org_comments, comment_org_name,  best_match_name, best_match_score, best_match_type, comment_url, everything()) %>% 
+  dplyr::select(org_comments, comment_org_name,  best_match_name, best_match_score, best_match_type, comment_url, everything()) %>% 
   kablebox()
 ```
 
@@ -442,38 +442,38 @@ d %>%
 # 2k
  paste("Credit Union matches: ", sum(!is.na(d$CreditUnions_name)) )
 
-d %>% filter(!is.na(CreditUnions_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
+d %>% filter(!is.na(CreditUnions_name)) %>% dplyr::select(ends_with("name"), comment_url) %>% kablebox()
 
 # 5k
  paste("CIK matches: ", sum(!is.na(d$CIK_name)) )
 
-d %>% filter(!is.na(CIK_name)) %>% select(ends_with("name"), comment_url)  %>% kablebox()
+d %>% filter(!is.na(CIK_name)) %>% dplyr::select(ends_with("name"), comment_url)  %>% kablebox()
 
 # 1k
  paste("FDIC_Institutions matches: ", sum(!is.na(d$FDIC_Institutions_name)) )
 
-d %>% filter(!is.na(FDIC_Institutions_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
+d %>% filter(!is.na(FDIC_Institutions_name)) %>% dplyr::select(ends_with("name"), comment_url) %>% kablebox()
 
 # 0
  paste("FFIECInstitutions matches: ", sum(!is.na(d$FFIECInstitutions_name)) )
 
-#d %>% filter(!is.na(FFIECInstitutions_name)) %>% select(ends_with("name")) %>% kablebox()
+#d %>% filter(!is.na(FFIECInstitutions_name)) %>% dplyr::select(ends_with("name")) %>% kablebox()
 
 # 18k
  paste("NonProfitTax matches: ", sum(!is.na(d$nonprofits_resources_name)) )
 
-d %>% filter(!is.na(nonprofits_resources_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
+d %>% filter(!is.na(nonprofits_resources_name)) %>% dplyr::select(ends_with("name"), comment_url) %>% kablebox()
 
 # 4k
  paste("OpenSecrets matches: ", sum(!is.na(d$opensecrets_resources_name)) )
 
-d %>% filter(!is.na(opensecrets_resources_name)) %>% select(ends_with("name"), comment_url) %>% kablebox()
+d %>% filter(!is.na(opensecrets_resources_name)) %>% dplyr::select(ends_with("name"), comment_url) %>% kablebox()
 
 
 # 0
  paste("SEC matches: ", sum(!is.na(d$SEC_Institutions_name)))
 
-# d %>% filter(!is.na(SEC_Institutions_name)) %>% select(ends_with("name"))  %>% kablebox()
+# d %>% filter(!is.na(SEC_Institutions_name)) %>% dplyr::select(ends_with("name"))  %>% kablebox()
  
 
 ```
@@ -484,7 +484,7 @@ Example URLs
 
 d %>% group_by(comment_agency) %>% 
   slice(1) %>% 
-  select(comment_url) 
+  dplyr::select(comment_url) 
 ```
 
 ---
@@ -542,7 +542,7 @@ org_count_agency %>%
 
 # CSVs for simplicity 
 FDIC_resources <- read_csv(here::here("data", "merged_resources", "FDIC_Institutions.csv"))  %>%
-  select(NAME, NAMEHCR, STALP, STNAME, BKCLASS, ASSET) %>% 
+  dplyr::select(NAME, NAMEHCR, STALP, STNAME, BKCLASS, ASSET) %>% 
   mutate(org_name = str_to_lower(NAME)) %>% 
   mutate(commented = org_name %in% d$best_match_name | org_name %in% d$FDIC_Institutions_name)
 
@@ -1253,10 +1253,10 @@ compustat %>%
 #FIXME 
 # TO GET NON-COMMENTERS, WE NEED TO JOIN IN THE OTHERS, BUT WE MIGHT NOT NEED THIS?
 # Until the asset data are fixed to include matches in multiple datasets. 
-d %<>% left_join(opensecrets %>% select(org_name, MeanContribAmount, TotalContribAmount)  ) %>%
-  left_join(nonprofit_resources %>% select(org_name, assets, revenue) ) %>%
-  left_join(compustat %>% select(-index) %>% select(org_name, marketcap, naics) ) %>% 
-  left_join(creditunions %>% select(org_name, `Total Assets`))
+d %<>% left_join(opensecrets %>% dplyr::select(org_name, MeanContribAmount, TotalContribAmount)  ) %>%
+  left_join(nonprofit_resources %>% dplyr::select(org_name, assets, revenue) ) %>%
+  left_join(compustat %>% dplyr::select(-index) %>% dplyr::select(org_name, marketcap, naics) ) %>% 
+  left_join(creditunions %>% dplyr::select(org_name, `Total Assets`))
 
 d %<>% distinct()
 
@@ -1357,7 +1357,7 @@ However, in the prior version of the data, the American Petroleum Institute and 
 d %<>% distinct()
 
 d %>% filter(str_detect(best_match_name, "petroleum inst|yale uni")) %>% # view
-  select(comment_url, best_match_name, 
+  dplyr::select(comment_url, best_match_name, 
          assets, 
          `nonprofits_resources-bestMatch:assets`, 
          `nonprofits_resources-bestMatch:revenue`,
@@ -1375,7 +1375,7 @@ But we still have almost as many duplicates when we drop `state`, partially beca
 ```{r duplicates2, eval = FALSE }
 # duplicates after removing state
 d %>% 
-  select(-state) %>%
+  dplyr::select(-state) %>%
   add_count(comment_url, name = "n_per_url") %>% 
   ungroup() %>% 
   filter(n_per_url > 1) %>% distinct() %>% 
@@ -1393,7 +1393,7 @@ is_not_na <- . %>% is.na() %>% isFALSE()
 
 dtable <- d_rin_lookup %>%
   ungroup() %>% 
-  full_join(d %>% select(docket_id, comment_url, ends_with("_name"))) %>%
+  full_join(d %>% dplyr::select(docket_id, comment_url, ends_with("_name"))) %>%
   ungroup() %>% 
   # add_count(docket_id) %>% 
   group_by(comment_url) %>% 
@@ -1401,14 +1401,14 @@ dtable <- d_rin_lookup %>%
   mutate(asset_data_name = sum( CIK_name, CreditUnions_name, FDIC_Institutions_name,	FFIECInstitutions_name,	SEC_Institutions_name,	compustat_resources_name,	nonprofits_resources_name) > 0#,
          #unique_orgs_name = org_name %>% unique() %>% length() 
          ) %>% 
-  select(docket_id, comment_count, comments_matched, lowest.sorted.rin.of.related.rins,related.rins,
+  dplyr::select(docket_id, comment_count, comments_matched, lowest.sorted.rin.of.related.rins,related.rins,
          comment_url, ends_with("_name")) %>% 
   distinct() %>% 
   group_by(docket_id, comment_count, comments_matched, lowest.sorted.rin.of.related.rins,related.rins) %>% 
   # tally up matches
   summarise(across(ends_with("name"), sum)) %>% 
   # select vars for table 
-  select(docket_id,  lowest.sorted.rin.of.related.rins,related.rins, comment_count, comments_matched, asset_data_name,
+  dplyr::select(docket_id,  lowest.sorted.rin.of.related.rins,related.rins, comment_count, comments_matched, asset_data_name,
          #unique_orgs_name,
         nonprofits_resources_name,
          CIK_name, CreditUnions_name, FDIC_Institutions_name,	FFIECInstitutions_name,	SEC_Institutions_name,	compustat_resources_name) %>% 
