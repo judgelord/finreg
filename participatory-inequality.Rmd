@@ -370,16 +370,35 @@ The main takeaway from this analysis is that resources are correlated with the c
 
 ### Repeat players in commenting are substantially wealthier
 
-```{r, dockets-percentile, fig.cap="Frequent and infrequent commenters (By Percentile of the Number of Dockets on which the Organization Commented) by Resources (Log Scale)", out.width="80%"}
-#TODO DEVIN WILL REMAKE THIS PLOT FOR NUMBER OF DOCKETS AND ADD IT HERE: https://judgelord.github.io/finreg/participation#Among_firms_that_commented_on_a_Dodd-Frank_rule
-knitr::include_graphics(
-"figs/ridgeline_plot_of_financialResources_by_Quantiles_of_numRulesCommentedOn.png"
-)
+```{r, dockets-percentile, fig.cap="Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
+knitr::include_graphics(c(
+  "figs/fdic-rules-2.png",
+    "figs/nonprofit-rules-2.png",
+  "figs/compustat-rules-2.png",
+  "figs/opensecrets-rules-2.png"
+))
 ```
 
 Figure \ref{fig:dockets-percentile} shows that organizations that comment on more rulemaking dockets tend to be wealthier.^[
-Note that this does not necessarily imply that wealthier organizations submit more comments. Many wealthy organizations only submit one comment on a docket, where other organizations may submit many comments on the same rule. For example, Axcess Financial (a payday lending company) and Advance Financial (a credit union) both mobilized over 1000 comments from their stores on the Consumer Financial Protection Bureau's Payday Loan Rule. These are not the wealthiest organizations.] 
-More specifically, it shows that organizations that comment infrequently are more likely to have less financial resources (less than a million dollars in assets). In contrast, the top five percent of the most frequent commenters tend to have well over ten million dollars in assets. Organizations in the top percentile of most frequent commenters have assets closer to 100 million dollars on average. A substantial share of organizations that are in the top ten percent of most frequent commenters have over $10 billion in assets, while only a tiny share bottom fifty percent of commenters have that level of wealth. In line with Hypothesis 2.5, frequent commenters tend to be wealthy organizations.
+Note that this does not necessarily imply that wealthier organizations submit more comments. Many wealthy organizations only submit one comment per rulemaking docket. Organizations may submit many comments on the same rule as a form of public pressure [see @judgelord2019]. For example, Axcess Financial (a payday lending company) and Advance Financial (a credit union) both mobilized over 1000 comments from their stores on the Consumer Financial Protection Bureau's Payday Loan Rule. Mobilizing public pressure on one rule is different from lobbying on many rules. Our analysis here focuses on the latter--the bredth, not the amplituded of lobbying.] 
+More specifically, it shows that organizations that comment infrequently are more likely to have less financial resources.
+
+In contrast, the top five percent of the most frequent commenters tend to have well over ten million dollars in assets. Organizations in the top percentile of most frequent commenters have assets closer to 100 million dollars on average. A substantial share of organizations that are in the top ten percent of most frequent commenters have over $10 billion in assets, while only a tiny share bottom fifty percent of commenters have that level of wealth. In line with Hypothesis 2.5, frequent commenters tend to be wealthy organizations.
+
+
+```{r}
+# models of number of rules commented on by assets
+load(here::here("models", "rules-by-assets.Rdata"))
+     
+modelsummary::modelsummary(models,
+             gof_map = gof_map,
+             coef_map = cm,
+             add_rows = rows,
+             stars = T,
+             gof_omit = "R.*|A.*|B.*") %>% 
+  kableExtra::kable_styling(latex_options = "scale_down") %>%
+  row_spec(row = 1, bold = T)
+```
 
 
 ### Wealthier companies are more sophisticated at lobbying
@@ -495,6 +514,16 @@ knitr::include_graphics("figs/creditunion-count-1.png")
 knitr::include_graphics("figs/compustat-count-1.png")
 
 knitr::include_graphics("figs/FDIC-count-select-1.png")
+```
+
+
+```{r, number-of-dockets, fig.cap="Number of Dockets on Which Each Type of Organization Commented", out.width="49%", fig.show= "hold"}
+knitr::include_graphics(c(
+  "figs/fdic-rules-1.png",
+    "figs/nonprofit-rules-1.png",
+  "figs/compustat-rules-1.png",
+  "figs/opensecrets-rules-1.png"
+))
 ```
 
 \clearpage

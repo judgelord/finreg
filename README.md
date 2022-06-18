@@ -1,8 +1,7 @@
-
 # Inequality in Administrative Democracy: Large-Sample Evidence from American Financial Regulation 
 
-[Data and analysis](https://judgelord.github.io/finreg/participation)
+Data and analysis of interest group [participation](https://judgelord.github.io/finreg/participation) and [efficacy](https://judgelord.github.io/finreg/efficacy)
 - Replication code for all tables and figures in the paper and appendix
-- A large number of additional summary tables and figures to guide data cleaning and analysis
+- Additional summary tables and figures to guide data cleaning and analysis
 
-[Validation against hand-coded data](https://judgelord.github.io/finreg/validation)
+[Data validated against hand-coded data](https://judgelord.github.io/finreg/validation)

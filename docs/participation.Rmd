@@ -1,22 +1,12 @@
 ---
-title: "Participation in Financial Rulemaking"
-#subtitle: "Appendix and Replication Code" 
+title: "Participation in Financial Rulemaking" #subtitle: "Appendix and Replication Code" 
 output:
-    bookdown::html_document2:
-      highlight: zenburn
-      toc: true
-      toc_float: true
-      code_folding: hide
-      number_sections: false
-# output:
-#   xaringan::moon_reader:
-#     lib_dir: libs
-#     mathjax: "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"
-#     css: xaringan-themer.css
-#     nature:
-#       highlightStyle: github
-#       highlightLines: true
-#       countIncrementalSlides: false
+  bookdown::html_document2:
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    code_folding: hide
+    number_sections: true
 ---
 
 
@@ -48,7 +38,7 @@ library("modelsummary")
 
 library(scales)
 library(magrittr)
-library(broom)
+#library(broom)
 #library(dotwhisker)
 library(here)
 library(knitr)
@@ -60,6 +50,26 @@ library(kableExtra)
 #library(fixest)
 #library(modelsummary)
 library(tidyverse)
+
+# var names 
+cm = c("ASSET" = "Assets",
+       "ASSETS" = "Assets (Hundreds of Millions)",
+       "Assets" = "Assets (Billions)",
+       "assets" = "Assets",
+       "assets_t" = "Assets (in Thousands)",
+       "assets_m" = "Assets (in Millions)",
+       "assets_b" = "Assets (in Billions)",
+       "marketcap_b" = "Market Capitalization (Billions)",
+       "donations_m" = "Campaign Donations (Millions)",
+       "onepercentTop 1%" = "Top 1% Most Frequent",
+       "Class SM" = "State Bank",
+       "Class SB" = "Savings Bank",
+       "Class SA" = "Savings Association",
+       "Class NM" = "Commercial Bank",
+       "ASSETS:Class SM" = "Assets x State Bank",
+       "ASSETS:Class SB" = "Assets x Savings Bank",
+       "ASSETS:Class SA" = "Assets x Savings Association",
+       "ASSETS:Class NM" = "Assets x Commercial Bank")
 
 # table defaults
 modelsummary <- function(...) modelsummary::modelsummary(..., 
@@ -263,6 +273,26 @@ load(here("data", "match_data_clean.Rdata"))
 match_data_clean %>% count(comment_agency)
 
 d <- match_data_clean  
+
+#FIXME
+d %<>% filter(org_name != "")
+
+# make a numeric
+d %<>%  
+   mutate(marketcap = coalesce(`CIK-bestMatch:marketcap`, `compustat_resources-bestMatch:marketcap`) ) %>% 
+  mutate(marketcap2 = ifelse(str_detect(marketcap, "k"),
+                             marketcap %>% str_remove("k") %>% as.numeric() * 1000,
+                             marketcap),
+         marketcap2 = ifelse(str_detect(marketcap, "M"),
+                             marketcap %>% str_remove("M") %>% as.numeric() * 1000000,
+                             marketcap2),
+         marketcap2 = ifelse(str_detect(marketcap, "B"),
+                             marketcap %>% str_remove("B") %>% as.numeric() * 1000000000,
+                             marketcap2),
+         marketcap2 = ifelse(str_detect(marketcap, "T"),
+                             marketcap %>% str_remove("T") %>% as.numeric() * 1000000000000,
+                             marketcap2),
+         marketcap2 = marketcap2 %>% str_remove(",") %>%  as.numeric(marketcap2))
 ```
 
 ## By organization type 
@@ -489,51 +519,315 @@ d %>% group_by(comment_agency) %>%
 
 ---
 
-#  By organization resources
+# Participation by organization resources
 
 ---
 
-## By Assets
+## Among organizations that commented on a Dodd-Frank rule
 
-(FDIC data)
+```{r asset-counts, fig.width=4, out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(assets = org_resources) %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .99),
+         assets_m = assets /1000000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"))
 
-### Among firms that commented on a Dodd-Frank rule
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_histogram() + 
+  labs(title = "Banks and Nonprofits",
+       y = "Number of Organizations",
+       fill = "Frequency of\nCommenting",
+       x = "Dodd-Frank Rules per Organization") #+ scale_y_log10()
+  
 
-```{r fdic-comment-counts, fig.width=4, out.width= "50%"}
-max <- org_count %>%   filter(org_type == "FDIC") %>% pull(n) %>% max()
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Banks and Nonprofits",
+       fill = "Frequency of\nCommenting",
+       y = "", 
+       x = "Assets (Millions)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
 
-org_count %>% 
-  filter(org_type == "FDIC") %>% 
-  ggplot() +
-  aes(x = org_resources,
-      y = n) + 
-  geom_point(alpha = .5) + 
-  geom_smooth() +
-  labs(x = "Assets",
-       y = "Number of Comments") +
-  lims(y =c(0, max))+ 
-  scale_x_log10(breaks = breaks_log())
 
-# by agency
-max <- org_count_agency %>%   filter(org_type == "FDIC") %>% pull(n) %>% max()
+m_asset_count <- lm(n ~ assets_b, data = asset_counts)
 
-org_count_agency %>% 
-  filter(org_type == "FDIC") %>% 
-  ggplot() +
-  aes(x = org_resources,
-      y = n) + 
-  geom_point(alpha = .5) + 
-  geom_smooth() +
-  labs(x = "Assets",
-       y = "Number of Comments") +
-  lims(y =c(0, max)) + 
-    facet_wrap("Agency") + 
-  scale_x_log10(breaks = breaks_log())
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Rules",
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(m_asset_count)
+```
+
+
+For every additional 10 billion in assets, an organization comments on about `r round(m_asset_count$coefficients[2]* 10,0) ` additional rules. 
+
+---
+
+### Among nonprofits that commented on a Dodd-Frank rule
+
+```{r nonprofit-rules, fig.width=4, out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(assets = `nonprofits_resources-bestMatch:assets`) %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .99),
+         assets_m = assets /1000000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"))
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_histogram() + 
+  labs(title = "Nonprofits",
+       y = "Number of Nonprofits",
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Nonprofits",
+       fill = "", y = "", x = "Assets (Millions)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_nonprofit_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules",
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(m_nonprofit_count)
+```
+
+
+For every additional 10 billion in assets, a nonprofit comments on about `r round(m_nonprofit_count$coefficients[2]* 10,1) ` additional rules. 
+
+---
+
+
+### Among FDIC-insured that commented on a Dodd-Frank rule
+
+```{r fdic-rules, fig.width=4, out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(assets = `FDIC_Institutions-bestMatch:ASSET`) %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .99),
+         assets_m = assets /1000000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"))
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_histogram() + 
+  labs(y = "Number of Banks",
+       title = "FDIC-Insured Banks",
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "FDIC-Insured Banks",
+       fill = "Frequency of\nCommenting",
+       y = "", x = "Assets (Millions)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_fdic_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules"
+  )
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(list(m_fdic_count))
+```
+
+
+For every additional 10 billion in assets, a nonprofit comments on about `r round(m_fdic_count$coefficients[2]* 10,0) ` additional rules. 
+
+
+---
+
+
+### Among publically-traded companies that commented on a Dodd-Frank rule
+
+```{r compustat-rules, fig.width=4, out.width= "50%"}
+# compustat-rules
+
+
+# combine and count 
+asset_counts <- d %>% 
+  mutate(marketcap = marketcap2) %>% 
+  filter(marketcap > 10) %>%
+  distinct(org_name, docket_id, marketcap) %>% 
+  count(org_name, marketcap) %>% 
+  filter(!is.na(marketcap)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         marketcap_t = marketcap /1000,
+         marketcap_m = marketcap_t /1000,
+         marketcap_b = marketcap_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"))
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_histogram() + 
+  labs(y = "Number of Companies",
+       title = "Publicaly-Traded Companies",
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = marketcap, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Publicaly-Traded Companies",
+       fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_compustat_count <- lm(n ~ marketcap_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules"
+  )
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(list(m_compustat_count))
+```
+
+
+For every additional 10 billion in assets, a nonprofit comments on about `r round(m_compustat_count$coefficients[2]* 10,0) ` additional rules. 
+
+---
+### Among campaign donors that commented on a Dodd-Frank rule
+
+```{r opensecrets-rules, fig.width=4, out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(donations = `opensecrets_resources_jwVersion-bestMatch:MeanContribAmountPerYearContributed`) %>% 
+  filter(donations > 10) %>%
+  distinct(org_name, docket_id, donations) %>% 
+  count(org_name, donations) %>% 
+  filter(!is.na(donations)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         donations_m = donations / 1000000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"))
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_histogram() + 
+  labs(title = "Campaign Donors",
+       y = "Number of Organizations",
+       fill = "",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = donations_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Campaign Donors",
+       fill = "", y = "", x = "PAC Donations (Thousands)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_opensecrets_count <- lm(n ~ donations_m, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules",
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(m_opensecrets_count)
+```
+
+
+For every additional 10 million in Political Action Committee campaing donations, an organization comments on about `r round(m_opensecrets_count$coefficients[2]* 10,0) ` additional rules. 
+
+---
+
+### All
+
+```{r all-rules}
+
+models <- list(#`All` = m_asset_count, 
+               `Banks` = m_fdic_count,
+               `Nonprofits` = m_nonprofit_count,
+               `Firms` = m_compustat_count,
+               `PAC Donors` = m_opensecrets_count)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  #`All` = "Number of Rules",
+    `Banks` = "Number of Rules",
+      `Nonprofits` = "Number of Rules",
+  `Firms` = "Number of Rules",
+    `PAC Donors` = "Number of Rules",
+  )
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+save(models, rows, cm, gof_map,
+     file = here::here("models", "rules-by-assets.Rdata"))
 ```
 
 ---
 
-### Comparing firms that did and did not comment on Dodd-Frank rules
+## Comparing firms that did and did not comment on Dodd-Frank rules
 
 
 ```{r FDIC-density, fig.height=1.5, fig.width=4, out.width="50%"}
@@ -1512,18 +1806,6 @@ FDIC_resources %<>% mutate(Class = str_c(" ", BKCLASS) %>% as.factor() %>% relev
 
 unique(FDIC_resources$BKCLASS)
 
-
-cm = c("ASSET" = "Assets",
-       "ASSETS" = "Assets (Hundreds of Millions)",
-       "Assets" = "Assets (Billions)",
-       "Class SM" = "State Bank",
-       "Class SB" = "Savings Bank",
-       "Class SA" = "Savings Association",
-       "Class NM" = "Commercial Bank",
-       "ASSETS:Class SM" = "Assets x State Bank",
-       "ASSETS:Class SB" = "Assets x Savings Bank",
-       "ASSETS:Class SA" = "Assets x Savings Association",
-       "ASSETS:Class NM" = "Assets x Commercial Bank")
 ```
 
 
@@ -1690,11 +1972,10 @@ modelsummary(models)
 ### By Market Cap
 ```{r mp-compustat}
 compustat %<>% mutate(commented = Commented == "Commented",
-                      marketcapB = marketcap2/1000000000)
+                      marketcap_b = marketcap2/1000000000)
 
-cm = c("marketcapB" = "Market Capitalization (Billions)")
 
-mpCompustat <- glm(commented ~ marketcapB,
+mpCompustat <- glm(commented ~ marketcap_b,
            data = compustat, 
              family=binomial(link="logit"))
 
