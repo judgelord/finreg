@@ -38,11 +38,12 @@ biblio-title: "Refrences"
 link-citations: yes
 citecolor: black
 urlcolor: black
+# output: word_document
 output_file: "docs/paticipatory-inequality.pdf"
-output: 
+output:
   pdf_document:
     keep_tex: true
-    template: assets/article-template.tex 
+    template: assets/article-template.tex
 anonymous: false
 ---
 
