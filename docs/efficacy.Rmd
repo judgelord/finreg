@@ -1,6 +1,6 @@
 ---
-title: "Efficacy  in Financial Rulemaking"
-#subtitle: "Appendix and Replication Code" 
+title: "Efficacy in Financial Rulemaking"
+#subtitle: "Appendix and Replication Code"
 output:
     bookdown::html_document2:
       highlight: zenburn
@@ -8,15 +8,6 @@ output:
       toc_float: true
       code_folding: hide
       number_sections: false
-# output:
-#   xaringan::moon_reader:
-#     lib_dir: libs
-#     mathjax: "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"
-#     css: xaringan-themer.css
-#     nature:
-#       highlightStyle: github
-#       highlightLines: true
-#       countIncrementalSlides: false
 ---
 
 
@@ -870,10 +861,10 @@ models <- list(mt_assets, mt_marketcap)
 # modelsummary(models)
 
 modelplot( mt_opensecrets) + theme(legend.position = "none") +  
-  labs(x = "Additional Technical and Legal Terms per Ten Thousand Dollars")
+  labs(x = "Additional Technical Terms per Ten Thousand Dollars")
 
 modelplot(mt_marketcap) + theme(legend.position = "none") + 
-  labs(x = "Additional Technical and Legal Terms per Ten Billion Dollars")
+  labs(x = "Additional Technical Terms per Ten Billion Dollars")
 ```
 
 ---
@@ -902,13 +893,13 @@ models <- list(mea_assets, mea_opensecrets, mea_marketcap)
 #modelsummary(models)
 
 modelplot( mea_assets) + theme(legend.position = "none") +  
-  labs(x = "Additional Words Added to Final Rule per Million Dollars")
+  labs(x = "Words Added to Final Rule per Million Dollars")
 
 modelplot( mea_opensecrets) + theme(legend.position = "none") +  
-  labs(x = "Additional Words Added to Final Rule per Thousand Dollars")
+  labs(x = "Words Added to Final Rule per Thousand Dollars")
 
 modelplot(mea_marketcap) + theme(legend.position = "none") +  
-  labs(x = "Additional Words Added to Final Rule per Million Dollars")
+  labs(x = "Words Added to Final Rule per Million Dollars")
 ```
 
 
@@ -943,16 +934,16 @@ attr(rows, 'position') <- c(0)
 # modelsummary(models)#, gof_map = gm)
 
 modelplot(mes_terms) + theme(legend.position = "none") +  
-  labs(x = "Additional Words Added to Final Rule per Technical Term")
+  labs(x = "Words Added to Final Rule per Technical Term")
 
 modelplot( mes_bluebook ) + theme(legend.position = "none") +  
-  labs(x = "Additional Words Added to Final Rule per Legal Citation")
+  labs(x = "Words Added to Final Rule per Legal Citation")
 
 modelplot(mes_terms_bluebook ) + theme(legend.position = "none") +  
-  labs(x = "Additional Words Added to Final Rule")
+  labs(x = "Words Added to Final Rule")
 
 modelplot(models) + theme(legend.position = "none") +  
-  labs(x = "Additional Words Added to Final Rule")
+  labs(x = "Words Added to Final Rule")
 ```
 
 
