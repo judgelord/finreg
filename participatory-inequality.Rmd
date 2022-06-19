@@ -41,7 +41,7 @@ urlcolor: black
 # output: word_document
 output_file: "docs/paticipatory-inequality.pdf"
 output:
-  pdf_document:
+  bookdown::pdf_document2:
     keep_tex: true
     template: assets/article-template.tex
 anonymous: false
@@ -58,7 +58,7 @@ source("code/setup.R")
 Studies of political inequality have revealed profound and durable patterns of disproportionate influence of wealthier citizens on lawmaking processes, which @Gilens2012 calls the influence of affluence. Critical work in American politics by @Bartels2008, @Baumgartner2009, @Hacker2010, @Gilens2012, @Skocpol2004, and @Schlozman2012, among others, documents ties between economic and political inequality. Relatedly, @Piketty2014 and others in economics and the social sciences have demonstrated rising capital-based wealth inequality over the twentieth century, especially in the United States [e.g., @Saez2020]. 
 
 In contrast to the wealth of literature on inequality in lawmaking, however, research on inequality in administrative democracy is sparse, especially when one considers the bureaucracy’s most powerful policy tool: rulemaking [but see, e.g., @Potter2019; @Kerwin2018; @Haeder2015,@YackeeJOP2006]. Research suggests that firms spend hundreds of millions lobbying after a bill has passed, both in the legislature and in the agencies entrusted to implement the legislation [@You2017; @Libgober2020]. Legislators who receive more corporate Political Action Committee (PAC) money from companies are much more likely to lobby federal agencies on behalf of those companies [@Powell2022].
-These rules are meaningful to the public, as well as to the courts. Through the writing of rules, agencies convert congressional intent into enforci policies with real human and economic effects.  Given the scale and importance of bureaucratic policymaking and the large volume of data on business and interest group participation, rulemaking presents opportunities to study inequalities in policy influence [@Carpenter2020].
+These rules are meaningful to the public, as well as to the courts. Through the writing of rules, agencies convert congressional intent into enforce policies with real human and economic effects.  Given the scale and importance of bureaucratic policymaking and the large volume of data on business and interest group participation, rulemaking presents opportunities to study inequalities in policy influence [@Carpenter2020].
 
 *When policymaking occurs in the administrative realm, do inequalities in the legislative process persist or morph? Are they magnified or reduced?* We present a suite of measurement and analysis tools that permit identification of organizational commenting, measurement of commenter wealth and comment sophistication, and links between wealth, sophistication and influence.
 In this expansive study of financial rulemaking, we draw upon a database of over 300,000 comments submitted to U.S. agencies tasked with implementing the Dodd-Frank Wall Street Reform and Consumer Protection Act of 2010 (hereafter Dodd-Frank). Our data cover over eight hundred regulatory actions^[We define a regulatory action as the publication of a proposed or final rule by one agency. For accounting purposes, we consider a joint rule issued by the SEC and the Federal Reserve as two regulatory actions.] such as proposed and final rules on 239 discrete rulemakings. The Dodd-Frank Act has the advantage of spurring historically abundant and significant rulemaking activity and, correspondingly, significant mobilization of interests to shape those rules. Beyond its provision of granular data, however, financial policymaking offers another reason for studying inequality - finance is perhaps an unparalleled site of interaction between economic inequality and unequal democracy. 
@@ -194,7 +194,7 @@ To assess the extent of inequality in rulemaking implementing the Dodd-Frank Act
 
 ## Rules
 
-Rulemaking involves a series of related regulatory actions. Figure \ref{fig:actions} shows policy the number of actions that key agencies took to implement the Dodd-Frank Act from 2009 to 2018. These actions include advance notices of proposed rulemaking (ANPRMs), proposed rules (NPRMs), interim rules, final rules, and others. Multiple of each kind of action may appear in some rulemakings, but none necessarily appears in any rulemaking. The range of possible action sequences creates semantic challenges for social scientists. Defining operationally how many rules were made or in the making by financial regulators sometimes requires complex choices.  In our study, we define a "rulemaking" (or "rule") as a set of regulatory actions that are connected via shared Regulation Identifier Number (RIN).^[RINs are assigned by OIRA to (almost) all actions by each agency and are usually preserved through rulemaking. We consider two RINs to be "directly connected" if there is a regulatory action (i.e., a document like a proposed rule) where those RINs appear together. Two RINs are "indirectly connected" or more simply "connected" if there is a way to start from one RIN and go from direct connection to direct connection and eventually arrive at the other RIN.] Using this definition, we found that between 2010 and July 8, 2018, there were 239 rulemakings by 21 regulators involving 802 regulatory actions. Some agencies, like the Department of Veterans Affairs, were not involved in more than a small number of rules. When they were, they usually engaged in a collaborative fashion with other agencies. Therefore, for the purposes of collecting data on comments, we focused our attention on the primary financial regulators: the Federal Reserve, the Consumer Financial Protection Bureau, the Securities and Exchange Commission, the Commodity Futures Trading Commission, the Federal Deposit Insurance Corporation, and the Office of the Comptroller of the Currency, and the National Credit Union Administration **TODO: CHECK THIS LIST AFTER JACOB UPDATES THE MATCHED DATA FROM MASTER.SQL**.  
+Rulemaking involves a series of related regulatory actions. Figure \ref{fig:actions} shows policy the number of actions that key agencies took to implement the Dodd-Frank Act from 2009 to 2018. These actions include advance notices of proposed rulemaking (ANPRMs), proposed rules (NPRMs), interim rules, final rules, and others. Multiple of each kind of action may appear in some rulemakings, but none necessarily appears in any rulemaking. The range of possible action sequences creates semantic challenges for social scientists. Defining operationally how many rules were made or in the making by financial regulators sometimes requires complex choices.  In our study, we define a "rulemaking" (or "rule") as a set of regulatory actions that are connected via shared Regulation Identifier Number (RIN).^[RINs are assigned by OIRA to (almost) all actions by each agency and are usually preserved through rulemaking. We consider two RINs to be "directly connected" if there is a regulatory action (i.e., a document like a proposed rule) where those RINs appear together. Two RINs are "indirectly connected" or more simply "connected" if there is a way to start from one RIN and go from direct connection to direct connection and eventually arrive at the other RIN.] Using this definition, we found that between 2010 and July 8, 2018, there were 239 rulemakings by 21 regulators involving 802 regulatory actions. Some agencies, like the Department of Veterans Affairs, were not involved in more than a small number of rules. When they were, they usually engaged in a collaborative fashion with other agencies. Therefore, for the purposes of collecting data on comments, we focused our attention on the primary financial regulators: the Federal Reserve, the Consumer Financial Protection Bureau, the Securities and Exchange Commission, the Commodity Futures Trading Commission, the Federal Deposit Insurance Corporation, and the Office of the Comptroller of the Currency, and the National Credit Union Administration <!--**TODO: CHECK THIS LIST AFTER JACOB UPDATES THE MATCHED DATA FROM MASTER.SQL**.  -->
 For each Dodd-Frank rulemaking that reached the stage of a proposed or final rule, we collected draft and final policies from the Federal Register.
 
 
@@ -330,7 +330,7 @@ knitr::include_graphics("figs/FDIC-count-by-class-4.png")
 
 Moreover, when we assess the odds of commenting among different types of FDIC banks,  we find find that Commercial Banks, State Banks, and Savings Banks are much more likely to comment than Saving Associations. Commercial banks are often large multinational corporations managed by a board selected by shareholders. In contrast Savings Associations are chartered with the narrow purpose of providing affordable residential mortgages. While both types of banks may hold large volumes of assets, Banks and Savings Associations serve different clients. Figure \ref{fig:mpFDIC} shows that banks that serve corporations and wealthier clients were disproportionately represented in Dodd-Frank rulemaking, and that savings associations were less represented, even controlling for differences in assets. Likewise, assets remains a significant predictor of whether an organization comments, even controling for differences in the type of institution. This supports the *Differential Participation* Hypothesis (H1), specifically H1.3.
 
-```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="80%"}
+```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="90%"}
 #TODO Make predicted probablity plots showing that all kinds of banks are more likley to comment when wealthier
 knitr::include_graphics(
 "figs/mpFDIC-1.png")
@@ -341,13 +341,14 @@ knitr::include_graphics(
 ### Wealthier organizations are more likely to participate
 
 
-```{r mp-assets, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Assets", out.width="80%"}
+```{r mp-assets, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Assets", out.width="90%"}
 knitr::include_graphics(
 "figs/mp-nonprofit-credit-unions-1.png")
 ```
 
 
-Figure \ref{fig:mp-assets} shows the results of three logit models predicting the log odds of commenting on a Dodd-Frank rules by assets for FDIC-Insured banks, credit unions, and nonprofits. Aligned with descriptive results above, wealthier organizations of all three types are more likely to comment. Of these three types of organizations, the marginal effect of assets on the log odds of commenting is largest for banks. 
+
+Figure \ref{fig:mp-assets} and Table \ref{tab:mp-assets-table} show the results of three logit models predicting the log odds of commenting on a Dodd-Frank rules by assets for FDIC-Insured banks, credit unions, and nonprofits. Aligned with descriptive results above, wealthier organizations of all three types are more likely to comment. Of these three types of organizations, the marginal effect of assets on the log odds of commenting is largest for banks. 
 
 
 
@@ -373,34 +374,35 @@ The main takeaway from this analysis is that resources are correlated with the c
 
 ```{r, dockets-percentile, fig.cap="Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
 knitr::include_graphics(c(
-  "figs/fdic-rules-2.png",
-    "figs/nonprofit-rules-2.png",
-  "figs/compustat-rules-2.png",
-  "figs/opensecrets-rules-2.png"
+  "figs/fdic-rules-3.png",
+    "figs/nonprofit-rules-3.png",
+  "figs/compustat-rules-3.png",
+  "figs/opensecrets-rules-3.png"
 ))
 ```
 
 Figure \ref{fig:dockets-percentile} shows that organizations that comment on more rulemaking dockets tend to be wealthier.^[
-Note that this does not necessarily imply that wealthier organizations submit more comments. Many wealthy organizations only submit one comment per rulemaking docket. Organizations may submit many comments on the same rule as a form of public pressure [see @judgelord2019]. For example, Axcess Financial (a payday lending company) and Advance Financial (a credit union) both mobilized over 1000 comments from their stores on the Consumer Financial Protection Bureau's Payday Loan Rule. Mobilizing public pressure on one rule is different from lobbying on many rules. Our analysis here focuses on the latter--the bredth, not the amplituded of lobbying.] 
-More specifically, it shows that organizations that comment infrequently are more likely to have less financial resources.
+Note that this does not necessarily imply that wealthier organizations submit more comments. Many wealthy organizations only submit one comment per rulemaking docket. Organizations may submit many comments on the same rule as a form of public pressure [see @judgelord2019SPSA]. For example, Axcess Financial (a payday lending company) and Advance Financial (a credit union) both mobilized over 1000 comments from their stores on the Consumer Financial Protection Bureau's Payday Loan Rule. Mobilizing public pressure on one rule is different from lobbying on many rules. Our analysis here focuses on the latter--the breadth, not the amplituded of lobbying.] 
+More specifically, it shows that organizations that comment infrequently (most organizations) are more likely to have less financial resources.
+In contrast, the small number of most frequent commenters tend to have more wealth. 
+The top-left panel of Figure \ref{fig:dockets-percentile} shows that a large number of the banks in the top one percent of most frequent commenters (the select few that commented on more than 5 rules) had assets over a million dollars, many as much as 100 million nearly all FDIC-Insured banks in the bottom 99 percentiles of most frequent commenters (those commenting on 5 or fewer rules) had assets under a million dollars.
+The top-right panel of Figure \ref{fig:dockets-percentile} shows that most of the nonprofits in the top one percent of most frequent commenters had assets over ten million dollars, while nonprofits in the bottom 99 percentiles of most frequent commenters had assets under ten million dollars.
+The bottom-left panel of Figure \ref{fig:dockets-percentile} shows that most of the firms in the top ten percent of most frequent commenters had market capitalization over ten billion dollars, while most firms in the bottom 99 percentiles of most frequent commenters had market capitalization under ten billion dollars.
+The bottom-right panel of Figure \ref{fig:dockets-percentile} shows that most of the campaign donors in the top ten percent of most frequent commenters donated over a thousand dollars, while most doners in the bottom 99 percentiles of most frequent commenters donated less than one thousand dollars.
+ In line with Hypothesis 2.5, frequent commenters tend to be wealthy organizations.
 
-In contrast, the top five percent of the most frequent commenters tend to have well over ten million dollars in assets. Organizations in the top percentile of most frequent commenters have assets closer to 100 million dollars on average. A substantial share of organizations that are in the top ten percent of most frequent commenters have over $10 billion in assets, while only a tiny share bottom fifty percent of commenters have that level of wealth. In line with Hypothesis 2.5, frequent commenters tend to be wealthy organizations.
 
-
-```{r}
+```{r rules-by-assets, caption}
 # models of number of rules commented on by assets
 load(here::here("models", "rules-by-assets.Rdata"))
-     
-modelsummary::modelsummary(models,
-             gof_map = gof_map,
-             coef_map = cm,
-             add_rows = rows,
-             stars = T,
-             gof_omit = "R.*|A.*|B.*") %>% 
-  kableExtra::kable_styling(latex_options = "scale_down") %>%
-  row_spec(row = 1, bold = T)
+
+modelsummary(models, caption = "Number of Dockets Commented on by Assets")  %>% 
+  kableExtra::kable_styling(latex_options = c("scale_down"))     
 ```
 
+
+Table \@ref(tab:rules-by-assets) shows that the means between the distributions shown in Figure \ref{fig:dockets-percentile} are statistically significant for FDIC-insured banks and campaign donors.
+For every additional billion dollars in assets under management, banks commented on about 12 additional Dodd-Frank rules on average. Likewise, each additional three million in Political Action Committee donations correlates with commenting on one additional rule. <!--TODO: CHECK THESE COEFICIENTS AFTER UPDATE--> 
 
 ### Wealthier companies are more sophisticated at lobbying
 
@@ -463,7 +465,7 @@ To investigate our proposed mechanism for unequal influence, we assess the relat
 We find that legal citations and technical terms are highly correlated with efficacy.
 Figure \ref{fig:repeated-text-bluebook} shows that comments that use more sophisticated legal and technical language are more likely to contain phrases that were added to the final rule. This aligns with the *Dividends of Sophistication* Hypothesis (H4). We measure the sophistication of comments in two ways and observe similar results. The top panel of Figure \ref{fig:repeated-text-bluebook} shows a positive correlation between the number of legal and banking terms and the amount of text a comment shares with the final rule. To capture sophistication with respect to the use of finance and banking jargon, we use the Oxford Dictionary of Finance and Banking, which includes 5260 finance and banking terms. To capture sophistication with respect to legal jargon, we use the Merriam-Webster law dictionary, which includes 10,172 legal terms. 
 
-```{r efficacy-sophstication, out.width="80%",  fig.cap="Estimated Efficacy of Legal and Technical Language"}
+```{r efficacy-sophistication, out.width="80%",  fig.cap="Estimated Efficacy of Legal and Technical Language"}
 knitr::include_graphics("figs/mes-1.png")
 knitr::include_graphics("figs/mes-2.png")
 ```
@@ -503,9 +505,12 @@ Our finding that wealthier companies generally advance more sophisticated commen
 
 Finally, we have shown that corporate wealth is also positively correlated with the best available quantitative measures of commenter influence. Given previous research and our analysis into commenter sophistication, this finding may not be surprising, but the magnitude of these relationships have implications for future research and policy reforms. 
 
+\clearpage
+
+
 # Appendix {-}
 
-> Do we prefer this to the density plots? 
+**QUESTION** Do we prefer these count plots to the density plots in Figure \ref{fig:commenters-noncommenters}? These take up a bit more space, but they have the means and medians on the plot. 
 
 ```{r, commenters-noncommenters-counts, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/nonprofit-count-1.png")
@@ -525,6 +530,28 @@ knitr::include_graphics(c(
   "figs/compustat-rules-1.png",
   "figs/opensecrets-rules-1.png"
 ))
+```
+
+```{r, dockets-percentile-five, fig.cap="Frequent and Infrequent Commenters (By the Number of Dockets on Which each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
+knitr::include_graphics(c(
+  "figs/fdic-rules-2.png",
+    "figs/nonprofit-rules-2.png",
+  "figs/compustat-rules-2.png",
+  "figs/opensecrets-rules-2.png"
+))
+```
+
+\clearpage
+
+Table \ref{tab:mp-assets-table} presents the full the regression table for models shown in Figure \ref{fig:mp-assets}.
+
+```{r mp-assets-table}
+# models of number of rules commented on by assets
+load(here::here("models", "pr-of-comment.Rdata"))
+
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule")  %>% kableExtra::kable_styling(latex_options = c("scale_down"))
+    #FIXME sometimes scale_down causes an error 
+  
 ```
 
 \clearpage

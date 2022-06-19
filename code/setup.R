@@ -8,7 +8,7 @@ requires <- c("bookdown",
               #"msm",
               "kableExtra",
               "modelsummary",
-              "dotwhisker",
+              #"dotwhisker",
               "mediation",
               "lme4",
               "lmerTest",
@@ -16,7 +16,6 @@ requires <- c("bookdown",
               "flextable",
               #"magick",
               "equatiomatic",
-              "latex2exp",
               #"tidytext",
               "latex2exp")
 to_install <- c(requires %in% rownames(installed.packages()) == FALSE)
@@ -35,8 +34,10 @@ library(kableExtra)
 #library(lme4)
 #library(lmerTest)
 #library(fixest)
-#library(modelsummary)
+library(modelsummary)
 library(tidyverse)
+library(modelsummary)
+library(kableExtra)
 
 fig.path <- here("figs/")
 
