@@ -988,7 +988,8 @@ mediator = "Total_Legal_Citations")
 
 summary(med.cont)
 
-plot(med.cont)#, main = "Legal Citations as a Mediator of Assets")
+plot(med.cont, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success", 
+     xlab = "Words from Comment Added to Final Rule")
 #modelplot(med.cont) + labs()
 ```
 
@@ -1021,11 +1022,13 @@ mediator = "dictionary_terms")
 
 summary(med.cont)
 
-plot(med.cont)#, main = "Technical Terms as a Mediator of Assets")
+plot(med.cont, 
+     main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule")
 ```
 
 ### Market cap x legal citations
-```{r mediation-marketcap-bluebook, fig.width=5, fig.height=4}
+```{r mediation-marketcap-bluebook, fig.width=4, fig.height=3}
 # model predicting mediator, sophistication 
 model.m <- lm(Total_Legal_Citations ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
@@ -1053,7 +1056,9 @@ mediator = "Total_Legal_Citations")
 
 summary(med.cont)
 
-plot(med.cont)#, main = "Legal Citations")
+plot(med.cont, 
+     main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule")
 ```
 
 
@@ -1086,7 +1091,9 @@ mediator = "dictionary_terms")
 
 summary(med.cont)
 
-plot(med.cont)#, main = "Techical Terms as a Mediator")
+plot(med.cont, 
+     main = "Techical Terms as a Mediator Between\nAssets and Lobbying Success",     
+     xlab = "Words from Comment Added to Final Rule")
 ```
 
 ### Market cap x technical terms  x legal citations 
@@ -1124,14 +1131,16 @@ mediator = "dictionary_terms")
 
 summary(med.cont)
 
-plot(med.cont)
+plot(med.cont, main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule")
 
 med.cont <- mediate(model.m2, model.y, sims=1000, treat = "marketcap2",
 mediator = "Total_Legal_Citations")
 
 summary(med.cont)
 
-plot(med.cont)
+plot(med.cont, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule")
 
 #FI
 # modelsummary::modelsummary(med.cont)
