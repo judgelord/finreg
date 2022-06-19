@@ -487,12 +487,12 @@ To investigate whether legal and technical language use explains the correlation
 We find that the bulk of the relationship between wealth and efficacy can be attributed to the use of technical and legal citations. Market capitalization is highly correlated with using technical terms, which are associated with efficacy. Causal mediation analysis suggests that much of the effect of market capitalization on efficacy results from the use of technical and legal terms.
 In a model with legal citations as the mediator (Figure \ref{fig:mediation-bluebook}), the Average Conditional Marginal Effect is nearly identical to the Total Effect of market capitalization on efficacy. In a model with technical terms as the mediator (Figure \ref{fig:mediation-terms}), the Average Conditional Marginal Effect is a large share (69.4%)  of the Total Effect of market capitalization on efficacy.
 
-```{r mediation-bluebook, out.width="80%",  fig.cap="Legal Citations as a Proposed Mediator Between Wealth and Efficacy"}
+```{r mediation-bluebook, out.width="60%",  fig.cap="Legal Citations as a Proposed Mediator Between Wealth and Efficacy"}
 # TODO DEVIN WILL INSERT mediation-bluebook from https://judgelord.github.io/finreg/efficacy#Market_cap_x_legal_citations
 knitr::include_graphics("figs/mediation-marketcap-bluebook-1.png")
 ```
 
-```{r mediation-terms, out.width="80%",  fig.cap="Technical Language as a Proposed Mediator Between Wealth and Efficacy"}
+```{r mediation-terms, out.width="60%",  fig.cap="Technical Language as a Proposed Mediator Between Wealth and Efficacy"}
 # TODO DEVIN WILL INSERT mediation-terms from https://judgelord.github.io/finreg/efficacy#Market_cap_x_legal_citations
 
 knitr::include_graphics("figs/mediation-marketcap-terms-1.png")
@@ -511,6 +511,12 @@ Finally, we have shown that corporate wealth is positively correlated with the b
 
 
 # Appendix {-}
+
+```{r, docket-table, fig.cap="Dockets and Comments Matched to Asset Data by Agency"}
+knitr::include_graphics("figs/docket-table-1.png")
+```
+
+\clearpage
 
 **QUESTION** Do we prefer these count plots to the density plots in Figure \ref{fig:commenters-noncommenters}? These take up a bit more space, but they have the means and medians on the plot. 
 

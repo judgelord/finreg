@@ -233,7 +233,7 @@ names(rin_lookup) %<>% str_remove(".lookup")
 
 Summary table data here: 
 
-```{r docket_table, fig.height=5.5, fig.width=5.4, out.width="80%"}
+```{r docket-table, fig.height=5.5, fig.width=5.4, out.width="80%"}
 # clean match data from finreg_commenter_covariates
 docket_table <- read_csv(here::here("data", "matches_per_docket.csv"))
 
