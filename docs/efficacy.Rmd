@@ -384,7 +384,7 @@ technical_terms_attachments %>% count(comment_url, sort = T)
 
 ### Join sophistication and asset data
 
-```{r sophistication-assets-join}
+```{r sophistication-assets-join, fig.height=3.5, fig.width=4}
 # Join 
 d %<>% 
   left_join(bluebook %>% dplyr::select(comment_url, Total_Legal_Citations)) %>% 
@@ -402,6 +402,198 @@ d %>%
 # FIXME Missing as of May 2022
 # bluebook %>% filter(str_detect(comment_url, "CFPB-2019-0021-0406"))
 # technical_terms %>% filter(str_detect(comment_url, "CFPB-2019-0021-0406"))
+
+
+#FIXME DROP BAD EFFICACY COMMENTS
+efficacy%<>% filter(!comment_url %in% c(
+  "https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=23750",
+  "https://www.regulations.gov/comment/CFPB-2012-0029-0054"
+))
+
+
+# look for outliers 
+efficacy %>% arrange(-efficacy) %>% kablebox(
+)
+
+technical_terms %>% 
+      dplyr::select(comment_url, dictionary_terms) %>% 
+  arrange(-dictionary_terms) %>% kablebox()
+
+#FIXME DROP BAD TECHICAL TERM MEASURE 
+technical_terms %<>% filter(!comment_url %in% c(
+  "https://www.regulations.gov/comment/OCC-2013-0008-0028"
+))
+
+#FIXME DROP BAD TECHICAL TERM MEASURE 
+technical_terms %<>% filter(!comment_url %in% c(
+  "https://www.regulations.gov/comment/OCC-2013-0008-0028"
+))
+
+bluebook %>% 
+      dplyr::select(comment_url, Total_Legal_Citations) %>% 
+  arrange(-Total_Legal_Citations) %>% kablebox()
+  
+efficacyXsophistication <- bluebook %>% 
+  dplyr::select(comment_url, Total_Legal_Citations) %>% drop_na(Total_Legal_Citations) %>% 
+  left_join(
+    technical_terms %>% 
+      dplyr::select(comment_url, dictionary_terms)
+  ) %>% 
+  left_join(efficacy) %>% 
+  mutate(efficacy = replace_na(efficacy, 0),
+         org = ifelse(comment_url %in% d$comment_url, "Matched organization", "Individual or\nunmatched organization") )
+```
+
+### Matched vs. unmatched comments
+
+```{r matched-by-terms, fig.height=3.5, fig.width=5}
+# matched-by-terms
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = dictionary_terms, fill = org) +
+  geom_histogram() + 
+  facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_y_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Number of Comments",
+       x = "Technical Terms in Comment",
+       fill = "") 
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = dictionary_terms, fill = org) +
+  geom_density(alpha = .5, color = NA) + 
+  #facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_x_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "",
+       x = "Technical Terms in Comment",
+       fill = "") 
+
+```
+
+
+
+```{r matched-by-bluebook, fig.height=3.5, fig.width=5}
+#  matched-by-bluebook
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = Total_Legal_Citations, fill = org) +
+  geom_histogram() + 
+  facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_y_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Number of Comments",
+       x = "Legal Citations in Comment",
+       fill = "") 
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = Total_Legal_Citations, fill = org) +
+  geom_density(alpha = .5, color = NA) + 
+  #facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_x_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "",
+       x = "Legal Citations in Comment",
+       fill = "") 
+```
+
+```{r matched-by-efficacy, fig.height=3.5, fig.width=5}
+# matched-by-efficacy
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = efficacy, fill = org) +
+  geom_histogram() + 
+  facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_y_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Number of Comments",
+       x = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
+       fill = "") 
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = efficacy, fill = org) +
+  geom_density(alpha = .5, color = NA) + 
+  #facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_x_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Number of Comments",
+       x = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
+       fill = "") 
+```
+
+### Efficacy by Sophistication 
+
+
+```{r efficacyXsophistication, fig.height=3.5, fig.width=5}
+# efficacyXsophistication
+
+efficacyXsophistication %>% arrange(-efficacy) %>% kablebox()
+
+eXsplot <- efficacyXsophistication %>% # filter(efficacy > 0) %>% #FIXME 
+  ggplot() +
+  aes(x = dictionary_terms, y = efficacy) + 
+  geom_point(y = 10131, x = 7705, color = "grey", shape = 0, size = 3) +
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm") +
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
+       x = "Technical Terms in Comment",
+       color = "") +
+  theme(legend.position = "bottom")
+
+eXsplot + 
+  annotate(y = 10131, x = 7705, color = "grey", geom = "text", label = "Comment & Marked-up Draft Rule from\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = -0.05)
+
+eXsplot + 
+  scale_x_log10() +
+  scale_y_log10()
+
+# color 
+eXsplot + 
+  annotate(y = 10131, x = 7705, color = "grey", geom = "text", 
+           label = "Comment & Marked-up Draft Rule from\nU.S. Chamber of Commerce et al.", 
+           vjust = 1, hjust = -0.05) + 
+  aes(color = org) + labs(color = "")
+
+eXsplot + 
+  scale_x_log10() +
+  scale_y_log10() + 
+  aes(color = org)+ labs(color = "")
+
+# legal citations
+eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME 
+  ggplot() +
+  aes(x = Total_Legal_Citations, y = efficacy) + 
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm") +
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       color = "",
+       y = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
+       x = "Legal Citations in Comment") + 
+  geom_point(x = 31, y = 10131, color = "grey", shape = 0, size = 3)+
+  theme(legend.position = "bottom")
+
+
+eXsplot  + 
+  annotate(x = 31, y = 10131, color = "grey", geom = "text", label = "Comment & Marked-up Draft Rule from\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = -0.05)
+
+eXsplot + 
+  scale_x_log10() +
+  scale_y_log10()
+
+# color 
+eXsplot  + 
+  annotate(x = 31, y = 10131, color = "grey", geom = "text", label = "Comment & Marked-up Draft Rule from\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = -0.05)  + aes(color = org) + labs(color = "")
+
+eXsplot + 
+  scale_x_log10() +
+  scale_y_log10() + aes(color = org) + labs(color = "")
 ```
 
 ---
@@ -410,7 +602,7 @@ d %>%
 
 ---
 
-### number of comments per agency
+### Number of comments per agency
 
 Technical terms measured for `r d %>% filter(comment_url %in% technical_terms$comment_url) %>% nrow()` of `r nrow(d)` comments.
 
@@ -989,7 +1181,7 @@ mediator = "Total_Legal_Citations")
 summary(med.cont)
 
 plot(med.cont, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success", 
-     xlab = "Words from Comment Added to Final Rule")
+     xlab = "Words From Comment Added to Final Rule")
 #modelplot(med.cont) + labs()
 ```
 
