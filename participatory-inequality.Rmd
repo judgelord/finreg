@@ -137,7 +137,7 @@ Differential Lobbying Participation. Previous work suggests that wealthier organ
 
 ### Differential Lobbying Participation
 
-Previous work suggests that wealthier organizations, such as business firms, will participate in agency rulemaking via the submission of comments at a greater rate than other of less wealthy organized interests, such as labor and public interest organizations [YackeeJOP006]. Past research theorizes that the high costs associated with public comment submission is one reason for this bias. @Rossi1997 writes of the need to monitor the bureaucracy’s rulemaking activities, which can be complex and arcane, to know when and how to participate in regulation is being formulated [see also, @Kerwin2018]. @Yackee2019 implies that these high participation costs may be paid more readily by business interests, which often have hired lobbyists and government affairs offices to monitor agency rulemaking on their behalf [see also, @JewellJPART2006]. A separate rational driving differential comment participation by wealthy organizations focuses on the concentrated costs and benefits attached to lobbying on government regulations [see broadly, @Olson 1965; @Wilson1989]. Wealthier organizations, such as big publicly traded companies and large banks, will tend to have a more focused stake in financial regulations than organizations with more diffuse and varied constituencies, such as public interest groups. 
+Previous work suggests that wealthier organizations, such as business firms, will participate in agency rulemaking via the submission of comments at a greater rate than other of less wealthy organized interests, such as labor and public interest organizations [@Yackee2006]. Past research theorizes that the high costs associated with public comment submission is one reason for this bias. @Rossi1997 writes of the need to monitor the bureaucracy’s rulemaking activities, which can be complex and arcane, to know when and how to participate in regulation is being formulated [see also, @Kerwin2018]. @Yackee2019 implies that these high participation costs may be paid more readily by business interests, which often have hired lobbyists and government affairs offices to monitor agency rulemaking on their behalf [see also, @JewellJPART2006]. A separate rational driving differential comment participation by wealthy organizations focuses on the concentrated costs and benefits attached to lobbying on government regulations [see broadly, @Olson1965; @Wilson1989]. Wealthier organizations, such as big publicly traded companies and large banks (banks with assets over $10 billion), will tend to have a more focused stake in financial regulations than organizations with more diffuse and varied constituencies, such as public interest groups.[^We use the \$10 billion figure as it is what the FDIC used in 12 CFR 327.8(f) as a result of Dodd-Frank amending the the Federal Deposit Insurance Act.] 
 
 While past research implies reasons why a wealth disparity in rulemaking lobbying participation may exist across different organizational types (i.e., business firms versus public interest groups), in this article we focus on wealth differentials in lobbying participation within organizational type.  For example, we theorize that, even amongst for-profit firms, wealthier firms will participate in rulemaking via the submission of comments to financial rules more often than poorer firms. The theoretical rationales for this expection, we argue, remain the same as articulated above—wealthy organizations are better able to pay the costs of rulemaking participation and often have more concentrated stakes in the rule—however, by comparing similar organizations, we will be better able to isolate whether wealth inequality drives lobbying participation differences in financial rulemaking.
 
@@ -194,11 +194,9 @@ knitr::include_graphics("figs/actions-1.png")
 
 ## Organization Commments on Proposed Rules
 
-We identify `r `n_assets %>% prettyNum(big.mark = ",")` comments submitted by organizations that appear in one or more of the datasets described below. Although we collected the text for all comments on Dodd-Frank rules, our main analyses on comments from organizations that we were able to link to measures of organizational wealth and lobbying activity. Past research suggests that organizations and individuals tend to submit quite different types of comments to rules [@JewellJPART2006].We go one step further and focus on comparing commenting behavior among similar types of organizations. For example, we compare the commenting behavior of large banks to other large banks. We thus control for many of the known sources of variance in commenting behavior, yielding cleaner tests of our hypotheses. Practically, acquiring wealth information for all commenters, including thousands of individuals who submit form comments as part of mass comment campaigns with no little identifying information would have been impossible. Moreover, because nearly all individual commenters are mobilized by an organisation, form comments comments are best conceptualized as supporting the more sophisticated organizational comments that we focus on here [@judgelord2019SPSA].
+We identify `r `n_assets %>% prettyNum(big.mark = ",")` comments submitted by organizations that appear in one or more of the datasets described below. Although we collected the text for all comments on Dodd-Frank rules, our main analyses on comments from organizations that we were able to link to measures of organizational wealth and lobbying activity. Past research suggests that organizations and individuals tend to submit quite different types of comments to rules [@JewellJPART2006]. We go one step further and focus on comparing commenting behavior among similar types of organizations. For example, we compare the commenting behavior of large banks to other large banks. We thus control for many of the known sources of variance in commenting behavior, yielding cleaner tests of our hypotheses. Practically, acquiring wealth information for all commenters, including thousands of individuals who submit form comments as part of mass comment campaigns with no little identifying information would have been impossible. Moreover, because nearly all individual commenters are mobilized by an organisation, form comments comments are best conceptualized as supporting the more sophisticated organizational comments that we focus on here [@judgelord2019SPSA].
 
 There was considerable variation in the organizational comments received to rules across the seven financial regulators. For example, the largest number of organizational comments was received by the CFPB on rules regulating payday loans, which received 3898 comments from organizations that we were able to match to asset data, while many low-salience rules received few comments, in several cases none from organizations with publicly-available wealth data. However, for all rules that received more than 25 comments, we matched at least two organizations to asset data. The agency with largest median number of organizational comments was XXX at XXX comments. 
-
-
 
 ## Organization Wealth 
 
@@ -298,7 +296,7 @@ Market capitalization is also highly correlated with using technical terms, whic
 
 
 ```{r, commenters-noncommenters, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
-knitr::include_graphics("figs/non-profit-density-1.png")
+knitr::include_graphics("figs/nonprofit-density-1.png")
 
 knitr::include_graphics("figs/creditunion-density-1.png")
 
@@ -318,7 +316,7 @@ The top left panel in Figure \ref{fig:commenters-noncommenters} shows that non-p
 
 Similarly, the top right panel in Figure \ref{fig:commenters-noncommenters} shows that credit unions that comment on proposed financial regulations also tend to be significantly better-resourced than we would expect from a random sample of credit unions. The average non-profit that did not comment has about \$19.5 million in assets, whereas the average credit union that did comment has \$108.6 million in assets. The average commenting credit union is five times larger than the average credit union that did not comment. This also supports the *Differential Participation* Hypothesis (H1), specifically H1.1.
 
-#### Publicly-traded Firms
+<!--#### Publicly-traded Firms-->
 
 The bottom left panel in Figure \ref{fig:commenters-noncommenters} shows the same distributions for banks and bank-like entities that file with the Securities and Exchange Commission. The banks that comment on proposed financial regulations are better-resourced than we would expect from a random sample of these organizations. Specifically, they have more capital, as measured by the total value of their stock. <!-- TODO: MORE ON THIS? --> 
 
@@ -333,9 +331,9 @@ Similarly, \ref(fig:mp-marketcap) shows the results of logit models predicting t
 
 END TODO NOTE -->
 
-#### Banks 
+<!--#### Banks --> 
 
-In contrast, the bottom right panel in Figure \ref{fig:commenters-noncommenters} shows that, on average, large (FDIC-insured) banks that comment on proposed financial regulations are not significantly better-resourced, on average, than we would expect from a random sample of large banks. The x-axis shows assets in the (in thousands of dollars). 
+In contrast, the bottom right panel in Figure \ref{fig:commenters-noncommenters} shows that, on average, large (FDIC-insured) banks that comment on proposed financial regulations are not significantly better-resourced, on average, than we would expect from a random sample of large banks. The x-axis shows assets in the (in thousands of dollars).^[There are over seventeen different types of institutions that the U.S. government defines as banks (see <https://www.ffiec.gov/npw/Help/InstitutionTypes>).  In this paper we focus on commercial banks, thrifts (savings institutions), and credit unions.  In general, commercial banks are publicly owned corporations that make loans to businesses and individuals. Credit Unions are non-profits made up of people with a similar characteristic - such as working for the same institution.  Savings institutions (thrifts) are non-profits primarily involved in mortgages.]
 At first glance, this does not support the *Differential Participation* Hypothesis (H1), specifically H1.3.
 However, when we look within categories of banks, we see that the wealthier banks in each class are more likely to participate. The top-left panel of Figure \ref{fig:FDIC-count-by-class} shows that Commercial banks that comment are wealthier than those that did not comment. The top-right panel of Figure \ref{fig:FDIC-count-by-class} shows that Savings Banks banks that comment are wealthier than those that did not comment. The modal savings bank that commented has nearly twice the assets of the modal savings bank that did not comment. The bottom-left panel of Figure \ref{fig:FDIC-count-by-class} shows that state banks that comment are wealthier than those that did not comment. The average assets of state banks that commented were three times the average assets of the state banks that did not comment. While savings associations are less likely to comment than more profit-oriented banks (see Figure \ref{fig:mpFDIC}), the bottom-right panel of Figure \ref{fig:FDIC-count-by-class} shows that when savings associations do comment, it tends to be the wealthier ones. 
 
@@ -365,7 +363,7 @@ knitr::include_graphics(
 
 ```{r mp-assets, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Assets", out.width="90%"}
 knitr::include_graphics(
-"figs/mp-non-profit-credit-unions-1.png")
+"figs/mp-nonprofit-credit-unions-1.png")
 ```
 
 
@@ -400,7 +398,7 @@ We now turn to hypotheses about inequalities within the population of organizati
 ```{r, dockets-percentile, fig.cap="Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
 knitr::include_graphics(c(
   "figs/fdic-rules-3.png",
-    "figs/non-profit-rules-3.png",
+    "figs/nonprofit-rules-3.png",
   "figs/compustat-rules-3.png",
   "figs/opensecrets-rules-3.png"
 ))
@@ -563,7 +561,7 @@ knitr::include_graphics("figs/docket-table-1.png")
 **QUESTION** Do we prefer these count plots to the density plots in Figure \ref{fig:commenters-noncommenters}? These take up a bit more space, but they have the means and medians on the plot. 
 
 ```{r, commenters-noncommenters-counts, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
-knitr::include_graphics("figs/non-profit-count-1.png")
+knitr::include_graphics("figs/nonprofit-count-1.png")
 
 knitr::include_graphics("figs/creditunion-count-1.png")
 
@@ -576,7 +574,7 @@ knitr::include_graphics("figs/FDIC-count-select-1.png")
 ```{r, number-of-dockets, fig.cap="Number of Dockets on Which Each Type of Organization Commented", out.width="49%", fig.show= "hold"}
 knitr::include_graphics(c(
   "figs/fdic-rules-1.png",
-    "figs/non-profit-rules-1.png",
+    "figs/nonprofit-rules-1.png",
   "figs/compustat-rules-1.png",
   "figs/opensecrets-rules-1.png"
 ))
@@ -585,7 +583,7 @@ knitr::include_graphics(c(
 ```{r, dockets-percentile-five, fig.cap="Frequent and Infrequent Commenters (By the Number of Dockets on Which each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
 knitr::include_graphics(c(
   "figs/fdic-rules-2.png",
-    "figs/non-profit-rules-2.png",
+    "figs/nonprofit-rules-2.png",
   "figs/compustat-rules-2.png",
   "figs/opensecrets-rules-2.png"
 ))

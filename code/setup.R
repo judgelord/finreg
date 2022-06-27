@@ -43,7 +43,7 @@ fig.path <- here("figs/")
 
 ## Sets defaults for R chunks
 knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
-                      cache = TRUE,
+                      cache = FALSE,
                       #cache = TRUE,
                       warning = FALSE,
                       message = FALSE,
