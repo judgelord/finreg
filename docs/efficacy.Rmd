@@ -125,9 +125,13 @@ The root for this script is `finreg`. Most of the data are in `finreg/data` (som
 
 ## Sophistication 
 
+
 File: `Data/Dictionary_Terms.RData` contains six objects (3 sets of measures for both comments and attachments)
 
 ### 1. Dictionary counts of technical terms used in comments and attachments
+
+We use the [Oxford Dictionary of Finance and Banking](https://www.oxfordreference.com/view/10.1093/acref/9780199664931.001.0001/acref-9780199664931) and the [Merriam Webster law dictionary](https://www.merriam-webster.com/browse/legal/). While Black's is a more common law dictionary, a complete version is not available online.
+
 
 Objects: `technical_terms_comments` and `technical_terms_attachment`
 
@@ -1336,6 +1340,16 @@ plot(med.cont, main = "Legal Citations as a Mediator Between\nAssets and Lobbyin
 
 #FI
 # modelsummary::modelsummary(med.cont)
+```
+
+# Save data 
+
+```{r save}
+n_comments <- nrow(efficacyXsophistication)
+
+save(n_comments,
+     efficacyXsophistication, 
+     file = here::here("data", "efficacyXsophistication.Rdata"))
 ```
 
 # TODO

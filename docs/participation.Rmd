@@ -137,6 +137,14 @@ kablebox <- . %>%
 
 # Data
 
+```{r}
+read_csv(here::here("data", "master_tables_status.csv")) %>% 
+  mutate(attachments_table = replace_na(attachments_table, 0)) %>% 
+  rename(`attachments table` = attachments_table,
+         `efficacy and sophistication measures` =`term counts`) %>% 
+  kablebox()
+```
+
 The root for this script is `finreg`. Most of the data are in `finreg/data` (some in a subfolder `merged_resources`). Others are up one level in `FINREGRULEMAKE2/Data`. This can and should be streamlined significantly. 
 
 Rules and comments: 
@@ -178,6 +186,49 @@ lookup <- read_csv(here::here("data", "docket_related_rin_lookup.csv")) %>%
 rin_lookup <- full_join(rins, lookup, by = "docket_id", suffix = c(".directory", ".lookup")) %>% 
   mutate(title = str_to_title(title) %>% str_squish()) %>% 
   mutate(across(everything(), str_squish))
+```
+
+```{r actions, fig.width=7, fig.height=6, out.width="100%", fig.cap= "Dodd-Frank Act Implimenting Actions by Agency", cache=FALSE}
+wide =  read.csv( here::here("data", "pivot_example.csv") )
+n_rules <- nrow(wide)
+
+long = read.csv( here::here("data", "actions.csv") )
+
+long %<>% 
+  mutate(year = publication_date %>% str_sub(1,4),
+         Stage = stage  %>% 
+           str_replace("ANPR", "Advance NPRM (ANPRM)") %>% 
+           str_replace("^FINAL", "Final Rule") %>% 
+           str_replace("GUIDANCE", "Guidance") %>% 
+           str_replace("INTERIM-FINAL", "Interim Final Rule") %>% 
+           str_replace("^NPR", "Notice of Proposed\nRulemaking (NPRM)")) %>% 
+    group_by(agency_acronym) %>%
+  add_count(name = "agency_total") %>% 
+  ungroup()
+
+n_actions <- nrow(long)
+
+long %>% 
+  filter(Stage %in% c("Advance NPRM (ANPRM)", "Final Rule", "Interim Final Rule", "Notice of Proposed\nRulemaking (NPRM)"),
+         agency_acronym %in% c("FRS", "CFPB", "SEC", "CFTC", "FDIC", "OCC",  "NCUA") ) %>% 
+  count(year, agency_acronym, Stage) %>% 
+  ggplot() +
+  aes(y = n, x = year, fill = Stage) %>% 
+  geom_col(alpha = .8) + 
+  facet_wrap("agency_acronym", scales = "free") +
+  scale_fill_viridis_d() +
+  labs(fill = "Document Type",
+       x = "", 
+       y = "",
+       caption = "Dodd-Frank regulatory actions from  the Consumer Financial Protection Bureau (CFPB),
+Commodity Futures Trading Commission (CFTC), Federal Deposit Insurance Corporation (FIDC), 
+Federal Reserve (FRS), National Credit Union Administration (NCUA), 
+Office of the Comptroler of the Currency (OCC), and Securities and Exchange Commission (SEC)") + 
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = .7, angle = 60),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        plot.caption = element_text(hjust = 0))
 ```
 
 Some dockets don't have related rins in lookup table 
@@ -259,15 +310,39 @@ docket_table %>%
   theme(legend.position = "bottom",
         panel.grid.major.y = element_blank(),
         strip.text = element_text(size = 12)) 
-  
+```
 
+### Dockets with most commments matched
+
+```{r}
+docket_table %<>% 
+  arrange(-`Any Resources Measure`) 
+
+# max
 docket_table %>% 
+  # filter(`Any Resources Measure` < 1) %>% 
   knitr::kable() %>% 
   kable_paper(full_width = F) %>%
   column_spec(5, color = "white",
               background = spec_color(docket_table$Comments/ docket_table$`Any Resources Measure`, begin = .1, end = .9, direction = 1, option = 3) ) %>% 
   scroll_box(height = "400px")
 ```
+
+### Dockets with fewest commments matched
+```{r}
+docket_table %<>% 
+  arrange(`Any Resources Measure`) 
+
+# min
+docket_table %>% 
+  # filter(`Any Resources Measure` < 1) %>% 
+  knitr::kable() %>% 
+  kable_paper(full_width = F) %>%
+  column_spec(5, color = "white",
+              background = spec_color(docket_table$Comments/ docket_table$`Any Resources Measure`, begin = .1, end = .9, direction = 1, option = 3) ) %>% 
+  scroll_box(height = "400px")
+```
+
 
 ```{r data-match-clean}
 # clean match data from finreg_commenter_covariates
@@ -992,6 +1067,8 @@ FDIC_resources %>%
 
 ---
 
+### FDIC instituttions
+
 #### National Associations
 
 I am dropping National Associations for now because we are not matching some important ones, including JP Morgan Chase, Wells Fargo, Bank of America, CitiBank, PNC BANK, Capital One, U.S. Bank, TD Bank, and Chase Bank. 
@@ -1032,7 +1109,8 @@ FDIC_resources %>%
 ```
 
 
-### FDIC instituttions
+#### Dropping National Associations
+
 
 Now omitting class national associations and foreign banks (Class IO are foreign banks and did not comment)
 
@@ -1221,6 +1299,7 @@ nonprofit_resources %>%
   geom_point(alpha = .5) + 
   geom_smooth() + 
     labs(x = "Assets",
+         title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
        y = "Number of Comments") +
   scale_x_log10()
 
@@ -1233,6 +1312,7 @@ nonprofit_resources %>%
   geom_point(alpha = .5) + 
   geom_smooth() + 
     labs(x = "Revenue",
+         title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
        y = "Number of Comments") +
   scale_x_log10() 
 ```
@@ -1256,7 +1336,7 @@ nonprofit_resources %>%
   aes(x = assets/1000000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(title = "Nonprofits",
+  labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
        fill = "", y = "", x = "Assets (Millions)")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1269,7 +1349,7 @@ nonprofit_resources %>%
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(fill = "", y = "", x = "Revenue",
-       title = "Nonprofits") +
+       title = str_c("Non-profits, N = ", nrow(nonprofit_resources))) +
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1316,7 +1396,8 @@ nonprofit_resources %>%
   geom_vline( aes(xintercept = mean_assets/1000000)) + 
       geom_vline( aes(xintercept = median_assets/1000000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = "Nonprofits",fill = "", y = "", x = "Assets (Millions)") + 
+  labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
+       fill = "", y = "", x = "Assets (Millions)") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1330,7 +1411,8 @@ nonprofit_resources %>%
   geom_histogram(alpha = .5, color = NA) + 
     geom_vline( aes(xintercept = mean_revenue/1000)) + 
   scale_x_log10() + 
-  labs(title = "Nonprofits",fill = "", x = "Revenue ($1,000s)")+ 
+  labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
+       fill = "", x = "Revenue ($1,000s)")+ 
   facet_grid(Commented ~ ., scales = "free_y")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1379,7 +1461,9 @@ creditunions %>%
   aes(x = assets/1000000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(fill = "", x = "Assets (Millions)", title = "Credit Unions", fill = "", y = "")+
+  labs(fill = "", x = "Assets (Millions)", 
+       title = str_c("Credit Unions, N = ", nrow(creditunions)),
+       fill = "", y = "")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1411,7 +1495,8 @@ creditunions %>%
   geom_vline( aes(xintercept = mean_assets/1000000)) + 
     geom_vline( aes(xintercept = median_assets/1000000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = "Credit Unions",fill = "", y = "", x = "Assets (Millions)") + 
+  labs(title = str_c("Credit Unions, N = ", nrow(creditunions)),
+       fill = "", y = "", x = "Assets (Millions)") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1463,7 +1548,7 @@ opensecrets %>%
   scale_x_log10() + 
   labs(fill = "",  
        y = "",
-       title = "Campaign Spending",
+       title = str_c("Campaign Donors, N = ", nrow(opensecrets)),
        x = "Mean Contribution
        ($1,000s, in years contributing 2010-2017)")+
   theme(panel.grid.major.y = element_blank(),
@@ -1476,7 +1561,7 @@ opensecrets %>%
   aes(x = MeanContribAmountPerYearContributed/1000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(title = "Campaign Spending",
+  labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)),
        fill = "", 
        y = "",
        x = "Mean Contribution per Year\n($1,000s, 2010-2017)")+
@@ -1490,8 +1575,7 @@ opensecrets %>%
   aes(x = TotalContribAmount/1000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(fill = "", 
-       title = "Campaign Spending",
+  labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)),
        y = "",
        x = "Total Contributions\n($1,000s, 2010-2017)")+
   theme(panel.grid.major.y = element_blank(),
@@ -1524,7 +1608,8 @@ opensecrets %>%
   geom_vline( aes(xintercept = mean_MeanContribAmount/1000)) + 
     geom_vline( aes(xintercept = median_MeanContribAmount/1000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = "Campaign Spending",fill = "", y = "", x = "Political Action Committee Donations (Thousands)") + 
+  labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)),
+       fill = "", y = "", x = "Political Action Committee Donations (Thousands)") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1576,7 +1661,7 @@ compustat %>%
   aes(x = marketcap2/1000000, fill = Commented) + 
   labs(fill = "", 
        y = "",
-       title = "Banks and Bank-like Entities",
+       title = str_c("Publically-traded Companies, N = ", nrow(compustat)),
        x = "Market Capitalization (Millions)") + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
@@ -1610,7 +1695,8 @@ compustat %>%
   geom_vline( aes(xintercept = mean_marketcap2/1000000)) + 
     geom_vline( aes(xintercept = median_marketcap2/1000000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = "Banks and Bank-like Entities",fill = "", y = "", x = "Market Cap (Millions)") + 
+  labs(title = str_c("Publically-traded Companies, N = ", nrow(compustat)),
+       fill = "", y = "", x = "Market Cap (Millions)") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1801,7 +1887,24 @@ dtable %>% write_csv(here::here("data", "matches_per_rin.csv"))
 #FIXME ideally all edits to these data would be in clean_match_data
 commenter_assets <- d
 
-save(commenter_assets, file = here::here("data", "commenter_assets.Rdata"))
+n_orgs <- d$org_name %>% unique() %>% length()
+
+# + non-commenters 
+n_orgs_total <- c(FDIC_resources$org_name,
+  nonprofit_resources$org_name,
+  opensecrets$org_name,
+  compustat$org_name) %>% 
+  unique() %>% 
+  length()
+
+n_assets <- nrow(d)
+
+save(commenter_assets, 
+     n_orgs, n_orgs_total, 
+     n_assets,
+     n_rules,
+     n_actions,
+     file = here::here("data", "commenter_assets.Rdata"))
 ```
 
 
@@ -2100,3 +2203,15 @@ modelsummary(models)
 
 
 ```
+
+
+
+# TODO 
+
+Priorities for matching that will give us the most leverage
+
+- [ ] Best match in *each* dataset rather than best match in *one* dataset: https://finreggroup.slack.com/archives/C027MRLQFLJ/p1650733175102459
+- [ ] Comments on dockets with 0 comments matched: https://judgelord.github.io/finreg/participation#Asset_data
+- [ ] Underpowered subsets, especially marketcap (hopefully matching both compustat and CIK will help with this): https://judgelord.github.io/finreg/participation#By_Market_Cap
+- [ ] FDIC `BKCLASS` == "national associations" that we are currently dropping: https://judgelord.github.io/finreg/participation#FDIC_instituttions  https://finreggroup.slack.com/archives/C027MRLQFLJ/p1653322086231879
+- [ ] False positives that I am currently dropping https://finreggroup.slack.com/archives/C027MRLQFLJ/p1650658969445029
