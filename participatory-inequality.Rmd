@@ -192,7 +192,7 @@ To assess the extent of organizational wealth inequality in rulemaking implement
 
 # Rules & Comments
 
-Our sampling frame begins with all rules promulgated under the Dodd-Frank Act, as defined by the law firm Davis Polk LLP, which maintained a regulatory tracker for such actions. We scraped the tracker and collected data throughout 2017 and until mid-2018. The final set includes all Dodd-Frank rules after enactment on July 20, 2010, and before July 8, 2018.
+To assess the extent of inequality in financial rulemaking, we assembled data from the Federal Register and regulations.gov on all rules promulgated under authorities granted in the Dodd-Frank Wall Street Reform and Consumer Protection Act.^[The law firm Davis Polk LLP maintains a list of Dodd-Frank related rules.] The final set includes all Dodd-Frank rules after enactment on July 20, 2010, and before July 8, 2018.
 
 We focus on the seven primary financial regulators writing rules in reply to the Dodd-Frank Act: FRS, CFPD, SEC, CFTC, FDIC, OCC, and NCUA.  We identified XXX separate rules, covering XXX regulatory actions, between 2010 and July 8, 2018 that were issued by one or more of these seven agencies.^[Each rule in our sample may be thought of as a set connected regulatory actions, which must include a proposed and/or final rule and are connected by a Regulation Identifier Number (RIN). We count a joint rule issued by the SEC and FRS as two regulatory actions.]
 
@@ -227,26 +227,23 @@ long %>%
         panel.grid.minor.x = element_blank())
 ```
 
-## Comments
+## Organization Wealth 
 
-The authors and research assistants scraped all available public comments from each financial regulator's website or regulations.gov for all Dodd-Frank rules. In doing so, we collected key metadata, including the name of the individual and organization submitting comments and their submission date. We used the open-source software tesseract to OCR comments that were not machine-readable on the Open Science Grid computing cluster. Comments are posted on agency websites and regulations.gov as either open text boxes or attachments. We collected **NUMBER** open text responses and **NUMBER** comments. Comments are not distributed uniformly across rules or agencies; for example, our sample included **NUMBER** comments from the CFPB and **SMALLER NUMBER** from **SMALLEST AGENCY**.   
+We developed several new tools to test our wealth inequality hypotheses, including ones that allowed us to compare the wealth of organizations that commented on financial rules in our sample to the wealth of similar organizations that did not comment on these rules.  No single database provides wealth data on all such organizations. As a result, we cast a wide net and identified five separate databases of organizations that might participate in financial rulemaking. These databases include: 
 
-We then collected data about the relative resources of potential participants in rulemaking and matched these data to organizations that submitted comments. Given the varied types of organizations that participate in rulemaking (including small nonprofits and large corporations), no single database contains data on the resources available to all types of participants. However, we systematically collected data on organizational resources for particular types of organizations. 
+1.	All publicly traded companies listed on U.S. exchanges during our analysis time frame. Following Libgober (2019), we gathered commonly reported financial data, such as market capitalization, from the Computstat and CIK on these public companies.
 
-Following @LibgoberQJPS2020, we collect information on public companies listed on U.S. exchanges during this time and gather commonly reported financial data, for example, market capitalization from the Federal Deposit Insurance Corporation (FDIC). We gathered data from Wharton Research Data Service, especially their Compustat and bank regulatory datasets. From the Compustat data, we selected a key measure of corporate size: the firm's total assets, representing a company's reported assets and liabilities.
-For bank and bank-like entities that report to the Federal Financial Institutions Examinations Council (FFIEC), we also collected a measure of their total assets under management from call reports on ncua.gov (see Appendix for data sources).
+2.	All corporations listed on the Wharton Research Data Service’s Compustat and bank regulatory datasets. From the Compustat data, we selected a key measure of corporate size, including the firm’s total assets, representing a company’s reported assets and liabilities. 
 
-To capture the resources of nonprofit organizations that do and do not engage in financial rulemaking, we download all Internal Revenue Service (IRS) reports from nonprofits from 2012. 
-We also collect data on Political Action Committee (PAC) donations and lobbying expenses from companies profiled by the Center for Responsive Politics using the Center's bulk data files and calculate average annual PAC contributions for each organization.
+3.	All bank and bank-like entities reported by the FFIEC. We then collected a measure of the bank’s total assets under management from call reports using NCUA data. 
 
-Finally, we use a probabilistic matching algorithm to match comments to organizations in these databases. The names that organizations use to submit comments and the names by which they appear in various datasets often differ. To do this, we identified comments that were likely from an organization, excluding those that were likely from an individual or public pressure campaign ("mass comments"). Each of the remaining comments was then linked to the organization with the best matching name (or no organization, where the matching algorithm did not identify any high-probability match in any of the datasets discussed above). The vast majority of comments we did not match to an organization were submitted by individuals and thus beyond the scope of this study.  
+4.	All nonprofit organizations as reported by the IRS, including their total assets.
 
-Our main dataset includes all comments that matched to either an FDIC-insured bank, a bank or bank-like entity that reports to the FFIEC, an organization that reports to the SEC (i.e., a publicly-traded company), additional companies that appear in the Compustat database, and or an IRS compliant nonprofit organization. To some degree, these categories may overlap. For example, some, but not all, banks are publicly traded. At the same time, each data source delimits a category of related entities that plausibly constitutes a sampling frame for making relevant comparisons.
+5.	All organizations reporting Political Action Committee (PAC) donations and lobbying expendatures, compiled by the Center for Responsive Politics. We  calculated average annual PAC contributions for each organization.
 
-This new dataset includes financial data on over 6,378 distinct organizations that submitted 27,601 unique comments on the Dodd-Frank rules in our database. 
-<!--AS OF MAY 2022. TODO: CHECK THESE NUMBERS AFTER THE FINAL DATA UPDATE. --> 
+The next step was to use a probabilistic matching algorithm to match the comments to organizations in these databases. This step took considerable innovation because the names that organizations use to submit comments and the names by which they appear in various databases can differ. As a result, we first identified comments that were likely from an organization, excluding those that were likely from an individual or a mass commenting campaign.  We then linked the remaining comments to the organization with the best matching name or to no organization when our matching algorithm did not identify a high-probability match in any of the five databases above.  We then spot-checked our processes to ensure ________.
+These processes resulted in a dataset of over 6,378 distinct organizations that submitted 27,601 unique comments on the Dodd-Frank rules in our dataset. We use these data to compare the wealth of commenting organizations to those organizations that did not comment on financial regulations but who are present in one of the five wealth databases.
 
-## Types of Organizations
 
 ```{r org-types, fig.cap="Number of Organizations by Type and Agency to which they Commented, Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)", out.width = "80%"}
 knitr::include_graphics("figs/org_count_type-2.png")
