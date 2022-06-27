@@ -237,19 +237,11 @@ Figure \ref{fig:comment-types} shows the number of comments submitted to each ag
 
 We measure comment sophistication by counting the technical and legal terms in each comment. For the technical terms, we use the Oxford Dictionary of Finance and Banking, which includes 5,260 finance and banking terms. For legal language, we use the Merriam Webster Law Dictionary, which includes 10,172 legal terms. As there are words with both financial and legal meaning (e.g., "underwrite"), and we do not want to double count overlapping terms, we calculate the sophistication of each comment by summing the legal and financial terms and then subtracting the subset of those that appear in both dictionaries. When an organization submits a comment that had multiple attachments, we measure sophistication by summing up the technical terms, and separately the legal terms, across all submitted documents. This approach follows the intuition that attachments with additional technical language reflect additional sophistication. For example, the most sophisticated organizations often submit a cover letter, a marked up version of the proposed rules, and studies supporting their arguments.
 
-Counts of Tables and Figures. Looks at the maximum number of tables, with large jumps excluded. For example, a document with tables 1, 2, 3, and 99 would treat 99 as an error and say there were three tables. This mostly comes from bad OCRing or documents that have footnotes in between the word “table” and the table number.
+<!--TODO 
+Second, we count the number of of Tables and Figures. Looks at the maximum number of tables, with large jumps excluded. For example, a document with tables 1, 2, 3, and 99 would treat 99 as an error and say there were three tables. This mostly comes from bad OCRing or documents that have footnotes in between the word “table” and the table number.
+-->
 
-Objects: Tables_and_Figures_attachments and Tables_and_Figures_comments
-
-Variables:
-
-comment_url - the comment_url or attachment_url in the comments and attachments files in master.sqlite
-Figures - counts of figures
-Tables- counts of tables
-Comment - 1 if from comments, 0 if from attachments
-Visualizations - sum of figures + tables
-3. Bluebook legal citations
-Counts of citations to US code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register
+As a second measure of legal sophistication, we count the number of citations to US code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register. **TOO: MORE ON THIS**
 
 ## Lobbying Success
 
@@ -288,7 +280,7 @@ First, we compare levels of resources among commenting organizations and similar
 We argue in Hypothesis 1 that organizations that comment on finanical rules will be wealthier than organizations that do not comments. To assess this, we compare organizations that did and did not comment on Dodd-Frank rules. Because our data included data on a full population of similar organizations that could reasonably be expected to submit comments (e.g., all FDIC-insured banks and all tax-exempt non-profits), only some of which did submitted comments, we can draw important new conclusions about the relationship between wealth inequality participation in policy process.
 
 Overall, we find strong support for the hypothesis:  organizations that comment are much wealthier on average than similar organizations that did not comment. 
-We can see these results cleanly in three of the four organizational types analyzed descriptively:  non-profits, credit unions, and publicly traded firms in Figure X. As we explain below, the four type—large banks—yields the same result when we dig deeper in the data. Figure X shows the distributions on a log scale of different organization types—split out by whether an organization submitted a comment to one of our Dodd-Frank rules or not. Additionally, in results not shown but found in Appendix Table X, we confirm these descriptive patterns using logistics regression modeling.
+We can see these results cleanly in descriptive plots for three of the four organizational types: non-profits, credit unions, and publicly traded firms in Figure \ref{fig:commenters-noncommenters}. The descriptives large banks—yields the same result when we dig deeper in the data. Figure X shows the distributions on a log scale of different organization types—split out by whether an organization submitted a comment to one of our Dodd-Frank rules or not. Additionally, in results not shown but found in Appendix Table X, we confirm these descriptive patterns using logistics regression modeling.
 
 We find that organizations, banks, non-profits, and credit unions that comment on proposed rules have much greater assets on average than similar organizations that did not comment. The median credit union that comments had three times the assets of the median credit union that does not. The median non-profit that comments had six times the assets of the median non-profit that does not. And the median bank had 40% more assets than the median bank that did not. Banks that comment were also much more likely to be profit-driven Commercial Banks than Savings Associations.
 Wealth (measured by market capitalization) is strongly correlated with efficacy among publicly-traded firms. 
