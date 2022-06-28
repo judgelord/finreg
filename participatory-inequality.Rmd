@@ -139,13 +139,13 @@ Differential Lobbying Participation. Previous work suggests that wealthier organ
 
 ### Differential Lobbying Participation
 
-Previous work suggests that wealthier organizations, such as business firms, will participate in agency rulemaking via the submission of comments at a greater rate than other of less wealthy organized interests, such as labor and public interest organizations [@YackeeJOP2006]. Past research theorizes that the high costs associated with public comment submission is one reason for this bias. @Rossi1997 writes of the need to monitor the bureaucracy’s rulemaking activities, which can be complex and arcane, to know when and how to participate in regulation is being formulated [see also, @Kerwin2018]. @Yackee2019 implies that these high participation costs may be paid more readily by business interests, which often have hired lobbyists and government affairs offices to monitor agency rulemaking on their behalf [see also, @JewellJPART2006]. A separate rational driving differential comment participation by wealthy organizations focuses on the concentrated costs and benefits attached to lobbying on government regulations [see broadly, @Olson1965; @Wilson1989]. Wealthier organizations, such as publicly traded companies and large banks (banks with assets over $10 billion), will tend to have a more narrow stake in financial regulations than organizations with more diffuse and varied constituencies, such as public interest groups.[^We use the \$10 billion figure as it is what the FDIC used in 12 CFR 327.8(f) as a result of Dodd-Frank amending the the Federal Deposit Insurance Act.] 
+Previous work suggests that wealthier organizations, such as business firms, will participate in agency rulemaking via the submission of comments at a greater rate than other of less wealthy organized interests, such as labor and public interest organizations [@YackeeJOP2006]. Past research theorizes that the high costs associated with public comment submission is one reason for this bias. @Rossi1997 writes of the need to monitor the bureaucracy’s rulemaking activities, which can be complex and arcane, to know when and how to participate in regulation is being formulated [see also, @Kerwin2018]. @Yackee2019 implies that these high participation costs may be paid more readily by business interests, which often have hired lobbyists and government affairs offices to monitor agency rulemaking on their behalf [see also, @JewellJPART2006].
 
-While past research implies reasons why a wealth disparity in rulemaking lobbying participation may exist across different organizational types (i.e., business firms versus public interest groups), in this article we focus on wealth differentials in lobbying participation within organizational type.  For example, we theorize that, even amongst for-profit firms, wealthier firms will participate in rulemaking via the submission of comments to financial rules more often than poorer firms. The theoretical rationales for this expection, we argue, remain the same as articulated above—wealthy organizations are better able to pay the costs of rulemaking participation and often have more concentrated stakes in the rule—however, by comparing similar organizations, we will be better able to isolate whether wealth inequality drives lobbying participation differences in financial rulemaking.
+While past research implies reasons why a wealth disparity in rulemaking lobbying participation may exist across different organizational types (i.e., business firms versus public interest groups), in this article we focus on wealth differentials in lobbying participation within organizational type.  For example, we theorize that, even amongs for-profit firms, wealthier firms will participate in rulemaking via the submission of comments to financial rules more often than poorer firms. The theoretical rationales for this expectation, we argue, remain the same as articulated above—wealthy organizations are better able to pay the costs of rulemaking participation and often have more concentrated stakes in the rule—however, by comparing similar organizations, we will be better able to isolate whether wealth inequality drives lobbying participation differences in financial rulemaking.
 
 > *Differential Participation Hypothesis (H1):* Organizations that comment on financial rules will be wealthier than organizations that do not comment on financial rules.
 
-Moreover, we theorize that wealth inequalities in lobbying participation will persist even among those organizations that are able to pay the initial costs of rulemaking participation.  Stated differently, when focused on those entities that have submitted at least one comment to a financial regulation, we argue that more wealthy organizations will, again, hold an advantage over less wealthy organizations by participating across a larger number of rules. For instance, among the non-profit organizations that submit comments to financial regulations, we hypothesize that the wealthier non-profits, such as those with more assets, will comment on more regulations than those that are less wealthy. 
+Moreover, we theorize that wealth inequalities in lobbying participation will persist even among those organizations that are able to pay the initial costs of rulemaking participation.  Stated differently, when focused on those entities that have submitted at least one comment to a financial regulation, we argue that more wealthy organizations will, again, hold an advantage over less wealthy organizations by participating across a larger number of rules. For instance, among the non-profit organizations that submit comments to financial regulations, we hypothesize that the wealthier non-profits will comment on more regulations than those that are less wealthy. 
 
 
 <!--
@@ -159,6 +159,11 @@ Moreover, we theorize that wealth inequalities in lobbying participation will pe
 --> 
 
 > *Differential Frequency of Participation Hypothesis (H2):* Among organizations commenting on financial rulemaking, organizations with greater wealth will comment on a larger number of financial rules.
+
+ A separate rational driving differential comment participation by wealthy organizations focuses on the concentrated costs and benefits attached to lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. Wealthy, profit-seeking organizations, such as publicly traded companies and for-profit banks, will tend to have a more narrow stake in financial regulations than organizations with more diffuse and varied constituencies, such as public interest groups. Wealthy, profit-s
+A major theorized way that inequalities in organization and political participation emerge
+
+> *Profit-motivated Participation Hypothesis (H3):* Organizations seeking profit will be more likely to comment.
 
 
 ### Differential Lobbying Success
@@ -309,7 +314,7 @@ Figure \ref{fig:commenters-noncommenters-counts} shows the distribution (on a lo
 
 **Credit Unions.** Similarly, the top right panel in Figure \ref{fig:commenters-noncommenters} shows that credit unions that comment on proposed financial regulations also tend to be significantly better-resourced than we would expect from a random sample of credit unions. The average credit union that did not comment has about \$27 million in assets, whereas the average credit union that did comment has \$75 million in assets. The average commenting credit union is thus three times larger than the average credit union that did not comment. This shows that the *Differential Participation* Hypothesis (H1) among credit unions. 
 
-**Publicly-traded companies.** The bottom left panel in Figure \ref{fig:commenters-noncommenters} shows the same distributions for banks and bank-like entities that file with the Securities and Exchange Commission. The banks that comment on proposed financial regulations are better-resourced than we would expect from a random sample of these organizations. Specifically, they have more capital, as measured by the total value of their stock. <!-- TODO: MORE ON THIS? --> 
+**Publicly-traded companies.** The bottom left panel in Figure \ref{fig:commenters-noncommenters} shows similar distributions over market capitalization for publicly traded companies. Companies that comment on proposed financial regulations are better-resourced than we would expect from a random sample. Specifically, they have much more capital, as measured by the total value of their stock. The median market capitalization of companies that commented was  almost 70 times that of the median company that did not comment.   <!-- TODO: MORE ON THIS? --> 
 
 <!-- TODO: ADD MARKET CAP RESULTS? 
 
@@ -324,9 +329,10 @@ END TODO NOTE -->
 
 **Banks.** The bottom right panel in Figure \ref{fig:commenters-noncommenters} shows that, on average, banks that comment on proposed financial regulations are better-resourced than we would expect from a random sample of banks. The x-axis shows assets in the (in thousands of dollars). Banks that participated in financial rulemaking had almost 40% greater median assets and nearly double the average assets. 
 
-When we look within categories of banks, we see that the wealthier banks in each class are also more likely to participate.  \@ref(fig:FDIC-count-by-class) shows that, within each class of bank (Commercial Banks, Savings Banks, State Banks, and Savings Associations), wealthier the banks participating in financial rulemaking are the wealthier ones.^[There are over seventeen different types of institutions that the U.S. government defines as banks (see <https://www.ffiec.gov/npw/Help/InstitutionTypes>).  In this paper we focus on commercial banks, thrifts (savings institutions), and credit unions.  In general, commercial banks are publicly traded corporations that make loans to businesses and individuals. Credit Unions are non-profit banks. Savings institutions (thrifts) are non-profits primarily involved in mortgages.]
+When we look within categories of banks, we see that the wealthier banks within each class are also more likely to submit comments on financial rules than similar banks with less wealth. Figure \@ref(fig:FDIC-count-by-class) shows that, within each class of bank (Commercial Banks, Savings Banks, State Banks, and Savings Associations), wealthier the banks participating in financial rulemaking are the wealthier ones.^[There are over seventeen different types of institutions that the U.S. government defines as banks (see <https://www.ffiec.gov/npw/Help/InstitutionTypes>).  In this paper we focus on Commercial Banks, thrifts (savings institutions), and credit unions.  In general, Commercial Banks are publicly traded corporations that make loans to businesses and individuals. Credit Unions are non-profit banks. Savings institutions (thrifts) are non-profits primarily involved in mortgages.]
+Differences in means among for-profit Commercial Banks are significant at the .05 level in a Welch Two Sample t-test. While the differences among other types of banks (State Banks, state-chartered Savings Banks, or nonprofit savings associations) are large, there are far fewer of them and differences in average wealth among them did not have enough observations to achieve statistical significance.
 
-The top-left panel of Figure \ref{fig:FDIC-count-by-class} shows that Commercial banks that comment are wealthier than those that did not comment. The top-right panel of Figure \ref{fig:FDIC-count-by-class} shows that Savings Banks banks that comment are wealthier than those that did not comment. The modal savings bank that commented has nearly twice the assets of the modal savings bank that did not comment. The bottom-left panel of Figure \ref{fig:FDIC-count-by-class} shows that state banks that comment are wealthier than those that did not comment. The average assets of state banks that commented were three times the average assets of the state banks that did not comment. While savings associations are less likely to comment than more profit-oriented banks (see Figure \ref{fig:mpFDIC}), the bottom-right panel of Figure \ref{fig:FDIC-count-by-class} shows that when savings associations do comment, it tends to be the wealthier ones. 
+Figure \ref{fig:FDIC-count-by-class} shows wealth distributions for four prominant classes of banks: Commercial Banks, Savings Banks, State Banks, and non-profit Savings Associations. The top-left panel of Figure \ref{fig:FDIC-count-by-class} shows that Commercial Banks that comment are wealthier than those that did not comment. The modal Commercial Bank that commented was 40 percent more assets than the modal Commercial Bank that did not comment.  The top-right panel of Figure \ref{fig:FDIC-count-by-class} shows that Savings Banks banks that comment are wealthier than those that did not comment. The modal Savings Bank that commented has nearly twice the assets of the modal Savings Bank that did not comment. The bottom-left panel of Figure \ref{fig:FDIC-count-by-class} shows that State Banks that comment are wealthier than those that did not comment. The average assets of State Banks that commented were three times the average assets of the State Banks that did not comment. While savings associations are less likely to comment than more profit-oriented banks (see Figure \ref{fig:mpFDIC}), the bottom-right panel of Figure \ref{fig:FDIC-count-by-class} shows that, when savings associations do comment, it tends to be the wealthier ones. 
 
 ```{r, FDIC-count-by-class, fig.cap="Financial Resources of FDIC-Insured Banks that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/FDIC-count-by-class-1.png")
@@ -339,18 +345,30 @@ knitr::include_graphics("figs/FDIC-count-by-class-4.png")
 
 ```
 
-<!---adding this because Susan added it, but it is out of place here. Maybe summarize it all first and then dive in--> 
-Additionally, results shown in Figure \@ref(fig:mpFDIC) and appendix Table \@ref(tab:mpFDIC-table), confirm these differences in the odds of commenting using logistics regression.
+
 
 ### Profit-driven organizations are more likley to comment than non-profits
 
-When we assess the odds of commenting among different types of banks,  we find that for-profit banks (commercial banks) are significantly more likely to comment than non-profit savings associations and credit unions, further supporting the link between lobbying activity and profit. 12 percent of commercial banks commented on Dodd-Frank rules, whereas only 3 precent of nonprofit savings associations, 2 percent of credit unions, and 0.2 percent of other nonprofits commented. Commercial banks are often large multinational corporations managed by a board selected by shareholders. In contrast, savings associations are chartered with the narrow purpose of providing affordable residential mortgages. While both types of banks may hold large volumes of assets, commercial banks and savings Associations serve different clients. Figure \ref{fig:mpFDIC} shows that banks serving corporations and wealthier and profit-motivated clients were disproportionately represented in Dodd-Frank rulemaking and that savings associations were less represented, even controlling for asset differences. Likewise, assets remain a significant predictor of whether an organization comments, even controlling for differences in the type of institution. This supports the *Differential Participation* Hypothesis (H1).
+Our *Profit-motivated Participation* Hypothesis (H3) posited that for-profit organizations would be more likely to comment than non-profit organizations. We find strong support for this hypothesis, both overall (comparing banks with nonprofits) and among for-profit and non-profit banks. 12 percent of Commercial Banks commented on Dodd-Frank rules, whereas only 3 precent of nonprofit savings associations, 2 percent of credit unions, and 0.2 percent of other nonprofits commented. This means that Comercial Banks were 6 times more likely to comment on a Dodd-Frank rule than the average credit union and 60 times more likely to comment than the average nonprofit. 
+ 
+To further test this hypothesis among banks, we estimate the odds of commenting across different types of banks,  we find that for-profit banks (Commercial Banks) are significantly more likely to comment than non-profit savings associations and credit unions, further supporting the link between lobbying activity and profit.  Commercial Banks are often large multinational corporations managed by a board selected by shareholders. In contrast, savings associations are chartered with the narrow purpose of providing affordable residential mortgages. While both types of banks may hold large volumes of assets, Commercial Banks and savings Associations serve different clients. Figure \@ref(fig:mpFDIC) (Appendix Table \@ref(tab:mpFDIC-table)) shows that banks serving corporations and wealthier and profit-motivated clients were disproportionately represented in Dodd-Frank rulemaking and that savings associations were less represented, even controlling for asset differences. This supports the *Profit-motivated Participation* Hypothesis (H3).  Likewise, assets remain a significant predictor of whether an organization comments, even controlling for differences in the type of institution. This further supports the *Differential Participation* Hypothesis (H1). <!--TODO CONSIDER A NEW HYPOTHESIS ABOUT THE PROFIT MOTIVE--> 
 
 ```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="90%"}
 #TODO Make predicted probability plots showing that all kinds of banks are more likely to comment when wealthier
 knitr::include_graphics("figs/mpFDIC-1.png")
 ```
 
+Further supporting the *Profit-motivated Participation* Hypothesis (H3), non-profits and credit unions are significantly less likely to comment than Banks, even when controlling for differences in assets. 
+Table \ref{tab:mp-all-table} shows presents the results of logit models predicting the log odds of commenting by organization type (credit union, non-profit, or bank) and total assets. In specifications estimating constant effect of assets (Model 1) and different effects by organization type (Model 2), non-profts are less likely to comment than for profits. 
+
+```{r mp-all-table}
+# models of number of rules commented on by assets
+load(here::here("models", "mpAll.Rdata"))
+
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference catagory = Banks")  %>% kableExtra::kable_styling()
+    #FIXME sometimes scale_down causes an error 
+  
+```
 
 
 ### Organizations that make larger campaign donations and spend more on lobbying are more likely to comment
@@ -360,7 +378,7 @@ knitr::include_graphics("figs/mpFDIC-1.png")
 knitr::include_graphics("figs/opensecrets-count-1.png")
 ```
 
-Figure \ref{fig:opensecrets-density} shows that organizations profiled by the Center for Responsive Politics (generally, those that donate to Political Action Committees) that comment on Dodd-Frank rules are better-resourced than we would expect from a random sample of political donor organizations. This aligns with the *Differential Participation* Hypothesis (H1), specifically H1.3. The average campaign spending per 2-year cycle was \$80 thousand for donor organizations that did not comment, and the average for a donor organization that did comment on a Dodd-Frank rule was \$96 thousand. 
+Figure \ref{fig:opensecrets-density} shows that organizations profiled by the Center for Responsive Politics (generally, those that donate to Political Action Committees) that comment on Dodd-Frank rules are better-resourced than we would expect from a random sample of political donor organizations. This aligns with the *Differential Participation* Hypothesis (H1). The average campaign spending per 2-year cycle was \$80 thousand for donor organizations that did not comment, and the average for a donor organization that did comment on a Dodd-Frank rule was \$96 thousand. 
 <!-- TODO NOTE: DEVIN UPDATED THESE NUMBERS IN MAY 2022, BUT WE MAY NEED TO REVISE THESE NUMBERS WITH NEW DATA --> 
 
 
@@ -586,6 +604,20 @@ modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule") 
     #FIXME sometimes scale_down causes an error 
   
 ```
+
+Table \ref{tab:mpFDIC-table} presents the full the regression table for models shown in Figure \ref{fig:mpFDIC}.
+
+```{r mpFDIC-table}
+# models of number of rules commented on by assets
+load(here::here("models", "mpFDIC.Rdata"))
+
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type")  %>% kableExtra::kable_styling(latex_options = c("scale_down"))
+    #FIXME sometimes scale_down causes an error 
+```
+
+<!--EXTRA TEXT 
+We define large banks as banks with assets over $10 billion as it is what the FDIC used in 12 CFR 327.8(f) as a result of Dodd-Frank amending the the Federal Deposit Insurance Act.
+--> 
 
 \clearpage
 

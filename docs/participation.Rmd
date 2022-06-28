@@ -71,9 +71,13 @@ cm = c("ASSET" = "Assets",
        "ASSETS:Class SM" = "Assets x State Bank",
        "ASSETS:Class SB" = "Assets x Savings Bank",
        "ASSETS:Class SA" = "Assets x Savings Association",
-       "ASSETS:Class NM" = "Assets x Commercial Bank")
+       "ASSETS:Class NM" = "Assets x Commercial Bank",
+       "org_typeCredit union" = "Credit union",
+       "org_typeNon-profit" = "Non-profit",
+       "assets_b:org_typeCredit union" = "Assets x Credit union",
+       "assets_b:org_typeNon-profit" = "Assets x Non-profit")
 
-# table defaults
+# table  efaults
 modelsummary <- function(...) modelsummary::modelsummary(..., 
                                                          stars = T, 
                                                          add_rows = rows,
@@ -685,7 +689,8 @@ asset_counts <- d %>%
   count(org_name, assets) %>% 
   filter(!is.na(assets)) %>% 
   mutate(nnp = quantile(n, probs = .99),
-         assets_m = assets /1000000,
+         assets_t = assets / 1000,
+         assets_m = assets_t /1000,
          assets_b = assets_m / 1000,
          onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
          five = ifelse(n < 5, "<5 Rules", "5 or More Rules"))
@@ -703,11 +708,11 @@ asset_counts %>%
 
 asset_counts %>% 
   ggplot() + 
-  aes(x = assets_m, fill = five) + 
+  aes(x = assets_t, fill = five) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = "Nonprofits",
-        fill = "Frequency of\nCommenting", y = "", x = "Assets (Millions)")+
+        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -715,11 +720,11 @@ asset_counts %>%
 
 asset_counts %>% 
   ggplot() + 
-  aes(x = assets_m, fill = onepercent) + 
+  aes(x = assets_t, fill = onepercent) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = "Nonprofits",
-        fill = "Frequency of\nCommenting", y = "", x = "Assets (Millions)")+
+        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -753,7 +758,8 @@ asset_counts <- d %>%
   count(org_name, assets) %>% 
   filter(!is.na(assets)) %>% 
   mutate(nnp = quantile(n, probs = .99),
-         assets_m = assets /1000000,
+         assets_t = assets /1000,
+         assets_m = assets_t /1000,
          assets_b = assets_m / 1000,
          onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
          five = ifelse(n < 5, "<5 Rules", "5 or More Rules"))
@@ -1088,6 +1094,30 @@ FDIC_resources %>% filter(str_detect(org_name, "jpmorgan|wells fargo|^bank of am
 d %>% filter(str_detect(org_name, "jpmorgan|wells fargo|^bank of america|capital one|td bank|chase bank")) %>% distinct(org_name, best_match_type, `FDIC_Institutions-bestMatch:ASSET`) %>% 
   kablebox()
 
+FDIC_resources %>% count(Commented) %>% mutate(percent = n/nrow(FDIC_resources))
+
+FDIC_resources %>% group_by(BKCLASS) %>%
+  mutate(nbkclass = n() ) %>% count(Commented, nbkclass) %>% mutate(percent = n/nbkclass) 
+
+t.test(FDIC_resources %>% filter(commented) %>% pull(ASSET),
+       FDIC_resources %>% filter(!commented) %>% pull(ASSET))
+
+
+t.test(FDIC_resources %>% filter(commented, BKCLASS == "NM") %>% pull(ASSET),
+       FDIC_resources %>% filter(!commented, BKCLASS == "NM") %>% pull(ASSET))
+
+
+t.test(FDIC_resources %>% filter(commented, BKCLASS == "SM") %>% pull(ASSET),
+       FDIC_resources %>% filter(!commented, BKCLASS == "SM") %>% pull(ASSET))
+
+
+t.test(FDIC_resources %>% filter(commented, BKCLASS == "SB") %>% pull(ASSET),
+       FDIC_resources %>% filter(!commented, BKCLASS == "SB") %>% pull(ASSET))
+
+
+t.test(FDIC_resources %>% filter(commented, BKCLASS == "SA") %>% pull(ASSET),
+       FDIC_resources %>% filter(!commented, BKCLASS == "SA") %>% pull(ASSET))
+
 
 FDIC_resources %>%
   filter(ASSET > 10, BKCLASS %in% c("N")) %>% 
@@ -1101,7 +1131,8 @@ FDIC_resources %>%
   geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
   scale_x_log10() + 
-  labs(title = "FDIC-Insured National Associations",fill = "", y = "", x = "Assets (Thousands)") + 
+  labs(title = "FDIC-Insured National Associations",
+       fill = "", y = "", x = "Assets (Thousands)") + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1138,7 +1169,7 @@ FDIC_resources %>%
   aes(x = ASSET/1000000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(title = "FDIC-Insured Banks",
+  labs(title = str_c("FDIC-Insured Banks, N = ", nrow(FDIC_resources)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Assets (Millions)")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1152,15 +1183,16 @@ FDIC_resources %>% distinct(Commented, mean_ASSET) %>% kable()
 FDIC_resources %>%
   filter(ASSET > 10) %>% 
   mutate(Commented = Commented %>% paste0(         
-    "\n(median = $", round(median_ASSET, 0) %>% prettyNum(big.mark = ",") ,
-         ", mean = $", round(mean_ASSET, 0) %>% prettyNum(big.mark = ","), ")")) %>% 
+    "\n(median = $", round(median_ASSET/1000000, 2) , " million",
+         ", mean = $", round(mean_ASSET/1000000, 1) %>% prettyNum(big.mark = ","), " million)")) %>% 
   ggplot() + 
   aes(x = ASSET/1000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
   geom_vline( aes(xintercept = mean_ASSET/1000)) + 
     geom_vline( aes(xintercept = median_ASSET/1000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = "U.S. FDIC-Insured Banks",fill = "", y = "", x = "Assets (Thousands)",
+  labs(title = str_c("U.S. FDIC-Insured Banks, N = ", nrow(FDIC_resources)%>% prettyNum(big.mark = ",")) ,
+       fill = "", y = "", x = "Assets (Thousands)",
        caption = "Omits foreign banks and national associations") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -1329,15 +1361,20 @@ nonprofit_resources %<>%
     "Commented", 
     "Did not comment")) 
 
+nonprofit_resources %>% count(Commented) %>% mutate(percent = n/nrow(nonprofit_resources))
+
+t.test(nonprofit_resources %>% filter(commented) %>% pull(assets),
+       nonprofit_resources %>% filter(!commented) %>% pull(assets))
+
 # density plots 
 nonprofit_resources %>% 
   filter(assets > 10) %>% 
   ggplot() + 
-  aes(x = assets/1000000, fill = Commented) + 
+  aes(x = assets/1000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
-       fill = "", y = "", x = "Assets (Millions)")+
+       fill = "", y = "", x = "Assets (Thoudsands)")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1345,10 +1382,10 @@ nonprofit_resources %>%
 nonprofit_resources %>% 
   #filter(assets > 100) %>% 
   ggplot() + 
-  aes(x = revenue, fill = Commented) + 
+  aes(x = revenue/1000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(fill = "", y = "", x = "Revenue",
+  labs(fill = "", y = "", x = "Revenue (Thousands)",
        title = str_c("Non-profits, N = ", nrow(nonprofit_resources))) +
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1391,13 +1428,13 @@ nonprofit_resources %>%
     "mean = $", round(mean_assets/10000000, 1), " million)"
     )) %>% 
   ggplot() + 
-  aes(x = assets/1000000, fill = Commented, color = Commented) + 
+  aes(x = assets/1000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_assets/1000000)) + 
-      geom_vline( aes(xintercept = median_assets/1000000), linetype = 2) + 
+  geom_vline( aes(xintercept = mean_assets/1000)) + 
+  geom_vline( aes(xintercept = median_assets/1000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
-       fill = "", y = "", x = "Assets (Millions)") + 
+  labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources) %>% prettyNum(big.mark = ",") ),
+       fill = "", y = "", x = "Assets (Thousands)") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1411,8 +1448,8 @@ nonprofit_resources %>%
   geom_histogram(alpha = .5, color = NA) + 
     geom_vline( aes(xintercept = mean_revenue/1000)) + 
   scale_x_log10() + 
-  labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
-       fill = "", x = "Revenue ($1,000s)")+ 
+  labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)%>% prettyNum(big.mark = ",")),
+       fill = "", y= "", x = "Revenue ($1,000s)")+ 
   facet_grid(Commented ~ ., scales = "free_y")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1452,6 +1489,10 @@ creditunions %<>% mutate(org_name = tolower(CU_NAME),
                          commented = org_name %in% d$best_match_name,
                          Commented = ifelse(commented, "Commented", "Did not comment"))
 
+creditunions %>% count(Commented) %>% mutate(percent = n/nrow(creditunions))
+
+t.test(creditunions %>% filter(!commented) %>% pull(assets),
+       creditunions %>% filter(commented) %>% pull(assets))
 
 
 # density plots 
@@ -1462,7 +1503,7 @@ creditunions %>%
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(fill = "", x = "Assets (Millions)", 
-       title = str_c("Credit Unions, N = ", nrow(creditunions)),
+       title = str_c("Credit Unions, N = ", nrow(creditunions)%>% prettyNum(big.mark = ",")),
        fill = "", y = "")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1495,7 +1536,7 @@ creditunions %>%
   geom_vline( aes(xintercept = mean_assets/1000000)) + 
     geom_vline( aes(xintercept = median_assets/1000000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = str_c("Credit Unions, N = ", nrow(creditunions)),
+  labs(title = str_c("Credit Unions, N = ", nrow(creditunions)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Assets (Millions)") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -1548,7 +1589,7 @@ opensecrets %>%
   scale_x_log10() + 
   labs(fill = "",  
        y = "",
-       title = str_c("Campaign Donors, N = ", nrow(opensecrets)),
+       title = str_c("Campaign Donors, N = ", nrow(opensecrets)%>% prettyNum(big.mark = ",")),
        x = "Mean Contribution
        ($1,000s, in years contributing 2010-2017)")+
   theme(panel.grid.major.y = element_blank(),
@@ -1561,7 +1602,7 @@ opensecrets %>%
   aes(x = MeanContribAmountPerYearContributed/1000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)),
+  labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)%>% prettyNum(big.mark = ",")),
        fill = "", 
        y = "",
        x = "Mean Contribution per Year\n($1,000s, 2010-2017)")+
@@ -1575,7 +1616,7 @@ opensecrets %>%
   aes(x = TotalContribAmount/1000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)),
+  labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)%>% prettyNum(big.mark = ",")),
        y = "",
        x = "Total Contributions\n($1,000s, 2010-2017)")+
   theme(panel.grid.major.y = element_blank(),
@@ -1594,6 +1635,13 @@ opensecrets %<>%
 
 opensecrets %>% distinct(Commented, mean_MeanContribAmount) %>% kable
 
+opensecrets %>% count(commented) %>% mutate(percent = n/nrow(opensecrets))
+
+t.test(opensecrets %>% 
+         filter(commented) %>% pull(MeanContribAmount),
+       opensecrets %>% 
+         filter(!commented) %>% pull(MeanContribAmount)
+       )
 
 # count histograms
 opensecrets %>% 
@@ -1608,7 +1656,7 @@ opensecrets %>%
   geom_vline( aes(xintercept = mean_MeanContribAmount/1000)) + 
     geom_vline( aes(xintercept = median_MeanContribAmount/1000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)),
+  labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Political Action Committee Donations (Thousands)") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -1654,6 +1702,12 @@ compustat %<>% group_by(org_name) %>%
   top_n(1, marketcap2) %>% 
   ungroup() 
 
+
+compustat %>% count(Commented) %>% mutate(percent = n/nrow(compustat))
+
+t.test(compustat %>% filter(commented) %>% pull(marketcap2),
+       compustat %>% filter(!commented) %>% pull(marketcap2))
+
 compustat %>% 
   group_by(Commented) %>%
   filter(marketcap2 > 1000) %>% 
@@ -1661,7 +1715,7 @@ compustat %>%
   aes(x = marketcap2/1000000, fill = Commented) + 
   labs(fill = "", 
        y = "",
-       title = str_c("Publically-traded Companies, N = ", nrow(compustat)),
+       title = str_c("Publically-traded Companies, N = ", nrow(compustat)%>% prettyNum(big.mark = ",")),
        x = "Market Capitalization (Millions)") + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
@@ -1686,8 +1740,8 @@ compustat %>% distinct(Commented, mean_marketcap2) %>% kable
 compustat %>% 
     filter(marketcap2 > 1000) %>% 
   mutate(Commented = Commented %>% paste0(
-    "\n(median = $", round(median_marketcap2/1000000, 2), " million, ",
-    "mean = $", round(mean_marketcap2/1000000, 1), " million)"
+    "\n(median = $", round(median_marketcap2/1000000000, 1), " billion, ",
+    "mean = $", round(mean_marketcap2/1000000000, 1), " billion)"
     )) %>% 
   ggplot() + 
   aes(x = marketcap2/1000000, fill = Commented, color = Commented) + 
@@ -1695,7 +1749,7 @@ compustat %>%
   geom_vline( aes(xintercept = mean_marketcap2/1000000)) + 
     geom_vline( aes(xintercept = median_marketcap2/1000000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = str_c("Publically-traded Companies, N = ", nrow(compustat)),
+  labs(title = str_c("Publically-traded Companies, N = ", nrow(compustat)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Market Cap (Millions)") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -2015,14 +2069,15 @@ rows <- tibble(
   term = c("Dependent Variable"),
   `1` = "Comment",
   `2` = "Comment",  
-  `3` = "Comment"
+  #`3` = "Comment"
 )
 
 attr(rows, 'position') <- c(0)
 
 models <- list(mpFDIC,# mpFDIC_BKCLASSonly,
-               mpFDIC_BKCLASS,
-               mpFDICxBKCLASS)
+               mpFDIC_BKCLASS#,
+               #mpFDICxBKCLASS
+               )
 
 equatiomatic::extract_eq(models[[1]]) 
 
@@ -2035,6 +2090,10 @@ caption = "Reference Category = Savings Associations") +
   theme(panel.grid.major.x =  element_blank(),
         panel.grid.major.y =  element_blank()) + 
   scale_color_viridis_d(end = .6)
+
+
+save(models, rows, cm, gof_map, modelsummary,
+     file = here::here("models", "mpFDIC.Rdata"))
 ```
 
 
@@ -2197,11 +2256,44 @@ modelsummary(models)
 
 ## Together
 
-```{r}
+```{r mp-all}
+all <- full_join(
+  FDIC_resources %>% dplyr::select(assets = ASSET, commented, org_type = Class) %>% mutate(org_type = "Bank"),
+  nonprofit_resources %>% dplyr::select(assets, commented) %>% mutate(org_type = "Non-profit")
+) %>% 
+  full_join(
+  creditunions %>% dplyr::select(assets, commented) %>% mutate(org_type = "Credit union")
+  )
+
+all %<>% mutate(assets_b = assets  / 100000000) # %>% filter(org_type != " SB", org_type != " SM")
+
+mpAll <- glm(commented ~ assets_b + org_type,
+           data = all, 
+             family=binomial(link="logit"))
+
+mpAlli <- glm(commented ~ assets_b * org_type,
+           data = all, 
+             family=binomial(link="logit"))
 
 
+models <- list(mpAll, mpAlli)
 
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented"
+)
 
+attr(rows, 'position') <- c(0)
+
+equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+# modelplot(models)
+
+save(models, rows, cm, gof_map, modelsummary,
+     file = here::here("models", "mpAll.Rdata"))
 ```
 
 
