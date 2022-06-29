@@ -14,109 +14,19 @@ output:
 
 ```{r options, include=FALSE}
 # rmarkdown::render("docs/efficacy.Rmd")
+source(here::here("code", "setup.R"))
 
-## Sets defaults for R chunks
+## Change defaults for R chunks
 knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       cache = FALSE,
-                      #cache = TRUE,
-                      warning = FALSE,
-                      message = FALSE,
-                      fig.show="hold",
-                      fig.pos= "htbp",
-                      fig.path = "../figs/", # figs folder at root (up one from /docs)
-                      fig.align='center',
-                      fig.cap = '   ',
+                      fig.path = "../figs/", # figs folder at root (up one from /docs),
                       fig.retina = 1, #6, #FIXME for publication quality images
                       fig.height=2.5, 
                       fig.width=3, 
-                      out.width="50%",
-                      # out.width = "100%",
-                      out.extra = "")
+                      out.width="50%")
 
-library("xaringan")
-library("xaringanthemer")
-library("here")
-library("modelsummary")
-
-library(scales)
-library(magrittr)
-# library(broom)
-library(here)
-library(knitr)
-options(kableExtra.latex.load_packages = FALSE)
-library(kableExtra)
-#library(mediation)
-#library(lme4)
-#library(lmerTest)
-#library(fixest)
-#library(modelsummary)
-library(tidyverse)
-
-# table defaults
-modelsummary <- function(...) modelsummary::modelsummary(..., 
-                                                         stars = T, 
-                                                         add_rows = rows,
-                                                         coef_rename = cm,
-                                                         coef_omit = "(Intercept)"#, gof_map = gm
-                                                         ) %>% 
-  row_spec(row = 1, bold = T)
-
-# coeficient plot defaults
-modelplot <- function(...) modelsummary::modelplot(..., 
-                                                   coef_omit = "(Intercept)",
-                                                   coef_rename = cm) + 
-  geom_vline(xintercept = 0, 
-             linetype = 2, 
-             alpha = .5) + 
-  aes(shape = model) 
-
-style_mono_light(base_color = "#3b444b",
-          link_color = "#B7E4CF",
-          #background_color = "#FAF0E6", # linen
-          header_font_google = google_font("PT Sans"), 
-          text_font_google = google_font("Old Standard"), 
-          text_font_size = "18px",
-          padding = "10px",
-          code_font_google = google_font("Inconsolata"), 
-          code_inline_background_color    = "#F5F5F5", 
-          table_row_even_background_color = "#ddede5",
-          extra_css = 
-            list(".remark-slide-number" = list("display" = "none")))
 ```
 
-```{r setup}
-options(scipen=999)
-
-# source(here::here("code", "setup.R"))
-
-# defaults for plots
-library(ggplot2); theme_set(theme_minimal());
-options(
-  ggplot2.continuous.color = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-scale_color_discrete <- function(...){
-  scale_color_viridis_d(..., direction = -1, 
-                        begin = 0, end = .6, option = "viridis")}
-scale_fill_discrete <- function(...){
-  scale_fill_viridis_d(..., direction = -1, 
-                       begin = 0, end = .6, option = "viridis")}
-
-scale_color_continuous <- function(...){
-  scale_color_viridis_c(..., direction = -1, 
-                        option = "viridis")}
-scale_fill_continuous <- function(...){
-  scale_fill_viridis_c(..., direction = -1, 
-                       option = "viridis")}
-
-# Table formatting
-library(kableExtra)
-kablebox <- . %>% 
-  slice_head(n = 300) %>%
-  knitr::kable() %>% 
-  kable_styling() %>% 
-  scroll_box(height = "400px")
-```
 
 # Data
 
@@ -1161,14 +1071,16 @@ These models have the prefix `mem_`. The dependent variable is the efficacy scor
 ```{r mediation-assets-bluebook, fig.width=4, fig.height=3}
 library(mediation)
 
+b$org_type %>% unique
+
 
 # model predicting mediator, sophistication 
-model.m <- lm(Total_Legal_Citations ~ assets,  
+model.m <- lm(Total_Legal_Citations ~ assets * org_type,  
               data = b  %>% mutate(assets = assets/10000000000) %>% 
                 drop_na(Total_Legal_Citations, efficacy))
 
 # model predicting DV
-model.y <- glm(efficacy ~ Total_Legal_Citations + assets,  
+model.y <- glm(efficacy ~ Total_Legal_Citations + assets * org_type,  
                data = b  %>% mutate(assets = assets/10000000000))
 
 models <- list(model.m, model.y)

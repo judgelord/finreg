@@ -10,134 +10,18 @@ output:
       number_sections: false
 ---
 
-
-
-
 ```{r options, include=FALSE}
 # rmarkdown::render("docs/participation.Rmd")
+source(here::here("code", "setup.R"))
 
-## Sets defaults for R chunks
-knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
-                      cache = FALSE,
-                      #cache = TRUE,
-                      warning = FALSE,
-                      message = FALSE,
-                      fig.show="hold",
-                      fig.pos= "htbp",
+## Change defaults for R chunks
+knitr::opts_chunk$set(cache = FALSE,
                       fig.path = "../figs/",
-                      fig.align='center',
-                      fig.cap = '   ',
-                      fig.retina = 1, #6, #FIXME for publication quality images
+                      fig.retina = 1, #6, #FIXME for publication quality images 
                       fig.height = 3,
-                      fig.width = 7,
-                      out.width = "100%",
-                      out.extra = "")
-
-library("xaringan")
-library("xaringanthemer")
-library("here")
-library("modelsummary")
-
-library(scales)
-library(magrittr)
-#library(broom)
-#library(dotwhisker)
-library(here)
-library(knitr)
-options(kableExtra.latex.load_packages = FALSE)
-library(kableExtra)
-#library(mediation)
-#library(lme4)
-#library(lmerTest)
-#library(fixest)
-#library(modelsummary)
-library(tidyverse)
-
-# var names 
-cm = c("ASSET" = "Assets",
-       "ASSETS" = "Assets (Hundreds of Millions)",
-       "Assets" = "Assets (Billions)",
-       "assets" = "Assets",
-       "assets_t" = "Assets (in Thousands)",
-       "assets_m" = "Assets (in Millions)",
-       "assets_b" = "Assets (in Billions)",
-       "marketcap_b" = "Market Capitalization (Billions)",
-       "donations_m" = "Campaign Donations (Millions)",
-       "onepercentTop 1%" = "Top 1% Most Frequent",
-       "Class SM" = "State Bank",
-       "Class SB" = "Savings Bank",
-       "Class SA" = "Savings Association",
-       "Class NM" = "Commercial Bank",
-       "ASSETS:Class SM" = "Assets x State Bank",
-       "ASSETS:Class SB" = "Assets x Savings Bank",
-       "ASSETS:Class SA" = "Assets x Savings Association",
-       "ASSETS:Class NM" = "Assets x Commercial Bank",
-       "org_typeCredit union" = "Credit union",
-       "org_typeNon-profit" = "Non-profit",
-       "assets_b:org_typeCredit union" = "Assets x Credit union",
-       "assets_b:org_typeNon-profit" = "Assets x Non-profit")
-
-# table  efaults
-modelsummary <- function(...) modelsummary::modelsummary(..., 
-                                                         stars = T, 
-                                                         add_rows = rows,
-                                                         coef_rename = cm,
-                                                         gof_omit = "R.*|A.*|B.*",
-                                                         coef_omit = "(Intercept)") %>% 
-  row_spec(row = 1, bold = T)
-
-# coeficient plot defaults
-modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)") + 
-  geom_vline(xintercept = 0, linetype = 2, alpha = .5) + 
-  aes(shape = model)
-
-style_mono_light(base_color = "#3b444b",
-          link_color = "#B7E4CF",
-          #background_color = "#FAF0E6", # linen
-          header_font_google = google_font("PT Sans"), 
-          text_font_google = google_font("Old Standard"), 
-          text_font_size = "18px",
-          padding = "10px",
-          code_font_google = google_font("Inconsolata"), 
-          code_inline_background_color    = "#F5F5F5", 
-          table_row_even_background_color = "#ddede5",
-          extra_css = 
-            list(".remark-slide-number" = list("display" = "none")))
+                      fig.width = 7)
 ```
 
-```{r setup}
-options(scipen=999)
-
-# source(here::here("code", "setup.R"))
-
-# defaults for plots
-library(ggplot2); theme_set(theme_minimal());
-options(
-  ggplot2.continuous.color = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-scale_color_discrete <- function(...){
-  scale_color_viridis_d(..., direction = -1, 
-                        begin = 0, end = .6, option = "plasma")}
-scale_fill_discrete <- function(...){
-  scale_fill_viridis_d(..., direction = -1, 
-                       begin = 0, end = .6, option = "plasma")}
-
-scale_color_continuous <- function(...){
-  scale_color_viridis_c(..., direction = -1, 
-                        option = "plasma")}
-scale_fill_continuous <- function(...){
-  scale_fill_viridis_c(..., direction = -1, 
-                       option = "plasma")}
-
-# Table formatting
-library(kableExtra)
-kablebox <- . %>% 
-  slice_head(n = 300) %>%
-  knitr::kable() %>% 
-  kable_styling() %>% 
-  scroll_box(height = "400px")
-```
 
 # Data
 
@@ -606,385 +490,9 @@ d %>% group_by(Agency) %>%
 
 
 
-## Among organizations that commented on a Dodd-Frank rule
 
-```{r asset-counts, fig.width=4, fig.height= 2, out.width= "50%"}
-asset_counts <- d %>% 
-  mutate(assets = org_resources) %>% 
-  filter(assets > 10) %>%
-  distinct(org_name, docket_id, assets) %>% 
-  count(org_name, assets) %>% 
-  filter(!is.na(assets)) %>% 
-  mutate(nnp = quantile(n, probs = .99),
-         assets_m = assets /1000000,
-         assets_b = assets_m / 1000,
-         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
-         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"))
 
-asset_counts %>% 
-  ggplot() + 
-  aes(x = n,  fill = onepercent) + 
-  geom_bar() + 
-  labs(title = "Banks and Nonprofits",
-       y = "Number of Organizations",
-       fill = "Frequency of\nCommenting",
-       x = "Dodd-Frank Rules per Organization") #+ scale_y_log10()
-
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = assets_m, fill = five) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "Banks and Nonprofits",
-       fill = "Frequency of\nCommenting",
-       y = "", 
-       x = "Assets (Millions)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-
-  
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = assets_m, fill = onepercent) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "Banks and Nonprofits",
-       fill = "Frequency of\nCommenting",
-       y = "", 
-       x = "Assets (Millions)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-
-
-
-
-m_asset_count <- lm(n ~ assets_b, data = asset_counts)
-
-rows <- tibble(
-  term = c("Dependent Variable"),
-  `1` = "Number of Rules",
-)
-
-attr(rows, 'position') <- c(0)
-
-modelsummary(m_asset_count)
-```
-
-
-For every additional 10 billion in assets, an organization comments on about `r round(m_asset_count$coefficients[2]* 10,0) ` additional rules. 
-
----
-
-### Among nonprofits that commented on a Dodd-Frank rule
-
-```{r nonprofit-rules, fig.width=4, fig.height= 2, out.width= "50%"}
-asset_counts <- d %>% 
-  mutate(assets = `nonprofits_resources-bestMatch:assets`) %>% 
-  filter(assets > 10) %>%
-  distinct(org_name, docket_id, assets) %>% 
-  count(org_name, assets) %>% 
-  filter(!is.na(assets)) %>% 
-  mutate(nnp = quantile(n, probs = .99),
-         assets_t = assets / 1000,
-         assets_m = assets_t /1000,
-         assets_b = assets_m / 1000,
-         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
-         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"))
-
-asset_counts %>% filter(onepercent == "Top 1%") %>% distinct(n) %>% min()
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = n, fill = onepercent) + 
-  geom_bar() + 
-  labs(title = "Nonprofits",
-       y = "Number of Nonprofits",
-       fill = "Frequency of\nCommenting",
-       x = "Number of Dodd-Frank Rules") # + scale_y_log10()
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = assets_t, fill = five) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "Nonprofits",
-        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-  
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = assets_t, fill = onepercent) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "Nonprofits",
-        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-
-
-m_nonprofit_count <- lm(n ~ assets_b, data = asset_counts)
-
-rows <- tibble(
-  term = c("Dependent Variable"),
-  `1` = "Number of Dodd-Frank Rules",
-)
-
-attr(rows, 'position') <- c(0)
-
-modelsummary(m_nonprofit_count)
-```
-
-
-For every additional 10 billion in assets, a nonprofit comments on about `r round(m_nonprofit_count$coefficients[2]* 10,1) ` additional rules. 
-
----
-
-
-### Among FDIC-insured that commented on a Dodd-Frank rule
-
-```{r fdic-rules, fig.width=4,  fig.height= 2,out.width= "50%"}
-asset_counts <- d %>% 
-  mutate(assets = `FDIC_Institutions-bestMatch:ASSET`) %>% 
-  filter(assets > 10) %>%
-  distinct(org_name, docket_id, assets) %>% 
-  count(org_name, assets) %>% 
-  filter(!is.na(assets)) %>% 
-  mutate(nnp = quantile(n, probs = .99),
-         assets_t = assets /1000,
-         assets_m = assets_t /1000,
-         assets_b = assets_m / 1000,
-         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
-         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"))
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = n, fill = onepercent) + 
-  geom_bar() + 
-  labs(y = "Number of Banks",
-       title = "FDIC-Insured Banks",
-       fill = "Frequency of\nCommenting",
-       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
-  
-asset_counts %>% 
-  ggplot() + 
-  aes(x = assets_m, fill = five) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "FDIC-Insured Banks",
-       fill = "Frequency of\nCommenting",
-       y = "", x = "Assets (Millions)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = assets_m, fill = onepercent) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "FDIC-Insured Banks",
-       fill = "Frequency of\nCommenting",
-       y = "", x = "Assets (Millions)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-
-
-m_fdic_count <- lm(n ~ assets_b, data = asset_counts)
-
-rows <- tibble(
-  term = c("Dependent Variable"),
-  `1` = "Number of Dodd-Frank Rules"
-  )
-
-attr(rows, 'position') <- c(0)
-
-modelsummary(list(m_fdic_count))
-```
-
-
-For every additional 10 billion in assets, a nonprofit comments on about `r round(m_fdic_count$coefficients[2]* 10,0) ` additional rules. 
-
-
----
-
-
-### Among publically-traded companies that commented on a Dodd-Frank rule
-
-```{r compustat-rules, fig.width=4, fig.height= 2, out.width= "50%"}
-# compustat-rules
-
-
-# combine and count 
-asset_counts <- d %>% 
-  mutate(marketcap = marketcap2) %>% 
-  filter(marketcap > 10) %>%
-  distinct(org_name, docket_id, marketcap) %>% 
-  count(org_name, marketcap) %>% 
-  filter(!is.na(marketcap)) %>% 
-  mutate(nnp = quantile(n, probs = .9),
-         marketcap_t = marketcap /1000,
-         marketcap_m = marketcap_t /1000,
-         marketcap_b = marketcap_m / 1000,
-         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
-         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"))
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = n, fill = onepercent) + 
-  geom_bar() + 
-  labs(y = "Number of Companies",
-       title = "Publicaly-Traded Companies",
-       fill = "Frequency of\nCommenting",
-       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
-  
-asset_counts %>% 
-  ggplot() + 
-  aes(x = marketcap_b, fill = five) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "Publicaly-Traded Companies",
-       fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = marketcap_b, fill = onepercent) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "Publicaly-Traded Companies",
-       fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-
-
-m_compustat_count <- lm(n ~ marketcap_b, data = asset_counts)
-
-rows <- tibble(
-  term = c("Dependent Variable"),
-  `1` = "Number of Dodd-Frank Rules"
-  )
-
-attr(rows, 'position') <- c(0)
-
-modelsummary(list(m_compustat_count))
-```
-
-
-For every additional 10 billion in assets, a nonprofit comments on about `r round(m_compustat_count$coefficients[2]* 10,0) ` additional rules. 
-
----
-
-### Among campaign donors that commented on a Dodd-Frank rule
-
-```{r opensecrets-rules, fig.width=4, fig.height= 2, out.width= "50%"}
-asset_counts <- d %>% 
-  mutate(donations = `opensecrets_resources_jwVersion-bestMatch:MeanContribAmountPerYearContributed`) %>% 
-  filter(donations > 10) %>%
-  distinct(org_name, docket_id, donations) %>% 
-  count(org_name, donations) %>% 
-  filter(!is.na(donations)) %>% 
-  mutate(nnp = quantile(n, probs = .9),
-         donations_m = donations / 1000000,
-         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
-         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"))
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = n, fill = onepercent) + 
-  geom_bar() + 
-  labs(title = "Campaign Donors",
-       y = "Number of Organizations",
-        fill = "Frequency of\nCommenting",
-       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
-  
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = donations_m, fill = five) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "Campaign Donors",
-        fill = "Frequency of\nCommenting", 
-       y = "", x = "PAC Donations (Thousands)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-
-
-asset_counts %>% 
-  ggplot() + 
-  aes(x = donations_m, fill = onepercent) + 
-  geom_density(alpha = .5, color = NA) + 
-  scale_x_log10() + 
-  labs(title = "Campaign Donors",
-        fill = "Frequency of\nCommenting", 
-       y = "", x = "PAC Donations (Thousands)")+
-  theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.y = element_blank())
-
-
-m_opensecrets_count <- lm(n ~ donations_m, data = asset_counts)
-
-rows <- tibble(
-  term = c("Dependent Variable"),
-  `1` = "Number of Dodd-Frank Rules",
-)
-
-attr(rows, 'position') <- c(0)
-
-modelsummary(m_opensecrets_count)
-```
-
-
-For every additional 10 million in Political Action Committee campaing donations, an organization comments on about `r round(m_opensecrets_count$coefficients[2]* 10,0) ` additional rules. 
-
----
-
-### All
-
-```{r all-rules}
-
-models <- list(#`All` = m_asset_count, 
-               `Banks` = m_fdic_count,
-               `Nonprofits` = m_nonprofit_count,
-               `Firms` = m_compustat_count,
-               `PAC Donors` = m_opensecrets_count)
-
-rows <- tibble(
-  term = c("Dependent Variable"),
-  #`All` = "Number of Rules",
-    `Banks` = "Number of Rules",
-      `Nonprofits` = "Number of Rules",
-  `Firms` = "Number of Rules",
-    `PAC Donors` = "Number of Rules",
-  )
-
-attr(rows, 'position') <- c(0)
-
-
-modelsummary(models)
-
-save(models, rows, cm, gof_map, modelsummary,
-     file = here::here("models", "rules-by-assets.Rdata"))
-```
-
----
-
-## Comparing firms that did and did not comment on Dodd-Frank rules
+## Comparing public companies that did and did not comment on Dodd-Frank rules
 
 
 ```{r FDIC-density, fig.height=1.5, fig.width=4, out.width="50%"}
@@ -1099,25 +607,25 @@ FDIC_resources %>% count(Commented) %>% mutate(percent = n/nrow(FDIC_resources))
 FDIC_resources %>% group_by(BKCLASS) %>%
   mutate(nbkclass = n() ) %>% count(Commented, nbkclass) %>% mutate(percent = n/nbkclass) 
 
-t.test(FDIC_resources %>% filter(commented) %>% pull(ASSET),
+fdic_t <- t.test(FDIC_resources %>% filter(commented) %>% pull(ASSET),
        FDIC_resources %>% filter(!commented) %>% pull(ASSET))
+fdic_t
 
-
-t.test(FDIC_resources %>% filter(commented, BKCLASS == "NM") %>% pull(ASSET),
+fdic_tNM <- t.test(FDIC_resources %>% filter(commented, BKCLASS == "NM") %>% pull(ASSET),
        FDIC_resources %>% filter(!commented, BKCLASS == "NM") %>% pull(ASSET))
+fdic_tNM
 
-
-t.test(FDIC_resources %>% filter(commented, BKCLASS == "SM") %>% pull(ASSET),
+fdic_tSM <- t.test(FDIC_resources %>% filter(commented, BKCLASS == "SM") %>% pull(ASSET),
        FDIC_resources %>% filter(!commented, BKCLASS == "SM") %>% pull(ASSET))
+fdic_tSM 
 
-
-t.test(FDIC_resources %>% filter(commented, BKCLASS == "SB") %>% pull(ASSET),
+fdic_tSB <- t.test(FDIC_resources %>% filter(commented, BKCLASS == "SB") %>% pull(ASSET),
        FDIC_resources %>% filter(!commented, BKCLASS == "SB") %>% pull(ASSET))
+fdic_tSB
 
-
-t.test(FDIC_resources %>% filter(commented, BKCLASS == "SA") %>% pull(ASSET),
+fdic_tSA <- t.test(FDIC_resources %>% filter(commented, BKCLASS == "SA") %>% pull(ASSET),
        FDIC_resources %>% filter(!commented, BKCLASS == "SA") %>% pull(ASSET))
-
+fdic_tSA
 
 FDIC_resources %>%
   filter(ASSET > 10, BKCLASS %in% c("N")) %>% 
@@ -1170,7 +678,8 @@ FDIC_resources %>%
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = str_c("FDIC-Insured Banks, N = ", nrow(FDIC_resources)%>% prettyNum(big.mark = ",")),
-       fill = "", y = "", x = "Assets (Millions)")+
+       fill = "", y = "", x = "Assets (Millions)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", fdic_t$p.value %>% round(3), "\nOmits foreign banks and national associations")) + 
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1193,7 +702,7 @@ FDIC_resources %>%
   scale_x_log10() + 
   labs(title = str_c("U.S. FDIC-Insured Banks, N = ", nrow(FDIC_resources)%>% prettyNum(big.mark = ",")) ,
        fill = "", y = "", x = "Assets (Thousands)",
-       caption = "Omits foreign banks and national associations") + 
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", fdic_t$p.value %>% round(3), "\nOmits foreign banks and national associations")) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1213,7 +722,8 @@ FDIC_resources %>%
   geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
     geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
   scale_x_log10() + 
-  labs(title = "FDIC-Insured Commercial Banks",fill = "", y = "", x = "Assets (Thousands)") + 
+  labs(title = "FDIC-Insured Commercial Banks",fill = "", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", fdic_tNM$p.value %>% round(3)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1231,7 +741,8 @@ FDIC_resources %>%
   geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
   scale_x_log10() + 
-  labs(title = "FDIC-Insured Savings Banks",fill = "", y = "", x = "Assets (Thousands)") + 
+  labs(title = "FDIC-Insured Savings Banks",fill = "", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", fdic_tSB$p.value %>% round(3)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1250,7 +761,8 @@ FDIC_resources %>%
   geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
 scale_x_log10() + 
-  labs(title = "FDIC-Insured State Banks",fill = "", y = "", x = "Assets (Thousands)") + 
+  labs(title = "FDIC-Insured State Banks",fill = "", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", fdic_tSM$p.value %>% round(3)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1268,7 +780,8 @@ FDIC_resources %>%
   geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
 scale_x_log10() + 
-  labs(title = "FDIC-Insured Savings Associations",fill = "", y = "", x = "Assets (Thousands)") + 
+  labs(title = "FDIC-Insured Savings Associations",fill = "", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", fdic_tSA$p.value %>% round(3)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1363,8 +876,16 @@ nonprofit_resources %<>%
 
 nonprofit_resources %>% count(Commented) %>% mutate(percent = n/nrow(nonprofit_resources))
 
-t.test(nonprofit_resources %>% filter(commented) %>% pull(assets),
+nonprofit_t <- t.test(nonprofit_resources %>% filter(commented) %>% pull(assets),
        nonprofit_resources %>% filter(!commented) %>% pull(assets))
+
+nonprofit_t
+
+nonprofit_revenue_t <- t.test(nonprofit_resources %>% filter(commented) %>% pull(revenue),
+       nonprofit_resources %>% filter(!commented) %>% pull(revenue))
+
+nonprofit_revenue_t
+
 
 # density plots 
 nonprofit_resources %>% 
@@ -1374,19 +895,21 @@ nonprofit_resources %>%
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
-       fill = "", y = "", x = "Assets (Thoudsands)")+
+       fill = "", y = "", x = "Assets (Thoudsands)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", nonprofit_t$p.value %>% round(5)))  + 
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
 
 nonprofit_resources %>% 
-  #filter(assets > 100) %>% 
+    filter(revenue > 10) %>% 
   ggplot() + 
   aes(x = revenue/1000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(fill = "", y = "", x = "Revenue (Thousands)",
-       title = str_c("Non-profits, N = ", nrow(nonprofit_resources))) +
+       title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", nonprofit_revenue_t$p.value %>% round(5)))  + 
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1434,7 +957,8 @@ nonprofit_resources %>%
   geom_vline( aes(xintercept = median_assets/1000), linetype = 2) + 
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources) %>% prettyNum(big.mark = ",") ),
-       fill = "", y = "", x = "Assets (Thousands)") + 
+       fill = "", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", nonprofit_t$p.value %>% round(5)))  + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1449,7 +973,8 @@ nonprofit_resources %>%
     geom_vline( aes(xintercept = mean_revenue/1000)) + 
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)%>% prettyNum(big.mark = ",")),
-       fill = "", y= "", x = "Revenue ($1,000s)")+ 
+       fill = "", y= "", x = "Revenue ($1,000s)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", nonprofit_revenue_t$p.value %>% round(5)))  + 
   facet_grid(Commented ~ ., scales = "free_y")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1491,9 +1016,9 @@ creditunions %<>% mutate(org_name = tolower(CU_NAME),
 
 creditunions %>% count(Commented) %>% mutate(percent = n/nrow(creditunions))
 
-t.test(creditunions %>% filter(!commented) %>% pull(assets),
+creditunion_t <- t.test(creditunions %>% filter(!commented) %>% pull(assets),
        creditunions %>% filter(commented) %>% pull(assets))
-
+creditunion_t
 
 # density plots 
 creditunions %>% 
@@ -1504,7 +1029,8 @@ creditunions %>%
   scale_x_log10() + 
   labs(fill = "", x = "Assets (Millions)", 
        title = str_c("Credit Unions, N = ", nrow(creditunions)%>% prettyNum(big.mark = ",")),
-       fill = "", y = "")+
+       fill = "", y = "",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", creditunion_t$p.value %>% round(3)))  + 
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1537,7 +1063,8 @@ creditunions %>%
     geom_vline( aes(xintercept = median_assets/1000000), linetype = 2) + 
   scale_x_log10() + 
   labs(title = str_c("Credit Unions, N = ", nrow(creditunions)%>% prettyNum(big.mark = ",")),
-       fill = "", y = "", x = "Assets (Millions)") + 
+       fill = "", y = "", x = "Assets (Millions)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", creditunion_t$p.value %>% round(3)))  + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1635,13 +1162,17 @@ opensecrets %<>%
 
 opensecrets %>% distinct(Commented, mean_MeanContribAmount) %>% kable
 
-opensecrets %>% count(commented) %>% mutate(percent = n/nrow(opensecrets))
+opensecrets %>% count(Commented) %>% mutate(percent = n/nrow(opensecrets))
 
-t.test(opensecrets %>% 
+opensecrets %<>% mutate(commented = Commented == "Commented")
+
+opensecrets_t <- t.test(opensecrets %>% 
          filter(commented) %>% pull(MeanContribAmount),
        opensecrets %>% 
          filter(!commented) %>% pull(MeanContribAmount)
        )
+
+opensecrets_t
 
 # count histograms
 opensecrets %>% 
@@ -1657,7 +1188,9 @@ opensecrets %>%
     geom_vline( aes(xintercept = median_MeanContribAmount/1000), linetype = 2) + 
   scale_x_log10() + 
   labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)%>% prettyNum(big.mark = ",")),
-       fill = "", y = "", x = "Political Action Committee Donations (Thousands)") + 
+       fill = "", y = "", x = "Political Action Committee Donations (Thousands)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", opensecrets_t$p.value %>% round(3))
+       ) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1680,7 +1213,8 @@ compustat %<>%
          Commented = ifelse(
     org_name %in% d$best_match_name,
     "Commented", 
-    "Did not comment")) %>% 
+    "Did not comment"),
+    commented = Commented == "Commented") %>% 
   mutate(marketcap2 = ifelse(str_detect(marketcap, "k"),
                              marketcap %>% str_remove("k") %>% as.numeric() * 1000,
                              marketcap),
@@ -1705,8 +1239,10 @@ compustat %<>% group_by(org_name) %>%
 
 compustat %>% count(Commented) %>% mutate(percent = n/nrow(compustat))
 
-t.test(compustat %>% filter(commented) %>% pull(marketcap2),
+compustat_t <- t.test(compustat %>% filter(commented) %>% pull(marketcap2),
        compustat %>% filter(!commented) %>% pull(marketcap2))
+
+compustat_t
 
 compustat %>% 
   group_by(Commented) %>%
@@ -1716,7 +1252,9 @@ compustat %>%
   labs(fill = "", 
        y = "",
        title = str_c("Publically-traded Companies, N = ", nrow(compustat)%>% prettyNum(big.mark = ",")),
-       x = "Market Capitalization (Millions)") + 
+       x = "Market Capitalization (Millions)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", compustat_t$p.value %>% round(3))
+       ) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   #geom_vline(aes(xintercept = mean)) +
@@ -1750,7 +1288,9 @@ compustat %>%
     geom_vline( aes(xintercept = median_marketcap2/1000000), linetype = 2) + 
   scale_x_log10() + 
   labs(title = str_c("Publically-traded Companies, N = ", nrow(compustat)%>% prettyNum(big.mark = ",")),
-       fill = "", y = "", x = "Market Cap (Millions)") + 
+       fill = "", y = "", x = "Market Cap (Millions)",
+       caption = str_c("Welch two-sample t-test of difference in means, p-vaue = ", compustat_t$p.value %>% round(3))
+       ) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1824,7 +1364,7 @@ d  %<>%
 ```
 
 
-We have market cap for  `r d %>% filter(!is.na(marketcap)) %>% count(best_match_name)  %>% nrow()` firms that submitted `r nrow(d %>% filter(!is.na(marketcap)))` comments.
+We have market cap for  `r d %>% filter(!is.na(marketcap)) %>% count(best_match_name)  %>% nrow()` companies that submitted `r nrow(d %>% filter(!is.na(marketcap)))` comments.
 ```{r marketcap-inspect}
 # fishy
 d %>% 
@@ -1895,7 +1435,7 @@ d %>%
 
 --> 
 
-# Asset data coverage by docket
+## Asset data coverage by docket
 
 ```{r}
 is_not_na <- . %>% is.na() %>% isFALSE()
@@ -1961,6 +1501,504 @@ save(commenter_assets,
      file = here::here("data", "commenter_assets.Rdata"))
 ```
 
+---
+
+# Frequency of participation among organizations that commented
+
+Among commenting organizatyions, how many rules did each comment on?
+
+```{r asset-counts, fig.width=4, fig.height= 2, out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(assets = org_resources) %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .99),
+         assets_m = assets /1000000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n > nnp)
+
+rules_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+rules_t
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n,  fill = onepercent) + 
+  geom_bar() + 
+  labs(title = "Banks and Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       y = "Number of Organizations",
+       fill = "Frequency of\nCommenting",
+       x = "Dodd-Frank Rules per Organization") #+ scale_y_log10()
+
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Banks and Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", 
+       x = "Assets (Millions)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Banks and Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", 
+       x = "Assets (Millions)")+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+
+
+m_asset_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Rules",
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(m_asset_count)
+```
+
+
+For every additional 10 billion in assets, an organization comments on about `r round(m_asset_count$coefficients[2]* 10,0) ` additional rules. 
+
+---
+
+## Among nonprofits that commented on a Dodd-Frank rule
+
+```{r nonprofit-rules, fig.width=4, fig.height= 2, out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(assets = `nonprofits_resources-bestMatch:assets`) %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .99),
+         assets_t = assets / 1000,
+         assets_m = assets_t /1000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n > nnp)
+
+asset_counts %>% filter(onepercent == "Top 1%") %>% distinct(n) %>% min()
+
+rules_nonprofits_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+rules_nonprofits_t 
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  labs(title = "Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       y = "Number of Nonprofits",
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") # + scale_y_log10()
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_t, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_nonprofits_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_t, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_nonprofits_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_nonprofit_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules",
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(m_nonprofit_count)
+```
+
+
+For every additional 10 billion in assets, a nonprofit comments on about `r round(m_nonprofit_count$coefficients[2]* 10,1) ` additional rules. 
+
+---
+
+## Among FDIC-insured that commented on a Dodd-Frank rule
+
+```{r fdic-rules, fig.width=4,  fig.height= 2,out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(assets = `FDIC_Institutions-bestMatch:ASSET`) %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .99),
+         assets_t = assets /1000,
+         assets_m = assets_t /1000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n>nnp)
+
+rules_fdic_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+rules_fdic_t 
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  labs(y = "Number of Banks",
+       title = "FDIC-Insured Banks" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "FDIC-Insured Banks" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", x = "Assets (Millions)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_fdic_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "FDIC-Insured Banks" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", x = "Assets (Millions)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_fdic_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_fdic_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules"
+  )
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(list(m_fdic_count))
+```
+
+
+For every additional 10 billion in assets, a nonprofit comments on about `r round(m_fdic_count$coefficients[2]* 10,0) ` additional rules. 
+
+
+---
+
+
+
+## Among credit unions that commented on a Dodd-Frank rule
+
+```{r creditunion-rules, fig.width=4,  fig.height= 2,out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(assets = `Total Assets`) %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         assets_t = assets /1000,
+         assets_m = assets_t /1000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n>nnp)
+
+rules_creditunion_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+rules_creditunion_t
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  labs(y = "Number of Credit Unions",
+       title = "Credit Unions" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Credit Unions" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", x = "Assets (Millions)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_creditunion_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Credit Unions" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", x = "Assets (Millions)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_creditunion_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_creditunion_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules"
+  )
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(list(m_creditunion_count))
+```
+
+
+For every additional 10 billion in assets, a nonprofit comments on about `r round(m_fdic_count$coefficients[2]* 10,0) ` additional rules. 
+
+
+---
+
+
+## Among publically-traded companies that commented on a Dodd-Frank rule
+
+```{r compustat-rules, fig.width=4, fig.height= 2, out.width= "50%"}
+# compustat-rules
+
+
+# combine and count 
+asset_counts <- d %>% 
+  mutate(marketcap = marketcap2) %>% 
+  filter(marketcap > 10) %>%
+  distinct(org_name, docket_id, marketcap) %>% 
+  count(org_name, marketcap) %>% 
+  filter(!is.na(marketcap)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         marketcap_t = marketcap /1000,
+         marketcap_m = marketcap_t /1000,
+         marketcap_b = marketcap_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n > nnp)
+
+
+rules_compustat_t <- t.test(asset_counts %>% filter(top) %>% pull(marketcap),
+                  asset_counts %>% filter(!top) %>% pull(marketcap),)
+
+rules_compustat_t 
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  labs(y = "Number of Companies",
+       title = "Publicaly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+asset_counts %>% 
+  ggplot() + 
+  aes(x = marketcap_b, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Publicaly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_compustat_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = marketcap_b, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Publicaly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_compustat_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_compustat_count <- lm(n ~ marketcap_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules"
+  )
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(list(m_compustat_count))
+```
+
+
+For every additional 10 billion in assets, a nonprofit comments on about `r round(m_compustat_count$coefficients[2]* 10,0) ` additional rules. 
+
+---
+
+## Among campaign donors that commented on a Dodd-Frank rule
+
+```{r opensecrets-rules, fig.width=4, fig.height= 2, out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(donations = `opensecrets_resources_jwVersion-bestMatch:MeanContribAmountPerYearContributed`) %>% 
+  filter(donations > 10) %>%
+  distinct(org_name, docket_id, donations) %>% 
+  count(org_name, donations) %>% 
+  filter(!is.na(donations)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         donations_m = donations / 1000000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n>nnp)
+
+rules_pac_t <- t.test(asset_counts %>% filter(top) %>% pull(donations),
+                  asset_counts %>% filter(!top) %>% pull(donations),)
+
+rules_pac_t 
+
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  labs(title = "Campaign Donors" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       y = "Number of Organizations",
+        fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = donations_m, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Campaign Donors" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", 
+       y = "", x = "PAC Donations (Thousands)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_pac_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = donations_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  labs(title = "Campaign Donors" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", 
+       y = "", x = "PAC Donations (Thousands)",
+       caption = str_c("Welch two-sample t-test, p-value = ", rules_pac_t$p.value %>% round(3)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_opensecrets_count <- lm(n ~ donations_m, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules",
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(m_opensecrets_count)
+```
+
+
+For every additional 10 million in Political Action Committee campaing donations, an organization comments on about `r round(m_opensecrets_count$coefficients[2]* 10,0) ` additional rules. 
+
+---
+
+## All
+
+```{r all-rules}
+
+models <- list(#`All` = m_asset_count, 
+               `Banks` = m_fdic_count,
+               `Nonprofits` = m_nonprofit_count,
+               `Public Companies` = m_compustat_count,
+               `PAC Donors` = m_opensecrets_count)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  #`All` = "Number of Rules",
+    `Banks` = "Number of Rules",
+      `Nonprofits` = "Number of Rules",
+  `Public Companies` = "Number of Rules",
+    `PAC Donors` = "Number of Rules",
+  )
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+save(models, rows, cm, gof_map, modelsummary,
+     file = here::here("models", "rules-by-assets.Rdata"))
+```
+
+---
 
 ## Comments per rule
 
@@ -2006,10 +2044,7 @@ d %>%
 ```
 
 
-# Regressions
-
-
-## Probability of Commenting
+# Probability of Commenting
 
 These models have the prefix `mp_`. The dependent variable is the probability that the organization comments.
 

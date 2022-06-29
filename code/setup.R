@@ -1,30 +1,30 @@
 
 requires <- c("bookdown",
-              "tidyverse",
               "scales",
               "magrittr",
-              "broom",
+              #"broom",
               "here",
               #"msm",
               "kableExtra",
               "modelsummary",
               #"dotwhisker",
               "mediation",
-              "lme4",
-              "lmerTest",
-              "fixest",
-              "flextable",
+              #"lme4",
+              #"lmerTest",
+              #"fixest",
+              #"flextable",
               #"magick",
               "equatiomatic",
               #"tidytext",
-              "latex2exp")
+              #"latex2exp",
+              "tidyverse")
 to_install <- c(requires %in% rownames(installed.packages()) == FALSE)
 install.packages(c(requires[to_install], "NA"), repos = "https://cloud.r-project.org/" )
 rm(requires, to_install)
 
 library(scales)
 library(magrittr)
-library(broom)
+#library(broom)
 #library(dotwhisker)
 library(here)
 library(knitr)
@@ -36,10 +36,12 @@ library(kableExtra)
 #library(fixest)
 library(modelsummary)
 library(tidyverse)
-library(modelsummary)
-library(kableExtra)
 
-fig.path <- here("figs/")
+# slides
+library("xaringan")
+library("xaringanthemer")
+
+
 
 ## Sets defaults for R chunks
 knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
@@ -52,7 +54,7 @@ knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
                       fig.path = "figs/",
                       fig.align='center',
                       fig.cap = '   ',
-                      fig.retina = 6,
+                      fig.retina = 1,
                       fig.height = 3,
                       fig.width = 7,
                       out.width = "100%",
@@ -65,7 +67,7 @@ theme_set(theme_tufte())
 theme_update(plot.title = element_text(hjust=0.5,size=12))
 
 # defaults for plots
-library(ggplot2); theme_set(theme_bw());
+library(ggplot2); theme_set(theme_minimal());
 options(
   ggplot2.continuous.color = "viridis",
   ggplot2.continuous.fill = "viridis"
@@ -83,6 +85,9 @@ scale_color_continuous <- function(...){
 scale_fill_continuous <- function(...){
   scale_fill_viridis_c(..., direction = -1,
                        option = "plasma")}
+
+
+# Table formatting
 
 # Table formatting
 library(kableExtra)
@@ -218,6 +223,64 @@ str_ext <- function(string, pattern) {
 str_spl <- function(string, pattern) {
   str_split(string, regex(pattern, ignore_case = TRUE))
 }
+
+
+# var names
+cm = c("ASSET" = "Assets",
+       "ASSETS" = "Assets (Hundreds of Millions)",
+       "Assets" = "Assets (Billions)",
+       "assets" = "Assets",
+       "assets_t" = "Assets (in Thousands)",
+       "assets_m" = "Assets (in Millions)",
+       "assets_b" = "Assets (in Billions)",
+       "marketcap_b" = "Market Capitalization (Billions)",
+       "donations_m" = "Campaign Donations (Millions)",
+       "onepercentTop 1%" = "Top 1% Most Frequent",
+       "Class SM" = "State Bank",
+       "Class SB" = "Savings Bank",
+       "Class SA" = "Savings Association",
+       "Class NM" = "Commercial Bank",
+       "ASSETS:Class SM" = "Assets x State Bank",
+       "ASSETS:Class SB" = "Assets x Savings Bank",
+       "ASSETS:Class SA" = "Assets x Savings Association",
+       "ASSETS:Class NM" = "Assets x Commercial Bank",
+       "org_typeCredit union" = "Credit union",
+       "org_typeNon-profit" = "Non-profit",
+       "assets_b:org_typeCredit union" = "Assets x Credit union",
+       "assets_b:org_typeNon-profit" = "Assets x Non-profit")
+
+# table  defaults
+modelsummary <- function(...) modelsummary::modelsummary(...,
+                                                         stars = T,
+                                                         add_rows = rows,
+                                                         coef_rename = cm,
+                                                         gof_omit = "R.*|A.*|B.*",
+                                                         coef_omit = "(Intercept)") %>%
+  row_spec(row = 1, bold = T)
+
+# coeficient plot defaults
+modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = .5) +
+  aes(shape = model)
+
+
+# SLIDE FORMATTING
+style_mono_light(base_color = "#3b444b",
+                 link_color = "#B7E4CF",
+                 #background_color = "#FAF0E6", # linen
+                 header_font_google = google_font("PT Sans"),
+                 text_font_google = google_font("Old Standard"),
+                 text_font_size = "18px",
+                 padding = "10px",
+                 code_font_google = google_font("Inconsolata"),
+                 code_inline_background_color    = "#F5F5F5",
+                 table_row_even_background_color = "#ddede5",
+                 extra_css =
+                   list(".remark-slide-number" = list("display" = "none")))
+
+options(scipen=999)
+
+
 
 
 
