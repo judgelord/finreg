@@ -212,7 +212,13 @@ We developed several new tools to test our wealth inequality hypotheses, includi
 
 5.	All non-profit organizations as reported by the IRS 990 forms, which include each non-profit's total assets and annual revenue.
 
-6.	All organizations reporting Political Action Committee (PAC) donations or lobbying expenditures, as compiled by the Center for Responsive Politics. We then calculate average annual PAC contributions and lobbying expenditures for each organization.
+6.	All organizations reporting Political Action Committee (PAC) donations, as compiled by the Center for Responsive Politics. We then calculate average annual PAC contributions for each organization.
+
+<!--
+7.	All organizations reporting lobbying expenditures, as compiled by the Center for Responsive Politics. We then calculate average annual lobbying expenditures for each organization.
+
+TODO: Devin will replicate PAC figures and analyses with data/Lobbying_and_Contributions.csv
+-->
 
 Next, we used a probabilistic matching algorithm to match comments to organizations in these databases. This step took considerable innovation because the names that organizations use to submit comments and the names by which they appear in various databases often differ. Our matching procedure involved several steps. We first identified comments that were likely from an organization, excluding those that were likely from an individual or a mass commenting campaign. We then linked these comments to the organization with the best matching name or to no organization when our matching algorithm did not identify a high-probability match in any of the above databases.  We then spot-checked our processes for false positive matches by inspecting organizations that matched many comments and false negatives by inspecting especially long, sophisticated, or efficacious comments that did not match to a known organization. We then improved the matching algorithm through dozens of iterations.
 This procedure ultimately resulted in a dataset of over `r n_orgs` distinct organizations that submitted  `r n_assets` unique comments on one or more Dodd-Frank rules. We use these data to compare the wealth of commenting organizations to `r n_orgs_total` similar organizations in one of above wealth databases that did not comment on financial regulations.
@@ -380,7 +386,7 @@ DEVIN WILL ADD LOBBYING EXPENDATURES
 
 The main takeaway from this analysis is that organizational resources correlate with commenting behavior. That is, wealthy organizations are represented more than less wealthy organizations. If representation is largely about who shows up to participate in the policy process, companies with high market capitalization, organizations that give more to political campaigns, and banks, credit unions, and nonprofits with more assets are represented better than those with lower market capitalization, less lobbying spending, and less assets. Both within and across different types of organization, wealthier organizations are more likely to be at the table when important policy decisions are made. 
 
-## Wealth Inequality in Participation, Sophistication, Lobbying Success Among Lobbying Organizations
+## Wealth Inequality in Frequency, Sophistication, Lobbying Success Among Lobbying Organizations
 
 We now turn to hypotheses about inequalities within the population of organizations that did participate in the policy process. These analyses give us even more confidence that we are comparing similar organizations with similar interests---all commented on at least one Dodd-Frank rule, but some commented more frequently, used more sophisticated language, and addressed comments to more agencies than others. Moreover, phrases from the texts of some comments are much more likely to be added to the final rules than others. We explore whether each of these types of variation is related to wealth.
 
@@ -390,10 +396,15 @@ We now turn to hypotheses about inequalities within the population of organizati
 To investigate Hypothesis 2, that frequent commenters tend to be wealthy organizations, we count that number of Dodd-Frank rules on which each participating organization commented.
 Figure \ref{fig:dockets-percentile} shows that organizations that comment on more rulemaking dockets tend to be wealthier.^[
 Note that commenting on *more rules*  is not the same as submitting *more comments*. Many wealthy organizations only submit one comment per rulemaking docket. Some organizations also submit many comments on the same rule as a form of public pressure. Most pressure campaigns are organized by public interest groups, but are occasionally organized by regulated companies [@judgelord2019SPSA]. For example, Axcess Financial (a payday lending company) and Advance Financial (a credit union) both mobilized over 1000 comments from their stores on the Consumer Financial Protection Bureau's Payday Loan Rule. Mobilizing public pressure on one rule is different from lobbying. Our analysis here focuses on the breadth, not the amplitude of lobbying.] 
-The top-left panel of Figure \ref{fig:dockets-percentile} shows that a large number of the banks in the top one percent of most frequent commenters (the select few that commented on more than five rules) had assets over a million dollars; many as much as 100 million. Yet, nearly all banks in the bottom 99 percentiles of most frequent commenters (most of which only commented on one rule) had assets under a million dollars.
-The top-right panel of Figure \ref{fig:dockets-percentile} shows that most of the non-profits in the top one percent of most frequent commenters had assets over ten million dollars. In contrast, non-profits in the bottom 99 percentiles of most frequent commenters had assets under ten million dollars.
-The bottom-left panel of Figure \ref{fig:dockets-percentile} shows that most of the firms in the top ten percent of most frequent commenters had market capitalization over ten billion dollars, while most firms in the bottom 99 percentiles of most frequent commenters had market capitalization under ten billion dollars.
-The bottom-right panel of Figure \ref{fig:dockets-percentile} shows that most of the campaign donors in the top ten percent of most frequent commenters donated over a thousand dollars. In contrast, most doners in the bottom 99 percentiles of most frequent commenters donated less than one thousand dollars.
+
+The top-left panel of Figure \ref{fig:dockets-percentile} shows that most of the non-profits in the top one percent of most frequent commenters had assets over \$10ten million dollars. In contrast, non-profits in the bottom 99 percentiles (the least frequent commenters, most commenting on only one rule) had assets under $10 million dollars.
+
+The middle-left panel of Figure \ref{fig:dockets-percentile} shows that, among publicly-traded companies, most of the top ten percent of most frequent commenters had market capitalization over \$10 billion. In contrast, most companies in the bottom 99 percentile had market capitalization under $10 billion dollars.
+
+The middle-right panel of Figure \ref{fig:dockets-percentile} shows that, even among banks, a large share the top one percent of most frequent commenters (the select few that commented on more than five rules) had assets over \$1 million; many over $100 milion. Yet, nearly all banks in the bottom 99 percentiles of most frequent commenters (most of which only commented on one rule) had under \$1 million in assets.
+
+The bottom panel of Figure \ref{fig:dockets-percentile} shows that most of the campaign donors in the top ten percent of most frequent commenters donated over \$1,000. In contrast, most campaign doners in the bottom 99 percentile donated less than \$1,000.
+While differences in average wealth between organizations that comment and those that do not are only statistically significant at the .05 level for nonprofits, frequent commenters are systematically wealthier for all organization types. 
 This supports Hypothesis 2; frequent commenters tend to be wealthy organizations.
 
 ```{r, dockets-percentile, fig.cap="Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
@@ -410,13 +421,13 @@ knitr::include_graphics(c(
 # models of number of rules commented on by assets
 load(here::here("models", "rules-by-assets.Rdata"))
 
-modelsummary(models, caption = "Number of Dockets Commented on by Assets")  %>% 
+modelsummary(models, caption = "OLS Predicting the Number of Dodd-Frank Rules On Which an Organization Commented")  %>% 
   kableExtra::kable_styling(latex_options = c("scale_down"))     
 ```
 
+Further supporting Hypothesis 2, OLS models shown in Table \@ref(tab:rules-by-assets) show statistically significant relationships between wealth and frequency of commenting on Dodd-Frank rules for banks, credit unions, and campaign donors.
+For every additional billion dollars in assets under management, a banks commented on about 12 additional Dodd-Frank rules on average. For every additional $10 billion in assets, a credit union comments on about 2 additional rules. Likewise, each additional three million in campaign donations correlates with commenting on one additional rule. <!--TODO: CHECK THESE COEFFICIENTS AFTER UPDATE--> 
 
-Table \@ref(tab:rules-by-assets) shows that the means between the distributions shown in Figure \ref{fig:dockets-percentile} are statistically significant for banks and campaign donors.
-For every additional billion dollars in assets under management, banks commented on about 12 additional Dodd-Frank rules on average. Likewise, each additional three million in Political Action Committee donations correlates with commenting on one additional rule. <!--TODO: CHECK THESE COEFFICIENTS AFTER UPDATE--> 
 
 ### Wealthier companies are more sophisticated at lobbying
 
@@ -582,9 +593,10 @@ knitr::include_graphics(c(
 
 ```{r, dockets-percentile-five, fig.cap="Frequent and Infrequent Commenters (By the Number of Dockets on Which each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
 knitr::include_graphics(c(
-  "figs/fdic-rules-2.png",
     "figs/nonprofit-rules-2.png",
+      "figs/creditunion-rules-2.png",
   "figs/compustat-rules-2.png",
+    "figs/fdic-rules-2.png",
   "figs/opensecrets-rules-2.png"
 ))
 ```
