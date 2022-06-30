@@ -38,6 +38,7 @@ biblio-title: "References"
 link-citations: yes
 citecolor: black
 urlcolor: black
+toc: false
 # output: word_document
 output_file: "docs/paticipatory-inequality.pdf"
 output:
@@ -232,7 +233,7 @@ Each database contains qualitatively different types of organizations; we can co
 Figure \ref{fig:comment-types} shows the number of comments submitted to each agency by an organization matched to each database described above.
 
 
-"`{r comment-types, fig.cap=" Number of Comments by Authoring Organization Type and Agency, Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)", out.width="80%"}
+```{r comment-types, fig.cap=" Number of Comments by Authoring Organization Type and Agency, Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)", out.width="80%"}
 # NOTE: Devin will revise these figs to be clearer in the legend about what is in each database. We should do this for all figs so they can stand independently. 
 
 knitr::include_graphics("figs/org_count_type-1.png")
@@ -379,7 +380,7 @@ Our *Profit-motivated Participation* Hypothesis (H2) posited that for-profit org
  
 To further test this hypothesis among banks, we estimate the odds of commenting across different types of banks; we find that for-profit banks (Commercial Banks) are significantly more likely to comment than non-profit Savings Associations and credit unions, further supporting the link between lobbying activity and profit. Commercial Banks are often large multinational corporations managed by a board selected by shareholders. In contrast, Savings Associations are chartered with the narrow purpose of providing affordable residential mortgages. Both types of banks may hold large volumes of assets, but they have very different clients. Commercial Banks and Savings Associations serve different clients. Figure \@ref(fig:mpFDIC) (Appendix Table \@ref(tab:mpFDIC-table)) shows that banks serving corporations and wealthier and profit-motivated clients were disproportionately represented in Dodd-Frank rulemaking and that Savings Associations were less represented, even controlling for asset differences. This supports the *Profit-motivated Participation* Hypothesis (H2). Likewise, assets remain a significant predictor of whether an organization comments, even controlling for differences in the type of institution. This further supports the *Differential Participation* Hypothesis (H1). 
 
-"`{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="90%"}
+```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="90%"}
 #TODO Make predicted probability plots showing that all kinds of banks are more likely to comment when wealthier
 knitr::include_graphics("figs/mpFDIC-1.png")
 ```
