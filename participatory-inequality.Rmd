@@ -66,7 +66,6 @@ Studies of political inequality have revealed profound and durable patterns of t
 In contrast to the large literature on inequality in legislative lawmaking, research on inequality in administrative lawmaking is sparse, especially when one considers the bureaucracy’s most powerful policy tool: rulemaking. By writing rules, agencies convert congressional intent into legally binding policies with real human and economic effects  [@West1995; @Kerwin2018]. After all, "policies mean little to nothing until they are given concrete expression through the bureaucracy" (Moe and Wilson 1994, 4). 
 
 Research suggests that firms spend hundreds of millions of dollars lobbying after a bill has been signed into law, including lobbying those agencies tasked with implementing congressional legislation [@You2017; @Libgober2020]. Legislators who receive more corporate Political Action Committee (PAC) money from companies are much more likely to lobby federal agencies on behalf of those companies [@Powell2022]. Interest groups---particularly business interests---are often the main lobbying participants to most agency rules [@GoldenJPART1998; @YackeeJOP2006]. 
-<!--By writing rules, agencies convert congressional intent into legally-binding policies with real human and economic effects.-->
 Given the scale and importance of bureaucratic policymaking and the large volume of data on business and interest group lobbying, rulemaking presents opportunities to study inequalities in policy influence [@Carpenter2020].
 
 As an indicator of the stakes of these developments, consider how media reporting in 2017 illustrated the political priorities of those at the very upper end of the income and power scale in the United States. During that year, major newspapers documented high-level gatherings between CEOs and officials at the Trump White House. For our purposes, what is interesting about these meetings is that the existing inequality literature would likely have predicted America’s wealthiest business leaders and allocators of capital would direct their lobbying at congressional lawmaking. Instead, these business leaders and their lobbyists were targeting the rules implementing the Dodd-Frank Wall Street Reform and Consumer Protection Act of 2010 (hereafter Dodd-Frank) [see e.g., @Protess2017; @Radnofsky2017].
@@ -84,13 +83,10 @@ We produce seven main findings, all of which support the conclusion that wealthy
 
 The substantive differences in wealth between organiztions that participate and do not participate are large. Banks, non-profits, and credit unions that comment on proposed rules have much greater assets on average than similar organizations that did not comment. The median credit union that comments had three times the assets of the median credit union that does not. The median non-profit that comments had six times the assets of the median non-profit that does not. And the median bank had 40% more assets than the median bank that did not comment.
 
-
-
 As we detail below, the idea that wealth inequality has affected financial policymaking is far from new. Nevertheless, critical questions have herein remained unanswered, such as: Does wealth inequality drive differential lobbying participation?  Do wealthy organizations get what they want more often during rulemaking?  And, if so, why?  We provide the data and tools to address these questions, and our analysis of financial rulemaking yields initial answers and evidence within a significant policy domain. Such information is critical to inform scholarly research regarding the impact of wealth inequality on American policymaking, as well as further our understanding of modern American governance, lobbying influence, and the role of money in politics within our administrative democracy.
 
 
 # Theorical Foundations
-
 
 The past two decades have witnessed an outpouring of social science research on inequality in the United States and other nations, focusing on national-level policymaking. While several scholars concentrated on the structural and technological determinants of inequality [e.g., @Goldin2009; @Piketty2014], others examined the political realm as a place where economic inequality shapes political outcomes, which plausibly generates further economic and social inequality. 
 
@@ -110,7 +106,7 @@ Unequal levels of power and access to the government may be especially acute in 
 
 The traditional literature on bureaucratic politics has often shied away from questions of inequality of influence during rulemaking and financial policymaking. An older literature by @McCubbins1987 through @Balla1998 examined rulemaking as an important venue of policymaking, often debating whether legislative institutions (i.e., Congress) could use the APA to control administrative agencies. Other high-profile research focused on the legislature's delegation decision while largely leaving unanswered how administrative agencies respond to new grants of policymaking authority in practice [@Epstein1999; @Volden2002; @Huber2002]. Still other major work focused on the politics of agency decision-making in enforcement or permitting decisions but not in rulemaking  [e.g., @Wood1994]. 
 
-These patterns shifted when scholars began focusing more on the role of public comments during rulemaking and attempted to correlate the requests made in comments with regulatory policy change  [@GoldenJPART1998; @WestPAR2004; @YackeeJOP2006; @YackeeJPART2006; @McKay2007]. This focus led to advancements in our understanding of political inequality during the agency rulemaking process, but without a specific concentration on wealth or on financial regulation.
+These patterns shifted when scholars began focusing more on the role of public comments during rulemaking and attempted to correlate the requests made in comments with regulatory policy change  [@GoldenJPART1998; @WestPAR2004; @YackeeJOP2006; @YackeeJPART2006; @McKay2007]. This advanced understanding of political inequality during the agency rulemaking process, but without a specific concentration on wealth or on financial regulation.
 
 <!-- CUT FOR NOW 
 
@@ -118,13 +114,9 @@ For example, @YackeeJOP2006 asked whether business interests could, by commentin
 
 END CUT-->
 
-When we focus on the handful of existing financial rulemaking studies, we uncover a mixed portrait of the policy impact, if any, of wealth inequality. As a result, these studies—which tend to focus on single agency or a single rule—raise important questions for future scholarship. 
-
-
+When we focus on the handful of existing financial rulemaking studies, we uncover a mixed portrait of the policy impact, if any, of wealth inequality. These studies—which tend to focus on single agency or a single rule—raise important questions for future scholarship. 
 @Krawiec2013 studied public participation patterns early in the rulemaking process in section 619 of Dodd-Frank (commonly known as the Volcker Rule). She found that comments from financial institutions and industry were more detailed, complex, and lengthy during Volcker’s pre-NPRM stage than from non-financial firms. @BanBP2019 focused on lobbying and agency rulemaking on a sample of SEC rules after Dodd-Frank. They concluded that the resources that an organization devotes to lobbying appeared to influence the likelihood that the SEC would list an organization’s name in its final rule. @Rashin2020 examined thousands of public comments to SEC rules and found that organizational resources do not appear to be correlated with a commenter’s efficacy in securing policy changes. In doing so, Rashin’s account appears to align with Nixon, Howard, and DeWitt’s (2002) older analysis of SEC rule changes, which did not suggest a severe bias toward what they called “privileged” interests. Finally, @Gordon2020 find that a diverse coalition of actors can come together to counter the role of larger and more established regulated entities in the area of credit risk retention regulation [see also @Ziegler2016]. However, @Young2017 found that participants outside the affected firms are less likely to mobilize in the financial sector, especially when a rule is technically complex.
 Thus, the existing literature yields a mix of conclusions on the impact of wealth inequality during rulemaking and thereby leaves open critical hypotheses regarding the plausible effects of wealth inequality during agency rulemaking in the financial regulation space.
-
-
 
 <!-- @Nixon2002 older analysis of SEC rule changes, which did not suggest a severe bias toward what they called "privileged" interests. That said, other research points to the difficulty of diverse and non-industry coalitions coming together. @Pagliari2017, for example, find that such coalitions may not form with great frequency in the financial sector and that that the voices outside the affected firms were less likely to mobilize, especially when the regulation is technically complex.
 -->
@@ -145,38 +137,39 @@ While past research implies reasons why a wealth disparity in rulemaking lobbyin
 
 > *Differential Participation Hypothesis (H1):* Organizations that comment on financial rules will be wealthier than organizations that do not comment on financial rules.
 
-Moreover, we theorize that wealth inequalities in lobbying participation will persist even among those organizations that are able to pay the initial costs of rulemaking participation.  Stated differently, when focused on those entities that have submitted at least one comment to a financial regulation, we argue that more wealthy organizations will, again, hold an advantage over less wealthy organizations by participating across a larger number of rules. For instance, among the non-profit organizations that submit comments to financial regulations, we hypothesize that the wealthier non-profits will comment on more regulations than those that are less wealthy. 
-
-
 <!--
 > *H1.1* non-profits with more assets will comment more frequently than non-profits with fewer assets.
 
->  *H1.2* Among non-profits participating in financial rulemaking, non-profits with more assets will comment on more proposed rules.
+> *H1.2* Firms with more assets will comment more frequently than firms with fewer assets.
+-->
 
->  *H1.3* Firms with more assets will comment more frequently than firms with fewer assets.
+Moreover, we theorize that wealth inequalities in lobbying participation will persist even among those organizations that are able to pay the initial costs of rulemaking participation.  Stated differently, when focused on those entities that have submitted at least one comment to a financial regulation, we argue that more wealthy organizations will, again, hold an advantage over less wealthy organizations by participating across a larger number of rules. For instance, among the non-profit organizations that submit comments to financial regulations, we hypothesize that the wealthier non-profits will comment on more regulations than those that are less wealthy. 
 
-> *H1.4* Among firms participating in financial rulemaking, firms with more assets will comment on more proposed rules.
---> 
 
 > *Differential Frequency of Participation Hypothesis (H2):* Among organizations commenting on financial rulemaking, organizations with greater wealth will comment on a larger number of financial rules.
 
- A separate rational driving differential comment participation by wealthy organizations focuses on the concentrated costs and benefits attached to lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. Wealthy, profit-seeking organizations, such as publicly traded companies and for-profit banks, will tend to have a more narrow stake in financial regulations than organizations with more diffuse and varied constituencies, such as public interest groups. Wealthy, profit-s
-A major theorized way that inequalities in organization and political participation emerge
+<!--
+>  *H2.1* Among non-profits participating in financial rulemaking, non-profits with more assets will comment on more proposed rules.
 
-> *Profit-motivated Participation Hypothesis (H3):* Organizations seeking profit will be more likely to comment.
+> *H2.2* Among firms participating in financial rulemaking, firms with more assets will comment on more proposed rules.
+--> 
+
+ A separate rational driving differential comment participation by wealthy organizations focuses on the concentrated costs and benefits attached to lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. Wealthy, profit-seeking organizations, such as publicly traded companies and for-profit banks, will tend to have a more narrow stake in financial regulations than organizations with more diffuse and varied constituencies, such as public interest groups. Wealthy, profit-seeking companies have especially strong incentives to lobby in rulemaking [@Libgober2020; @LibgoberQJPS2020].
+
+> *Profit-motivated Participation Hypothesis (H3):* Profit-seekin organizations will be more likely to comment.
 
 
 ### Differential Lobbying Success
 
 Existing research hints at a differential lobbying benefit attached to wealth during rulemaking. For instance, @Haeder2015 find more policy movement on federal regulations during rulemaking when business interests are more active than other types of organizations, such as public interest groups.  Yet, such research does not provide a clean test of wealth inequality. After all, some businesses are large while some are small; some non-profits hold major financial assets while others are poor. We thus seek to understand whether it is wealth that is a common factor driving organizational influence during rulemaking. As a result, we theorize that, among similar organizations, wealthier ones will see greater lobbying success during financial rulemaking.  For example, we expect the comments of more wealthy large banks will be more impactful on the content of final financial rules than the comments of less wealthy large banks.
 
-> *Differential Lobbying Success Hypothesis (H3):* Comments from wealthier organizations will be more successful in shifting the content of agency rules.
+> *Differential Lobbying Success Hypothesis (H4):* Comments from wealthier organizations will be more successful in shifting the content of agency rules.
 
 Research suggest that wealthier organizations are more influential because they are better able to deploy sophisticated legal arguments and technical information than less well-off entities [@WagnerALR2011]. Put different, large organizations are disproportionately able to marshal the legal and technical expertise necessary to write sophisticated comments for rules, and we theorize that more sophisticated comments will be associated with greater lobbying success during rulemaking. Our argument builds on @JewellJPART2006 findings that agency officials pay greater attention to abstract and technical arguments, such as those often in comments in comments from business organizations, while tending to minimize moral and personal arguments that are common to less sophisticated comments from individuals. Similarly, @Krawiec2013, in her study of the pre-proposal stage of the Volcker rule, concludes that non-industry comments often lacked the specificity and the detail that agencies needed to change policy, and @Yackee2015JPART theorizes that impactful comments often provide technical information. Consequently, we hypothesize that wealthier entities will utilize their resources to produce comments that hold greater sophistication than less prosperous groups, and these comments will be more impactful.
 
-> *Differential Sophistication Hypothesis (H4):* Wealthier organizations will use more technical and sophisticated language when commenting on proposed rules.
+> *Differential Sophistication Hypothesis (H5):* Wealthier organizations will use more technical and sophisticated language when commenting on proposed rules.
 
-> *Dividends of Sophistication Hypothesis (H1):* Comments from wealthier organizations will be more successful in affecting the content of agency rules because of comment sophistication.  
+> *Dividends of Sophistication Hypothesis (H6):* Comments from wealthier organizations will be more successful in affecting the content of agency rules because of comment sophistication.  
 
 
 Together, these hypothesis test for two major kinds of potential bias in policymaking: that the wealthy are better able to participate, and that even when less wealthy groups participate, the wealthy are likely have their demands met. Additionally, they test a major theorized mechanism of lobbying influence: the ability of the wealthy to mobilize lawyers and experts to make sophisticated and thus influential arguments on their behalf.
@@ -203,7 +196,7 @@ knitr::include_graphics("figs/actions-1.png")
 
 We identify `r n_assets` comments submitted by organizations that appear in one or more of the datasets described below. Although we collected the text for all comments on Dodd-Frank rules, our main analyses on comments from organizations that we were able to link to measures of organizational wealth and lobbying activity. Past research suggests that organizations and individuals tend to submit quite different types of comments to rules [@JewellJPART2006]. We go one step further and focus on comparing commenting behavior among similar types of organizations. For example, we compare the commenting behavior of large banks to other large banks. We thus control for many of the known sources of variance in commenting behavior, yielding cleaner tests of our hypotheses. Practically, acquiring wealth information for all commenters, including thousands of individuals who submit form comments as part of mass comment campaigns with no little identifying information would have been impossible. Moreover, because nearly all individual commenters are mobilized by an organisation, form comments comments are best conceptualized as supporting the more sophisticated organizational comments that we focus on here [@judgelord2019SPSA].
 
-There was considerable variation in the organizational comments received to rules across the seven financial regulators. For example, the largest number of organizational comments was received by the CFPB on rules regulating payday loans, which received 3898 comments from organizations that we were able to match to asset data, while many low-salience rules received few comments, in several cases none from organizations with publicly-available wealth data. However, for all rules that received more than 25 comments, we matched at least two organizations to asset data. The agency with largest median number of organizational comments was XXX at XXX comments. 
+There was considerable variation in the organizational comments received to rules across the seven financial regulators. For example, the largest number of organizational comments was received by the CFPB on rules regulating payday loans, which received 3898 comments from organizations that we were able to match to asset data. At the same time, many low-salience rules received few comments, in several cases none from organizations with publicly-available wealth data. However, for all rules that received more than 25 comments, we matched at least two organizations to asset data. The agency with largest median number of organizational comments was the CFPB at 21 comments. 
 
 ## Organization Wealth 
 
@@ -330,9 +323,9 @@ END TODO NOTE -->
 **Banks.** The bottom right panel in Figure \ref{fig:commenters-noncommenters} shows that, on average, banks that comment on proposed financial regulations are better-resourced than we would expect from a random sample of banks. The x-axis shows assets in the (in thousands of dollars). Banks that participated in financial rulemaking had almost 40% greater median assets and nearly double the average assets. 
 
 When we look within categories of banks, we see that the wealthier banks within each class are also more likely to submit comments on financial rules than similar banks with less wealth. Figure \@ref(fig:FDIC-count-by-class) shows that, within each class of bank (Commercial Banks, Savings Banks, State Banks, and Savings Associations), wealthier the banks participating in financial rulemaking are the wealthier ones.^[There are over seventeen different types of institutions that the U.S. government defines as banks (see <https://www.ffiec.gov/npw/Help/InstitutionTypes>).  In this paper we focus on Commercial Banks, thrifts (savings institutions), and credit unions.  In general, Commercial Banks are publicly traded corporations that make loans to businesses and individuals. Credit Unions are non-profit banks. Savings institutions (thrifts) are non-profits primarily involved in mortgages.]
-Differences in means among for-profit Commercial Banks are significant at the .05 level in a Welch Two Sample t-test. While the differences among other types of banks (State Banks, state-chartered Savings Banks, or nonprofit savings associations) are large, there are far fewer of them and differences in average wealth among them did not have enough observations to achieve statistical significance.
+Differences in means among for-profit Commercial Banks are significant at the .1 level in a Welch Two Sample t-test. While the differences with other types of banks (State Banks, state-chartered Savings Banks, or nonprofit Savings Associations) are large, there are too few of these types of banks for differences in average wealth among them to reach statistical significance.
 
-Figure \ref{fig:FDIC-count-by-class} shows wealth distributions for four prominant classes of banks: Commercial Banks, Savings Banks, State Banks, and non-profit Savings Associations. The top-left panel of Figure \ref{fig:FDIC-count-by-class} shows that Commercial Banks that comment are wealthier than those that did not comment. The modal Commercial Bank that commented was 40 percent more assets than the modal Commercial Bank that did not comment.  The top-right panel of Figure \ref{fig:FDIC-count-by-class} shows that Savings Banks banks that comment are wealthier than those that did not comment. The modal Savings Bank that commented has nearly twice the assets of the modal Savings Bank that did not comment. The bottom-left panel of Figure \ref{fig:FDIC-count-by-class} shows that State Banks that comment are wealthier than those that did not comment. The average assets of State Banks that commented were three times the average assets of the State Banks that did not comment. While savings associations are less likely to comment than more profit-oriented banks (see Figure \ref{fig:mpFDIC}), the bottom-right panel of Figure \ref{fig:FDIC-count-by-class} shows that, when savings associations do comment, it tends to be the wealthier ones. 
+Figure \ref{fig:FDIC-count-by-class} shows wealth distributions for four prominant classes of banks: Commercial Banks, Savings Banks, State Banks, and non-profit Savings Associations. The top-left panel of Figure \ref{fig:FDIC-count-by-class} shows that Commercial Banks that comment are wealthier than those that did not comment. The modal Commercial Bank that commented was 40 percent more assets than the modal Commercial Bank that did not comment.  The top-right panel of Figure \ref{fig:FDIC-count-by-class} shows that Savings Banks banks that comment are wealthier than those that did not comment. The modal Savings Bank that commented has nearly twice the assets of the modal Savings Bank that did not comment. The bottom-left panel of Figure \ref{fig:FDIC-count-by-class} shows that State Banks that comment are wealthier than those that did not comment. The average assets of State Banks that commented were three times the average assets of the State Banks that did not comment. While Savings Associations are less likely to comment than more profit-oriented banks (see Figure \ref{fig:mpFDIC}), the bottom-right panel of Figure \ref{fig:FDIC-count-by-class} shows that, when Savings Associations do comment, it tends to be the wealthier ones. 
 
 ```{r, FDIC-count-by-class, fig.cap="Financial Resources of FDIC-Insured Banks that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/FDIC-count-by-class-1.png")
@@ -346,12 +339,11 @@ knitr::include_graphics("figs/FDIC-count-by-class-4.png")
 ```
 
 
-
 ### Profit-driven organizations are more likley to comment than non-profits
 
-Our *Profit-motivated Participation* Hypothesis (H3) posited that for-profit organizations would be more likely to comment than non-profit organizations. We find strong support for this hypothesis, both overall (comparing banks with nonprofits) and among for-profit and non-profit banks. 12 percent of Commercial Banks commented on Dodd-Frank rules, whereas only 3 precent of nonprofit savings associations, 2 percent of credit unions, and 0.2 percent of other nonprofits commented. This means that Comercial Banks were 6 times more likely to comment on a Dodd-Frank rule than the average credit union and 60 times more likely to comment than the average nonprofit. 
+Our *Profit-motivated Participation* Hypothesis (H3) posited that for-profit organizations would be more likely to comment than non-profit organizations. We find strong support for this hypothesis, both overall (comparing banks with nonprofits) and among for-profit and non-profit banks. 12 percent of Commercial Banks commented on Dodd-Frank rules, whereas only 3 precent of nonprofit Savings Associations, 2 percent of credit unions, and 0.2 percent of other nonprofits commented. This means that Comercial Banks were 6 times more likely to comment on a Dodd-Frank rule than the average credit union and 60 times more likely to comment than the average nonprofit. 
  
-To further test this hypothesis among banks, we estimate the odds of commenting across different types of banks,  we find that for-profit banks (Commercial Banks) are significantly more likely to comment than non-profit savings associations and credit unions, further supporting the link between lobbying activity and profit.  Commercial Banks are often large multinational corporations managed by a board selected by shareholders. In contrast, savings associations are chartered with the narrow purpose of providing affordable residential mortgages. While both types of banks may hold large volumes of assets, Commercial Banks and savings Associations serve different clients. Figure \@ref(fig:mpFDIC) (Appendix Table \@ref(tab:mpFDIC-table)) shows that banks serving corporations and wealthier and profit-motivated clients were disproportionately represented in Dodd-Frank rulemaking and that savings associations were less represented, even controlling for asset differences. This supports the *Profit-motivated Participation* Hypothesis (H3).  Likewise, assets remain a significant predictor of whether an organization comments, even controlling for differences in the type of institution. This further supports the *Differential Participation* Hypothesis (H1). <!--TODO CONSIDER A NEW HYPOTHESIS ABOUT THE PROFIT MOTIVE--> 
+To further test this hypothesis among banks, we estimate the odds of commenting across different types of banks,  we find that for-profit banks (Commercial Banks) are significantly more likely to comment than non-profit Savings Associations and credit unions, further supporting the link between lobbying activity and profit.  Commercial Banks are often large multinational corporations managed by a board selected by shareholders. In contrast, Savings Associations are chartered with the narrow purpose of providing affordable residential mortgages. Both types of banks may hold large volumes of assets, but they have very different clients. Commercial Banks and Savings Associations serve different clients. Figure \@ref(fig:mpFDIC) (Appendix Table \@ref(tab:mpFDIC-table)) shows that banks serving corporations and wealthier and profit-motivated clients were disproportionately represented in Dodd-Frank rulemaking and that Savings Associations were less represented, even controlling for asset differences. This supports the *Profit-motivated Participation* Hypothesis (H3).  Likewise, assets remain a significant predictor of whether an organization comments, even controlling for differences in the type of institution. This further supports the *Differential Participation* Hypothesis (H1). <!--TODO CONSIDER A NEW HYPOTHESIS ABOUT THE PROFIT MOTIVE--> 
 
 ```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="90%"}
 #TODO Make predicted probability plots showing that all kinds of banks are more likely to comment when wealthier
@@ -378,42 +370,41 @@ modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", 
 knitr::include_graphics("figs/opensecrets-count-1.png")
 ```
 
-Figure \ref{fig:opensecrets-density} shows that organizations profiled by the Center for Responsive Politics (generally, those that donate to Political Action Committees) that comment on Dodd-Frank rules are better-resourced than we would expect from a random sample of political donor organizations. This aligns with the *Differential Participation* Hypothesis (H1). The average campaign spending per 2-year cycle was \$80 thousand for donor organizations that did not comment, and the average for a donor organization that did comment on a Dodd-Frank rule was \$96 thousand. 
-The difference in average contributions between organizations that comment and do not comment is significant at the 0.001 level in a Welch Two Sample t-test.
-<!-- TODO NOTE: 
+The final two ways that we investigate  *Differential Participation* Hypothesis (H1)
+Figure \ref{fig:opensecrets-density} shows that organizations that comment on Dodd-Frank rules also donate more to political campaigns via political action committees. This aligns with the *Differential Participation* Hypothesis (H1). Among organizations that donate to campaigns, the average campaign spending per two-year cycle was \$80,000 for those that did not comment, and the average for a donor organization that did comment on a Dodd-Frank rule was \$95,000. 
+The difference in average campaign spending between organizations that commented and do not comment is significant at the 0.01 level in a Welch Two Sample t-test.
+<!-- TODO NOTE:
 DEVIN UPDATED THESE NUMBERS IN MAY 2022, BUT WE MAY NEED TO REVISE THESE NUMBERS WITH NEW DATA 
 DEVIN WILL ADD LOBBYING EXPENDATURES
 --> 
 
-
 The main takeaway from this analysis is that organizational resources correlate with commenting behavior. That is, wealthy organizations are represented more than less wealthy organizations. If representation is largely about who shows up to participate in the policy process, companies with high market capitalization, organizations that give more to political campaigns, and banks, credit unions, and nonprofits with more assets are represented better than those with lower market capitalization, less lobbying spending, and less assets. Both within and across different types of organization, wealthier organizations are more likely to be at the table when important policy decisions are made. 
 
-## Wealth Inequality in Lobbying Success: Variation Among Commenting Organizations
+## Wealth Inequality in Participation, Sophistication, Lobbying Success Among Lobbying Organizations
 
 We now turn to hypotheses about inequalities within the population of organizations that did participate in the policy process. These analyses give us even more confidence that we are comparing similar organizations with similar interests---all commented on at least one Dodd-Frank rule, but some commented more frequently, used more sophisticated language, and addressed comments to more agencies than others. Moreover, phrases from the texts of some comments are much more likely to be added to the final rules than others. We explore whether each of these types of variation is related to wealth.
 
 
 ### Repeat players in commenting are substantially wealthier
 
-```{r, dockets-percentile, fig.cap="Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
-knitr::include_graphics(c(
-  "figs/fdic-rules-3.png",
-    "figs/nonprofit-rules-3.png",
-  "figs/compustat-rules-3.png",
-  "figs/opensecrets-rules-3.png"
-))
-```
-
+To investigate Hypothesis 2, that frequent commenters tend to be wealthy organizations, we count that number of Dodd-Frank rules on which each participating organization commented.
 Figure \ref{fig:dockets-percentile} shows that organizations that comment on more rulemaking dockets tend to be wealthier.^[
-Note that this does not necessarily imply that wealthier organizations submit more comments. Many wealthy organizations only submit one comment per rulemaking docket. Organizations may submit many comments on the same rule as a form of public pressure [see @judgelord2019SPSA]. For example, Axcess Financial (a payday lending company) and Advance Financial (a credit union) both mobilized over 1000 comments from their stores on the Consumer Financial Protection Bureau's Payday Loan Rule. Mobilizing public pressure on one rule is different from lobbying on many rules. Our analysis here focuses on the breadth, not the amplitude of lobbying.] 
-More specifically, it shows that organizations that comment infrequently (most organizations) are more likely to have less financial resources.
-In contrast, the few most frequent commenters tend to have more wealth. 
+Note that commenting on *more rules*  is not the same as submitting *more comments*. Many wealthy organizations only submit one comment per rulemaking docket. Some organizations also submit many comments on the same rule as a form of public pressure. Most pressure campaigns are organized by public interest groups, but are occasionally organized by regulated companies [@judgelord2019SPSA]. For example, Axcess Financial (a payday lending company) and Advance Financial (a credit union) both mobilized over 1000 comments from their stores on the Consumer Financial Protection Bureau's Payday Loan Rule. Mobilizing public pressure on one rule is different from lobbying. Our analysis here focuses on the breadth, not the amplitude of lobbying.] 
 The top-left panel of Figure \ref{fig:dockets-percentile} shows that a large number of the banks in the top one percent of most frequent commenters (the select few that commented on more than five rules) had assets over a million dollars; many as much as 100 million. Yet, nearly all banks in the bottom 99 percentiles of most frequent commenters (most of which only commented on one rule) had assets under a million dollars.
 The top-right panel of Figure \ref{fig:dockets-percentile} shows that most of the non-profits in the top one percent of most frequent commenters had assets over ten million dollars. In contrast, non-profits in the bottom 99 percentiles of most frequent commenters had assets under ten million dollars.
 The bottom-left panel of Figure \ref{fig:dockets-percentile} shows that most of the firms in the top ten percent of most frequent commenters had market capitalization over ten billion dollars, while most firms in the bottom 99 percentiles of most frequent commenters had market capitalization under ten billion dollars.
 The bottom-right panel of Figure \ref{fig:dockets-percentile} shows that most of the campaign donors in the top ten percent of most frequent commenters donated over a thousand dollars. In contrast, most doners in the bottom 99 percentiles of most frequent commenters donated less than one thousand dollars.
- In line with Hypothesis 2.5, frequent commenters tend to be wealthy organizations.
+This supports Hypothesis 2; frequent commenters tend to be wealthy organizations.
 
+```{r, dockets-percentile, fig.cap="Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
+knitr::include_graphics(c(
+    "figs/nonprofit-rules-3.png",
+  "figs/creditunion-rules-3.png",
+  "figs/compustat-rules-3.png",
+    "figs/fdic-rules-3.png",
+  "figs/opensecrets-rules-3.png"#TODO , "figs/lobbying-rules-3.png"
+))
+```
 
 ```{r rules-by-assets}
 # models of number of rules commented on by assets
@@ -525,9 +516,10 @@ knitr::include_graphics("figs/mediation-marketcap-terms-1.png")
 
 By combining multiple methods and data sources, this paper offers a new and systematic perspective on inequality in bureaucratic policymaking. Our systematic approach, covering all rules across multiple agencies implementing the same landmark piece of legislation (the Dodd-Frank Act) and rich data on multiple participants, allows unique comparisons within and across agencies and types of organizations. This new dataset allows us to assess the relative level of access and lobbying success that different types of organizations enjoy across policymaking institutions.
 
+We find support for theories that predict inequality in the policy process. Unequal resources among organizations leads to inequalities in levels of participation,  frequency of participation, lobbying sophistication, and lobbying success. Further, we offer evidence that differences in lobbying success across wealthy and less wealthy organizations are a result of lobbying sophistication and that participation is profit motivated.
+
 We have shown that commenting is disproportionately concentrated among wealthier organizations. Many organizations do not have the baseline level of resources to engage in sophisticated lobbying.
 Our finding that wealthier companies generally advance more sophisticated comments suggests that wealth correlates with the kind of lobbying behavior that past studies have found to be most influential. Sophisticated and technical lobbying strategies are effective. Indeed this has been a common explanation for why businesses enjoy unique levels of access and influence in agency rulemaking [@YackeeJOP2006]. Our results lend support to this theory. Where previous studies generally assume that businesses are wealthier, we show that businesses are wealthier and that within and across types of organizations---including businesses---organizations with more engage in more sophisticated and technical lobbying efforts.
-
 
 We have shown that corporate wealth is positively correlated with the best available quantitative measures of commenter lobbying success. Wealth (measured by market capitalization) is strongly correlated with efficacy among publicly-traded firms. 
 Market capitalization is also highly correlated with using technical terms, which are associated with efficacy, and causal mediation analysis suggests that much of the effect of market cap on efficacy is a result of the use of technical and legal terms. Given previous research and our analysis of commenter sophistication, this finding may not be surprising, but the magnitude of these relationships has implications for future research and policy reforms. 
