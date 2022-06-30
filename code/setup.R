@@ -248,9 +248,31 @@ cm = c("ASSET" = "Assets",
        "org_typeNon-profit" = "Non-profit",
        "assets_b:org_typeCredit union" = "Assets x Credit union",
        "assets_b:org_typeNon-profit" = "Assets x Non-profit",
-       "marketcap2" = "Market Cap",
+       "marketcap2" =  "Market Capitalization",
        "dictionary_terms" = "Technical Terms",
-       "Total_Legal_Citations" = "Legal Citations")
+       "Total_Legal_Citations" = "Legal Citations",
+       "MeanContribAmount" = "PAC Donations")
+
+# rename coeficients for tables and plots
+# cm = c("ASSET" = "Assets",
+#        "ASSETS" = "Assets (Hundreds of Millions)",
+#        "Assets" = "Assets (Billions)",
+#        "assets" = "Assets",
+#        "marketcap2" = "Market Capitalization",
+#        "Class SM" = "State Bank",
+#        "Class SB" = "Savings Bank",
+#        "Class SA" = "Savings Association",
+#        "Class NM" = "Commercial Bank",
+#        "ASSETS:Class SM" = "Assets x State Bank",
+#        "ASSETS:Class SB" = "Assets x Savings Bank",
+#        "ASSETS:Class SA" = "Assets x Savings Association",
+#        "ASSETS:Class NM" = "Assets x Commercial Bank",
+#        "dictionary_terms" = "Technical Terms",
+#        "Total_Legal_Citations" = "Legal Citations")
+
+gm = list("Num.Obs." = "Number of Comments",
+          "R2" = "R2",
+          "AIC" = "AIC")
 
 # table  defaults
 modelsummary <- function(...) modelsummary::modelsummary(...,
@@ -262,7 +284,7 @@ modelsummary <- function(...) modelsummary::modelsummary(...,
   row_spec(row = 1, bold = T)
 
 # coeficient plot defaults
-modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)") +
+modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)", coef_map = cm) +
   geom_vline(xintercept = 0, linetype = 2, alpha = .5) +
   aes(shape = model)
 

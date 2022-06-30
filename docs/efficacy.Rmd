@@ -874,26 +874,6 @@ knitr::opts_chunk$set(fig.show="show",
                       fig.width=5, 
                       out.width = "80%")
 
-# rename coeficients for tables and plots 
-cm = c("ASSET" = "Assets",
-       "ASSETS" = "Assets (Hundreds of Millions)",
-       "Assets" = "Assets (Billions)",
-       "assets" = "Assets",
-       "marketcap2" = "Market Capitalization",
-       "Class SM" = "State Bank",
-       "Class SB" = "Savings Bank",
-       "Class SA" = "Savings Association",
-       "Class NM" = "Commercial Bank",
-       "ASSETS:Class SM" = "Assets x State Bank",
-       "ASSETS:Class SB" = "Assets x Savings Bank",
-       "ASSETS:Class SA" = "Assets x Savings Association",
-       "ASSETS:Class NM" = "Assets x Commercial Bank",
-       "dictionary_terms" = "Technical Terms",
-       "Total_Legal_Citations" = "Legal Citations")
-
-gm = list("Num.Obs." = "Number of Comments",
-       "R2" = "R2",
-       "AIC" = "AIC")
 ```
 
 

@@ -332,6 +332,14 @@ org_count <- d  %>%
 ## Comments per docket
 
 ```{r rins-table}
+d %>% count(Agency, docket_id) %>% 
+  group_by(Agency) %>%
+  summarise(mean_comments = mean(n),
+            median_comments = median(n)) %>% 
+  kablebox()
+
+
+
 d_rin_lookup <- d %>% full_join(rin_lookup) %>% 
   distinct(docket_id,
          #  RIN,
@@ -1742,11 +1750,10 @@ For every additional 10 billion in assets, a nonprofit comments on about `r roun
 
 ```{r creditunion-rules, fig.width=4,  fig.height= 2,out.width= "50%"}
 asset_counts <- d %>% 
-  mutate(assets = `Total Assets`) %>% 
-  filter(assets > 10) %>%
+  mutate(assets = `Total Assets`) %>% # credit union call reports Total Assets
+  filter(assets > 10, !is.na(assets)) %>%
   distinct(org_name, docket_id, assets) %>% 
   count(org_name, assets) %>% 
-  filter(!is.na(assets)) %>% 
   mutate(nnp = quantile(n, probs = .9),
          assets_t = assets /1000,
          assets_m = assets_t /1000,
@@ -1809,7 +1816,7 @@ modelsummary(list(m_creditunion_count))
 ```
 
 
-For every additional 10 billion in assets, a nonprofit comments on about `r round(m_fdic_count$coefficients[2]* 10,0) ` additional rules. 
+For every additional billion in assets, a credit union comments on about `r round(m_creditunion_count$coefficients[2]* 10,0) ` additional rules. 
 
 
 ---
@@ -1975,17 +1982,19 @@ For every additional 10 million in Political Action Committee campaing donations
 ```{r all-rules}
 
 models <- list(#`All` = m_asset_count, 
-               `Banks` = m_fdic_count,
-               `Nonprofits` = m_nonprofit_count,
+               `Non-profits` = m_nonprofit_count,
+               `Credit Unions`= m_creditunion_count,
                `Public Companies` = m_compustat_count,
+               `Banks` = m_fdic_count,
                `PAC Donors` = m_opensecrets_count)
 
 rows <- tibble(
   term = c("Dependent Variable"),
   #`All` = "Number of Rules",
-    `Banks` = "Number of Rules",
       `Nonprofits` = "Number of Rules",
+  `Credit Unions`= "Number of Rules",
   `Public Companies` = "Number of Rules",
+  `Banks` = "Number of Rules",
     `PAC Donors` = "Number of Rules",
   )
 
@@ -2338,7 +2347,26 @@ save(models, rows, cm, gof_map, modelsummary,
 Priorities for matching that will give us the most leverage
 
 - [ ] Best match in *each* dataset rather than best match in *one* dataset: https://finreggroup.slack.com/archives/C027MRLQFLJ/p1650733175102459
+
 - [ ] Comments on dockets with 0 comments matched: https://judgelord.github.io/finreg/participation#Asset_data
+
 - [ ] Underpowered subsets, especially marketcap (hopefully matching both compustat and CIK will help with this): https://judgelord.github.io/finreg/participation#By_Market_Cap
+
 - [ ] FDIC `BKCLASS` == "national associations" that we are currently dropping: https://judgelord.github.io/finreg/participation#FDIC_instituttions  https://finreggroup.slack.com/archives/C027MRLQFLJ/p1653322086231879
+
 - [ ] False positives that I am currently dropping https://finreggroup.slack.com/archives/C027MRLQFLJ/p1650658969445029
+
+Analyses to clean up and add to the paper 
+
+- [ ] Lobbying expendatures from CRP (replication all PAC figures and models)
+
+- [ ] Nonprofit revenue (maybe just add the revenue figures and models to the appendix)
+
+- [ ] the full (best-ish) model includes nonprofits, credit unions, and each type of bank as seperate org_types. This model is run above but needs to be investited 
+
+Presentation 
+
+- [ ] Predicted probability plots for all models presented in the paper. These should replace all tables. All tables should appear in the appendix. 
+
+- [ ] Nonprofit and credit union plots for the correlation between assets and sophsitication
+
