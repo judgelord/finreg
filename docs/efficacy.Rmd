@@ -462,25 +462,25 @@ eXsplot <- efficacyXsophistication %>% # filter(efficacy > 0) %>% #FIXME
   theme(legend.position = "bottom")
 
 eXsplot + 
-  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = -0.05, size = 3.5)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = -0.05, size = 3.5)
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
-  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = 1.05, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
 
 # color 
 eXsplot + 
   annotate(y = 10131, x = 7705, color = "red", geom = "text", 
            label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", 
-           vjust = 1, hjust = -0.05, size = 3.5) + 
+           vjust = .5, hjust = -0.05, size = 3.5) + 
   aes(color = org) + labs(color = "")
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
   aes(color = org)+ labs(color = "") + 
-  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = 1.05, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
 
 # legal citations
 eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME 
@@ -497,22 +497,22 @@ eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME
 
 
 eXsplot  + 
-  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = -0.05, size = 3.5)
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = -0.05, size = 3.5)
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
-  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
 
 # color 
 eXsplot  + 
-  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = -0.05, size = 3.5)  + aes(color = org) + labs(color = "")
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = -0.05, size = 3.5)  + aes(color = org) + labs(color = "")
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
   aes(color = org) + labs(color = "") + 
-  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
 ```
 
 ---
@@ -1271,13 +1271,26 @@ save(n_comments,
 
 # TODO
 
-- [ ] check on the status of OCC comments (missing from the attachments table as of May 2022)
+
+## Presentation 
+
+- [ ] Predicted probability plots for all models presented in the paper. These should replace all tables. All tables should appear in the appendix. 
+
+- [ ] Nonprofit and credit union plots for the correlation between assets and sophsitication
+
+- [ ] `assets-tech-` figures should have x-axis scales in the millions or billions 
+
+## Analysis 
 
 - [ ] split out FDIC banks and nonprofits in asset mediation analysis? (at the moment, neither type of asset is correlated with efficacy, so mediation analysis is a low priority)
 
+## Data
+
+- [ ] check on the status of OCC comments (missing from the attachments table as of May 2022)
+
 - [ ] Try to get efficacy measures for key observations. For example, in cases where we have market cap: 
 
-Observations for which we have market cap and sophistication but are missing efficacy measures: 
+Observations for which we have market cap and sophistication but are missing efficacy measures (POSSIBLY DUE TO THERE BEING NO FINAL RULE): 
 
 ```{r}
 b %>% drop_na(marketcap, Total_Legal_Citations) %>% 

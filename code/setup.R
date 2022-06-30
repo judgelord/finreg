@@ -247,7 +247,10 @@ cm = c("ASSET" = "Assets",
        "org_typeCredit union" = "Credit union",
        "org_typeNon-profit" = "Non-profit",
        "assets_b:org_typeCredit union" = "Assets x Credit union",
-       "assets_b:org_typeNon-profit" = "Assets x Non-profit")
+       "assets_b:org_typeNon-profit" = "Assets x Non-profit",
+       "marketcap2" = "Market Cap",
+       "dictionary_terms" = "Technical Terms",
+       "Total_Legal_Citations" = "Legal Citations")
 
 # table  defaults
 modelsummary <- function(...) modelsummary::modelsummary(...,
