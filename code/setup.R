@@ -44,7 +44,7 @@ library("xaringanthemer")
 
 
 ## Sets defaults for R chunks
-knitr::opts_chunk$set(echo = FALSE, # echo = TRUE means that code will show
+knitr::opts_chunk$set(echo = TRUE, # echo = TRUE means that code will show
                       cache = FALSE,
                       #cache = TRUE,
                       warning = FALSE,

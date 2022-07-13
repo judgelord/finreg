@@ -2127,7 +2127,7 @@ equatiomatic::extract_eq(models[[1]])
 
 modelsummary(models)
 
-modelplot(models[1:2], coef_map = cm) +
+modelplot(models[1:2]) +
   labs(title  = "FDIC-Insured Banks",
 x = "Change in Log Odds of Commenting",
 caption = "Reference Category = Savings Associations") +
@@ -2214,7 +2214,7 @@ models <- list(mpFDICbillions, mpNonprofit, mp_creditunions)
 names(models) <- c("FDIC-Insured Banks", "Nonprofits", "Credit Unions")
 
 
-modelplot(models, coef_map = cm) + 
+modelplot(models) + 
   theme(panel.grid.major.x =  element_blank()) + 
   labs(x = "Change in Log Odds of Commenting per Billion in Assets") +
   facet_wrap("model", scales = "free", ncol = 1)
