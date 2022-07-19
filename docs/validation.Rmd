@@ -361,3 +361,8 @@ d %>%
   geom_text(color = "blue") + 
   geom_smooth()
 ```
+
+
+#TODO
+
+- [ ] Validate efficacy against hand-coded success 

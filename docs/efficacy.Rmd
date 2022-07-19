@@ -14,109 +14,19 @@ output:
 
 ```{r options, include=FALSE}
 # rmarkdown::render("docs/efficacy.Rmd")
+source(here::here("code", "setup.R"))
 
-## Sets defaults for R chunks
+## Change defaults for R chunks
 knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       cache = FALSE,
-                      #cache = TRUE,
-                      warning = FALSE,
-                      message = FALSE,
-                      fig.show="hold",
-                      fig.pos= "htbp",
-                      fig.path = "../figs/", # figs folder at root (up one from /docs)
-                      fig.align='center',
-                      fig.cap = '   ',
+                      fig.path = "../figs/", # figs folder at root (up one from /docs),
                       fig.retina = 1, #6, #FIXME for publication quality images
                       fig.height=2.5, 
                       fig.width=3, 
-                      out.width="50%",
-                      # out.width = "100%",
-                      out.extra = "")
+                      out.width="50%")
 
-library("xaringan")
-library("xaringanthemer")
-library("here")
-library("modelsummary")
-
-library(scales)
-library(magrittr)
-# library(broom)
-library(here)
-library(knitr)
-options(kableExtra.latex.load_packages = FALSE)
-library(kableExtra)
-#library(mediation)
-#library(lme4)
-#library(lmerTest)
-#library(fixest)
-#library(modelsummary)
-library(tidyverse)
-
-# table defaults
-modelsummary <- function(...) modelsummary::modelsummary(..., 
-                                                         stars = T, 
-                                                         add_rows = rows,
-                                                         coef_rename = cm,
-                                                         coef_omit = "(Intercept)"#, gof_map = gm
-                                                         ) %>% 
-  row_spec(row = 1, bold = T)
-
-# coeficient plot defaults
-modelplot <- function(...) modelsummary::modelplot(..., 
-                                                   coef_omit = "(Intercept)",
-                                                   coef_rename = cm) + 
-  geom_vline(xintercept = 0, 
-             linetype = 2, 
-             alpha = .5) + 
-  aes(shape = model) 
-
-style_mono_light(base_color = "#3b444b",
-          link_color = "#B7E4CF",
-          #background_color = "#FAF0E6", # linen
-          header_font_google = google_font("PT Sans"), 
-          text_font_google = google_font("Old Standard"), 
-          text_font_size = "18px",
-          padding = "10px",
-          code_font_google = google_font("Inconsolata"), 
-          code_inline_background_color    = "#F5F5F5", 
-          table_row_even_background_color = "#ddede5",
-          extra_css = 
-            list(".remark-slide-number" = list("display" = "none")))
 ```
 
-```{r setup}
-options(scipen=999)
-
-# source(here::here("code", "setup.R"))
-
-# defaults for plots
-library(ggplot2); theme_set(theme_minimal());
-options(
-  ggplot2.continuous.color = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-scale_color_discrete <- function(...){
-  scale_color_viridis_d(..., direction = -1, 
-                        begin = 0, end = .6, option = "viridis")}
-scale_fill_discrete <- function(...){
-  scale_fill_viridis_d(..., direction = -1, 
-                       begin = 0, end = .6, option = "viridis")}
-
-scale_color_continuous <- function(...){
-  scale_color_viridis_c(..., direction = -1, 
-                        option = "viridis")}
-scale_fill_continuous <- function(...){
-  scale_fill_viridis_c(..., direction = -1, 
-                       option = "viridis")}
-
-# Table formatting
-library(kableExtra)
-kablebox <- . %>% 
-  slice_head(n = 300) %>%
-  knitr::kable() %>% 
-  kable_styling() %>% 
-  scroll_box(height = "400px")
-```
 
 # Data
 
@@ -125,9 +35,13 @@ The root for this script is `finreg`. Most of the data are in `finreg/data` (som
 
 ## Sophistication 
 
+
 File: `Data/Dictionary_Terms.RData` contains six objects (3 sets of measures for both comments and attachments)
 
 ### 1. Dictionary counts of technical terms used in comments and attachments
+
+We use the [Oxford Dictionary of Finance and Banking](https://www.oxfordreference.com/view/10.1093/acref/9780199664931.001.0001/acref-9780199664931) and the [Merriam Webster law dictionary](https://www.merriam-webster.com/browse/legal/). While Black's is a more common law dictionary, a complete version is not available online.
+
 
 Objects: `technical_terms_comments` and `technical_terms_attachment`
 
@@ -538,33 +452,35 @@ efficacyXsophistication %>% arrange(-efficacy) %>% kablebox()
 eXsplot <- efficacyXsophistication %>% # filter(efficacy > 0) %>% #FIXME 
   ggplot() +
   aes(x = dictionary_terms, y = efficacy) + 
-  geom_point(y = 10131, x = 7705, color = "grey", shape = 0, size = 3) +
+  geom_point(aes(y = 10131, x = 7705), color = "red", shape = 0, size = 3) +
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm") +
-  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+  labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        y = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
        x = "Technical Terms in Comment",
        color = "") +
   theme(legend.position = "bottom")
 
 eXsplot + 
-  annotate(y = 10131, x = 7705, color = "grey", geom = "text", label = "Comment & Marked-up Draft Rule from\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = -0.05)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = -0.05, size = 3.5)
 
 eXsplot + 
   scale_x_log10() +
-  scale_y_log10()
+  scale_y_log10() + 
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
 
 # color 
 eXsplot + 
-  annotate(y = 10131, x = 7705, color = "grey", geom = "text", 
-           label = "Comment & Marked-up Draft Rule from\nU.S. Chamber of Commerce et al.", 
-           vjust = 1, hjust = -0.05) + 
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", 
+           label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", 
+           vjust = .5, hjust = -0.05, size = 3.5) + 
   aes(color = org) + labs(color = "")
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
-  aes(color = org)+ labs(color = "")
+  aes(color = org)+ labs(color = "") + 
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
 
 # legal citations
 eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME 
@@ -572,32 +488,35 @@ eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME
   aes(x = Total_Legal_Citations, y = efficacy) + 
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm") +
-  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+  labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        color = "",
        y = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
        x = "Legal Citations in Comment") + 
-  geom_point(x = 31, y = 10131, color = "grey", shape = 0, size = 3)+
+  geom_point(aes(x = 31, y = 10131), color = "red", shape = 0, size = 3)+
   theme(legend.position = "bottom")
 
 
 eXsplot  + 
-  annotate(x = 31, y = 10131, color = "grey", geom = "text", label = "Comment & Marked-up Draft Rule from\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = -0.05)
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = -0.05, size = 3.5)
 
 eXsplot + 
   scale_x_log10() +
-  scale_y_log10()
+  scale_y_log10() + 
+  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
 
 # color 
 eXsplot  + 
-  annotate(x = 31, y = 10131, color = "grey", geom = "text", label = "Comment & Marked-up Draft Rule from\nU.S. Chamber of Commerce et al.", vjust = 1, hjust = -0.05)  + aes(color = org) + labs(color = "")
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = -0.05, size = 3.5)  + aes(color = org) + labs(color = "")
 
 eXsplot + 
   scale_x_log10() +
-  scale_y_log10() + aes(color = org) + labs(color = "")
+  scale_y_log10() + 
+  aes(color = org) + labs(color = "") + 
+  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
 ```
 
 ---
-
+  
 <!-- DO NOT MODIFY MAIN DATA (d) BELOW---> 
 
 ---
@@ -955,26 +874,6 @@ knitr::opts_chunk$set(fig.show="show",
                       fig.width=5, 
                       out.width = "80%")
 
-# rename coeficients for tables and plots 
-cm = c("ASSET" = "Assets",
-       "ASSETS" = "Assets (Hundreds of Millions)",
-       "Assets" = "Assets (Billions)",
-       "assets" = "Assets",
-       "marketcap2" = "Market Capitalization",
-       "Class SM" = "State Bank",
-       "Class SB" = "Savings Bank",
-       "Class SA" = "Savings Association",
-       "Class NM" = "Commercial Bank",
-       "ASSETS:Class SM" = "Assets x State Bank",
-       "ASSETS:Class SB" = "Assets x Savings Bank",
-       "ASSETS:Class SA" = "Assets x Savings Association",
-       "ASSETS:Class NM" = "Assets x Commercial Bank",
-       "dictionary_terms" = "Technical Terms",
-       "Total_Legal_Citations" = "Legal Citations")
-
-gm = list("Num.Obs." = "Number of Comments",
-       "R2" = "R2",
-       "AIC" = "AIC")
 ```
 
 
@@ -1152,14 +1051,16 @@ These models have the prefix `mem_`. The dependent variable is the efficacy scor
 ```{r mediation-assets-bluebook, fig.width=4, fig.height=3}
 library(mediation)
 
+b$org_type %>% unique
+
 
 # model predicting mediator, sophistication 
-model.m <- lm(Total_Legal_Citations ~ assets,  
+model.m <- lm(Total_Legal_Citations ~ assets * org_type,  
               data = b  %>% mutate(assets = assets/10000000000) %>% 
                 drop_na(Total_Legal_Citations, efficacy))
 
 # model predicting DV
-model.y <- glm(efficacy ~ Total_Legal_Citations + assets,  
+model.y <- glm(efficacy ~ Total_Legal_Citations + assets * org_type,  
                data = b  %>% mutate(assets = assets/10000000000))
 
 models <- list(model.m, model.y)
@@ -1338,15 +1239,38 @@ plot(med.cont, main = "Legal Citations as a Mediator Between\nAssets and Lobbyin
 # modelsummary::modelsummary(med.cont)
 ```
 
+# Save data 
+
+```{r save}
+n_comments <- nrow(efficacyXsophistication)
+
+save(n_comments,
+     efficacyXsophistication, 
+     file = here::here("data", "efficacyXsophistication.Rdata"))
+```
+
 # TODO
 
-- [ ] check on the status of OCC comments (missing from the attachments table as of May 2022)
+
+## Presentation 
+
+- [ ] Predicted probability plots for all models presented in the paper. These should replace all tables. All tables should appear in the appendix. 
+
+- [ ] Nonprofit and credit union plots for the correlation between assets and sophsitication
+
+- [ ] `assets-tech-` figures should have x-axis scales in the millions or billions 
+
+## Analysis 
 
 - [ ] split out FDIC banks and nonprofits in asset mediation analysis? (at the moment, neither type of asset is correlated with efficacy, so mediation analysis is a low priority)
 
+## Data
+
+- [ ] check on the status of OCC comments (missing from the attachments table as of May 2022)
+
 - [ ] Try to get efficacy measures for key observations. For example, in cases where we have market cap: 
 
-Observations for which we have market cap and sophistication but are missing efficacy measures: 
+Observations for which we have market cap and sophistication but are missing efficacy measures (POSSIBLY DUE TO THERE BEING NO FINAL RULE): 
 
 ```{r}
 b %>% drop_na(marketcap, Total_Legal_Citations) %>% 
