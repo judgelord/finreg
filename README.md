@@ -1,22 +1,7 @@
-# Inequality in Administrative Democracy: Methods and Evidence From Financial Regulation 
+# Inequality in Administrative Democracy: Large-Sample Evidence from American Financial Regulation 
 
-# [PDF](https://github.com/judgelord/finreg/blob/main/docs/participatory-inequality.pdf)
-
-The above linked PDF is genered by `participatory-inequality.Rmd`, which requires 
-- /code/`setup.R`
-- /figs/
-- /models/
-- /data/
-- /assets/
-
-## replication+ files:
-
-- [Wealth and participation](https://judgelord.github.io/finreg/participation) 
-- [Wealth, sophistication, and efficacy](https://judgelord.github.io/finreg/efficacy)
-
-These include
+Data and analysis of interest group [participation](https://judgelord.github.io/finreg/participation) and [efficacy](https://judgelord.github.io/finreg/efficacy)
 - Replication code for all tables and figures in the paper and appendix
 - Additional summary tables and figures to guide data cleaning and analysis
 
-## Other: 
-- [Data validated against hand-coded data](https://judgelord.github.io/finreg/validation)
+[Data validated against hand-coded data](https://judgelord.github.io/finreg/validation)
