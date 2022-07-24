@@ -11,11 +11,11 @@ author:
   - name: Devin Judge-Lord
     department: Department of Government
     affiliation: Harvard University
+    thanks: "Corresponding author: DevinJudgeLord@FAS.Harvard.edu."
   - name: Christopher T. Kenny
     department: Department of Government
     affiliation: Harvard University
   - name: Brian Libgober
-    thanks: "Corresponding author: blibgober@ucsd.edu."
     department: School of Global Policy and Strategy
     affiliation: University of California, San Diego
   - name: Steven Rashin
@@ -91,7 +91,7 @@ The substantive differences in wealth between organizations that participate and
 
 As we detail below, the idea that wealth inequality has affected financial policymaking is far from new. Nevertheless, critical questions have remained unanswered. Does wealth inequality drive differential lobbying participation? Do wealthy organizations get what they want more often during rulemaking? And, if so, why? We provide the data and tools to address these questions, and our analysis of financial rulemaking yields initial answers and evidence within a significant policy domain. Such information is critical to inform scholarly research regarding the impact of wealth inequality on American policymaking, as well as further our understanding of modern American governance, lobbying influence, and the role of money in politics within our administrative democracy.
 
-<!-- This paper makes three primary contributions to the literature.  First, we develop a suite of measurement and analytic tools to identify organizational commenting, measure commenter wealth and comment sophistication, and assess relationships between wealth, sophistication, and influence in the administrative sphere.  To our knowledge, we are the first to measure the wealth of organizations that comment on entities that submitted comments to regulatory agencies.  While other studies have identified organizations in rulemaking (see e.g., Yackee and Nelson 2012; Ban and You 2019; Carpenter and Libgober 2018), looked at comment sophistication (Balla et al 2019; Coglianese 2005), and assessed comment influence (see e.g., Yackee and Yackee 2005), none of these studies have combined these tools to tens of thousands of comments.  For example, in identifying organizations, we used an iterative matching procedure to find matches between nearly 500,000 publicly traded companies or nonprofits and organizations that commented on Dodd-Frank rules.  Second, we created a novel dataset of all organizations that commented on Dodd-Frank rules that spans 264,709 comments over 239 separate rulemaking dockets within seven federal agencies.  Third, we leverage the dataset to provide the first large-scale assessment of the impacts of wealth inequality in agency rulemaking.  This allows us to answer questions on inequality and lobbying participation which were, up to now, only answerable in the legislative process.  Such information is critical to inform scholarly research regarding the impact of wealth inequality on American policymaking, as well as further our understanding of modern American governance, lobbying influence, and the role of money in politics within our administrative democracy. -->
+<!-- This paper makes three primary contributions to the literature. First, we develop a suite of measurement and analytic tools to identify organizational commenting, measure commenter wealth and comment sophistication, and assess relationships between wealth, sophistication, and influence in the administrative sphere. To our knowledge, we are the first to measure the wealth of organizations that comment on entities that submitted comments to regulatory agencies. While other studies have identified organizations in rulemaking (see, e.g., Yackee and Nelson 2012; Ban and You 2019; Carpenter and Libgober 2018), looked at comment sophistication (Balla et al. 2019; Coglianese 2005), and assessed comment influence (see, e.g., Yackee and Yackee 2005), none of these studies have combined these tools to tens of thousands of comments. For example, in identifying organizations, we used an iterative matching procedure to find matches between nearly 500,000 publicly traded companies or nonprofits and organizations that commented on Dodd-Frank rules. Second, we created a novel dataset of all organizations that commented on Dodd-Frank rules that spans 264,709 comments over 239 separate rulemaking dockets within seven federal agencies. Third, we leverage the dataset to provide the first large-scale assessment of the impacts of wealth inequality in agency rulemaking. This allows us to answer questions on inequality and lobbying participation which were, up to now, only answerable in the legislative process. Such information is critical to inform scholarly research regarding the impact of wealth inequality on American policymaking, as well as further our understanding of modern American governance, lobbying influence, and the role of money in politics within our administrative democracy. -->
 
 
 # Theorical Foundations
@@ -152,7 +152,7 @@ While past research has focused on differences in lobbying participation across 
 
 
 
- A separate rational driving differential participation by wealthy organizations focuses on the concentrated costs and benefits of lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. For-profit organizations, such as private and publicly-traded companies and banks, are profit-seeking and tend to have a narrow stake in financial regulations. Wealthy, profit-seeking companies have especially strong incentives to lobby in rulemaking [@Libgober2020; @LibgoberQJPS2020]. Meanwhile, non-profit organizations such as public interest groups have more diffuse and varied constituencies, and may exhibit less profit-seeking incentives to comment.  Thus, we anticipate differences between for-profit and non-profit organizations.^[Our paper categorizes for-profit organizations as "profit-seeking", and non-profit organizations as absent of profit-seeking behavior.  However, non-profit industry associations can focus their efforts on private interests, demonstrating profit-seeking behavior. Because our data does not include a measure of private-public interests among the organizations featured, we opt for this binary "profit-seeking" categorization between for-profit and non-profit organizations.]
+ A separate rational driving differential participation by wealthy organizations focuses on the concentrated costs and benefits of lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. For-profit organizations, such as private and publicly-traded companies and banks, are profit-seeking and tend to have a narrow stake in financial regulations. Wealthy, profit-seeking companies have especially strong incentives to lobby in rulemaking [@Libgober2020; @LibgoberQJPS2020]. Meanwhile, non-profit organizations such as public interest groups have more diffuse and varied constituencies and may exhibit less profit-seeking incentives to comment. Thus, we anticipate differences between for-profit and non-profit organizations.^[Our paper categorizes for-profit organizations as "profit-seeking" and non-profit organizations as absent of profit-seeking behavior. However, non-profit industry associations can focus their efforts on private interests, demonstrating profit-seeking behavior. Because our data does not include a measure of private-public interests among the organizations featured, we opt for this binary "profit-seeking" categorization between for-profit and non-profit organizations.]
  <!-- (Angelo 7/14/2022: Is this footnote too wordy?) -->
 
 > *Profit-motivated Participation Hypothesis (H2):* Profit-seeking organizations will be more likely to comment.
@@ -174,8 +174,8 @@ Existing research hints at a differential lobbying benefit attached to wealth du
 
 > *Differential Lobbying Success Hypothesis (H4):* Comments from wealthier organizations will be more successful in shifting the content of agency rules.
 
-Research suggests that wealthier organizations are more influential because they can better deploy sophisticated technical information than less well-off entities [@WagnerALR2011]. Put differently, large organizations are disproportionately able to marshal the technical expertise necessary to write sophisticated comments for rules. We theorize that more sophisticated comments will be associated with greater lobbying success during rulemaking. Our argument builds on @JewellJPART2006 findings that agency officials pay greater attention to abstract and technical arguments, such as those often in comments from business organizations while tending to minimize common moral and personal arguments to less sophisticated comments from individuals. Similarly, @Krawiec2013, in her study of the pre-proposal stage of the Volcker rule, concludes that non-industry comments often lacked the specificity and the detail that agencies needed to change policy, and @Yackee2015JPART theorizes that impactful comments often provide technical information. Consequently, we hypothesize that wealthier entities will utilize their resources to produce comments that hold greater sophistication than less prosperous groups, and these comments will be more impactful.
-<!-- (Angelo 7/14/2022: moved mentions of legal expertise to appendix.) -->
+Research suggests that wealthier organizations are more influential because they can better deploy sophisticated technical information than less well-off entities [@WagnerALR2011]. Put differently; large organizations are disproportionately able to marshal the technical expertise necessary to write sophisticated comments for rules. Building on @Yackee2015JPART, we theorize that more sophisticated comments will be associated with greater lobbying success during rulemaking. Agency officials pay greater attention to abstract and technical arguments, such as those often in comments from business organizations, while often minimizing common moral and personal arguments to less sophisticated comments from individuals [@JewellJPART2006]. For example, in the pre-proposal stage of the Volcker rule, non-industry comments often lacked the specificity and the detail that agencies needed to change policy [@Krawiec2013]. Consequently, we hypothesize that wealthier entities will utilize their resources to produce comments that hold greater sophistication than less prosperous groups, and these comments will be more impactful.
+<!-- (Angelo 7/14/2022: moved mentions of legal expertise to the appendix.) -->
 
 > *Differential Sophistication Hypothesis (H5):* Wealthier organizations will use more technical and sophisticated language when commenting on proposed rules.
 
@@ -222,7 +222,7 @@ We developed several new tools to test our wealth inequality hypotheses, includi
 
 4. All credit unions from consolidated call report published by the NCUA, which include the total assets under management for each credit union.
 
-5.	All non-profit organizations reported by the IRS 990 forms, including each non-profit's total assets and annual revenue.
+5.	All non-profit organizations that are reported by the IRS 990 forms, including each non-profit's total assets and annual revenue.
 
 6.	All organizations reporting Political Action Committee (PAC) donations, as compiled by the Center for Responsive Politics. We then calculate the average annual PAC contributions for each organization.
 
@@ -255,7 +255,7 @@ knitr::include_graphics("figs/org_count_type-1.png")
 
 We measure comment sophistication by counting the technical terms in each comment. To capture sophistication with respect to the use of finance and banking jargon, we use the Oxford Dictionary of Finance and Banking, which includes 5260 finance and banking terms. When an organization submits a comment with multiple attachments, we measure sophistication by summing up the technical terms and legal citations across all submitted documents. This approach follows the intuition that attachments with additional technical language reflect additional sophistication. For example, the most sophisticated organizations often submit a cover letter, a marked-up version of the proposed rules, and studies supporting their arguments.
 
-<!-- (Angelo 7/14/2022: This was originally in between "...5260 finance and banking terms." and "When an organization...". If we choose to use only one measure of sophistication--technical--do we have to re-run this analysis so we don't subtract overlap?) -->
+<!-- (Angelo 7/14/2022: This was originally in between "...5260 finance and banking terms." and "When an organization...". If we choose to use only one measure of sophistication--technical--do we have to re-run this analysis, so we don't subtract overlap?) -->
  <!-- As there are words with both financial and legal meaning (e.g., "underwrite"), and we do not want to double count overlapping terms, we calculate the sophistication of each comment by summing the legal and financial terms and then subtracting the subset of those that appear in both dictionaries.  -->
 
 <!--TODO 
@@ -282,17 +282,15 @@ Despite its limitations, our measure can capture "success" in the sense that it 
 
 In dealing with endogeneity, one methodological choice merits elaboration: we excluded text from the proposed rule when measuring lobbying success but not when measuring sophistication. This choice rests on the underlying concepts we are attempting to measure. In measuring text reuse, we aim to capture ideas that are not yet in the policy. Thus, text copied from the agency's proposal must be excluded. Indeed text that appears in both the draft and final rule is what did *not* change. If a commenter attached a marked-up version of the proposed rule, we aim to exclude all but their suggested changes. 
 
-In contrast, in measuring sophistication, we aim to assess how much the commenter utilizes expertise to engage in technical policy debates. Here, attaching a marked-up version of the proposed rule captures the underlying concept of sophistication. Thus, our counts of technical banking terms do not exclude the text of the draft rule. Even if they are the agency's terms, engaging with the agency's texts indicates sophistication.
+In contrast, in measuring sophistication, we aim to assess how much the commenter utilizes expertise to engage in technical policy debates. Here, attaching a marked-up version of the proposed rule captures the underlying concept of sophistication. Thus, our counts of technical banking terms do not exclude the text of the draft rule. Even if they are the agency's terms, engaging with the agency's texts indicates sophistication. For example, the comment with the most legal terms from a bank contained a 4-page comment and 112 pages of attachments, 105 of which were the full proposed rule. These 105 pages were excluded from our measure of text reuse but included in the legal and banking terms count.  
 
-<!-- (Angelo 7/14/22: Is there a technical terms example, if we're moving the legal term analysis to the appendix?) -->
-<!-- For example, the comment with the most bluebook/legal terms from a bank contained a 4-page comment and 112 pages of attachments, 105 of which were the full proposed rule. These 105 pages were excluded from our measure of text reuse but included in the legal and banking terms count.  -->
 
 
 <!--CORRELATION BETWEEN SOPHISTICATION AND SUCCESS
 This figure is here rather than in the results section to facilitate discussion of the data, but I'm open to suggestions
 --> 
 Descriptively, our measures of lobbying sophistication and lobbying success are highly correlated. Our measure of commenter lobbying success increases with the wealth of the commenting organization. 
-Figure \@ref(fig:efficacyXsophistication) shows that the number of words from the comment added to the final rule is correlated with both the number of technical words. The plot highlights the comment the with the highest score on our measure of lobbying success, a comment to the SEC prepared by the law firm White & Case, LLP for the U.S. Chamber of Commerce, Americans for Limited Government, Ryder Systems, Inc., the Financial Services Institute, Inc., and Verizon. This highly-sophisticated comment included a 19-page cover letter with many technical citations underscoring the Chamber's "very serious concerns on the impact [the rule's] whistleblower requirements will have on... companies' responsibilities to act in the best interests of their shareholders."
+Figure \@ref(fig:efficacyXsophistication) shows that the number of words from the comment added to the final rule is correlated with both the number of technical words. The plot highlights the comment with the highest score on our measure of lobbying success, a comment to the SEC prepared by the law firm White & Case, LLP for the U.S. Chamber of Commerce, Americans for Limited Government, Ryder Systems, Inc., the Financial Services Institute, Inc., and Verizon. This highly-sophisticated comment included a 19-page cover letter with many technical citations underscoring the Chamber's "very serious concerns on the impact [the rule's] whistleblower requirements will have on... companies' responsibilities to act in the best interests of their shareholders."
 This comment also included a marked-up draft of the SEC's proposed rule, suggesting specific changes, several of which were adopted by the SEC. 
 Other comments with high efficacy scores include an 84-page comment from Standard & Poor's Global Ratings credit rating agency to the SEC, a 59-page comment from the Futures Industry Association to the CFTC, and several marked-up versions of proposed SEC rules from investment companies.
 Overall, \ref{fig:efficacyXsophistication} shows a positive correlation between the number of technical banking terms in a comment and the amount of text it shares with the final rule. 
@@ -306,7 +304,7 @@ knitr::include_graphics("figs/efficacyXsophistication-6.png")
 
 ## Methodology
 
-<!-- (Angelo 7/15: Added broad methods exposition... thought it fit better at the end as it's own little subsection?) -->
+<!-- (Angelo 7/15: Added broad methods exposition... thought it fit better at the end as its own little subsection?) -->
 We apply various methods to the data described above to investigate each individual hypothesis.
 Descriptively, we compare the wealth distribution and mean asset amount of different organizations to uncover any significant differences between commenters and non-commenters (H1), for-profit and non-profit organization types (H2), and frequent and infrequent commenters (H3).
 Welch t-tests determine whether two samples with unequal variances and sample sizes have equal means.
@@ -314,13 +312,13 @@ Because variance and sample sizes are unequal between the groups compared in eac
 The tests' corresponding p-value at or below .05 would demonstrate whether any uncovered difference is statistically significant.
 
 We also use regression analyses to gauge whether organizational wealth is a significant predictor of various outcomes of interest.  
-Logit regression is used to model the binary outcome of commenting as a function of wealth (H1), and wealth and for-profit banking types like commercial, saving and state banks (H2).  
-Resulting model coefficients allow us to predicatively estimate how changes in an organization's assets produce changes in that organization's probability and odds of offering a comment on a rule.
+Logit regression is used to model the binary outcome of commenting as a function of wealth (H1) and wealth and for-profit banking types like commercial, saving, and state banks (H2).  
+The resulting model coefficients allow us to predicatively estimate how changes in an organization's assets produce changes in that organization's probability and odds of offering a comment on a rule.
 
 Poisson regression is used to model the discrete count of rules an organization comments on (H3), the number of words from a comment added to the final rule (H4), and the number of technical terms used in a comment (H5), as a function of organizational wealth. 
 Poisson modeling is useful when trying to correlate an explanatory variable with some outcome of interest that represents a discrete sum of an event occurring.
-Because our outcomes in the three hypotheses above are discrete counts, poisson modeling is an approriate method to test them.
-Model coefficients will then allow us to predict how changes in wealth produce changes in the number of rules commented on, words from comment into the final rule, and technical terms used.
+Because our outcomes in the three hypotheses above are discrete counts, Poisson modeling is an appropriate method to test them.
+Model coefficients will then allow us to predict how changes in wealth produce changes in the number of rules commented on, words from a comment in the final rule, and technical terms used.
 
 Causal mediation analysis is used to **DEVIN HERE**
 
@@ -418,7 +416,7 @@ DEVIN WILL ADD LOBBYING EXPENDITURES
 Our *Profit-motivated Participation* Hypothesis (H2) posited that for-profit organizations would be more likely to comment than non-profit organizations. We find strong support for this hypothesis, both overall (comparing banks with non-profits) and among for-profit and non-profit banks. Twelve percent of Commercial Banks commented on Dodd-Frank rules. In contrast, only three percent of non-profit Savings Associations, two percent of credit unions, and 0.2 percent of other non-profits commented. This means that Comercial Banks were six times more likely to comment on a Dodd-Frank rule than the average credit union and 60 times more likely to comment than the average non-profit. 
  
 To further test this hypothesis among banks, we estimate the odds of commenting across different types of banks; we find that for-profit banks (Commercial Banks) are significantly more likely to comment than non-profit Savings Associations and credit unions, further supporting the link between lobbying activity and profit. 
-Among FDIC insured banks with a mean asset amount of \$1,175,970, our model predicts commercial banks to have a 12 percent probability of commenting.  
+Among FDIC-insured banks with a mean asset amount of \$1,175,970, our model predicts commercial banks to have a 12 percent probability of commenting.  
 Meanwhile, non-profit savings associations with the same asset resources have only a 3 percent probability of commenting.
 <!-- (Angelo 7/18/2022: Added last two sentences of examples) -->
 
@@ -433,7 +431,7 @@ Further supporting the *Profit-motivated Participation* Hypothesis (H2), non-pro
 Table \ref{tab:mp-all-table} shows the results of logit models predicting the log odds of commenting by organization type (credit union, non-profit, or bank) and total assets. In specifications estimating the constant effect of assets (Model 1) and different effects by organization type (Model 2), non-profits are less likely to comment than for-profit organizations. 
 
 ```{r mp-all-table}
-# models of number of rules commented on by assets
+# models of a number of rules commented on by assets
 load(here::here("models", "mpAll.Rdata"))
 
 modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference catagory = Banks")  %>% kableExtra::kable_styling()
@@ -478,7 +476,7 @@ knitr::include_graphics(c(
 ```
 
 ```{r rules-by-assets}
-# models of number of rules commented on by assets
+# models of a number of rules commented on by assets
 load(here::here("models", "rules-by-assets.Rdata"))
 
 modelsummary(models, caption = "OLS Predicting the Number of Dodd-Frank Rules On Which an Organization Commented")  %>% 
@@ -540,7 +538,7 @@ knitr::include_graphics("figs/assets-tech-6.png")
 
 
 
-```{r marketcap-terms, out.width="90%",  fig.cap="Amount of Legal and Technical Language by Market Capitialzation (Among Comments  on Dodd-Frank Rules)"}
+```{r marketcap-terms, out.width="90%",  fig.cap="Amount of Legal and Technical Language by Market Capitalization (Among Comments  on Dodd-Frank Rules)"}
 knitr::include_graphics("figs/mt-2.png")
 # knitr::include_graphics("figs/mb-2.png")
 
@@ -568,7 +566,7 @@ Further supporting the *Dividends of Sophistication* Hypothesis (H6), Figure \re
 ### Legal and Technical Sophistication Explains the Efficacy of Wealthy Companies {#mediation}
 
 Finally, to draw firmer conclusions regarding the *Dividends of Sophistication* Hypothesis (H6), we use mediation analysis to estimate the extent to which the sophistication of the organizational comments explains the relationship between organizational wealth and lobbying success. Here we concentrate our analyses on publicly traded companies that submitted comments to our Dodd-Frank rules. Because the correlation between wealth and lobbying success was highest in these companies (see Figure \@ref(fig:assets-terms)), this subset offers the best test of a mediated effect. The company's market capitalization is the key predictor variable,
-lobbying success is the dependent variable in the main models, and the number of technical terms are the proposed mediators (the dependent variable in the mediator model). 
+lobbying success is the dependent variable in the main models, and the number of technical terms is the proposed mediator (the dependent variable in the mediator model). 
 
 We find that the bulk of the relationship between wealth and efficacy can be attributed to wealthier organizations using more technical language. Market capitalization is highly correlated with using technical terms, which are associated with efficacy. Thus, we can conclude that much of the effect of market capitalization on lobbying success results from using technical banking terms.
 
@@ -580,7 +578,7 @@ With technical terms as the mediator, Figure \ref{fig:mediation-terms} shows tha
 <!-- ``` -->
 
 ```{r mediation-terms, out.width="60%",  fig.cap="Technical Language as a Proposed Mediator Between Wealth and Efficacy"}
-# TODO DEVIN WILL INSERT mediation-terms from https://judgelord.github.io/finreg/efficacy#Market_cap_x_legal_citations
+# TODO DEVIN WILL INSERT mediation terms from https://judgelord.github.io/finreg/efficacy#Market_cap_x_legal_citations
 
 knitr::include_graphics("figs/mediation-marketcap-terms-1.png")
 ```
@@ -589,7 +587,7 @@ knitr::include_graphics("figs/mediation-marketcap-terms-1.png")
 
 This paper offers a new and systematic perspective on inequality in bureaucratic policymaking by combining multiple methods and data sources. Our systematic approach, covering all rules across multiple agencies implementing the same landmark piece of legislation (the Dodd-Frank Act) and rich data on multiple participants, allows unique comparisons within and across agencies and types of organizations. This new dataset allows us to assess the relative level of access and lobbying success that different types of organizations enjoy across policymaking institutions.
 
-We find support for theories that predict that societal inequality leads to inequality in the policy process. Vastly unequal levels of resources among organizations lead to inequalities in participation,  frequency of participation, lobbying sophistication, and lobbying success. Further, we offer evidence that differences in lobbying success across wealthy and less wealthy organizations are a result of lobbying sophistication and that participation is profit-motivated.
+We find support for theories that predict that economic inequality leads to inequality in the policy process. Vastly unequal levels of resources among organizations lead to inequalities in participation,  frequency of participation, lobbying sophistication, and lobbying success. Further, we offer evidence that differences in lobbying success across wealthy and less wealthy organizations are a result of lobbying sophistication and that participation is profit-motivated.
 
 We have shown that commenting is disproportionately concentrated among wealthier organizations. Many organizations do not have the baseline level of resources to engage in sophisticated lobbying.
 Our finding that wealthier companies generally advance more sophisticated comments suggests that wealth correlates with the lobbying behavior that past studies found to be most influential. Sophisticated and technical lobbying strategies are effective. Indeed this has been a common explanation for why businesses enjoy unique levels of access and influence in agency rulemaking [@YackeeJOP2006]. Our results lend support to this theory. Where previous studies generally assume that businesses are wealthier, we show that businesses are wealthier and that within and across types of organizations---including businesses---organizations with more engage in more sophisticated and technical lobbying efforts.
@@ -621,13 +619,19 @@ read_csv(here::here("data", "master_tables_status.csv")) %>%
     ) %>% 
   mutate(`Wealth Measures` = replace_na(`Wealth Measures`, 0)) %>% 
   kable3(
-    caption = "Comments, Comment Attachments, Comment Sophistication, Comment Efficacy, and Commenter Wealth Data on Rules Implimenting the Dodd-Frank Act"
+    caption = "Comments, Comment Attachments, Comment Sophistication, Comment Efficacy, and Commenter Wealth Data on Rules Implementing the Dodd-Frank Act"
     ) 
 ```
 
 ```{r, docket-table, fig.cap="Dockets and Comments Matched to Asset Data by Agency", out.width="70%"}
 knitr::include_graphics("figs/docket-table-1.png")
 ```
+
+<!-- TODO: PAGE DESCRIBING MATCHING METHOD
+\clearpage 
+
+Something like TF-IDF meets a Jaccard index. Basically, for each commenter, I start with the most uncommon token in the submitter's names and look for names in the CIK, FDIC, Nonprofit, etc. datasets that have that token (e.g., if Klamath First Federal Bank submitted a comment, I'd look for names that have the token "Klamath"). I rank the resulting candidate matches using a modified Jaccard index that scores each token in the commenter's name that matches a token in the candidate name in inverse proportion to the token's frequency in the commenter dataset (normalizing by the sum of the inverse frequencies of all the tokens in the commenter's name, matching or otherwise) so that 'more informative' words contribute more to the 'match score.'
+-->
 
 \clearpage
 
@@ -645,7 +649,7 @@ knitr::include_graphics("figs/FDIC-density-select-1.png")
 
 
 
-```{r, number-of-dockets, fig.cap="Number of Dockets on Which Each Type of Organization Commented", out.width="49%", fig.show= "hold"}
+```{r, number-of-dockets, fig.cap= "Number of Dockets on Which Each Type of Organization Commented", out.width="49%", fig.show= "hold"}
 knitr::include_graphics(c(
     "figs/nonprofit-rules-1.png",
   "figs/creditunion-rules-1.png",
@@ -670,7 +674,7 @@ knitr::include_graphics(c(
 Table \ref{tab:mp-assets-table} presents the full the regression table for models shown in Figure \ref{fig:mp-assets}.
 
 ```{r mp-assets-table}
-# models of number of rules commented on by assets
+# models of the number of rules commented on by assets
 load(here::here("models", "pr-of-comment.Rdata"))
 
 modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule")  %>% kableExtra::kable_styling()
@@ -681,7 +685,7 @@ modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule") 
 Table \ref{tab:mpFDIC-table} presents the full the regression table for models shown in Figure \ref{fig:mpFDIC}.
 
 ```{r mpFDIC-table}
-# models of number of rules commented on by assets
+# models of the number of rules commented on by assets
 load(here::here("models", "mpFDIC.Rdata"))
 
 modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type")  %>% kableExtra::kable_styling()
@@ -696,7 +700,7 @@ We define large banks as banks with assets over $10 billion, which is what the F
 
 ## Comment sophistication: Legal citations
 
-Our analyses investigating the *Differential Sophistication* (H5) and *Dividends of Sophistication* (H6) hypotheses rely on a measure of comment sophistication that is based on the number of technical terms used in a given comment. However, the use of technical terms is only one way to gauge sophistication. An alternate measure would be the number of legal citations present in the comment. Wealthier organizations may be more influential by their use sophistical legal arguments in commenting.
+Our analyses investigating the *Differential Sophistication* (H5) and *Dividends of Sophistication* (H6) hypotheses rely on a measure of comment sophistication that is based on the number of technical terms used in a given comment. However, the use of technical terms is only one way to gauge sophistication. An alternate measure would be the number of legal citations present in the comment. Wealthier organizations may be more influential by their use of sophistical legal arguments in commenting.
 
 This section replicates the descriptive and regression analyses conducted in sections 4.2.3 and 4.2.4, instead using the number of legal citations as the measure of comment sophistication. To categorize text as legal jargon, we use the Merriam-Webster law dictionary, which includes 10,172 legal terms. We then count the number of citations to the U.S. Code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register. Like in the analyses relying on technical terms, we sum up citations across all the submitted documents of a commenter.
 
