@@ -671,7 +671,7 @@ FDIC_resources %<>%
 
 # density plot without N and OI
 FDIC_resources %>%
-   densityplot(caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_t$p.value %>% round(3), "\nOmits foreign banks and national associations"))
+   densityplot(caption = str_c("Welch t-test of difference in means, p = ", fdic_t$p.value %>% round(3), "\nOmits foreign banks and national associations"))
 ```
 
 ```{r FDIC-count-select, fig.height=3, fig.width=4, out.width="50%"}
@@ -691,7 +691,7 @@ FDIC_resources %>%
   scale_x_log10() + 
   labs(title = str_c("U.S. FDIC-Insured Banks, N = ", nrow(FDIC_resources)%>% prettyNum(big.mark = ",")) ,
        fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_t$p.value %>% round(3), "\nOmits foreign banks and national associations")) + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_t$p.value %>% round(3), "\nOmits foreign banks and national associations")) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -712,7 +712,7 @@ FDIC_resources %>%
     geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
   scale_x_log10() + 
   labs(title = "FDIC-Insured Commercial Banks",fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_tNM$p.value %>% round(3)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tNM$p.value %>% round(3)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -731,7 +731,7 @@ FDIC_resources %>%
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
   scale_x_log10() + 
   labs(title = "FDIC-Insured Savings Banks",fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_tSB$p.value %>% round(3)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSB$p.value %>% round(3)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -751,7 +751,7 @@ FDIC_resources %>%
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
 scale_x_log10() + 
   labs(title = "FDIC-Insured State Banks",fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_tSM$p.value %>% round(3)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSM$p.value %>% round(3)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -770,7 +770,7 @@ FDIC_resources %>%
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
 scale_x_log10() + 
   labs(title = "FDIC-Insured Savings Associations",fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_tSA$p.value %>% round(3)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSA$p.value %>% round(3)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -783,26 +783,26 @@ FDIC_resources %>%
   densityplot(
     title = "FDIC-Insured Commercial Banks",
     x = "Assets (Thousands)",
-    caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_tNM$p.value %>% round(3)))
+    caption = str_c("Welch t-test of difference in means, p = ", fdic_tNM$p.value %>% round(3)))
   
 
 FDIC_resources %>%
   filter(ASSET > 10, BKCLASS %in% c("SB")) %>% 
   densityplot(title = "FDIC-Insured Savings Banks", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_tSB$p.value %>% round(3)))
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSB$p.value %>% round(3)))
 
 
 FDIC_resources %>%
   filter(ASSET > 10, BKCLASS %in% c("SM")) %>% 
   densityplot(title = "FDIC-Insured State Banks",
               x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_tSM$p.value %>% round(3)))
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSM$p.value %>% round(3)))
 
 FDIC_resources %>%
   filter(ASSET > 10, BKCLASS %in% c("SA")) %>% 
   densityplot(title = "FDIC-Insured Savings Associations",
               x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", fdic_tSA$p.value %>% round(3)))
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSA$p.value %>% round(3)))
 ```
 
 
@@ -844,7 +844,7 @@ states %>%
 
 ### Among nonprofits that commented on Dodd-Frank rules
 
-```{r nonprofit-comment-counts, fig.height=1.5, fig.width=4, out.width="50%"}
+```{r nonprofit-comment-counts, fig.height=3, fig.width=4, out.width="50%"}
 load(here("data", "nonprofit_resources.Rdata"))
 
 # make unique ( there are nearly 5k different rotary internationals and several APIs )
@@ -909,7 +909,7 @@ nonprofit_resources %>%
               by = 1000,
               title = "Non-profits",
                x = "Assets (Thousands)",
-              caption = str_c("Welch t-test of difference in means, p-vaue = ", nonprofit_t$p.value %>% round(5))) 
+              caption = str_c("Welch t-test of difference in means, p = ", nonprofit_t$p.value %>% round(5))) 
 
 
 nonprofit_resources %>% 
@@ -918,7 +918,7 @@ nonprofit_resources %>%
               by = 1000,
               title = "Non-profits",
                x = "Revenue (Thousands)",
-              caption = str_c("Welch t-test of difference in means, p-vaue = ", nonprofit_revenue_t$p.value %>% round(5))) 
+              caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value %>% round(5))) 
 
 # old density plots 
 nonprofit_resources %>% 
@@ -929,7 +929,7 @@ nonprofit_resources %>%
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
        fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", nonprofit_t$p.value %>% round(5)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_t$p.value %>% round(5)))  + 
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -943,7 +943,7 @@ nonprofit_resources %>%
   scale_x_log10() + 
   labs(fill = "", y = "", x = "Revenue (Thousands)",
        title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", nonprofit_revenue_t$p.value %>% round(5)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value %>% round(5)))  + 
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -992,7 +992,7 @@ nonprofit_resources %>%
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources) %>% prettyNum(big.mark = ",") ),
        fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", nonprofit_t$p.value %>% round(5)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_t$p.value %>% round(5)))  + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1008,7 +1008,7 @@ nonprofit_resources %>%
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)%>% prettyNum(big.mark = ",")),
        fill = "", y= "", x = "Revenue ($1,000s)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", nonprofit_revenue_t$p.value %>% round(5)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value %>% round(5)))  + 
   facet_grid(Commented ~ ., scales = "free_y")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1061,7 +1061,7 @@ creditunions %>%
               by = 1000000,
               x = "Assets (Millions)",
               title = "Credit Unions", 
-              caption = str_c("Welch t-test of difference in means, p-vaue = ", creditunion_t$p.value %>% round(3)))
+              caption = str_c("Welch t-test of difference in means, p = ", creditunion_t$p.value %>% round(3)))
   
 #   
 # creditunions %>% 
@@ -1073,7 +1073,7 @@ creditunions %>%
 #   labs(fill = "", x = "Assets (Millions)", 
 #        title = str_c("Credit Unions, N = ", nrow(creditunions)%>% prettyNum(big.mark = ",")),
 #        fill = "", y = "",
-#        caption = str_c("Welch t-test of difference in means, p-vaue = ", creditunion_t$p.value %>% round(3)))  + 
+#        caption = str_c("Welch t-test of difference in means, p = ", creditunion_t$p.value %>% round(3)))  + 
 #   theme(panel.grid.major.y = element_blank(),
 #         panel.grid.minor.y = element_blank(),
 #         axis.text.y = element_blank())
@@ -1107,7 +1107,7 @@ creditunions %>%
   scale_x_log10() + 
   labs(title = str_c("Credit Unions, N = ", nrow(creditunions)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", creditunion_t$p.value %>% round(3)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", creditunion_t$p.value %>% round(3)))  + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1144,6 +1144,27 @@ opensecrets %<>%
 opensecrets %<>% group_by(org_name) %>% 
   top_n(1, MeanContribAmount)
 
+opensecrets %<>% 
+  group_by(Commented) %>% 
+  mutate(mean_MeanContribAmount = mean(MeanContribAmount, na.rm = T),
+         median_MeanContribAmount = median(MeanContribAmount, na.rm = T) ) %>% 
+  ungroup()
+
+opensecrets %>% distinct(Commented, mean_MeanContribAmount) %>% kable
+
+opensecrets %>% count(Commented) %>% mutate(percent = n/nrow(opensecrets))
+
+opensecrets %<>% mutate(commented = Commented == "Commented")
+
+opensecrets_t <- t.test(opensecrets %>% 
+         filter(commented) %>% pull(MeanContribAmount),
+       opensecrets %>% 
+         filter(!commented) %>% pull(MeanContribAmount)
+       )
+
+opensecrets_t
+
+
 opensecrets %>% 
   group_by(Commented) %>% 
   summarise(mean_MeanContribAmount = mean(MeanContribAmount, na.rm = T),
@@ -1151,12 +1172,15 @@ opensecrets %>%
             MeanTotalContribAmount = mean(TotalContribAmount, na.rm = T)) %>% 
   kable()
 
+
+
 opensecrets %>% 
   densityplot(var = "MeanContribAmount",
               by = 1000,
               title = "Campaign Donors",
-              x =  "Mean Contribution
-       ($1,000s, in years contributing 2010-2017)")
+              x =  "Mean Contribution ($1,000s, in years contributing 2010-2017)",
+       caption = str_c("Welch t-test of difference in means, p = ", opensecrets_t$p.value %>% round(3))
+       )
 
 # # old
 # opensecrets %>% 
@@ -1205,25 +1229,6 @@ opensecrets %>%
 
 ```{r opensecrets-count, fig.height= 3, fig.width=4, out.width="50%"}
 # opensecrets-count 
-opensecrets %<>% 
-  group_by(Commented) %>% 
-  mutate(mean_MeanContribAmount = mean(MeanContribAmount, na.rm = T),
-         median_MeanContribAmount = median(MeanContribAmount, na.rm = T) ) %>% 
-  ungroup()
-
-opensecrets %>% distinct(Commented, mean_MeanContribAmount) %>% kable
-
-opensecrets %>% count(Commented) %>% mutate(percent = n/nrow(opensecrets))
-
-opensecrets %<>% mutate(commented = Commented == "Commented")
-
-opensecrets_t <- t.test(opensecrets %>% 
-         filter(commented) %>% pull(MeanContribAmount),
-       opensecrets %>% 
-         filter(!commented) %>% pull(MeanContribAmount)
-       )
-
-opensecrets_t
 
 # count histograms
 opensecrets %>% 
@@ -1240,7 +1245,7 @@ opensecrets %>%
   scale_x_log10() + 
   labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Political Action Committee Donations (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", opensecrets_t$p.value %>% round(3))
+       caption = str_c("Welch t-test of difference in means, p = ", opensecrets_t$p.value %>% round(3))
        ) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -1301,7 +1306,7 @@ compustat %>%
               by = 1000000, 
               title = "Publicly-traded Companies",
        x = "Market Capitalization (Millions)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", compustat_t$p.value %>% round(3))
+       caption = str_c("Welch t-test of difference in means, p = ", compustat_t$p.value %>% round(3))
        )
 ```
 
@@ -1331,7 +1336,7 @@ compustat %>%
   scale_x_log10() + 
   labs(title = str_c("Publicly-traded Companies, N = ", nrow(compustat)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Market Cap (Millions)",
-       caption = str_c("Welch t-test of difference in means, p-vaue = ", compustat_t$p.value %>% round(3))
+       caption = str_c("Welch t-test of difference in means, p = ", compustat_t$p.value %>% round(3))
        ) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -1666,7 +1671,7 @@ asset_counts %>%
   scale_x_log10() + 
   labs(title = "Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
         fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test, p-value = ", rules_nonprofits_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_nonprofits_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1679,7 +1684,7 @@ asset_counts %>%
   scale_x_log10() + 
   labs(title = "Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
         fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test, p-value = ", rules_nonprofits_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_nonprofits_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1741,7 +1746,7 @@ asset_counts %>%
   labs(title = "FDIC-Insured Banks" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting",
        y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test, p-value = ", rules_fdic_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_fdic_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1754,7 +1759,7 @@ asset_counts %>%
   labs(title = "FDIC-Insured Banks" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting",
        y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test, p-value = ", rules_fdic_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_fdic_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1818,7 +1823,7 @@ asset_counts %>%
   labs(title = "Credit Unions" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting",
        y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test, p-value = ", rules_creditunion_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_creditunion_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1831,7 +1836,7 @@ asset_counts %>%
   labs(title = "Credit Unions" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting",
        y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test, p-value = ", rules_creditunion_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_creditunion_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1899,7 +1904,7 @@ asset_counts %>%
   scale_x_log10() + 
   labs(title = "Publicly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
-       caption = str_c("Welch t-test, p-value = ", rules_compustat_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_compustat_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1912,7 +1917,7 @@ asset_counts %>%
   scale_x_log10() + 
   labs(title = "Publicly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
-       caption = str_c("Welch t-test, p-value = ", rules_compustat_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_compustat_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1974,7 +1979,7 @@ asset_counts %>%
   labs(title = "Campaign Donors" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
         fill = "Frequency of\nCommenting", 
        y = "", x = "PAC Donations (Thousands)",
-       caption = str_c("Welch t-test, p-value = ", rules_pac_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_pac_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1988,7 +1993,7 @@ asset_counts %>%
   labs(title = "Campaign Donors" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
         fill = "Frequency of\nCommenting", 
        y = "", x = "PAC Donations (Thousands)",
-       caption = str_c("Welch t-test, p-value = ", rules_pac_t$p.value %>% round(3)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_pac_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
