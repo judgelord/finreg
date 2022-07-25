@@ -20,7 +20,7 @@ source(here::here("code", "setup.R"))
 knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       cache = FALSE,
                       fig.path = "../figs/", # figs folder at root (up one from /docs),
-                      #fig.retina = 3, #6, #FIXME for publication quality images
+                      #fig.retina = 3, #6, #FIXME for publication-quality images
                       fig.height=2.3, 
                       fig.width=3.2, 
                       out.width="50%")
@@ -63,7 +63,7 @@ Objects: `Tables_and_Figures_attachments` and `Tables_and_Figures_comments`
 
 Variables:
 
-- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
+- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.SQLite
 - `Figures` - counts of figures
 - `Tables`- counts of tables
 - `Comment` - 1 if from comments, 0 if from attachments
@@ -78,13 +78,13 @@ Objects: `bluebok_comments` and `bluebook_attachments`
 Variables:
 
 - `Comment` - 1 if from comments, 0 if from attachments
-- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
+- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.SQLite
 - `US_Code` - counts of US code citations
 - `Supreme_Court_Cases` - counts of Supreme Court cases
 - `Appeals_and_District_Court_Cases` - counts of citations to Appeals and district court cases
 - `Code_of_Federal_Regulations` - counts of citations to CFR
-- `Federal_Register_Total` - counts of citations to federal register
-- `Total_Legal_Citations` - sum of above except comment dummy
+- `Federal_Register_Total` - counts of citations to the federal register
+- `Total_Legal_Citations` - the sum of the above except comment dummy
 
 
 ```{r sophistication}
@@ -111,7 +111,7 @@ bluebook_attachments %<>%
 # max <- . %>% base::max(na.rm = TRUE)
 
 
-# sum by comment url 
+# sum by comment URL 
 #FIXME, why are these not unique! 
 bluebook_c <- bluebook_comments %>% 
   drop_na(Total_Legal_Citations) %>% 
@@ -119,7 +119,7 @@ bluebook_c <- bluebook_comments %>%
   dplyr::select(-comment) %>% 
   summarise_all(base::max)
 
-# whereas these should not be uniqe to comment url 
+# whereas these should not be unique to comment URL 
 bluebook_a <- bluebook_attachments %>% 
   drop_na(Total_Legal_Citations) %>% 
   group_by(comment_url) %>% 
@@ -135,7 +135,7 @@ bluebook <- full_join(bluebook_a,
 # # check for unique comment_url
 # bluebook %>% count(comment_url, sort = T)
 
-# sum by comment url 
+# sum by comment URL 
 #FIXME, why are these not unique!? 
 technical_terms_c <- technical_terms_comments %>% 
   drop_na(dictionary_terms) %>% 
@@ -143,7 +143,7 @@ technical_terms_c <- technical_terms_comments %>%
   dplyr::select(-comment) %>% 
   summarise_all(base::max)
 
-# whereas these should not be uniqe to comment url 
+# whereas these should not be unique to comment URL 
 technical_terms_a <- technical_terms_attachments %>% 
   drop_na(dictionary_terms) %>% 
   group_by(comment_url) %>% 
@@ -228,9 +228,9 @@ efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.c
 #   filter(is.na(efficacy)) %>% 
 #   dplyr::select(comment_url, cumulative_sequence_length_over_10)
 
-# select needed vars. url is comment url (even for attachments)
+# select needed vars. URL is comment URL (even for attachments)
 efficacy <- efficacy_raw %>% 
-  # make comment url 
+  # make comment URL 
   mutate(comment_url2 = attachment_url %>% 
            str_replace("https://downloads.regulations.gov/", 
                        "https://www.regulations.gov/comment/" ) %>% 
@@ -274,12 +274,12 @@ d %>% group_by(Agency) %>% count(is.na(efficacy))
 
 
 ```{r testing, eval = FALSE}
-# check number of NAs 
+# check the number of NAS 
 bluebook_comments %>%
   summarise_all(is.na) %>%
   summarise_all(sum)
 
-# multiple per url? 
+# multiple per URL? 
 bluebook_comments %>%  count(comment_url, sort = T)
 
 bluebook_attachments %>%  count(comment_url, sort = T)
@@ -309,7 +309,7 @@ d %>%
   filter(!is.na(dictionary_terms)) %>% 
   kablebox()
 
-# write out missing comment urls
+# write out missing comment URLs
 d %>% 
   filter(is.na(dictionary_terms)) %>% dplyr::select(comment_url) %>% write_csv(file = "dictionary_terms_missing.csv")
 
@@ -333,12 +333,12 @@ technical_terms %>%
       dplyr::select(comment_url, dictionary_terms) %>% 
   arrange(-dictionary_terms) %>% kablebox()
 
-#FIXME DROP BAD TECHICAL TERM MEASURE 
+#FIXME DROP BAD TECHNICAL TERM MEASURE 
 technical_terms %<>% filter(!comment_url %in% c(
   "https://www.regulations.gov/comment/OCC-2013-0008-0028"
 ))
 
-#FIXME DROP BAD TECHICAL TERM MEASURE 
+#FIXME DROP BAD TECHNICAL TERM MEASURE 
 technical_terms %<>% filter(!comment_url %in% c(
   "https://www.regulations.gov/comment/OCC-2013-0008-0028"
 ))
@@ -560,8 +560,8 @@ b %>% dplyr::select(org_name, Total_Legal_Citations, org_resources, comment_url)
   drop_na(org_name, org_resources) %>%
   kablebox()
 
-# FDIC ASSTS 
-# FDIC ASSTS 
+# FDIC ASSETS 
+# FDIC ASSETS 
 p <- b %>% 
   filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
   ggplot() +
@@ -650,9 +650,10 @@ b %>% filter(Total_Legal_Citations>10,
 t <- d %>% drop_na(dictionary_terms)
 
 
-# FDIC ASSTS 
+# FDIC ASSETS 
 p <- t %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
+  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`),
+         `FDIC_Institutions-bestMatch:ASSET` > 10) %>% 
   ggplot() +
   aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
       y = dictionary_terms ) + 
@@ -670,13 +671,16 @@ p +
   scale_x_log10()
 
 t %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`), dictionary_terms == 0) %>%
+  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`),
+         `FDIC_Institutions-bestMatch:ASSET` > 10,
+         dictionary_terms == 0) %>%
   dplyr::select(org_name, everything() ) %>% 
   kablebox()
 
 # nonprofits
 p <- t %>% 
-  filter(!is.na(assets)) %>% 
+  filter(!is.na(assets),
+         assets > 10) %>% 
   ggplot() +
   aes(x = assets, 
       y = dictionary_terms) + 
@@ -689,9 +693,11 @@ p <- t %>%
 
 p 
 
-p + 
-  scale_y_log10() +
-  scale_x_log10()
+p
+
+# p + 
+#   scale_y_log10() +
+#   scale_x_log10()
 
 # contribution
 p <- t %>% 
@@ -740,7 +746,7 @@ p +
 e <- d %>% drop_na(efficacy)
 
 
-# FDIC ASSTS 
+# FDIC ASSETS 
 p <- e %>% 
   filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
   ggplot() +
@@ -1185,7 +1191,7 @@ mediator = "dictionary_terms")
 summary(med.cont)
 
 plot(med.cont, 
-     main = "Techical Terms as a Mediator Between\nAssets and Lobbying Success",     
+     main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",     
      xlab = "Words from Comment Added to Final Rule")
 ```
 
@@ -1256,7 +1262,7 @@ save(n_comments,
 
 - [ ] Predicted probability plots for all models presented in the paper. These should replace all tables. All tables should appear in the appendix. 
 
-- [ ] Nonprofit and credit union plots for the correlation between assets and sophsitication
+- [ ] Nonprofit and credit union plots for the correlation between assets and sophistication
 
 - [ ] `assets-tech-` figures should have x-axis scales in the millions or billions 
 
