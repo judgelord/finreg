@@ -1299,7 +1299,7 @@ compustat %>%
   filter(marketcap2 > 1000) %>% 
   densityplot(var = "marketcap2",
               by = 1000000, 
-              title = "Publically-traded Companies",
+              title = "Publicly-traded Companies",
        x = "Market Capitalization (Millions)",
        caption = str_c("Welch t-test of difference in means, p-vaue = ", compustat_t$p.value %>% round(3))
        )
@@ -1329,7 +1329,7 @@ compustat %>%
   geom_vline( aes(xintercept = mean_marketcap2/1000000)) + 
     geom_vline( aes(xintercept = median_marketcap2/1000000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = str_c("Publically-traded Companies, N = ", nrow(compustat)%>% prettyNum(big.mark = ",")),
+  labs(title = str_c("Publicly-traded Companies, N = ", nrow(compustat)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Market Cap (Millions)",
        caption = str_c("Welch t-test of difference in means, p-vaue = ", compustat_t$p.value %>% round(3))
        ) + 
@@ -1856,7 +1856,7 @@ For every additional billion in assets, a credit union comments on about `r roun
 ---
 
 
-## Among publically-traded companies that commented on a Dodd-Frank rule
+## Among publicly-traded companies that commented on a Dodd-Frank rule
 
 ```{r compustat-rules, fig.width=4, fig.height= 2, out.width= "50%"}
 # compustat-rules
@@ -1888,7 +1888,7 @@ asset_counts %>%
   aes(x = n, fill = onepercent) + 
   geom_bar() + 
   labs(y = "Number of Companies",
-       title = "Publicaly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       title = "Publicly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting",
        x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
   
@@ -1897,7 +1897,7 @@ asset_counts %>%
   aes(x = marketcap_b, fill = five) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(title = "Publicaly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+  labs(title = "Publicly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
        caption = str_c("Welch t-test, p-value = ", rules_compustat_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),
@@ -1910,7 +1910,7 @@ asset_counts %>%
   aes(x = marketcap_b, fill = onepercent) + 
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
-  labs(title = "Publicaly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+  labs(title = "Publicly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
        caption = str_c("Welch t-test, p-value = ", rules_compustat_t$p.value %>% round(3)))+
   theme(panel.grid.major.y = element_blank(),

@@ -54,7 +54,7 @@ source("code/setup.R")
 
 # overide defaults 
 knitr::opts_chunk$set(echo = FALSE,
-                      cache = FALSE) 
+                      cache = TRUE) 
 
 # asset data from https://judgelord.github.io/finreg/participation#Save_asset_data
 load(here::here("data", "commenter_assets.Rdata"))
@@ -117,7 +117,7 @@ Critical research also highlights the revolving-door dynamics often present with
 
 What the literature currently lacks, however, are measures of wealth inequality in organizational participation and influence during one of the most important venues for political lobbying: agency rulemaking. Rulemaking is a critical but understudied part of the American political process. While Congress routinely passes statutes, their implementation almost always requires federal agencies, staffed primarily by civil servants, to devise legally binding standards and procedures (i.e., rules) that make the legislation practically effective [@West1995; @Kerwin2018]. This kind of agency policymaking is pervasive; in 2018, federal agencies finalized over 3,300 rules.
 
-The Administrative Procedure Act of 1946 (APA) governs the rulemaking process. The APA requires federal agencies to solicit public comments on their draft policy proposals (called Notice of Proposed Rulemakings, NPRMs, or proposed rules) and to consider any comments before issuing the agency's legally binding rule (called Final Rules). Agency officials may or may not make changes to the proposed rule text based on the public comments—leaving open the possibility that the commenting process creates an avenue for unequal influence. Given the potential impact of agency-issued regulations, those individuals, firms, and other organizations most affected often attempt to influence regulatory policy content by submitting public comments. Federal agency restrictions on ex parte (or "off the public record") lobbying after the issuance of a proposed regulation allow researchers to use comments during notice and comment rulemaking to identify interest group mobilization [@Yackee2012].
+The Administrative Procedure Act of 1946 (APA) governs the rulemaking process. The APA requires federal agencies to solicit public comments on their draft policy proposals (called Notice of Proposed Rulemakings, NPRMs, or proposed rules) and to consider any substantive comments before issuing a legally-binding rule (a Final Rule). Agency officials may or may not make changes to the proposed rule text based on the public comments. The rulemaking process thous creates opportunities for influence. Given the potential impact of agency-issued regulations, the firms and other organizations most affected often attempt to influence regulatory policy content by submitting public comments. Federal agency restrictions on ex parte (or "off the public record") lobbying after the issuance of a proposed regulation allow researchers to use comments during notice and comment rulemaking to identify interest group demands [@Yackee2012]. Even where groups may exercise influence in parallel forms of lobbying, they often still have incentives to enter their arguments and demands into the official rulemaking record via public comments.
 
 Unequal levels of power and access to the government may be especially acute in financial regulation, where Congress tends to rely upon government agencies to develop key regulatory concepts and instruments and, in doing so, to carry out legislative intent. Administrative agencies made many of the most important deregulatory decisions of the past three decades. These include reductions in regulatory capital requirements and the deregulation of mortgage and other consumer loans [@Engel2011]. While ostensibly re-regulating the financial sector, Dodd-Frank handed considerable authority to federal financial agencies [@Carpenter2012; @Carpenter2013]. For instance, the law contains over 300 provisions authorizing new agency rulemaking, and each provision could result in multiple rules [@Copeland2010]. Each rule yields a fresh opportunity for the financial industry and others to lobby the government agency for policy change.
 
@@ -337,7 +337,7 @@ The resulting model coefficients allow us to estimate how changes in an organiza
 We use Poisson regression to model the discrete count of rules an organization comments on (H3), the number of words from a comment added to the final rule (H4), and the number of technical terms used in a comment (H5), as a function of organizational wealth. 
 Poisson modeling is useful when the outcome of interest is a count (e.g., a count of comments or additional banking terms in a comment).
 Because our outcomes in the three hypotheses above are counts, Poisson modeling is an appropriate method to test them.
-Model coefficients allow us to predict how changes in wealth produce changes in the number of rules commented on, technical terms used, and words from each comment that get adopted in the final rule.
+Model coefficients allow us to predict how changes in wealth produce changes in the number of rules commented on, technical terms used, and words from each comment adopted in the final rule.
 
 <!-- TODO: DEVIN 
 Causal mediation analysis is used to ...--> 
@@ -359,7 +359,7 @@ First, we compare levels of resources among commenting organizations and similar
 Our *Differential Participation Hypothesis (H1)* posits that organizations that comment on financial rules will be wealthier than organizations that do not comment. To assess this, we compare organizations that did and did not comment on Dodd-Frank rules. Because our data included data on a full population of similar organizations that could reasonably be expected to submit comments (e.g., all banks and all non-profits), only some of which did submit comments, we can draw important new conclusions about the relationship between wealth inequality participation in the policy process.
 
 Overall, we find strong support for the *Differential Participation Hypothesis*:  organizations that comment are much wealthier on average than similar organizations that did not comment. 
-We can see these results clearly in descriptives. Figure \ref{fig:commenters-noncommenters} shows distributions of logged organizational wealth by whether the organization commented on any Dodd-Frank rule. Organizations that comment are higher on the wealth distribution than similar organizations that did not comment. Differences within non-profits, banks, and public-traded firms are significant at the .01 level in a Welch Two Sample t-test. While differences in credit unions are large, the smaller sample lacks the power to achieve statistical significance. 
+Figure \ref{fig:commenters-noncommenters} shows distributions of logged organizational wealth by whether the organization commented on any Dodd-Frank rule. Organizations that comment are higher on the wealth distribution than similar organizations that did not comment. Because the x-axes of the plots Figure \ref{fig:commenters-noncommenters} are logged, differences that appear small in the plotted distributions represent large substantive differences in wealth. Differences within non-profits and public-traded firms are significant at the .01 level in a Welch Two Sample t-test. While differences in credit unions are large, the smaller sample lacks the power to achieve statistical significance. 
 
 <!---adding this because Susan added it, but it is out of place here. Maybe summarize it all first and then dive in--> 
 Logistic regression results confirm these differences in means, including statistically significant differences among credit unions.
@@ -458,7 +458,7 @@ Table \ref{tab:mp-all-table} shows the results of logit models predicting the lo
 # models of the number of rules commented on by assets
 load(here::here("models", "mpAll.Rdata"))
 
-modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference catagory = Banks")  %>% kableExtra::kable_styling()
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference category = Banks")  %>% kableExtra::kable_styling()
     #FIXME sometimes scale_down causes an error 
   
 ```
@@ -753,7 +753,7 @@ Table \ref{tab:mpFDIC-table} presents the full the regression table for models s
 # models of the number of rules commented on by assets
 load(here::here("models", "mpFDIC.Rdata"))
 
-modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Reference catagory = savings associations")  %>% kableExtra::kable_styling()
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Reference category = savings associations")  %>% kableExtra::kable_styling()
     #FIXME sometimes scale_down causes an error 
 ```
 
