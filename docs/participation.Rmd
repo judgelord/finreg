@@ -17,7 +17,7 @@ source(here::here("code", "setup.R"))
 ## Change defaults for R chunks
 knitr::opts_chunk$set(cache = FALSE,
                       fig.path = "../figs/",
-                      #fig.retina = 3, #6, #FIXME for publication quality images 
+                      #fig.retina = 3, #6, #FIXME for publication-quality images 
                       fig.height = 3,
                       fig.width = 7)
 ```
@@ -45,7 +45,7 @@ Rules and comments:
 Resource data: 
 - For commenters: `finreg/data/match_data_clean.Rdata`
 
-Resource data for full population of organizations, including non-commmenters: 
+Resource data for the full population of organizations, including non-commenters: 
 
 - Nonprofit `assets` and `revenue` from 990 data from https://www.irs.gov/charities-non-profits/form-990-series-downloads: `finreg/data/nonprofit_resources.Rdata` or `finreg/data/merged_resources/nonprofit_resources.csv`
 - FDIC assets (`ASSET`) and bank class (`BKCLASS`): `finreg/data/FDIC_resources.Rdata` or `finreg/data/merged_resources/FDIC_Institutions.csv`
@@ -111,7 +111,7 @@ long %>%
        caption = "Dodd-Frank regulatory actions from  the Consumer Financial Protection Bureau (CFPB),
 Commodity Futures Trading Commission (CFTC), Federal Deposit Insurance Corporation (FIDC), 
 Federal Reserve (FRS), National Credit Union Administration (NCUA), 
-Office of the Comptroler of the Currency (OCC), and Securities and Exchange Commission (SEC)") + 
+Office of the Comptroller of the Currency (OCC), and Securities and Exchange Commission (SEC)") + 
   theme_minimal() +
   theme(axis.text.x = element_text(hjust = .7, angle = 60),
         panel.grid.major.x = element_blank(),
@@ -119,7 +119,7 @@ Office of the Comptroler of the Currency (OCC), and Securities and Exchange Comm
         plot.caption = element_text(hjust = 0))
 ```
 
-Some dockets don't have related rins in lookup table 
+Some dockets don't have related rins in the lookup table 
 ```{r rins-missing}
 # ~35/2 with different comment counts per docket 
 # ~325/2 with different titles per docket 
@@ -200,7 +200,7 @@ docket_table %>%
         strip.text = element_text(size = 12)) 
 ```
 
-### Dockets with most commments matched
+### Dockets with most comments matched
 
 ```{r}
 docket_table %<>% 
@@ -216,7 +216,7 @@ docket_table %>%
   scroll_box(height = "400px")
 ```
 
-### Dockets with fewest commments matched
+### Dockets with the fewest commments matched
 ```{r}
 docket_table %<>% 
   arrange(`Any Resources Measure`) 
@@ -286,7 +286,7 @@ d %>% group_by(Agency, Org_type) %>%
   ggplot() +
   aes(x = Agency, y = n, fill = Org_type) + 
   geom_col() + 
-  labs(fill = "Type of Organanization",
+  labs(fill = "Type of Organization",
        y = "Number of Comments")
 
 
@@ -302,7 +302,7 @@ d %>% group_by(Agency, Org_type) %>%
 #   aes(x = Agency, y = n, fill = org_type) + 
 #   geom_col() + 
 #   #facet_wrap("org_comment", scales = "free") +
-#   labs(fill = "Type of Organanization",
+#   labs(fill = "Type of Organization",
 #        y = "Number of Comments")
 
 # unique orgs 
@@ -316,7 +316,7 @@ d %>% distinct(Agency, Org_type, org_name) %>%
   ggplot() +
   aes(x = Agency, y = n, fill = Org_type) + 
   geom_col() + 
-  labs(fill = "Type of Organanization",
+  labs(fill = "Type of Organization",
        y = "Number of Organizations")
 
 
@@ -847,7 +847,7 @@ states %>%
 ```{r nonprofit-comment-counts, fig.height=1.5, fig.width=4, out.width="50%"}
 load(here("data", "nonprofit_resources.Rdata"))
 
-# make unique ( there are nearly 5k different rotary internationals, and sevarl APIs )
+# make unique ( there are nearly 5k different rotary internationals and several APIs )
 # select org entry with highest assets 
 nonprofit_resources %<>% group_by(org_name) %>% 
   top_n(1, assets) %>% 
@@ -908,7 +908,7 @@ nonprofit_resources %>%
   densityplot(var = "assets",
               by = 1000,
               title = "Non-profits",
-               x = "Assets (Thoudsands)",
+               x = "Assets (Thousands)",
               caption = str_c("Welch t-test of difference in means, p-vaue = ", nonprofit_t$p.value %>% round(5))) 
 
 
@@ -917,7 +917,7 @@ nonprofit_resources %>%
   densityplot(var = "revenue",
               by = 1000,
               title = "Non-profits",
-               x = "Revenue (Thoudsands)",
+               x = "Revenue (Thousands)",
               caption = str_c("Welch t-test of difference in means, p-vaue = ", nonprofit_revenue_t$p.value %>% round(5))) 
 
 # old density plots 
@@ -928,7 +928,7 @@ nonprofit_resources %>%
   geom_density(alpha = .5, color = NA) + 
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
-       fill = "", y = "", x = "Assets (Thoudsands)",
+       fill = "", y = "", x = "Assets (Thousands)",
        caption = str_c("Welch t-test of difference in means, p-vaue = ", nonprofit_t$p.value %>% round(5)))  + 
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1257,7 +1257,7 @@ opensecrets %>%
 ```{r compustat-density, fig.height=3, fig.width=4, out.width="50%"}
 compustat <- read_csv(here("data/merged_resources/compustat_resources.csv"))
 
-#TODO CIK NOW HAS MATCHES, SHOULD BE COMBINED HERE 
+#TODO CIK NOW HAS MATCHES, THEY SHOULD BE COMBINED HERE 
 
 compustat %<>% 
   mutate(org_name = conm %>% str_to_lower(),
@@ -1520,7 +1520,7 @@ dtable %>% write_csv(here::here("data", "matches_per_rin.csv"))
 
 ## Save asset data
 ```{r save}
-#FIXME ideally all edits to these data would be in clean_match_data
+#FIXME ideally, all edits to these data would be in clean_match_data
 commenter_assets <- d
 
 n_orgs <- d$org_name %>% unique() %>% length()
@@ -1547,7 +1547,7 @@ save(commenter_assets,
 
 # Frequency of participation among organizations that commented
 
-Among commenting organizatyions, how many rules did each comment on?
+Among commenting organizations, how many rules did each comment on?
 
 ```{r asset-counts, fig.width=4, fig.height= 2, out.width= "50%"}
 asset_counts <- d %>% 
@@ -2049,7 +2049,7 @@ save(models, rows, cm, gof_map, modelsummary,
 ```{r}
 # comments 
 # of the matched sample 
-# 90% of credit union comments, half of nonprofits, and 75% campaig
+# 90% of credit union comments, half of the nonprofits, and 75% campaig
 d %>% 
   mutate(docket_id = str_split(docket_id, ";")) %>% 
   unnest(docket_id) %>% 
@@ -2063,13 +2063,13 @@ d %>%
 ### Percent of each organization type on any one rule
 
 ```{r}
-# orgs (15% of nonprifits on payday loan rule, 30% of opensecrets)
+# orgs (15% of nonprofits on payday loan rule, 30% of opensecrets)
 d %>% 
  mutate(docket_id = str_split(docket_id, ";")) %>% 
   unnest(docket_id) %>% 
   # org rather than comment level counts now
   distinct(org_name, docket_id, org_type) %>% 
-  # total orgs of each type  in dataset 
+  # total orgs of each type  in the dataset 
   add_count(org_type, name = "dataset_total") %>% 
   # number of each org type by docket 
   count(org_type, docket_id, `dataset_total`, sort = T) %>%
@@ -2384,7 +2384,7 @@ save(models, rows, cm, gof_map, modelsummary,
 
 # TODO 
 
-Priorities for matching that will give us the most leverage
+Priorities for matching that will give us the most leverage:
 
 - [ ] Best match in *each* dataset rather than best match in *one* dataset: https://finreggroup.slack.com/archives/C027MRLQFLJ/p1650733175102459
 
@@ -2398,15 +2398,15 @@ Priorities for matching that will give us the most leverage
 
 Analyses to clean up and add to the paper 
 
-- [ ] Lobbying expendatures from CRP (replication all PAC figures and models)
+- [ ] Lobbying expenditures from CRP (replication of all PAC figures and models)
 
 - [ ] Nonprofit revenue (maybe just add the revenue figures and models to the appendix)
 
-- [ ] the full (best-ish) model includes nonprofits, credit unions, and each type of bank as seperate org_types. This model is run above but needs to be investited 
+- [ ] the full (best-ish) model includes nonprofits, credit unions, and each type of bank as separate org_types. This model is run above but needs to be investigated 
 
 Presentation 
 
 - [ ] Predicted probability plots for all models presented in the paper. These should replace all tables. All tables should appear in the appendix. 
 
-- [ ] Nonprofit and credit union plots for the correlation between assets and sophsitication
+- [ ] Nonprofit and credit union plots for the correlation between assets and sophistication
 
