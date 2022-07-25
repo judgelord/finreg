@@ -54,7 +54,7 @@ knitr::opts_chunk$set(echo = TRUE, # echo = TRUE means that code will show
                       fig.path = "figs/",
                       fig.align='center',
                       fig.cap = '   ',
-                      fig.retina = 4,
+                      fig.retina = 3,
                       fig.height = 3,
                       fig.width = 7,
                       out.width = "100%",
