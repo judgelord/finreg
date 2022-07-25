@@ -54,7 +54,7 @@ knitr::opts_chunk$set(echo = TRUE, # echo = TRUE means that code will show
                       fig.path = "figs/",
                       fig.align='center',
                       fig.cap = '   ',
-                      fig.retina = 1,
+                      fig.retina = 4,
                       fig.height = 3,
                       fig.width = 7,
                       out.width = "100%",
@@ -308,4 +308,41 @@ options(scipen=999)
 
 
 
+densityplot <- function(data,
+                        var = "ASSET",
+                        title = "FDIC-Insured Banks",
+                        by = 1000000,
+                        x = "Assets (Millions)",
+                        caption = "",
+                        fill = "", y = ""){
+  data$var <- data %>% pull(var)
+  data$by <- by
 
+  data %>%
+    group_by(Commented) %>%
+    mutate(mean = mean(var, na.rm =TRUE),
+           median = median(var, na.rm =TRUE)) %>%
+    group_by(Commented) %>%
+    mutate(Commented = Commented %>% paste0(
+      "\nmedian = $", round(median, 0) %>% prettyNum(big.mark = ",") ,
+      "\nmean = $", round(mean, 0) %>% prettyNum(big.mark = ",")#, "\n"
+      )) %>%
+    ggplot() +
+    aes(x = var/by,
+        fill = Commented, color = Commented) +
+    #geom_vline( aes(xintercept = mean_ASSET/by, color = Commented)) +
+    #geom_vline( aes(xintercept = median_ASSET/by, color = Commented), linetype = 2) +
+    geom_density(alpha = .5, color = NA) +
+    scale_x_log10() +
+    labs(title = title,
+         subtitle = str_c("N = ", nrow(data) %>% pretty_num()),
+         fill = "", y = "", x = x,
+         caption = caption)+
+    scale_fill_discrete(guide = guide_legend(reverse = TRUE) ) +
+    scale_color_discrete(alpha = .5, guide = "none") +
+    theme(panel.grid.major.y = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          legend.position = "bottom",
+          plot.caption = element_text(hjust = 0),
+          axis.text.y = element_blank())
+}

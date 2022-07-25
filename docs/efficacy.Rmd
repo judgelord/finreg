@@ -20,9 +20,9 @@ source(here::here("code", "setup.R"))
 knitr::opts_chunk$set(#echo = FALSE, # echo = TRUE means that code will show
                       cache = FALSE,
                       fig.path = "../figs/", # figs folder at root (up one from /docs),
-                      fig.retina = 1, #6, #FIXME for publication quality images
-                      fig.height=2.5, 
-                      fig.width=3, 
+                      #fig.retina = 3, #6, #FIXME for publication quality images
+                      fig.height=2.3, 
+                      fig.width=3.2, 
                       out.width="50%")
 
 ```
@@ -426,7 +426,7 @@ efficacyXsophistication %>%
   scale_y_log10() + 
   labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        y = "Number of Comments",
-       x = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
+       x = "Lobbying Success\nn(Words From Comment\nAdded to Final Rule)",
        fill = "") 
 
 efficacyXsophistication %>% 
@@ -437,7 +437,7 @@ efficacyXsophistication %>%
   scale_x_log10() + 
   labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        y = "Number of Comments",
-       x = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
+       x = "Lobbying Success\nn(Words From Comment\nAdded to Final Rule)",
        fill = "") 
 ```
 
@@ -456,31 +456,31 @@ eXsplot <- efficacyXsophistication %>% # filter(efficacy > 0) %>% #FIXME
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm") +
   labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
-       y = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
+       y = "Lobbying Success\nn(Words From Comment\nAdded to Final Rule)",
        x = "Technical Terms in Comment",
        color = "") +
   theme(legend.position = "bottom")
 
 eXsplot + 
-  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = -0.05, size = 3.5)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
-  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
 
 # color 
 eXsplot + 
   annotate(y = 10131, x = 7705, color = "red", geom = "text", 
            label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", 
-           vjust = .5, hjust = -0.05, size = 3.5) + 
+           vjust = .8, hjust = -0.05, size = 3.5) + 
   aes(color = org) + labs(color = "")
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
   aes(color = org)+ labs(color = "") + 
-  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
 
 # legal citations
 eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME 
@@ -490,14 +490,14 @@ eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME
   geom_smooth(method = "lm") +
   labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        color = "",
-       y = "Efficacy\n(Words From Comment\nAdded to Final Rule)",
+       y = "Lobbying Success\nn(Words From Comment\nAdded to Final Rule)",
        x = "Legal Citations in Comment") + 
   geom_point(aes(x = 31, y = 10131), color = "red", shape = 0, size = 3)+
   theme(legend.position = "bottom")
 
 
 eXsplot  + 
-  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = -0.05, size = 3.5)
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
 
 eXsplot + 
   scale_x_log10() +
@@ -506,13 +506,13 @@ eXsplot +
 
 # color 
 eXsplot  + 
-  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = -0.05, size = 3.5)  + aes(color = org) + labs(color = "")
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)  + aes(color = org) + labs(color = "")
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
   aes(color = org) + labs(color = "") + 
-  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
 ```
 
 ---
@@ -601,12 +601,12 @@ p +
 # contribution
 p <- b %>% 
   ggplot() +
-  aes(x = MeanContribAmount, 
+  aes(x = MeanContribAmount/1000, 
       y = Total_Legal_Citations) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Average PAC Contribution",
+  labs(x = "Mean PAC Contribution ($1,000)",
        y = "Legal Citations",
        title = "Campaign Donors")
 
@@ -697,12 +697,12 @@ p +
 p <- t %>% 
   filter(!is.na(MeanContribAmount)) %>%
   ggplot() +
-  aes(x = MeanContribAmount, 
+  aes(x = MeanContribAmount/1000, 
       y = dictionary_terms) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
-  labs(x = "Average PAC Contribution",
+  labs(x = "Mean PAC Contribution ($1,000)",
        y = "Technical Terms",
        title = "Campaign Donors")
 
@@ -744,13 +744,13 @@ e <- d %>% drop_na(efficacy)
 p <- e %>% 
   filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
   ggplot() +
-  aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
+  aes(x = `FDIC_Institutions-bestMatch:ASSET`/1000, # %>% log(), 
       y = efficacy ) + 
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Assets",
-       y = "Number of Words in Comment\nAdded to Final Rule", 
+  labs(x = "Assets ($1,000)",
+       y = "Words in Comment\nAdded to Final Rule", 
        title = "FDIC-Insured Banks")
 
 p
@@ -769,13 +769,13 @@ e %>%
 p <- e %>% 
   filter(!is.na(assets)) %>% 
   ggplot() +
-  aes(x = assets, 
+  aes(x = assets/1000, 
       y = efficacy) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Assets",
-       y = "Number of Words in Comment\nAdded to Final Rule", 
+  labs(x = "Assets ($1,000)",
+       y = "Words in Comment\nAdded to Final Rule", 
        title = "Nonprofits")
 
 p
@@ -789,12 +789,12 @@ p +
 p <- e %>% 
   filter(!is.na(MeanContribAmount)) %>%
   ggplot() +
-  aes(x = MeanContribAmount, 
+  aes(x = MeanContribAmount/1000, 
       y = efficacy) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Average PAC Contribution",
+  labs(x = "Mean PAC Contribution ($1,000)",
        y = "Words in Comment\nAdded to Final Rule",
        title = "Campaign Donors")
 
@@ -808,13 +808,13 @@ p +
 p <- e %>% 
   filter(!is.na(marketcap2)) %>% 
   ggplot() +
-  aes(x = marketcap2, 
+  aes(x = marketcap2/1000000, 
       y = efficacy) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
-  labs(x = "Market Capitalization",
-       y = "Number of Words in Comment\nAdded to Final Rule",
+  labs(x = "Market Capitalization ($1,000,000)",
+       y = "Words in Comment\nAdded to Final Rule",
        title = "Publicly-traded Companies")
 
 p
@@ -835,7 +835,7 @@ p <- e %>%
   geom_smooth(method = "lm"
   ) + 
   labs(x = "Legal Citations",
-       y = "Number of Words in Comment\nAdded to Final Rule") 
+       y = "Words in Comment\nAdded to Final Rule") 
 
 p
 
@@ -854,7 +854,7 @@ p <- e %>%
   geom_smooth(method = "lm"
   ) + 
   labs(x = "Technical Terms",
-       y = "Number of Words in Comment\nAdded to Final Rule") 
+       y = "Words in Comment\nAdded to Final Rule") 
 
 p
 
