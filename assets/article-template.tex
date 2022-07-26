@@ -265,6 +265,7 @@ $endif$
 \usepackage{floatrow}
 \floatsetup[figure]{capposition=top}
 \floatsetup[table]{capposition=top}
+\floatplacement{figure}{!H}
 \usepackage{setspace}
 
 % inherit spacing names from memoir
@@ -344,9 +345,9 @@ $if(frontpage)$
   \pagenumbering{gobble}
 $endif$
 
-\begin{center}
-\Large PRELIMINARY DRAFT - DO NOT CITE
-\end{center}
+% \begin{center}
+% \Large PRELIMINARY DRAFT - DO NOT CITE
+% \end{center}
 
 $if(abstract)$
 

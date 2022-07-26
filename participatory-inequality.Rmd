@@ -27,7 +27,6 @@ author:
   - name: Susan Webb Yackee
     department: La Follette School of Public Affairs
     affiliation: University of Wisconsin, Madison
-warning: "Preliminary - Do Not Cite Without Permission."
 abstract: |
   Research on inequality in American democracy has focused on legislative processes, largely overlooking administrative policymaking, where most U.S. law is now made under pressure from vast amounts of money, lobbying, and political mobilization. Leveraging a broad suite of measurements for organizational wealth, participation, and lobbying success during rulemaking, we provide the first large-scale assessment of wealth inequality in agency rulemaking. Drawing upon an original database of almost 30,000 organizational comments on agency rules implementing the Dodd-Frank Act, we document several patterns: (a) wealthier organizations are more likely to participate in the rulemaking process, (b) wealthier organizations generally advance more sophisticated comments, and (c) wealthier organizations enjoy more success in shifting the content of federal agency rules. Our findings show how organizational wealth translates into political power in a country increasingly governed by agency regulations. 
 keywords: "Inequality, Bureaucratic Policymaking, Interest groups, Lobbying, Rulemaking, Financial Regulation"
