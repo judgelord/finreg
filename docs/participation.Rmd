@@ -273,8 +273,8 @@ d %<>% mutate(#org_comment = ifelse(is_likely_org == 1, "Likely Org", "Likely No
 d %<>% mutate(org_type = best_match_type)
 
 d %<>% mutate(Org_type = org_type %>% 
-                str_replace("CIK", "Filed with SEC (CIK Data)") %>% 
-                str_replace("Compustat", "Wharton Compustat Company Database") %>% 
+                str_replace("CIK", "Publicly-traded company\n(SEC + Compustat Data)") %>% 
+                str_replace("^Compustat", "Publicly-traded company\n(SEC + Compustat Data)") %>% 
                 str_replace("FDIC", "FDIC-Insured Bank") %>% 
                 str_replace("Nonprofit", "Nonprofit (IRS Data)") %>% 
                 str_replace("FFIEC", "FFIEC Bank/Bank-like Entity") %>% 
@@ -2262,7 +2262,8 @@ names(models) <- c("FDIC-Insured Banks", "Nonprofits", "Credit Unions")
 modelplot(models) + 
   theme(panel.grid.major.x =  element_blank()) + 
   labs(x = "Change in Log Odds of Commenting per Billion in Assets") +
-  facet_wrap("model", scales = "free", ncol = 1)
+  facet_wrap("model", scales = "free", ncol = 1) +
+  scale_color_viridis_d(option = "plasma", end = .7)
 
 
 rows <- tibble(
