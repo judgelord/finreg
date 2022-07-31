@@ -175,14 +175,13 @@ While past research has focused on differences in lobbying participation across 
 
 
 
-An additional driver of differential participation may be the concentration of the costs and benefits of lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. For-profit organizations---such as publicly-traded companies and banks---tend to have concentrated and narrow stakes in regulations. Wealthy profit-seekers then have especially strong incentives to lobby in rulemaking [@Libgober2020; @LibgoberQJPS2020]. By construction, non-profit organizations have less profit-seeking incentives. Non-profits are often formed to advance broader concepts of the public interest rather than narrow private interests. Thus, we anticipate differences between for-profit and non-profit organizations.^[Our paper categorizes for-profit organizations as "profit-seeking" and non-profit organizations as absent of profit-seeking behavior. However, non-profit industry associations can focus their efforts on private interests, demonstrating profit-seeking behavior. Because our data do not include a measure of private-public interests among the organizations featured, we opt for this binary "profit-seeking" categorization between for-profit and non-profit organizations based on incorporation status.]
- <!-- (Angelo 7/14/2022: Is this footnote too wordy?) -->
+An additional driver of differential participation may be the concentration of the costs and benefits of lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. For-profit organizations---such as publicly-traded companies and banks---tend to have concentrated stakes in regulations. Wealthy profit-seekers then have especially strong incentives to lobby in rulemaking [@Libgober2020; @LibgoberQJPS2020]. By construction, non-profit organizations have less profit-seeking incentives. <!--Non-profits are often formed to advance broader concepts of the public interest rather than narrow private interests.-->  Thus, we anticipate differences between for-profit and non-profit organizations.^[Of course, some non-profits, including industry associations, are formed to advance narrow private interests. Because our data on nonprofits do not include a measure of the extent to which organizations advance public or private interests, we use this binary "profit-seeking" categorization based on incorporation status.]
  <!-- (Chris 2022-07-23: I really struggled with reading the paragraph )
 -->
 
 > *Profit-motivated Participation Hypothesis (H2):* Profit-seeking organizations will be more likely to comment.
 
-Moreover, we theorize that wealth inequalities in lobbying participation will persist even among those organizations that can pay the initial costs of rulemaking participation. Stated differently, when focused on those entities that have submitted at least one comment to a Dodd-Frank regulation, we argue that more wealthy organizations will, again, hold an advantage over less wealthy organizations by participating across a larger number of rules. For instance, among the non-profit organizations that submit comments on financial regulations, we hypothesize that the wealthier non-profits will comment on more regulations than those less wealthy. 
+Moreover, we theorize that wealth inequalities in lobbying participation will persist even among those organizations that can pay the initial costs of rulemaking participation. Stated differently, when focused on those entities that have submitted at least one comment to a Dodd-Frank regulation, we argue that more wealthy organizations will, again, hold an advantage over less wealthy organizations by participating across a larger number of rules. <!--For instance, among the non-profit organizations that submit comments on financial regulations, we hypothesize that the wealthier non-profits will comment on more regulations than those less wealthy. --> 
 
 > *Differential Frequency of Participation Hypothesis (H3):* Among organizations commenting on financial rulemaking, organizations with greater wealth will comment on a larger number of financial rules.
 
@@ -195,25 +194,26 @@ Moreover, we theorize that wealth inequalities in lobbying participation will pe
 
 ### Differential Lobbying Success
 
-Existing research hints at a differential lobbying benefit attached to wealth during rulemaking. For instance, @Haeder2015 find more policy movement on federal regulations during rulemaking when business interests are more active than other types of organizations, such as public interest groups. Yet, such research does not provide a clean test of wealth inequality. After all, some businesses are large while some are small; some non-profits hold major financial assets while others are poor. We thus seek to understand whether wealth is a common factor driving organizational influence during rulemaking. As a result, we theorize that, among similar organizations, wealthier ones will see greater lobbying success during financial rulemaking. For example, we expect the comments of more wealthy large banks will impact the content of final financial rules more than those of less wealthy large banks.
+Existing research hints at a differential lobbying benefit attached to wealth during rulemaking. For instance, @Haeder2015 find more policy movement on federal regulations during rulemaking when business interests are more active than other types of organizations, such as public interest groups. Yet, such research does not provide a clean test of wealth inequality. After all, some businesses are large while some are small; some non-profits hold major financial assets while others are poor. We thus seek to understand whether wealth is a common factor driving organizational influence during rulemaking. As a result, we theorize that, among similar organizations, wealthier ones will see greater lobbying success during financial rulemaking. <!--For example, we expect the comments of more wealthy large banks will impact the content of final financial rules more than those of less wealthy large banks.-->
 
 > *Differential Lobbying Success Hypothesis (H4):* Comments from wealthier organizations will be more successful in shifting the content of agency rules.
 
-Research suggests wealthier organizations are more influential because they can better deploy sophisticated technical information than less well-off entities [@WagnerALR2011]. Put differently; large organizations are disproportionately able to marshal the technical expertise necessary to write sophisticated comments for rules. Building on @Yackee2015JPART, we theorize that more sophisticated comments will be associated with greater lobbying success during rulemaking. Agency officials pay greater attention to abstract and technical arguments, such as those often in comments from business organizations, while often minimizing common moral and personal arguments to less sophisticated comments from individuals [@JewellJPART2006]. For example, in the pre-proposal stage of the Volcker rule, non-industry comments often lacked the specificity and the detail that agencies needed to change policy [@Krawiec2013]. Consequently, we hypothesize that wealthier entities will utilize their resources to produce comments that hold greater sophistication than less prosperous groups, and these comments will be more impactful.
+Research suggests wealthier organizations are more influential because they can better deploy sophisticated technical information than less well-off entities [@WagnerALR2011]. Put differently; large organizations are disproportionately able to marshal the technical expertise necessary to write sophisticated comments for rules. Moreover, agency officials pay greater attention to abstract and technical arguments, such as those in comments from business organizations, while often minimizing the moral and personal arguments frequently found in less sophisticated comments from individuals [@JewellJPART2006]. Additionally, non-industry comments often lacked the specificity and the detail that agencies needed to change policy [@Krawiec2013]. Consequently, we hypothesize that wealthier entities will utilize their resources to produce comments that hold greater sophistication than less prosperous groups, and these comments will be more impactful.
 <!-- (Angelo 7/14/2022: moved mentions of legal expertise to the appendix.) -->
 
 > *Differential Sophistication Hypothesis (H5):* Wealthier organizations will use more technical and sophisticated language when commenting on proposed rules.
 
 > *Dividends of Sophistication Hypothesis (H6):* Comments from wealthier organizations will be more successful in affecting the content of agency rules because of comment sophistication.  
 
-
-Together, these hypotheses test for two major kinds of potential bias in policymaking: that the wealthy are better able to participate and that even when less wealthy groups participate, the wealthy are likely to have their demands met. Additionally, they test a major theorized mechanism of lobbying influence: the ability of the wealthy to mobilize lawyers and experts to make sophisticated and thus influential arguments on their behalf.
+<!--Susan suggested cutting this paragraph, but I think we need an end to this section, perhaps revise--> 
+Together, these hypotheses test for two major kinds of potential bias in policymaking: (1) that the wealthy are better able to participate and (2) that even when less wealthy groups participate, the wealthy are likely to have their demands met. Additionally, they test a major theorized mechanism of lobbying influence: the ability of the wealthy to mobilize lawyers and experts to make sophisticated and thus influential arguments on their behalf.
 
 # Data and Methods {#data}
         
 <!-- (Angelo: Should we explicitly say "this data provides us with this variable...") -->
 <!-- (Chris 2022-07-23: I agree with Angelo. For the next version, maybe this is a generic table.) -->
-To assess the extent of inequality in financial rulemaking, we assembled data on draft and final rules, comments on those rules, and organizational wealth and lobbying expenditures. Data sources included the Federal Register, Regulations.gov, Wharton Research Data Services, the Center for Responsive Politics, Federal Financial Institutions Examinations Council (FFIEC), the Internal Revenue Service (IRS), the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), the Federal Deposit Insurance Corporation (FDIC), Federal Reserve (FRS), National Credit Union Administration (NCUA), Office of the Comptroller of the Currency (OCC), the Securities and Exchange Commission (SEC). This expansive data collection effort includes data on agency administrative data, public comment and rule texts, and measures of organizational wealth.
+
+To assess the extent of inequality in financial rulemaking, we assembled data on draft and final rules, comments on those rules, and organization wealth and lobbying expenditures. Data sources included the Federal Register, Regulations.gov, Wharton Research Data Services, the Center for Responsive Politics, Federal Financial Institutions Examinations Council (FFIEC), the Internal Revenue Service (IRS), the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), the Federal Deposit Insurance Corporation (FDIC), Federal Reserve (FRS), National Credit Union Administration (NCUA), Office of the Comptroller of the Currency (OCC), the Securities and Exchange Commission (SEC). This expansive data collection effort includes data on agency administrative data, public comment and rule texts, and measures of organization wealth.
 
 
 
@@ -221,47 +221,50 @@ To assess the extent of inequality in financial rulemaking, we assembled data on
 
 From the Federal Register, we collected the text of all rules promulgated under authorities granted in Dodd-Frank
 between its enactment on July 20, 2010, and July 8, 2018
-by the seven primary financial regulators tasked with writing rules under the Dodd-Frank Act: FRS, CFPB, SEC, CFTC, FDIC, NCUA, and OCC. We also collected all public comments and comment metadata available on these rules from each agency's website or regulations.gov. In doing so, we collected key information, including the name of the organization submitting the comments and the comment submission date. We also collected the text of all comments from comment submission forms and file attachments. These data include `r n_comments` comments on `r n_rules` separate rulemaking dockets, covering `r n_actions` regulatory actions issued by one or more of these seven agencies.^[
-The law firm Davis Polk LLP maintains a list of Dodd-Frank-related rules. Each rule in our sample may be considered a set of connected regulatory actions, which must include a proposed and final rule connected by a Regulation Identifier Number (RIN). We count a joint rule issued by the SEC and FRS as two rules because both agencies collected comments separately.
+by the seven primary financial regulators tasked with writing rules under the Dodd-Frank Act: FRS, CFPB, SEC, CFTC, FDIC, NCUA, and OCC. We also collected all public comments and comment metadata available on these rules from each agency's website or Regulations.gov. In doing so, we collected key information, including the name of the organization submitting the comments and the comment submission date. We also collected the text of all comments from comment submission forms and file attachments. These data include `r n_comments` comments on `r n_rules` separate rulemaking dockets, covering `r n_actions` regulatory actions issued by one or more of these seven agencies.^[
+**NOTE:** This draft utilizes data from five of these seven agencies for which data processing is complete. Data from the OCC and FRS will be included shortly.
+The law firm Davis Polk LLP maintains a list of Dodd-Frank-related rules. Each rule in our sample may be considered a set of connected regulatory actions, which must include a proposed and final rule connected by a Regulation Identifier Number (RIN). We count jointly-issued rules, such as a rule issued by the SEC and FRS as two rules because both agencies collected comments separately.]
 
-**NOTE:** This draft utilizes data from five of these seven agencies for which data processing is complete. Data from the OCC and FRS will be included shortly.]
-
-Figure \ref{fig:actions} shows significant variation in regulatory activity across these agencies. The largest agency in our sample by regulatory volume is the CFPB, while the smallest is NCUA. The figure also shows considerable variation in the range of regulatory actions, including advanced notices of proposed rulemaking (ANPRMs), proposed, interim, final, and final rules. 
+Figure \ref{fig:actions} shows significant variation in regulatory activity across these agencies. The largest agency in our sample by regulatory volume is the CFPB, while the smallest is NCUA. The figure also shows considerable variation in the range of regulatory actions, including advanced notices of proposed rulemaking (ANPRMs), proposed rules, interim final rules, and final rules. 
 
 <!-- (Chris 2022-07-23: I agree with Angelo. For the next version, maybe this is a generic table.) 
 
-Devin: I think the figures often need to be self-contained-->
+DJL: figures often need to be self-contained for journals-->
 
 ```{r actions, out.width="100%", fig.cap= "Dodd-Frank Act Implimenting Actions by Agency", cache=FALSE}
 knitr::include_graphics("figs/actions-1.png")
 ```
 
 
-## Organization Comments on Proposed Rules
+## The Wealth of Organizations
 
 
-We identify `r n_assets` comments submitted by organizations that appear in one or more of the datasets described below. Combined, these datasets contain nearly 500,000 publicly traded companies or nonprofits. Our main analyses focus on comments from organizations that we could link to measures of organizational wealth or lobbying activity. Past research suggests that organizations and individuals tend to submit different types of comments to rules [@JewellJPART2006]. We go one step further and compare commenting behavior among similar types of organizations. For example, we compare the commenting behavior of large banks to other large banks. Thus, we control many known sources of variance in commenting behavior, yielding cleaner tests of our hypotheses.
 
-The first step in creating these data was collecting and digitizing the texts of all public comments on Dodd-Frank rules. We then extracted entity names and attempted to match them to organizations in databases of organizational wealth. The final dataset is the subset of all comments that match an organization with some form of wealth data.
+
+ 
+
+
+
+Our wealth inequality hypotheses focus on the lobbying behavior of organizations during rulemaking. 
+As a result, to test these hypotheses, we had to develop a suite of new measurement and analytic tools designed to capture measures of wealth for organizations and then link these measures to lobbying activities. The final dataset is the subset of all comments on Dodd-Frank rules that match an organization with some form of wealth data. This dataset allows us to compare the wealth of organizations that commented on financial rules to the wealth of similar organizations that did not comment on these rules.
+
+<!--TODO SUSAN SUGGESTED DELETING, BUT I THINK THIS PARAGRAPH IS NEEDED SOMEWHERE-->
+Past research suggests that organizations and individuals tend to submit different types of comments to rules [@JewellJPART2006]. We go one step further and compare commenting behavior among similar types of organizations. For example, we compare the commenting behavior of large banks to other large banks. Thus, we control many known sources of variance in commenting behavior, yielding cleaner tests of our hypotheses.
 Practically, acquiring wealth information for all commenters---including thousands of individuals who submit form comments as part of mass comment campaigns (with no little identifying information)---would have been impossible. Moreover, because nearly all individual commenters are mobilized by an organization, form comments are best conceptualized as supporting the more sophisticated organizational comments we focus on here [@judgelord2019SPSA].
 
-There was considerable variation in the organizational comments on rules across the seven financial regulators. For example, the CFPB rules regulating payday loans generated the largest number of organizational comments (3898) in our data. At the same time, many low-salience rules received few comments. Several rules received no comments from organizations with publicly-available wealth data. However, for all rules that received more than 25 comments, we matched at least two organizations to asset data. The agency with the largest median number of organizational comments was the CFPB at 21. 
+The first step in creating these data was collecting and digitizing the texts of all public comments on Dodd-Frank rules. We then extracted entity names and matched them to organizations in databases that yield information on wealth (such as an organization’s market capitalization or total assets). No single database provides this wealth data.  As a result, we cast a wide net and identified multiple databases of organizations that might participate in financial rulemaking.  When combined, the six databases below contain nearly 500,000 publicly traded companies and non-profits. We identify `r n_assets` comments submitted by organizations that appear in one or more of the datasets described below.  These databases are:
 
-## Organization Wealth 
+1.	Market capitalization for all publicly traded companies listed on U.S. exchanges during our analysis time frame from the Wharton Research Data Service's Compustat database, including financial data, such as market capitalization. 
 
-We developed several new tools to test our wealth inequality hypotheses, including tools that allowed us to compare the wealth of organizations that commented on financial rules in our sample to the wealth of similar organizations that did not comment on these rules. No single database provides wealth data on all such organizations. As a result, we cast a wide net and identified multiple databases of organizations that might participate in financial rulemaking. These databases include:
+2. Additionally, we collect market capitalization for corporations that filed disclosures with the SEC and are thus listed in the SEC's Central Index Key (CIK) database.
 
-1.	All publicly traded companies listed on U.S. exchanges during our analysis time frame from the Wharton Research Data Service's Compustat database, including financial data, such as market capitalization.
+3.	Assets under management for all bank and bank-like entities covered by the FDIC.
 
-2. All corporations that filed disclosures with the SEC and are thus listed in the SEC's Central Index Key (CIK) database.
+4. Assets under management for all US credit unions from consolidated call reports published by the NCUA.
 
-3.	All bank and bank-like entities covered by the FDIC, which reports each bank's classification and total assets under management.
+5.	Total assets and annual revenue for all non-profit organizations reported by the IRS 990 forms.
 
-4. All credit unions from consolidated call reports published by the NCUA, which include the total assets under management for each credit union.
-
-5.	All non-profit organizations reported by the IRS 990 forms, including each non-profit's total assets and annual revenue.
-
-6.	All organizations reporting Political Action Committee (PAC) donations, as compiled by the Center for Responsive Politics. We then calculate the average annual PAC contributions for each organization.
+6.	Political Action Committee (PAC) donations by all organizations filing campaign disclosure reports, as compiled by the Center for Responsive Politics. We then calculate the average annual PAC contributions for each organization.
 
 <!--TODO
 7.	All organizations reporting lobbying expenditures, as compiled by the Center for Responsive Politics. We then calculate the average annual lobbying expenditures for each organization.
@@ -278,8 +281,10 @@ This procedure ultimately resulted in a dataset of over `r n_orgs` distinct orga
 knitr::include_graphics("figs/org_count_type-2.png")
 ```
 
-Each database contains qualitatively different types of organizations; we can compare patterns of commenting within each type and across types. The remainder of this section describes the distribution of these data, which are not equally distributed across agencies, rules, and commenter types. Figure \ref{fig:org-types} shows the number of unique commenting organizations matched to each database by the agency or agencies to which they submitted comments. Across all agencies except for the Federal Reserve (FRS), most commenting organizations are non-profits. The next most common type of commenter was federally-insured (FDIC-insured) banks (hereafter "banks"). Organizations that report to the SEC and donors to PACs were less common.
+Each database contains qualitatively different types of organizations; we can compare patterns of commenting within each type and across types. The remainder of this section describes the distribution of these data, which are not equally distributed across agencies, rules, and commenter types.
+ Figure \ref{fig:org-types} shows the number of unique commenting organizations matched to each database by the agency or agencies to which they submitted comments. Across all agencies except for the Federal Reserve (FRS), most commenting organizations are non-profits. The next most common type of commenter was federally-insured (FDIC-insured) banks (hereafter "banks"). Organizations that report to the SEC and donors to PACs were less common.
 Figure \ref{fig:comment-types} shows the number of comments submitted to each agency by an organization matched to each database described above.
+There was considerable variation in the organizational comments on rules across the seven financial regulators. For example, the CFPB rules regulating payday loans generated the largest number of organizational comments (3898) in our data. At the same time, many low-salience rules received few comments. Several rules received no comments from organizations with publicly-available wealth data. However, for all rules that received more than 25 comments, we matched at least two organizations to asset data. The agency with the largest median number of organizational comments was the CFPB at 21. 
 
 
 ```{r comment-types, fig.cap = "Number of Comments by Authoring Organization Type and Agency, Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)", out.width = "80%"}
