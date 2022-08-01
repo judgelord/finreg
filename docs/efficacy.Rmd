@@ -19,7 +19,7 @@ source(here::here("code", "setup.R"))
 ## Change defaults for R chunks
 knitr::opts_chunk$set(
   echo = FALSE, 
-  cache = TRUE,
+  cache = FALSE,
   fig.path = "../figs/", #
   fig.height=2.3, 
   fig.width=3.2, 
@@ -647,7 +647,70 @@ b %>% filter(Total_Legal_Citations>10,
 ### Technical terms x assets
 
 ```{r assets-tech, fig.height=2.5, fig.width=3, out.width="50%"}
+#assets-tech
 t <- d %>% drop_na(dictionary_terms)
+
+# nonprofits
+p <- t %>% 
+  filter(!is.na(nonprofits_resources_name),
+         assets > 10) %>% 
+  ggplot() +
+  aes(x = assets/1000, 
+      y = dictionary_terms) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) +
+  labs(x = "Assets ($1,000)",
+       y = "Technical Terms",
+       title = "Nonprofits")
+
+p
+
+p +
+  scale_y_log10() +
+  scale_x_log10()
+
+
+# credit unions 
+p <- t %>% 
+  filter(!is.na(CreditUnions_name),
+         assets > 10) %>% 
+  ggplot() +
+  aes(x = assets/1000, 
+      y = dictionary_terms) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) +
+  labs(x = "Assets ($1,000)",
+       y = "Technical Terms",
+       title = "Credit Unions")
+
+p
+
+p +
+  scale_y_log10() +
+  scale_x_log10()
+
+
+
+# Publicly - traded companies 
+p <- t %>% 
+  filter(!is.na(marketcap2)) %>% 
+  ggplot() +
+  aes(x = marketcap2/1000000, 
+      y = dictionary_terms) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) +
+  labs(x = "Market Capitalization ($1,000,000)",
+       y = "Technical Terms",
+       title = "Publicly-Traded Companies")
+
+p 
+
+p + 
+  scale_y_log10() +
+  scale_x_log10() #+ xlim(c(0, 400))
 
 
 # FDIC ASSETS 
@@ -655,12 +718,12 @@ p <- t %>%
   filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`),
          `FDIC_Institutions-bestMatch:ASSET` > 10) %>% 
   ggplot() +
-  aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
+  aes(x = `FDIC_Institutions-bestMatch:ASSET`/1000, # %>% log(), 
       y = dictionary_terms ) + 
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Assets",
+  labs(x = "Assets ($1,000)",
        y = "Technical Terms", 
        title = "FDIC-Insured Banks")
 
@@ -677,29 +740,9 @@ t %>%
   dplyr::select(org_name, everything() ) %>% 
   kablebox()
 
-# nonprofits
-p <- t %>% 
-  filter(!is.na(assets),
-         assets > 10) %>% 
-  ggplot() +
-  aes(x = assets, 
-      y = dictionary_terms) + 
-  geom_jitter(alpha = .5) + 
-  geom_smooth(method = "lm"
-  ) +
-  labs(x = "Assets",
-       y = "Technical Terms",
-       title = "Nonprofits")
 
-p 
 
-p
-
-# p + 
-#   scale_y_log10() +
-#   scale_x_log10()
-
-# contribution
+# PAC contribution
 p <- t %>% 
   filter(!is.na(MeanContribAmount)) %>%
   ggplot() +
@@ -717,26 +760,6 @@ p
 p + 
   scale_y_log10() +
   scale_x_log10()
-
-
-p <- t %>% 
-  filter(!is.na(marketcap2)) %>% 
-  ggplot() +
-  aes(x = marketcap2/1000000000, 
-      y = dictionary_terms) + 
-  geom_jitter(alpha = .5) + 
-  geom_smooth(method = "lm"
-  ) +
-  labs(x = "Market Capitalization (Billions)",
-       y = "Technical Terms",
-       title = "Publicly-Traded Companies")
-
-p 
-
-p + 
-  scale_y_log10() +
-  scale_x_log10() + 
-  xlim(c(0, 400))
 ```
 
 ## Efficacy x assets
@@ -746,12 +769,75 @@ p +
 e <- d %>% drop_na(efficacy)
 
 
+
+# nonprofits
+p <- e %>% 
+  filter(!is.na(nonprofits_resources_name)) %>% 
+  ggplot() +
+  aes(x = assets/1000, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  labs(x = "Assets ($1,000)",
+       y = "Words in Comment\nAdded to Final Rule", 
+       title = "Nonprofits")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
+# creditunions
+p <- e %>% 
+  filter(!is.na(CreditUnions_name)) %>% 
+  ggplot() +
+  aes(x = assets/1000, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  labs(x = "Assets ($1,000)",
+       y = "Words in Comment\nAdded to Final Rule", 
+       title = "Credit Unions")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
+
+
+
+
+# market cap
+p <- e %>% 
+  filter(!is.na(marketcap2)) %>% 
+  ggplot() +
+  aes(x = marketcap2/1000000, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) +
+  labs(x = "Market Capitalization ($1,000,000)",
+       y = "Words in Comment\nAdded to Final Rule",
+       title = "Publicly-traded Companies")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
 # FDIC ASSETS 
 p <- e %>% 
   filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
   ggplot() +
   aes(x = `FDIC_Institutions-bestMatch:ASSET`/1000, # %>% log(), 
-      y = efficacy ) + 
+      y = efficacy# , color = BKCLASS #TODO 
+      ) + 
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
@@ -771,25 +857,6 @@ e %>%
   dplyr::select(org_name, everything() ) %>% 
   kablebox()
 
-# nonprofits
-p <- e %>% 
-  filter(!is.na(assets)) %>% 
-  ggplot() +
-  aes(x = assets/1000, 
-      y = efficacy) + 
-  geom_jitter(alpha = .5) + 
-  geom_smooth(method = "lm"
-  ) + 
-  labs(x = "Assets ($1,000)",
-       y = "Words in Comment\nAdded to Final Rule", 
-       title = "Nonprofits")
-
-p
-
-p + 
-  scale_y_log10() +
-  scale_x_log10()
-
 
 # contribution
 p <- e %>% 
@@ -803,25 +870,6 @@ p <- e %>%
   labs(x = "Mean PAC Contribution ($1,000)",
        y = "Words in Comment\nAdded to Final Rule",
        title = "Campaign Donors")
-
-p
-
-p + 
-  scale_y_log10() +
-  scale_x_log10()
-
-# market cap
-p <- e %>% 
-  filter(!is.na(marketcap2)) %>% 
-  ggplot() +
-  aes(x = marketcap2/1000000, 
-      y = efficacy) + 
-  geom_jitter(alpha = .5) + 
-  geom_smooth(method = "lm"
-  ) +
-  labs(x = "Market Capitalization ($1,000,000)",
-       y = "Words in Comment\nAdded to Final Rule",
-       title = "Publicly-traded Companies")
 
 p
 

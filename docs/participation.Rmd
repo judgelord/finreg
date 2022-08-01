@@ -1561,10 +1561,10 @@ asset_counts <- d %>%
   distinct(org_name, docket_id, assets) %>% 
   count(org_name, assets) %>% 
   filter(!is.na(assets)) %>% 
-  mutate(nnp = quantile(n, probs = .99),
+  mutate(nnp = quantile(n, probs = .9),
          assets_m = assets /1000000,
          assets_b = assets_m / 1000,
-         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
          five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
          top = n > nnp)
 
@@ -1640,11 +1640,11 @@ asset_counts <- d %>%
   distinct(org_name, docket_id, assets) %>% 
   count(org_name, assets) %>% 
   filter(!is.na(assets)) %>% 
-  mutate(nnp = quantile(n, probs = .99),
+  mutate(nnp = quantile(n, probs = .9),
          assets_t = assets / 1000,
          assets_m = assets_t /1000,
          assets_b = assets_m / 1000,
-         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
          five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
          top = n > nnp)
 
@@ -1716,11 +1716,11 @@ asset_counts <- d %>%
   distinct(org_name, docket_id, assets) %>% 
   count(org_name, assets) %>% 
   filter(!is.na(assets)) %>% 
-  mutate(nnp = quantile(n, probs = .99),
+  mutate(nnp = quantile(n, probs = .90),
          assets_t = assets /1000,
          assets_m = assets_t /1000,
          assets_b = assets_m / 1000,
-         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
          five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
          top = n>nnp)
 
@@ -1797,7 +1797,7 @@ asset_counts <- d %>%
          assets_t = assets /1000,
          assets_m = assets_t /1000,
          assets_b = assets_m / 1000,
-         onepercent = ifelse(n > nnp, "Top 1%", "Bottom 99%"),
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
          five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
          top = n>nnp)
 
