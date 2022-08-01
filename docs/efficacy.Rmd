@@ -426,7 +426,7 @@ efficacyXsophistication %>%
   scale_y_log10() + 
   labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        y = "Number of Comments",
-       x = "Lobbying Success\nn(Words From Comment\nAdded to Final Rule)",
+       x = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
        fill = "") 
 
 efficacyXsophistication %>% 
@@ -437,7 +437,7 @@ efficacyXsophistication %>%
   scale_x_log10() + 
   labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        y = "Number of Comments",
-       x = "Lobbying Success\nn(Words From Comment\nAdded to Final Rule)",
+       x = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
        fill = "") 
 ```
 
@@ -456,23 +456,23 @@ eXsplot <- efficacyXsophistication %>% # filter(efficacy > 0) %>% #FIXME
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm") +
   labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
-       y = "Lobbying Success\nn(Words From Comment\nAdded to Final Rule)",
+       y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
        x = "Technical Terms in Comment",
        color = "") +
   theme(legend.position = "bottom")
 
 eXsplot + 
-  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
-  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
 
 # color 
 eXsplot + 
   annotate(y = 10131, x = 7705, color = "red", geom = "text", 
-           label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", 
+           label = "U.S. Chamber of Commerce et al.", 
            vjust = .8, hjust = -0.05, size = 3.5) + 
   aes(color = org) + labs(color = "")
 
@@ -480,7 +480,7 @@ eXsplot +
   scale_x_log10() +
   scale_y_log10() + 
   aes(color = org)+ labs(color = "") + 
-  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
 
 # legal citations
 eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME 
@@ -490,29 +490,29 @@ eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME
   geom_smooth(method = "lm") +
   labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        color = "",
-       y = "Lobbying Success\nn(Words From Comment\nAdded to Final Rule)",
+       y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
        x = "Legal Citations in Comment") + 
   geom_point(aes(x = 31, y = 10131), color = "red", shape = 0, size = 3)+
   theme(legend.position = "bottom")
 
 
 eXsplot  + 
-  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
-  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
 
 # color 
 eXsplot  + 
-  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)  + aes(color = org) + labs(color = "")
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)  + aes(color = org) + labs(color = "")
 
 eXsplot + 
   scale_x_log10() +
   scale_y_log10() + 
   aes(color = org) + labs(color = "") + 
-  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "Comment & Marked-up Draft Rule,\nU.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
+  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
 ```
 
 ---
