@@ -57,15 +57,13 @@ style_mono_light(base_color = "#3b444b",
 ```
 
 
----
-
 # Question: 
 
 ## Does wealth mean power in agency rulemaking? 
 
 ???
 
-I just have 3 slides
+I just have three slides
 
 This is the first paper to come out of a project where we have spent years collecting data and now get to write papers. 
 
@@ -73,57 +71,84 @@ Your feedback will be helpful in the directions we take this.
 
 We start with a simple question that has received a lot of attention in the legislative context. With 90% of US law now made in the executive branch. 
 
----
+There is also a body of work demonstrating that. 
 
-# Question: 
 
-## Does wealth mean power in agency rulemaking? 
 --
 
 e.g., the Inflation Reduction Act delegates authorities to 30+ agencies.
 
 --
 
-Who do we expect to win and lose as fights moves to agency policymaking? 
+Who do we expect to win and lose as fights move to agency policymaking? 
 
 ???
 
 ---
 
-# Data 
+# 📊 Data 
 
 - All 200+ Dodd-Frank Rulmakings (800+ policy documents)
 - All ~300k comments on these rules
-- Linked to 6k+ organizations (+ the full population of 500k similar organizations that did not comment)
+--
+
+- Linked to 6k+ organizations (+ all ~500k similar organizations that did not comment)
+
+```{r org-types, fig.cap= "Number of Organizations by Type and Agency to which they Commented, Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)", out.width = "73%"}
+
+knitr::include_graphics("figs/org_count_type-2.png")
+```
 
 ---
 
 # Argument: 
 
-## $ $\rightarrow$ lobbying success
+## 💰 $\rightarrow$ seat at the table
+
+
+```{r mp-assets, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Assets", out.width="90%"}
+knitr::include_graphics("figs/mp-nonprofit-credit-unions-1.png")
+```
 
 ---
 
 # Argument: 
 
-## $ $\rightarrow$ sophistication (e.g., lawyers) $\rightarrow$ lobbying success
+## 💰 $\rightarrow$ lobbying success
 
 ???
 
+Finally, we test one mechanism by which wealth translates to power: as Wendy Wagner and others show, money to hire lawyers and experts. 
+
 ---
 
-# Feedback 
+# Argument: 
+
+## 💰 $\rightarrow$ sophistication (e.g., lawyers) $\rightarrow$ lobbying success
+
+```{r, efficacyXsophistication, fig.cap="Lobbying Success by Comment Sophistication", out.width= "62%"}
+knitr::include_graphics("figs/efficacyXsophistication-2.png")
+```
+
+???
+
+So we measure the sophistication of comments. 
+The x-axis here is the number of words that appear in dictionaries of legal and banking terms. 
+
+---
+
+# 🙏 Feedback 
 
 This paper: 
 
-- Ommited variables?
-- Benchmarks to compare lobbying inequality across Congress and the bureaucracy? 
+- **Omitted variables**?
+- **Benchmarks** to compare lobbying inequality across Congress and the bureaucracy? 
 
 
 Next: 
 
-- Other mechanisms? 
-- Dimensions of variation across venues or policy domains? 
+- Other **mechanisms**? 
+- Dimensions of variation across **venues** or policy **domains**? 
 
 
 ???
