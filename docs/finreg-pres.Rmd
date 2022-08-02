@@ -71,8 +71,6 @@ Your feedback will be helpful in the directions we take this.
 
 We start with a simple question that has received a lot of attention in the legislative context. With 90% of US law now made in the executive branch. 
 
-There is also a body of work demonstrating that. 
-
 
 --
 
@@ -84,14 +82,23 @@ Who do we expect to win and lose as fights move to agency policymaking?
 
 ???
 
+There is also a body of work demonstrating that businesses win more often than other types of organizations in rulemaking. We push this forward in two ways: 
+First, we investigate mechanism of busness influence related to wealth and sophisticated lobbying
+Second, we assess inequalities *within* types of organizations
+
+
 ---
 
 # 📊 Data 
 
 - All 200+ Dodd-Frank Rulmakings (800+ policy documents)
 - All ~300k comments on these rules
---
 
+???
+
+First, we collect all policy documents coming out of dodd frank and all comments on those proposed rules.
+Then, we link comments to organizations with various measures of wealth
+--
 - Linked to 6k+ organizations (+ all ~500k similar organizations that did not comment)
 
 ```{r org-types, fig.cap= "Number of Organizations by Type and Agency to which they Commented, Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)", out.width = "73%"}
@@ -106,8 +113,9 @@ knitr::include_graphics("figs/org_count_type-2.png")
 ## 💰 $\rightarrow$ seat at the table
 
 
-```{r mp-assets, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Assets", out.width="90%"}
-knitr::include_graphics("figs/mp-nonprofit-credit-unions-1.png")
+```{r mp-assets, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Assets", out.width="65%"}
+#knitr::include_graphics("figs/mp-nonprofit-credit-unions-1.png")
+knitr::include_graphics("figs/pr-bank.png")
 ```
 
 ---

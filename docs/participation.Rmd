@@ -11,6 +11,9 @@ output:
 ---
 
 ```{r options, include=FALSE}
+library(marginaleffects)
+library(fixest)
+
 # rmarkdown::render("docs/participation.Rmd")
 source(here::here("code", "setup.R"))
 
@@ -2386,7 +2389,53 @@ save(models, rows, cm, gof_map, modelsummary,
      file = here::here("models", "mpAll.Rdata"))
 ```
 
+```{r mp-all-predict, fig.height=1.7, fig.width=3}
 
+# A data frame of values at which to estimate probabilities:
+values <- all %>% 
+  filter(org_type == "Bank") %>% 
+  tidyr::expand(assets_b = c(0, 1,2,3,4,5), org_type = "Bank") 
+
+predicted <- predictions(mpAlli,
+                         newdata = values) %>% 
+  mutate(.fitted = predicted,
+         .se.fit = std.error) 
+
+
+# predicted %<>%
+#   mutate(agency = agency %>% 
+#            str_replace("EPA" , "Environmental Protection Agency") %>% 
+#            str_replace("PHMSA", "Pipeline & Hazardous Materials\nSafety Administration"))
+
+# As a plot
+p <- predicted %>% 
+  ggplot() + 
+  aes(x = assets_b, y = .fitted#, shape = org_type, color = org_type
+      ) + 
+  geom_pointrange(aes(ymin = .fitted - 1.96*.se.fit,
+                  ymax = .fitted + 1.96*.se.fit), alpha = .7, position = position_dodge(width = 0.40) )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  coord_flip() +
+  facet_wrap("org_type", ncol = 3, scales = "free") +
+  labs(y = 'Probability of Commenting', 
+       x = "Assets (Billions)",
+       color = "",#color = '"Environmental Justice"\nRaised by Comments',
+       shape = "",#shape = '"Environmental Justice"\nRaised by Comments', 
+       title = "") + 
+  theme_minimal() + 
+  theme(#axis.text.y = element_blank(),
+        #axis.ticks.y = element_blank(),
+        #panel.grid.major.y = element_blank()
+        )+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  #+ ylim(0,1) 
+
+p 
+
+p$layers[1] <- NULL
+
+
+p
+```
 
 # TODO 
 
