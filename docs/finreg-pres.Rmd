@@ -1,0 +1,130 @@
+---
+title: "Inequality in Administrative Democracy"
+subtitle: "Evidence from Financial Rulemaking"
+author: "<p>Daniel P. Carpenter, Angelo Dagonel, Devin Judge-Lord, Christopher T. Kenny,  Brian Libgober,  Steven Rashin, Jacob Waggoner, Susan Webb Yackee<p>"
+#date: "Paper, slides, & data: [judgelord.github.io/research/finreg](https://judgelord.github.io/research/finreg)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    mathjax: "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"
+    css: xaringan-themer.css
+    nature:
+      ratio: '16:10'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+short = "false"
+exclude_stepwise = "true"
+exclude_extra = "true"
+
+# chunks options:
+# hide code and messages by default (warning, message)
+# cache everything 
+knitr::opts_chunk$set(warning = FALSE, 
+                      message = FALSE,
+                      echo = FALSE, 
+                      #fig.path = "Figs/",
+                      cache = FALSE, 
+                      fig.align = 'center',
+                      fig.retina = 2,
+                      dpi = 100)
+# Xaringan: https://slides.yihui.name/xaringan/
+library("xaringan")
+library("xaringanthemer")
+library("here")
+library("tidyverse")
+library("magrittr")
+
+
+style_mono_light(base_color = "#3b444b",
+          inverse_link_color	
+ = "#85bb65",
+          #background_image = "Figs/ej-superfund-light.jpeg",
+          background_color = "FFFFFF", #FAF0E6", # linen
+          header_font_google = google_font("PT Sans"), 
+          text_font_google = google_font("Old Standard"), 
+          text_font_size = "40px",
+          padding = "10px",
+          code_font_google = google_font("Inconsolata"), 
+          code_inline_background_color    = "#F5F5F5", 
+          table_row_even_background_color = "#ddede5"#, extra_css = list(".remark-slide-number" = list("display" = "none"))
+ )
+```
+
+
+---
+
+# Question: 
+
+## Does wealth mean power in agency rulemaking? 
+
+???
+
+I just have 3 slides
+
+This is the first paper to come out of a project where we have spent years collecting data and now get to write papers. 
+
+Your feedback will be helpful in the directions we take this. 
+
+We start with a simple question that has received a lot of attention in the legislative context. With 90% of US law now made in the executive branch. 
+
+---
+
+# Question: 
+
+## Does wealth mean power in agency rulemaking? 
+--
+
+e.g., the Inflation Reduction Act delegates authorities to 30+ agencies.
+
+--
+
+Who do we expect to win and lose as fights moves to agency policymaking? 
+
+???
+
+---
+
+# Data 
+
+- All 200+ Dodd-Frank Rulmakings (800+ policy documents)
+- All ~300k comments on these rules
+- Linked to 6k+ organizations (+ the full population of 500k similar organizations that did not comment)
+
+---
+
+# Argument: 
+
+## $ $\rightarrow$ lobbying success
+
+---
+
+# Argument: 
+
+## $ $\rightarrow$ sophistication (e.g., lawyers) $\rightarrow$ lobbying success
+
+???
+
+---
+
+# Feedback 
+
+This paper: 
+
+- Ommited variables?
+- Benchmarks to compare lobbying inequality across Congress and the bureaucracy? 
+
+
+Next: 
+
+- Other mechanisms? 
+- Dimensions of variation across venues or policy domains? 
+
+
+???
+
