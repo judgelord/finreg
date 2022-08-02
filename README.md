@@ -18,5 +18,6 @@ These include
 - Replication code for all tables and figures in the paper and appendix
 - Additional summary tables and figures to guide data cleaning and analysis
 
-## Other: 
+## Other:
+
 - [Data validated against hand-coded data](https://judgelord.github.io/finreg/validation)

@@ -113,9 +113,9 @@ knitr::include_graphics("figs/org_count_type-2.png")
 ## 💰 $\rightarrow$ seat at the table
 
 
-```{r mp-assets, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Assets", out.width="65%"}
-#knitr::include_graphics("figs/mp-nonprofit-credit-unions-1.png")
-knitr::include_graphics("figs/pr-bank.png")
+```{r mp-assets, fig.cap= "", out.width="90%"}
+knitr::include_graphics("figs/mp-nonprofit-credit-unions-1.png")
+#knitr::include_graphics("figs/pr-bank.png")
 ```
 
 ---

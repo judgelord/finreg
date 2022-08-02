@@ -2,7 +2,7 @@
 title: "Inequality in Administrative Democracy: Methods and Evidence from Financial Rulemaking"
 author:
   - name: Daniel P. Carpenter
-    thanks: "Authors are listed alphabetically; the listing does not imply the significance of contribution. We will be extremely grateful for any comments. The most recent draft is here: [judgelord.github.io/finreg](https://judgelord.github.io/finreg/participatory-inequality.pdf). We thank Larry Bartels, Christine Desan, Sanford Gordon, Howell Jackson, David Moss, and Eric Talley for their conversations and comments. We acknowledge the Russell Sage Foundation, the Washington Center for Equitable Growth, and the Radcliffe Institute for Advanced Study for research support. Please do not cite without permission."
+    thanks: "Authors are listed alphabetically; the listing does not imply the significance of contribution. We will be extremely grateful for any comments. The most recent draft is here: [judgelord.github.io/finreg](https://judgelord.github.io/finreg/participatory-inequality.pdf). We thank Larry Bartels, Devin Caughey, Christine Desan, Sanford Gordon, Howell Jackson, David Moss, Eric Talley, and participants in the American Political Economy Conference for their conversations and comments. We acknowledge the Russell Sage Foundation, the Washington Center for Equitable Growth, and the Radcliffe Institute for Advanced Study for research support. Please do not cite without permission."
     department: Department of Government and Radcliffe Institute
     affiliation: Harvard University
   - name: Angelo Dagonel
@@ -459,7 +459,7 @@ The main takeaway from our analysis thus far is that resources correlate with co
 We now investigate wealth inequalities within the population of organizations participating in the policy process. 
 By focusing on variation among organizations that all commented on at least one Dodd-Frank rule, we can have even more confidence that we are comparing similar organizations with similar interests. <!--Despite their similarities, however, some organizations commented more frequently, used more sophisticated language, or were more successful in having their policy demands met than others. We explore whether each of these types of variation is related to wealth.--> 
 
-#### The “usual suspects” are wealthier than those who participate less frequently
+#### The "usual suspects" are wealthier than those who participate less frequently
 Hypothesis 3 posits that, among commenters, wealthy organizations will participate more frequently. To test this hypothesis, we count the number of Dodd-Frank rules on which each participating organization commented.
 Figure \ref{fig:dockets-percentile} shows that organizations that comment on more rulemaking dockets tend to be wealthier. As most organizations comment on very few rules, we sort commenters by the number of rules on which they commented and compare the wealth of the top ten percent to the average of the bottom 90%.^[In the appendix, we show similar results comparing organizations that commented on five or more rules to those that commented on fewer than five rules.]
 <!--^[
@@ -655,10 +655,13 @@ Finally, we inspect all matches that occurred ten times or more and a sample of 
 Practically, acquiring wealth information for all commenters---including thousands of individuals who submit form comments as part of mass comment campaigns (with no little identifying information)---would have been impossible. Moreover, because nearly all individual commenters are mobilized by an organization, form comments are best conceptualized as supporting the more sophisticated comments we focus on in our analysis here [@judgelord2019SPSA].--> 
 
 ```{r master-table, fig.pos = "b", out.extra = ""}
+#master-table
+
 read_csv(here::here("data", "master_tables_status.csv")) %>% 
   mutate(attachments_table = replace_na(attachments_table, 0)) %>% 
   rename(`Attachments` = attachments_table,
-         `Lobbying Success and\nSophistication Measures` =`term counts`,
+         `Lobbying Success and
+         \nSophistication Measures` =`term counts`,
          Comments = `comments table`,
          Agency = agency_acronym) %>% 
   left_join(
