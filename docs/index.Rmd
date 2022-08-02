@@ -1,0 +1,6 @@
+---
+title: "Inequality in Administrative Democracy: Methods and Evidence From Financial Regulation "
+output: html_document
+---
+
+# [PDF](https://judgelord.github.io/finreg/participatory-inequality.pdf)
