@@ -18,7 +18,7 @@ source(here::here("code", "setup.R"))
 
 ## Change defaults for R chunks
 knitr::opts_chunk$set(
-  echo = FALSE, 
+  echo = TRUE, 
   cache = FALSE,
   fig.path = "../figs/", #
   fig.height=2.3, 
@@ -258,7 +258,7 @@ efficacy %<>%
   group_by(comment_url) %>% 
   summarise_all(base::max)
 
-efficacy %>% arrange(-efficacy) %>% kablebox()
+efficacy %>% arrange(-efficacy) #%>% kablebox()
 
 # d$comment_url %in% efficacy$comment_url %>% sum
 
@@ -1138,6 +1138,148 @@ summary(med.cont)
 plot(med.cont, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success", 
      xlab = "Words From Comment Added to Final Rule")
 #modelplot(med.cont) + labs()
+```
+
+### Mediation with Campaign Expenditure and Lobbying Dollars
+
+```{r}
+lobbying_and_contributions <- read_csv( here::here("data", "Lobbying_and_Contributions.csv")  )
+
+lobbying_and_contributions %<>%
+  mutate(best_match_name = tolower(orgName)) %>%
+  dplyr::select(best_match_name, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) 
+
+mediation_data <- b %>%
+  tidylog::left_join(lobbying_and_contributions, by = "best_match_name") %>%
+  tidylog::distinct(comment_url, .keep_all = T) %>%
+  mutate(
+    assets = assets/10000000000,
+    TotalLobbyingAmountNo0 = ifelse(is.na(TotalLobbyingAmount), 0, TotalLobbyingAmount), 
+    TotalContribAmountNo0 = ifelse(is.na(TotalContribAmount), 0, TotalContribAmount)) 
+
+
+# Show mediation doesn't work for contributions without imputing 0s for the non-contirbutors 
+# you can't estimate the assets:org_typeNonprofit coefficient in the efficacy regression
+# model.m.doesntwork <- lm(TotalContribAmount ~ assets * org_type,  
+#               data = b %>%
+#                 mutate(
+#                   assets = assets/10000000000))
+# 
+# # model predicting DV
+# model.y.doesntwork <- lm(efficacy ~ TotalContribAmount + assets * org_type,  
+#                data = b %>%
+#                 mutate(
+#                   assets = assets/10000000000))
+# 
+# med.cont.alt <- mediate(model.m.doesntwork, model.y.doesntwork, sims=1000, treat = "assets", mediator = "TotalContribAmount")
+
+model.m.pac.contrib <- lm(TotalContribAmountNo0 ~ assets * org_type,
+              data = mediation_data %>% drop_na(efficacy))
+
+# model predicting DV
+model.y.pac.contrib <- lm(efficacy ~ TotalContribAmountNo0 + assets * org_type,
+               data = mediation_data %>% drop_na(efficacy))
+
+med.cont.pac <- mediate(model.m.pac.contrib, model.y.pac.contrib, sims=1000, treat = "assets", mediator = "TotalContribAmountNo0",  control.value = .1, treat.value = 1, boot = T)
+
+summary(med.cont.pac)
+
+model.m.pac.lobby <- lm(TotalLobbyingAmountNo0 ~ assets * org_type,
+              data = mediation_data %>% drop_na(efficacy))
+
+# model predicting DV
+model.y.pac.lobby <- lm(efficacy ~ TotalLobbyingAmountNo0 + assets * org_type,
+               data = mediation_data %>% drop_na(efficacy))
+
+mediation_data %>% 
+  dplyr::select(TotalLobbyingAmountNo0, assets) %>%
+  skimr::skim()
+
+# Going from 10 billion to 100 billion
+# "Since the treatment
+# variable is a continuous variable, we use the values of 3 and 4 as the control and treatment
+# values, respectively, and estimate the quantities of interest in terms of these values.""
+med.cont.lobby <- mediate(model.m.pac.lobby, model.y.pac.lobby, sims=1000, treat = "assets", mediator = "TotalLobbyingAmountNo0",  control.value = .1, treat.value = 1, boot = T)
+
+summary(med.cont.pac)
+summary(med.cont.lobby)
+```
+
+### Mediation with two mediators
+
+TotalContribAmount is PAC expenditure
+
+multimed can't do the sensitivity analysis with a continuous treatment variable
+
+In the case of a continuous treatment
+variable, the researcher would specify two values of the treatment to make the contrast (Imai
+et al. 2010a). 
+
+https://cran.r-project.org/web/packages/mediation/mediation.pdf page 40
+```{r mediation-multiple, eval = FALSE}
+
+lobbying_and_contributions <- read_csv( here::here("data", "Lobbying_and_Contributions.csv")  )
+
+lobbying_and_contributions %<>%
+  mutate(best_match_name = tolower(orgName)) %>%
+  dplyr::select(best_match_name, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) 
+
+mediation_data <- b %>%
+  tidylog::left_join(lobbying_and_contributions, by = "best_match_name") %>%
+  tidylog::distinct() %>%
+  mutate(TotalLobbyingAmount = ifelse(is.na(TotalLobbyingAmount), 0, TotalLobbyingAmount),
+         TotalContribAmount = ifelse(is.na(TotalContribAmount), 0, TotalContribAmount)) 
+
+#temp <- mediation_data  %>% mutate(assets = assets/10000000000) 
+                    # drop_na(efficacy, MeanContribAmount, TotalContribAmount, Total_Legal_Citations, assets,org_comments, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) %>%
+
+temp <- mediation_data  %>% mutate(assets = as.numeric(assets > 1000000)) 
+temp <- mediation_data  %>% mutate(assets = assets/10000000000) 
+
+temp %<>% dplyr::select(efficacy, Total_Legal_Citations, assets,org_comments, TotalLobbyingAmount, TotalContribAmount) %>% drop_na(efficacy, Total_Legal_Citations, assets,org_comments, TotalLobbyingAmount) %>%
+  data.frame()
+
+temp %>%
+  skimr::skim(  )
+
+Xnames <- c("org_comments")
+
+m.med <- multimed(outcome = "efficacy", med.main = "TotalContribAmount", med.alt = "TotalLobbyingAmount",
+                  treat = "assets", covariates = Xnames,
+                  data = temp, sims = 1000, )
+
+# Sensitivity Analysis is blank b/c of some error, need to figure out why
+summary(m.med)
+
+plot(m.med, type = "point")
+
+plot(m.med, type = c("sigma", "R2-total"), tgroup = c("treated", "control"))
+
+summary(lm(formula = efficacy ~ TotalContribAmount + Total_Legal_Citations + assets + org_comments, data = b  %>% mutate(assets = assets/10000000000) %>%
+                    drop_na(efficacy, TotalContribAmount, Total_Legal_Citations, assets,org_comments)))
+
+
+## package data
+Xnames <- c("age", "educ", "gender", "income")
+
+lapply(X = framing, class)
+
+library(mediation)
+framing %<>%
+  mutate(cond_int = as.numeric(as.character(cond)))
+
+m.med <- multimed(outcome = "immigr", med.main = "emo", med.alt = "p_harm",
+                  treat = "treat", covariates = Xnames,
+                  data = framing, sims = 100)
+
+summary(m.med)
+
+m.med.cont <- multimed(outcome = "immigr", med.main = "emo", med.alt = "p_harm",
+                  treat = "cond_int", covariates = Xnames,
+                  data = framing, sims = 100)
+
+summary(m.med.cont)
+
 ```
 
 ### Assets x technical terms
