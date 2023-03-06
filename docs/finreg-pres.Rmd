@@ -223,7 +223,7 @@ knitr::include_graphics("figs/FDIC-density-select-1.png")
 
 ---
 
-##  💰 $\rightarrow$ seat at the table
+##  💰 $\rightarrow$ seat at the table, especially if profit-motivated
   
   
 ```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="100%"}
@@ -234,13 +234,23 @@ knitr::include_graphics("figs/mpFDIC-1.png")
 ---
 
 
-##  💰 $\rightarrow$ seat at the table
+##  💰 $\rightarrow$ seat at the table, especially if profit-motivated
 
 
 ```{r mp-assets, fig.cap= "", out.width="100%"}
 knitr::include_graphics("figs/mp-nonprofit-credit-unions-1.png")
 #knitr::include_graphics("figs/pr-bank.png")
 ```
+
+---
+
+##  💰 $\rightarrow$ seat at the table, especially if profit-motivated
+
+
+```{r mp-pr-bank, fig.cap= "", out.width="70%"}
+knitr::include_graphics("figs/pr-bank.png")
+```
+
 
 ---
 
