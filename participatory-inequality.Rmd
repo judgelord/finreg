@@ -590,7 +590,7 @@ lobbying success is the dependent variable in the main models, and the number of
 
 We find that the bulk of the relationship between wealth and lobbying success can be attributed to wealthier organizations using more technical language. Market capitalization is highly correlated with using technical terms, which are associated with lobbying success. Thus, we can conclude that much of the effect of market capitalization on lobbying success results from wealthier organizations using more legal and technical banking terms in their comments.
 
-With technical terms as the mediator, Figure \ref{fig:mediation-terms} shows that the Average Conditional Marginal Effect is a large share (over 69 percent)  of the Total Effect of wealth on lobbying success. This suggests that the relationship between wealth and lobbying success is mediated by the use of legal and technical language. The conditional effects of technical language are statistically significant at the 0.05 level.
+With technical terms as the mediator, Figure \ref{fig:mediation-terms} shows that the Average Conditional Marginal Effect (ACME) is a large share (over 69 percent)  of the Total Effect of wealth on lobbying success. This suggests that the relationship between wealth and lobbying success is mediated by the use of legal and technical language. The conditional effects of technical language are statistically significant at the 0.05 level.
 <!--TODO INTERPRET MEDIATION: ". For example, these results suggest that for every XX word from the comment added to the final rule ……… " OR SOMETHING-->
  In the appendix, we replicate these results using an alternative measure of sophistication.
 
@@ -604,6 +604,10 @@ With technical terms as the mediator, Figure \ref{fig:mediation-terms} shows tha
 
 knitr::include_graphics("figs/mediation-marketcap-terms-1.png")
 ```
+
+### Mechanisms {#spend_mediation}
+
+While we argue that wealthier organizations are, on average, better able to influence the development of public policy than less wealthy ones, we have remained silent with respect to the mechanisms.  One possible mechanism is similar to Gordon and Hafer's (2005) burning money story where large organizations exert influence through repeated political contributions.  To test this potential mechanism, we use mediation analysis with PAC contributions as a mediator.^[The results are similar if we use lobbying expenditures as the mediator.  We show this in the Appendix.]  Unlike above, the ACME is small and not statistically significant.  Further, very little of the Total Effect is mediated by campaign contributions.  This implies that increasing a corporations wealth ten-fold from one billion to ten, increases their expenditure on candidates but not their influence on regulatory policy.        
 
 # Conclusion
 
@@ -852,3 +856,29 @@ knitr::include_graphics("figs/mediation-marketcap-bluebook-1.png")
 
 \singlespacing
 
+
+<!--
+We might want to do some thinking on competing theory tests. Caughey pointed out that rejecting or not rejecting our null of no relationship between wealth and lobbying success is just not interesting, so I think he is right that we need a competing hypothesis model. One way to re-frame what we already have is "Are wealthy orgs structurally advantaged (i.e. do they always win) or do they win *because* of their lobbying (i.e., because it is more sophisticated). To do this we beef up the mediation analysis and maybe look at cases where the wealthy are not winning. 
+
+Does anyone know of good membership data for the nonprofits in our database?
+Of course, larger orgs will be, on average, weather. I think this is much more of a normative than empirical critique, and it only applies to nonprofits. I am inclined to deflect and say that large organizations often have problems with second-order representation, so it is really unclear if larger or smaller nonprofits winning is normatively better. 
+
+Stylistic emulation as opposed to true lobbying success---Steve and I have dug into a bunch of these qualitatively, and, while there is noise, I don't think it is stylistic repetiation. Also, Steve did a variety of n-gram lengths that I can use to replicate everything. 
+
+Large/wealthy orgs may create collective benefits. As Dan notes, Libgober 2020 says these are often private gains, so let's just say that. I don't know how else to address this in an easy way. Even if big firms are creating policy benefits for all firms in the industry, the small ones are still being ignored more often, so I think our finding holds. I think hand-coding is the only way to know if the small firms are really winning just as much as the big ones from the agency adopting the big firm's suggestions.
+
+Selection model --- I am not convinced that Heckman is what we want or that there is really even a problem here. It seems that a selection model would be right if we were trying to make inferences about lobbying success about the whole population of orgs, but only observing some (or if we were making inferences about all commenters from only some selected comments). However, I think we only want to make claims about lobbying success *among those who lobby* and we observe *all* of this population. Happy to discuss that further, but perhaps we just need to clarify that we are making inferences about different populations in different parts of the paper. Perhaps I'm wrong.
+
+Address normative baseline -- should every org count the same? I think this is very very difficult. Going back to #2 and #3, we would need info about how many people each org represents. There is a whole chapter of my dissertation arguing that this is almost unknowable. One of the only simple I see we can do is to characterize groups as representing broad-based/public interests or narrow/private interests. I added an analysis using for-profit vs non-profit to proxi for broad/narrow in this in this draft, but I think it would be worthwhile to try to code the nonprofits at some point. We could at least try to pull out industry associations and business-dominated thinktanks. I have a bunch coded already. 
+
+When would we expect wealth not to correlate? This, to me, is not a normative question but a question for theory, so I think this goes back to #1. I have the Selin agency independence scores and can merge them in. We may have competing theories about whether sophisticated lobbying works better on more or less expert and more or less independent agencies. We might also expect that PAC donations woudl be more associated with lobbying influence at less independent agencies. I think we need to pick a few competing hypotheses / conditional effects of wealth/sophistication. 
+
+A few more things that Caughey brought up
+- How do you know you have the right universe of orgs / potential commenters? I'm comfortable that we are pretty solid on this and we maybe just say so. 
+- Devin wanted to see more validation of both sophistication and success --- we can do this both qualitatively and benchmark against comments we have hand-coded
+- Are sophisticated comments just more "correct"? I am not sure what to do about this kind of positivism. 
+
+Thelen suggested that we cite Patashnik on post-legislative politics. 
+
+Henry Begg suggested that we break up our analysis by Dodd-Frank title, coding titles as whether they regulate big banks or not. Easy to do and there might be something there. 
+--> 
