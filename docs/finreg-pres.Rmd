@@ -247,7 +247,7 @@ knitr::include_graphics("figs/mp-nonprofit-credit-unions-1.png")
 ##  💰 $\rightsquigarrow$ seat at the table, especially if profit-motivated
 
 
-```{r mp-pr-bank, fig.cap= "", out.width="70%"}
+```{r mp-pr-bank, fig.cap= "", out.width="60%"}
 knitr::include_graphics("figs/pr-bank.png")
 ```
 
@@ -339,13 +339,25 @@ The x-axis here is the number of words that appear in dictionaries of legal and 
 
 ---
 
+## 💰 $\rightsquigarrow$ PAC Donations $\nrightarrow$ lobbying success
+
+
+```{r mediation-pac, out.width="60%",  fig.cap= "PAC Donations as a Mediator Between Wealth and Lobbying Success"}
+# TODO DEVIN WILL INSERT mediation terms from https://judgelord.github.io/finreg/efficacy#Market_cap_x_legal_citations
+
+knitr::include_graphics("figs/mediation-marketcap-lobbying-1.png")
+```
+
+
+---
+
 ## 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
 
 
-```{r mediation-terms, out.width="50%",  fig.cap= "Technical Language as a Proposed Mediator Between Wealth and Lobbying Success"}
+```{r mediation-terms, out.width="60%",  fig.cap= "Technical Language as a Proposed Mediator Between Wealth and Lobbying Success"}
 # TODO DEVIN WILL INSERT mediation terms from https://judgelord.github.io/finreg/efficacy#Market_cap_x_legal_citations
 
-knitr::include_graphics("figs/mediation-marketcap-terms-1.png")
+knitr::include_graphics("figs/mediation-marketcap-terms-bluebook-1.png")
 ```
 
 ---
