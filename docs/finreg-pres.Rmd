@@ -105,7 +105,7 @@ We start with a simple question that has received a lot of attention in the legi
 
 --
 
-*not mutually exclusive, but _how much_ influence is due to lobbying?
+*not mutually exclusive. But _how much_ influence is due to lobbying?
 
 ---
 
@@ -127,16 +127,16 @@ knitr::include_graphics("figs/clip-lobbying-info.png")
 ---
 # PREVIEW
 
-💰 $\rightarrow$ seat at the table
+💰 $\rightsquigarrow$ seat at the table
 
 - Wealthy organizations are more likely to comment 
 - Among commenters, frequent commenters are wealthier 
 
 --
 
-Among participants, 💰 $\rightarrow$ sophistication (e.g., lawyers) $\rightarrow$ lobbying success
+Among commenters, 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
 
-- Wealthy organizations submit more sophisticated comments (legally & technically)
+- Wealthy organizations submit more sophisticated comments
 --
 
 - Agencies are more likely to adopt language from sophisticated comments
@@ -167,7 +167,7 @@ https://clsbluesky.law.columbia.edu/2022/06/29/rolling-back-dodd-frank-investors
 
 ## 📊 DATA  
 
-- All 200+ Dodd-Frank Rulmakings (800+ policy documents)
+- All 200+ Dodd-Frank Rulemakings (800+ policy documents)
 - All ~300k comments on these rules
 
 ???
@@ -175,7 +175,7 @@ https://clsbluesky.law.columbia.edu/2022/06/29/rolling-back-dodd-frank-investors
 First, we collect all policy documents coming out of dodd-frank and all comments on those proposed rules.
 Then, we link comments to organizations with various measures of wealth.
 --
-- Linked to 6k+ organizations (+ all ~500k similar orgs that did not comment)
+- Linked to 6k+ organizations (+ all ~500k similar orgs. that did not comment)
 
 ```{r org-types, fig.cap= "", out.width = "80%"}
 
@@ -187,7 +187,7 @@ Number of Organizations by Type and Agency to which they Commented, Including th
 
 ---
 
-##  💰 $\rightarrow$ seat at the table
+##  💰 $\rightsquigarrow$ seat at the table
 
 ```{r, commenters-noncommenters1, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/nonprofit-density-1.png")
@@ -195,7 +195,7 @@ knitr::include_graphics("figs/nonprofit-density-1.png")
 
 ---
 
-##  💰 $\rightarrow$ seat at the table
+##  💰 $\rightsquigarrow$ seat at the table
 
 ```{r, commenters-noncommenters2, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/creditunion-density-1.png")
@@ -205,7 +205,7 @@ knitr::include_graphics("figs/creditunion-density-1.png")
 
 
 
-##  💰 $\rightarrow$ seat at the table
+##  💰 $\rightsquigarrow$ seat at the table
 
 ```{r, commenters-noncommenters3, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/compustat-density-1.png")
@@ -213,7 +213,7 @@ knitr::include_graphics("figs/compustat-density-1.png")
 
 ---
 
-##  💰 $\rightarrow$ seat at the table
+##  💰 $\rightsquigarrow$ seat at the table
 
 ```{r, commenters-noncommenters4, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/FDIC-density-select-1.png")
@@ -223,7 +223,7 @@ knitr::include_graphics("figs/FDIC-density-select-1.png")
 
 ---
 
-##  💰 $\rightarrow$ seat at the table, especially if profit-motivated
+##  💰 $\rightsquigarrow$ seat at the table, especially if profit-motivated
   
   
 ```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="100%"}
@@ -234,7 +234,7 @@ knitr::include_graphics("figs/mpFDIC-1.png")
 ---
 
 
-##  💰 $\rightarrow$ seat at the table, especially if profit-motivated
+##  💰 $\rightsquigarrow$ seat at the table, especially if profit-motivated
 
 
 ```{r mp-assets, fig.cap= "", out.width="100%"}
@@ -244,7 +244,7 @@ knitr::include_graphics("figs/mp-nonprofit-credit-unions-1.png")
 
 ---
 
-##  💰 $\rightarrow$ seat at the table, especially if profit-motivated
+##  💰 $\rightsquigarrow$ seat at the table, especially if profit-motivated
 
 
 ```{r mp-pr-bank, fig.cap= "", out.width="70%"}
@@ -278,7 +278,7 @@ much harder to measure
 
 ---
 
-##  💰 $\rightarrow$ lobbying success
+##  💰 $\rightsquigarrow$ lobbying success
 
 ```{r repeated-text-assets2, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
 knitr::include_graphics("figs/assets-efficacy-2.png")
@@ -290,7 +290,7 @@ Finally, we test one mechanism by which wealth translates to power: as Wendy Wag
 
 ---
 
-##  💰 $\rightarrow$ lobbying success
+##  💰 $\rightsquigarrow$ lobbying success
 
 ```{r repeated-text-assets4, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
 knitr::include_graphics("figs/assets-efficacy-4.png")
@@ -298,7 +298,7 @@ knitr::include_graphics("figs/assets-efficacy-4.png")
 
 ---
 
-##  💰 $\rightarrow$ lobbying success
+##  💰 $\rightsquigarrow$ lobbying success
 
 ```{r repeated-text-assets6, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
 knitr::include_graphics("figs/assets-efficacy-6.png")
@@ -306,7 +306,7 @@ knitr::include_graphics("figs/assets-efficacy-6.png")
 
 ---
 
-##  💰 $\rightarrow$ lobbying success
+##  💰 $\rightsquigarrow$ lobbying success
 
 ```{r repeated-text-assets8, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
 knitr::include_graphics("figs/assets-efficacy-8.png")
@@ -314,7 +314,7 @@ knitr::include_graphics("figs/assets-efficacy-8.png")
 
 ---
 
-##  💰 $\rightarrow$ lobbying success
+##  💰 $\rightsquigarrow$ lobbying success
 
 ```{r repeated-text-assets10, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
 knitr::include_graphics("figs/assets-efficacy-10.png")
@@ -324,7 +324,7 @@ knitr::include_graphics("figs/assets-efficacy-10.png")
 
 ---
 
-## 💰 $\rightarrow$ sophistication (e.g., lawyers) $\rightarrow$ lobbying success
+## 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
 
 --
 
@@ -339,7 +339,7 @@ The x-axis here is the number of words that appear in dictionaries of legal and 
 
 ---
 
-## 💰 $\rightarrow$ sophistication (e.g., lawyers) $\rightarrow$ lobbying success
+## 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
 
 
 ```{r mediation-terms, out.width="50%",  fig.cap= "Technical Language as a Proposed Mediator Between Wealth and Lobbying Success"}
@@ -386,9 +386,9 @@ Large/wealthy orgs may create collective benefits. Libgober 2020 finds these are
 # 🙏 Feedback 
 
 - Setup 
-- **Omitted variables**?
-- Selection process? 
-- Validation? 
+- Omitted variables
+- [Validation](https://judgelord.github.io/finreg/validation)
+- Do we need to model a selection process? 
 
 ???
 
@@ -410,16 +410,16 @@ Selection model --- I am not convinced that Heckman is what we want or that ther
 
 # RECAP
 
-💰 $\rightarrow$ seat at the table
+💰 $\rightsquigarrow$ seat at the table
 
 - Wealthy organizations are more likely to comment 
 - Among commenters, frequent commenters are wealthier 
 
 --
 
-Among participants, 💰 $\rightarrow$ sophistication (e.g., lawyers) $\rightarrow$ lobbying success
+Among commenters, 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
 
-- Wealthy organizations submit more sophisticated comments (legally & technically)
+- Wealthy organizations submit more sophisticated comments
 --
 
 - Agencies are more likely to adopt language from sophisticated comments
