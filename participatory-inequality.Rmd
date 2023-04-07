@@ -216,12 +216,17 @@ Our research design advances past work by comparing commenting behavior among si
 
 The first step in creating the dataset was collecting and digitizing the texts of all public comments on Dodd-Frank rules. We then extracted entity names and matched them to organizations in databases that yield information on wealth. No single database provides information on wealth for all types of organizations. We thus cast a wide net and identified multiple databases of organizations that might participate in financial rulemaking. When combined, the six databases below contain nearly 500,000 publicly traded companies and non-profits. We identify `r n_assets` comments submitted by organizations that appear in one or more of the datasets described below. These databases are:
 
-1.       Market capitalization for all publicly traded companies listed on U.S. exchanges during our analysis time frame from the Wharton Research Data Service’s Compustat database, which includes financial data, such as market capitalization.
-2.       Separately, market capitalization for all corporations that filed disclosures with the SEC and are thus listed in the SEC’s Central Index Key (CIK) database.
-3.       Assets under management for all bank and bank-like entities covered by the FDIC.
-4.       Assets under management for all U.S. credit unions from consolidated call reports published by the NCUA.
-5.       Total assets and annual revenue for all non-profit organizations as reported by Internal Revenue Service 990 forms.<!---TODO: VOLUNTEERS-->
-6.       Political Action Committee (PAC) donations from all organizations filing campaign disclosure reports, as compiled by the Center for Responsive Politics. These reports allow us to calculate the average annual PAC contributions for each organization.
+1. Market capitalization for all publicly traded companies listed on U.S. exchanges during our analysis time frame from the Wharton Research Data Service’s Compustat database, which includes financial data, such as market capitalization.
+
+2. Separately, market capitalization for all corporations that filed disclosures with the SEC and are thus listed in the SEC’s Central Index Key (CIK) database.
+
+3. Assets under management for all bank and bank-like entities covered by the FDIC.
+
+4. Assets under management for all U.S. credit unions from consolidated call reports published by the NCUA.
+
+5. Total assets and annual revenue for all non-profit organizations as reported by Internal Revenue Service 990 forms.<!---TODO: VOLUNTEERS-->
+
+6. Political Action Committee (PAC) donations from all organizations filing campaign disclosure reports, as compiled by the Center for Responsive Politics. These reports allow us to calculate the average annual PAC contributions for each organization.
 
 <!--TODO
 7.	All organizations that report lobbying expenditures, as compiled by the Center for Responsive Politics. We then calculate the average annual lobbying expenditures for each organization.
