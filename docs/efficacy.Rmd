@@ -455,6 +455,7 @@ eXsplot <- efficacyXsophistication %>% # filter(efficacy > 0) %>% #FIXME
   geom_point(aes(y = 10131, x = 7705), color = "red", shape = 0, size = 3) +
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm") +
+  geom_smooth(color = "light blue") +
   labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
        x = "Technical Terms in Comment",
@@ -488,6 +489,7 @@ eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME
   aes(x = Total_Legal_Citations, y = efficacy) + 
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm") +
+  geom_smooth(color = "light blue") +
   labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        color = "",
        y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
@@ -515,13 +517,47 @@ eXsplot +
   annotate(y = 10131, x = 31, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
 ```
 
+
+### Efficacy by Volunteers  
+
+
+```{r efficacyXvol, fig.height=3.5, fig.width=5}
+
+
+efficacyXvol <- commenter_assets %>% 
+  left_join(efficacy) %>% 
+  mutate(efficacy = replace_na(efficacy, 0),
+         org = ifelse(comment_url %in% d$comment_url, "Matched organization", "Individual or\nunmatched organization") )
+
+
+eXvplot <- efficacyXvol %>% # filter(efficacy > 0) %>% #FIXME 
+  ggplot() +
+  aes(x = TotalVolunteersCnt, y = efficacy) + 
+  #geom_point(aes(y = 10131, x = 7705), color = "red", shape = 0, size = 3) +
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm") +
+  geom_smooth(color = "light blue") +
+  labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXvol) %>% prettyNum(big.mark = ",")),
+       y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+       x = "Volunteers",
+       color = "") +
+  theme(legend.position = "bottom")
+
+eXvplot #+ annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
+
+eXvplot + 
+  scale_x_log10() +
+  scale_y_log10()
+```
+
+
 ---
   
 <!-- DO NOT MODIFY MAIN DATA (d) BELOW---> 
 
 ---
 
-### Number of comments per agency
+# Number of comments per agency
 
 Technical terms measured for `r d %>% filter(comment_url %in% technical_terms$comment_url) %>% nrow()` of `r nrow(d)` comments.
 
@@ -568,7 +604,8 @@ p <- b %>%
   aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
       y = Total_Legal_Citations ) + 
   geom_point(alpha = .5) + 
-  geom_smooth(method = "lm"
+  geom_smooth(method = "lm",
+  color = "light blue"
   ) + 
   labs(x = "Assets",
        y = "Legal Citations", 
@@ -1102,7 +1139,7 @@ To assess sophistication as a mediator between wealth and the influence of publi
 These models have the prefix `mem_`. The dependent variable is the efficacy score. The mediator is technical terms.
 
 ### Assets x legal citations
-```{r mediation-assets-bluebook, fig.width=4, fig.height=3}
+```{r mediation-assets-bluebook, fig.width=4.5, fig.height=3}
 library(mediation)
 
 b$org_type %>% unique
@@ -1264,7 +1301,6 @@ Xnames <- c("age", "educ", "gender", "income")
 
 lapply(X = framing, class)
 
-library(mediation)
 framing %<>%
   mutate(cond_int = as.numeric(as.character(cond)))
 
@@ -1283,7 +1319,7 @@ summary(m.med.cont)
 ```
 
 ### Assets x technical terms
-```{r mediation-assets-terms, fig.width=4, fig.height=3}
+```{r mediation-assets-terms, fig.width=4.5, fig.height=3}
 # model predicting mediator, sophistication 
 model.m <- lm(dictionary_terms ~ assets,  
               data = b  %>% mutate(assets = assets/10000000000) %>% 
@@ -1317,7 +1353,7 @@ plot(med.cont,
 ```
 
 ### Market cap x legal citations
-```{r mediation-marketcap-bluebook, fig.width=4, fig.height=3}
+```{r mediation-marketcap-bluebook, fig.width=4.5, fig.height=3}
 # model predicting mediator, sophistication 
 model.m <- lm(Total_Legal_Citations ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
@@ -1325,7 +1361,7 @@ model.m <- lm(Total_Legal_Citations ~ marketcap2,
 
 # model predicting DV
 model.y <- glm(efficacy ~ Total_Legal_Citations + marketcap2,  
-               data = b  %>% mutate(assets = marketcap2/10000000000))
+               data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
 
 models <- list(model.m, model.y)
 
@@ -1352,7 +1388,7 @@ plot(med.cont,
 
 
 ### Market cap x technical terms 
-```{r mediation-marketcap-terms, fig.width=4, fig.height=3}
+```{r mediation-marketcap-terms, fig.width=4.5, fig.height=3}
 # model predicting mediator, sophistication 
 model.m <- lm(dictionary_terms ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
@@ -1387,7 +1423,7 @@ plot(med.cont,
 
 ### Market cap x technical terms  x legal citations 
 
-```{r mediation-marketcap-terms-bluebook, fig.width=4, fig.height=3}
+```{r mediation-marketcap-terms-bluebook, fig.width=4.5, fig.height=3}
 # model predicting mediator, sophistication 
 model.m1 <- lm(dictionary_terms ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
@@ -1434,6 +1470,88 @@ plot(med.cont, main = "Legal Citations as a Mediator Between\nAssets and Lobbyin
 #FI
 # modelsummary::modelsummary(med.cont)
 ```
+
+## Market Cap x Political Spending 
+```{r mediation-marketcap-lobbying, fig.width=4.75, fig.height=3}
+
+lobbying_and_contributions <- read_csv( here::here("data", "Lobbying_and_Contributions.csv")  )
+
+lobbying_and_contributions %<>%
+  mutate(best_match_name = tolower(orgName)) %>%
+  dplyr::select(best_match_name, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) 
+
+mediation_data <- b %>%
+  tidylog::left_join(lobbying_and_contributions, by = "best_match_name") %>%
+  tidylog::distinct(comment_url, .keep_all = T) %>%
+  mutate(TotalLobbyingAmount = ifelse(is.na(TotalLobbyingAmount), 0, TotalLobbyingAmount),
+         TotalContribAmount = ifelse(is.na(TotalContribAmount), 0, TotalContribAmount),
+         marketcap2 = marketcap2/10000000000,
+         TotalLobbyingAmount = TotalLobbyingAmount/1000000, 
+         TotalContribAmount = TotalContribAmount/1000000, ) 
+
+mediation_data %>% 
+  dplyr::select(marketcap2, TotalContribAmount, TotalLobbyingAmount) %>% 
+  drop_na(marketcap2) %>%
+  skimr::skim()
+
+# model predicting mediator, sophistication 
+model.m1.cont <- lm(TotalContribAmount ~ marketcap2,  
+              data = mediation_data  %>% 
+                drop_na(TotalContribAmount, efficacy, marketcap2))
+
+# model predicting DV
+model.y.cont <- glm(efficacy ~ TotalContribAmount + marketcap2,  
+               data = mediation_data %>% 
+                drop_na(TotalContribAmount, efficacy, marketcap2) )
+
+med.cont <- mediate(model.m1.cont, model.y.cont, sims=1000, treat = "marketcap2", 
+                    mediator = "TotalContribAmount", robustSE = T, boot = T, 
+                    control.value = 0.1, treat.value = 1)
+
+summary(med.cont)
+
+model.m2.lob <- lm(TotalLobbyingAmount ~ marketcap2,  
+              data = mediation_data  %>% 
+                drop_na(TotalLobbyingAmount, efficacy, marketcap2))
+
+model.y.lob <- glm(efficacy ~ TotalLobbyingAmount + marketcap2,  
+               data = mediation_data %>% 
+                drop_na(TotalLobbyingAmount, efficacy, marketcap2) )
+
+med.lob <- mediate(model.m2.lob, model.y.lob, sims=1000, treat = "marketcap2", 
+                   mediator = "TotalLobbyingAmount",
+                   robustSE = T, boot = T, 
+                    control.value = 0.1, treat.value = 1)
+
+summary(med.lob)
+
+models <- list(model.m1.cont, model.m2.lob, model.y.cont, model.y.lob)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "PAC Contributions",
+   `2` = "Lobbying",
+  `3` = "Efficacy",
+    `4` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models)
+
+
+plot(med.cont, main = "Political Contributions as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule\nPer Million Dollars in PAC Contributions")
+
+plot(med.lob, main = "Lobbying Expenditure as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule\nPer Million Dollars in Total Lobbying Expenditure")
+
+
+
+#FI
+# modelsummary::modelsummary(med.cont)
+```
+
 
 # Save data 
 
