@@ -1,7 +1,10 @@
 
 requires <- c("bookdown",
+              "cowplot", #FIXME not sure where this is called but modelsummary seems to want it?
+              "maps",
               "scales",
               "magrittr",
+              "readxl",
               #"broom",
               "here",
               #"msm",
@@ -24,17 +27,18 @@ rm(requires, to_install)
 
 library(scales)
 library(magrittr)
-#library(broom)
-#library(dotwhisker)
+library(readxl)
+# library(maps) # don't load library because it replaces purrr:map()
 library(here)
 library(knitr)
 options(kableExtra.latex.load_packages = FALSE)
 library(kableExtra)
-#library(mediation)
+library(mediation)
 #library(lme4)
 #library(lmerTest)
-#library(fixest)
 library(modelsummary)
+library(marginaleffects)
+library(fixest)
 library(tidyverse)
 
 # slides
@@ -289,19 +293,23 @@ modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)
   aes(shape = model)
 
 
-# SLIDE FORMATTING
-style_mono_light(base_color = "#3b444b",
-                 link_color = "#B7E4CF",
-                 #background_color = "#FAF0E6", # linen
-                 header_font_google = google_font("PT Sans"),
-                 text_font_google = google_font("Old Standard"),
-                 text_font_size = "18px",
-                 padding = "10px",
-                 code_font_google = google_font("Inconsolata"),
-                 code_inline_background_color    = "#F5F5F5",
-                 table_row_even_background_color = "#ddede5",
-                 extra_css =
-                   list(".remark-slide-number" = list("display" = "none")))
+style_mono_light(base_color = "#000000", # "#F2DFCE",
+                 link_color	 = "#0D7680",
+                 inverse_link_color	 = "#FFCFB3",
+                 background_color = "#FFF1E0",
+                 header_background_content_padding_top = "7rem",
+                 table_row_even_background_color = "#FFCFB3",
+                 header_font_google = google_font("Playfair Display"),
+                 text_font_google = google_font("Playfair Display"),
+                 base_font_size = "30px",
+                 text_font_size = "1rem",
+                 code_font_size = "1rem",
+                 header_h1_font_size = "1.5rem",
+                 header_h2_font_size = "1.25rem",
+                 header_h3_font_size = "1.25rem",
+                 padding = "25px",
+                 code_font_google = google_font("Inconsolata")
+)
 
 options(scipen=999)
 
@@ -346,3 +354,4 @@ densityplot <- function(data,
           plot.caption = element_text(hjust = 0),
           axis.text.y = element_blank())
 }
+

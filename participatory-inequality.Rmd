@@ -34,18 +34,18 @@ link-citations: yes
 frontpage: true
 # urlcolor: black
 toc: false
-output: word_document
-# output:
-#   bookdown::pdf_document2:
-#     template: assets/article-template.tex
-spacing: doublespacing # onehalfspacing # 
+# output: word_document
+output:
+  bookdown::pdf_document2:
+    template: assets/article-template.tex
+spacing:  onehalfspacing # doublespacing #
 bibliography: '`r here::here("assets/finreg.bib")`'
 biblio-style: '`r here::here("assets/apsr.bst")`'
 anonymous: false
 ---
 
 ```{r, echo=F, message=F, warning=F}
-source("code/setup.R")
+source(here::here("code/setup.R"))
 
 # overide defaults 
 knitr::opts_chunk$set(echo = FALSE,
@@ -420,7 +420,7 @@ Table \ref{tab:mp-all-table} shows the results of two logit models predicting th
 # Models of the number of rules commented on by assets
 load(here::here("models", "mpAll.Rdata"))
 
-#modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference category = Banks")  %>% kableExtra::kable_styling()
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference category = Banks")  %>% kableExtra::kable_styling()
     #FIXME sometimes scale_down causes an error 
 ```
 
@@ -463,8 +463,7 @@ knitr::include_graphics(c(
 # Models of the number of rules commented on by assets
 load(here::here("models", "rules-by-assets.Rdata"))
 
-#modelsummary(models, caption = "OLS Predicting the Number of Dodd-Frank Rules On Which an Organization Commented")  %>% 
-#  kableExtra::kable_styling(latex_options = c("scale_down"))     
+modelsummary(models, caption = "OLS Predicting the Number of Dodd-Frank Rules On Which an Organization Commented")  %>%  kableExtra::kable_styling(latex_options = c("scale_down"))     
 ```
 
 OLS regression models presented in Table \@ref(tab:rules-by-assets) show statistically significant relationships between wealth and frequency of commenting on Dodd-Frank rules for banks, credit unions, and campaign donors and therefore provide additional evidence in support of Hypothesis 3. For instance, these results suggest that for. For every additional billion dollars in assets under management, banks commented on about 12 additional Dodd-Frank rules on average. 
@@ -766,7 +765,7 @@ Table \ref{tab:mp-assets-table} presents the full regression table for models sh
 ```{r mp-assets-table, fig.pos = "!H", out.extra = ""}
 load(here::here("models", "pr-of-comment.Rdata"))
 
-#modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule")  %>% kableExtra::kable_styling()
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule")  %>% kableExtra::kable_styling()
 ```
 
 Table \ref{tab:mpFDIC-table} presents the full regression table for models shown in Figure \ref{fig:mpFDIC}.
@@ -774,7 +773,7 @@ Table \ref{tab:mpFDIC-table} presents the full regression table for models shown
 ```{r mpFDIC-table}
 load(here::here("models", "mpFDIC.Rdata"))
 
-#modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Reference category = savings associations")  %>% kableExtra::kable_styling()
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Reference category = savings associations")  %>% kableExtra::kable_styling()
 ```
 
 
