@@ -2604,17 +2604,19 @@ save(models, rows, cm, gof_map, modelsummary,
 
 ### Campaign Donors
 
-```{r mp-opensecrets}
+```{r mp-opensecrets-predict, fig.height=2.5, fig.width=3.5}
 # TODO JOIN org_type2 and lobbying expend
 
-opensecrets %<>% mutate(MeanContribAmount_m = MeanContribAmount/1000000,
+opensecrets %<>% mutate(MeanContribAmount_t = MeanContribAmount/1000,
+                        TotalContribAmount_t = TotalContribAmount/1000,
+                        MeanContribAmount_m = MeanContribAmount/1000000,
                         TotalContribAmount_m = TotalContribAmount/1000000)
 
-mpOpensecrets <- glm(commented ~ MeanContribAmount_m,
+mpOpensecrets <- glm(commented ~ MeanContribAmount_t,
            data = opensecrets, 
              family=binomial(link="logit"))
 
-mpOpensecrets_total <- glm(commented ~ TotalContribAmount_m,
+mpOpensecrets_total <- glm(commented ~ TotalContribAmount_t,
            data = opensecrets, 
              family=binomial(link="logit"))
 
@@ -2638,7 +2640,7 @@ modelsummary(models)
 # A data frame of values at which to estimate probabilities:
 values <- opensecrets %>% 
   #filter(org_type == "Bank") %>% 
-  tidyr::expand(MeanContribAmount = seq(0,100000,1000) )#, org_type = "Bank") 
+  tidyr::expand(MeanContribAmount_t = seq(0,500,100) )#, org_type = "Bank") 
 
 predicted <- marginaleffects::predictions(mpOpensecrets,
                          newdata = values) 
@@ -2649,14 +2651,14 @@ names(predicted)
 # As a plot
 p <- predicted %>% 
   ggplot() + 
-  aes(x = MeanContribAmount, y = estimate#, shape = org_type, color = org_type
+  aes(x = MeanContribAmount_t, y = estimate#, shape = org_type, color = org_type
       ) + 
   geom_pointrange(aes(ymin = conf.low,
                   ymax = conf.high), alpha = .7, position = position_dodge(width = 0.010) )  + 
   geom_hline(yintercept = 0, linetype = 2) +
   #coord_flip() +
   labs(y = 'Probability of Commenting', 
-       x = "PAC Contributions",
+       x = "PAC Contributions ($1,000s)",
        color = "",#color = '"Environmental Justice"\nRaised by Comments',
        shape = "",#shape = '"Environmental Justice"\nRaised by Comments', 
        title = "") + 
