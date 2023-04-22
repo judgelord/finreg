@@ -427,9 +427,34 @@ d %<>% add_count(comment_org_name, name = "org_comments") %>%
 d %>% distinct(comment_url) %>% nrow()
 
 
+
+
+
+# Merge in original organization names
+comments <- read_csv(here::here("data", "comment_url_orgs.csv"))
+
+non_orgs <- c("none", "self", "myself", "privat", "private", "person", "trader", "(none)", "broker", "-none-", "[none]", "artist",
+              "church", "client", "family", "my own", "no org", "online", "retired", "citizen", "unknown", "realtor", "student",
+              "home", "bank", "plan", "retiree", "america", "beehive", "college", "farming", "just me", "manager", "realter", "retierd", "self ..", "traders",
+              "n.a.", "nada", "????", "investor", "consumer", "personal","attorney", "american", "congress", "customer",
+              "disabled", "invester", "the bank", "a friend", "autonomy",
+              "1123", "1967", "1961")
+
+comments %<>% drop_na(organization) %>%
+  mutate(organization = str_to_lower(organization) %>% str_squish()) %>%
+  filter(nchar(organization) >3,
+         !organization %in% non_orgs)
+
+comments %>%  filter(nchar(organization) == 8 ) %>%
+  count(organization, sort = T) %>% kablebox()
+
+d %<>% left_join(comments)
+
 match_data_clean <- d %>%
   # filter(!is.na(best_match_type)) %>%
   distinct()
+
+
 
 # save comment-level match data
 save(match_data_clean, file = here("data", "match_data_clean.Rdata"))
@@ -439,19 +464,19 @@ save(match_data_clean, file = here("data", "match_data_clean.Rdata"))
 # TO INVESTIGATE
 d_raw %>% filter(str_detect(best_match_name_nonprofit, "petroleum")) %>%
   select(comment_org_name, best_match_name, contains("best_match_name_"), contains("name")) %>% distinct() %>%  kablebox()
-nonprofit_resources %>% filter(str_detect(str_to_lower(name), "petroleum institute"))  %>%
-   distinct() %>% kablebox()
+
+# nonprofit_resources %>% filter(str_detect(str_to_lower(name), "petroleum institute"))  %>%   distinct() %>% kablebox()
 
 
 d_raw %>% filter(str_detect(best_match_name, "jp morgan chase bank")) %>%
   select(comment_org_name, best_match_name, contains("best_match_name_"), contains("name")) %>% distinct() %>%  kablebox()
-nonprofit_resources %>% filter(str_detect(str_to_lower(name), "jp morgan chase bank")) %>%
-  distinct() %>% kablebox()
+
+# nonprofit_resources %>% filter(str_detect(str_to_lower(name), "jp morgan chase bank")) %>% distinct() %>% kablebox()
 
 d_raw %>% filter(str_detect(best_match_name_nonprofit, "yale")) %>%
   select(comment_org_name, best_match_name, contains("best_match_name_"), contains("name")) %>% distinct() %>%  kablebox()
-nonprofit_resources %>% filter(str_detect(str_to_lower(name), "yale (u|l|c)")) %>%
-  distinct() %>% kablebox()
+
+# nonprofit_resources %>% filter(str_detect(str_to_lower(name), "yale (u|l|c)")) %>%  distinct() %>% kablebox()
 
 
 

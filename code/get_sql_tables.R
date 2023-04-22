@@ -14,6 +14,8 @@ comments <- dbGetQuery(con, "SELECT * FROM comments")
 
 head(comments)
 
+# write_csv(distinct(comments, comment_url, organization), file = here::here("data", "comment_url_orgs.csv"))
+
 attachments <- dbGetQuery(con, "SELECT comment_url, attachment_url FROM attachments")
 
 head(attachments)
