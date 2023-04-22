@@ -176,6 +176,9 @@ load(here::here("data", "commenter_assets.Rdata"))
 
 d <- commenter_assets
 
+# patch since I got rid of the original org type 
+d$org_type <- d$org_type2
+
 #FIXME MOVE TO TOP 
 d$comment_url %<>% str_replace("document\\?D=", "comment/")
 
@@ -188,6 +191,9 @@ d %>% arrange(marketcap2) %>%
 
 d %>% arrange(-MeanContribAmount) %>% 
   dplyr::select(org_name, MeanContribAmount, comment_url) %>% kablebox()
+
+d %>% filter(str_dct(org_name, "chamber")) %>% 
+  dplyr::select(organization, comment_org_name, org_name, assets, revenue, MeanContribAmount, comment_url) %>% kablebox()
 ```
 
 ---
@@ -1352,12 +1358,17 @@ plot(med.cont,
      xlab = "Words from Comment Added to Final Rule")
 ```
 
+
+## Efficacy by Market Cap
+
+
 ### Market cap x legal citations
 ```{r mediation-marketcap-bluebook, fig.width=4.5, fig.height=3}
+
 # model predicting mediator, sophistication 
 model.m <- lm(Total_Legal_Citations ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
-                drop_na(Total_Legal_Citations, efficacy))
+                drop_na(Total_Legal_Citations, efficacy) )
 
 # model predicting DV
 model.y <- glm(efficacy ~ Total_Legal_Citations + marketcap2,  
@@ -1383,7 +1394,7 @@ summary(med.cont)
 
 plot(med.cont, 
      main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success",       
-     xlab = "Words from Comment Added to Final Rule")
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 ```
 
 
@@ -1418,18 +1429,18 @@ summary(med.cont)
 
 plot(med.cont, 
      main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",     
-     xlab = "Words from Comment Added to Final Rule")
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 ```
 
 ### Market cap x technical terms  x legal citations 
 
 ```{r mediation-marketcap-terms-bluebook, fig.width=4.5, fig.height=3}
 # model predicting mediator, sophistication 
-model.m1 <- lm(dictionary_terms ~ marketcap2,  
+model.m1.terms <- lm(dictionary_terms ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
                 drop_na(dictionary_terms, efficacy))
 
-model.m2 <- lm(Total_Legal_Citations ~ marketcap2,  
+model.m1.legal <- lm(Total_Legal_Citations ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
                 drop_na(Total_Legal_Citations, efficacy))
 
@@ -1437,7 +1448,8 @@ model.m2 <- lm(Total_Legal_Citations ~ marketcap2,
 model.y <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations +  marketcap2,  
                data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
 
-models <- list(model.m1, model.m2, model.y)
+
+models.med1 <- list(model.m1.terms, model.m1.legal, model.y)
 
 rows <- tibble(
   term = c("Dependent Variable"),
@@ -1449,23 +1461,23 @@ rows <- tibble(
 attr(rows, 'position') <- c(0)
 
 
-modelsummary(models)
+modelsummary(models.med1)
 
-med.cont <- mediate(model.m1, model.y, sims=1000, treat = "marketcap2",
+save(models.med1, rows, file = here::here("models", "models.med2.Rdata"))
+
+med.terms <- mediate(model.m1.terms, model.y, sims=1000, treat = "marketcap2",
 mediator = "dictionary_terms")
 
-summary(med.cont)
+plot(med.terms, main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
-plot(med.cont, main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
-     xlab = "Words from Comment Added to Final Rule")
-
-med.cont <- mediate(model.m2, model.y, sims=1000, treat = "marketcap2",
+med.legal <- mediate(model.m1.legal, model.y, sims=1000, treat = "marketcap2",
 mediator = "Total_Legal_Citations")
 
-summary(med.cont)
+summary(med.legal)
 
-plot(med.cont, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success",       
-     xlab = "Words from Comment Added to Final Rule")
+plot(med.legal, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
 #FI
 # modelsummary::modelsummary(med.cont)
@@ -1495,7 +1507,7 @@ mediation_data %>%
   skimr::skim()
 
 # model predicting mediator, sophistication 
-model.m1.cont <- lm(TotalContribAmount ~ marketcap2,  
+model.cont <- lm(TotalContribAmount ~ marketcap2,  
               data = mediation_data  %>% 
                 drop_na(TotalContribAmount, efficacy, marketcap2))
 
@@ -1504,13 +1516,13 @@ model.y.cont <- glm(efficacy ~ TotalContribAmount + marketcap2,
                data = mediation_data %>% 
                 drop_na(TotalContribAmount, efficacy, marketcap2) )
 
-med.cont <- mediate(model.m1.cont, model.y.cont, sims=1000, treat = "marketcap2", 
+med.cont <- mediate(model.cont, model.y.cont, sims=1000, treat = "marketcap2", 
                     mediator = "TotalContribAmount", robustSE = T, boot = T, 
-                    control.value = 0.1, treat.value = 1)
+                    control.value = 1, treat.value = 2)
 
 summary(med.cont)
 
-model.m2.lob <- lm(TotalLobbyingAmount ~ marketcap2,  
+model.lob <- lm(TotalLobbyingAmount ~ marketcap2,  
               data = mediation_data  %>% 
                 drop_na(TotalLobbyingAmount, efficacy, marketcap2))
 
@@ -1518,30 +1530,38 @@ model.y.lob <- glm(efficacy ~ TotalLobbyingAmount + marketcap2,
                data = mediation_data %>% 
                 drop_na(TotalLobbyingAmount, efficacy, marketcap2) )
 
-med.lob <- mediate(model.m2.lob, model.y.lob, sims=1000, treat = "marketcap2", 
+med.lob <- mediate(model.lob, model.y.lob, sims=1000, treat = "marketcap2", 
                    mediator = "TotalLobbyingAmount",
                    robustSE = T, boot = T, 
-                    control.value = 0.1, treat.value = 1)
+                    control.value = 1, treat.value = 2)
 
 summary(med.lob)
 
-models <- list(model.m1.cont, model.m2.lob, model.y.cont, model.y.lob)
+model.y <- glm(efficacy ~ TotalLobbyingAmount + TotalContribAmount + marketcap2,  
+               data = mediation_data %>% 
+                drop_na(TotalLobbyingAmount, efficacy, marketcap2) )
+
+
+
+models.med.spending <- list(model.cont, model.lob, model.y.cont, model.y.lob, model.y)
 
 rows <- tibble(
   term = c("Dependent Variable"),
   `1` = "PAC Contributions",
    `2` = "Lobbying",
   `3` = "Efficacy",
-    `4` = "Efficacy"
+    `4` = "Efficacy",
+  `5` = "Efficacy"
 )
 
 attr(rows, 'position') <- c(0)
 
-modelsummary(models)
+modelsummary(models.med.spending)
 
+save(models.med.spending, rows, file = here::here("models", "models.med.spending.Rdata"))
 
 plot(med.cont, main = "Political Contributions as a Mediator Between\nAssets and Lobbying Success",       
-     xlab = "Words from Comment Added to Final Rule\nPer Million Dollars in PAC Contributions")
+     xlab = "Words from Comment Added to Final Rule")
 
 plot(med.lob, main = "Lobbying Expenditure as a Mediator Between\nAssets and Lobbying Success",       
      xlab = "Words from Comment Added to Final Rule\nPer Million Dollars in Total Lobbying Expenditure")
@@ -1551,6 +1571,158 @@ plot(med.lob, main = "Lobbying Expenditure as a Mediator Between\nAssets and Lob
 #FI
 # modelsummary::modelsummary(med.cont)
 ```
+
+
+## Market Cap mediated by Sophistication or Political Spending
+```{r mediation-marketcap-terms-lobbying, fig.width=4.75, fig.height=3}
+model.m2.lob <- lm(TotalLobbyingAmount ~ marketcap2,  
+              data = mediation_data  %>% 
+                drop_na(TotalLobbyingAmount, efficacy, marketcap2))
+
+model.m2.terms <- lm(dictionary_terms ~ marketcap2,  
+              data = mediation_data  %>% 
+                drop_na(dictionary_terms, efficacy, marketcap2))
+
+model.y2 <- glm(efficacy ~ TotalLobbyingAmount + marketcap2+ dictionary_terms,  
+               data = mediation_data %>% 
+                drop_na(TotalLobbyingAmount, efficacy, marketcap2, dictionary_terms) )
+
+med.lob.2 <- mediate(model.m2.lob, model.y2, sims=1000, treat = "marketcap2", 
+                   mediator = "TotalLobbyingAmount",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+med.terms.2 <- mediate(model.m2.terms, model.y2, sims=1000, treat = "marketcap2", 
+                   mediator = "dictionary_terms",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+summary(med.lob.2)
+summary(med.terms.2)
+
+
+models.m2 <- list(model.m2.lob, model.m2.terms, model.y2)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+   `1` = "Lobbying",
+  `2` = "Technical Terms",
+    `3` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models.m2)
+
+
+
+
+plot(med.terms.2, main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule")
+
+plot(med.lob.2, main = "Lobbying Expenditure as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule\nPer Million Dollars in Total Lobbying Expenditure")
+
+
+
+#FI
+# modelsummary::modelsummary(med.cont)
+```
+
+
+
+### Testing 4 pathways to influence
+
+- PAC donations 
+- Lobbying spending (LDA data)
+- Technical Terms
+- Legal Citations
+
+```{r mediation-4way, fig.width=4.75, fig.height=3}
+mediation_data4 <- mediation_data  %>% 
+                drop_na(efficacy,
+                        marketcap2, 
+                        TotalLobbyingAmount, 
+                        TotalContribAmount,
+                        dictionary_terms,
+                        Total_Legal_Citations)
+
+model.m4.cont <- lm(TotalContribAmount ~ marketcap2,  
+              data = mediation_data4)
+
+model.m4.lob <- lm(TotalLobbyingAmount ~ marketcap2,  
+              data = mediation_data4)
+
+model.m4.terms <- lm(dictionary_terms ~ marketcap2,  
+              data = mediation_data4)
+
+model.m4.legal <- lm(Total_Legal_Citations ~ marketcap2,  
+              data = mediation_data4)
+
+
+model.y4 <- glm(efficacy ~ marketcap2 + TotalLobbyingAmount + TotalContribAmount + dictionary_terms + Total_Legal_Citations,  
+               data = mediation_data4 )
+
+med.cont.4 <- mediate(model.m4.cont, model.y4, sims=1000, treat = "marketcap2", 
+                   mediator = "TotalContribAmount",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+med.lob.4 <- mediate(model.m4.lob, model.y4, sims=1000, treat = "marketcap2", 
+                   mediator = "TotalLobbyingAmount",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+med.terms.4 <- mediate(model.m4.terms, model.y4, sims=1000, treat = "marketcap2", 
+                   mediator = "dictionary_terms",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+med.legal.4 <- mediate(model.m4.legal, model.y4, sims=1000, treat = "marketcap2", 
+                   mediator = "Total_Legal_Citations",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+
+
+models.m4 <- list(model.m4.cont, model.m4.lob, model.m4.terms, model.m4.legal, model.y4)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+   `1` = "PAC Spending",
+     `2` = "Lobbying Spending",
+  `3` = "Technical Terms",
+     `4` = "Legal Citations",
+    `5` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models.m4)
+
+save(models.m4, file = here::here("models", "models.m4.Rdata"))
+
+
+plot(med.terms.4, main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+
+
+plot(med.legal.4, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+
+plot(med.cont.4, main = "Political Spending as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+
+plot(med.lob.4, main = "Lobbying Expenditure as a Mediator Between\nAssets and Lobbying Success",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+
+
+
+#FI
+# modelsummary::modelsummary(med.cont)
+```
+
+
 
 
 # Save data 
