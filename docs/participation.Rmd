@@ -259,7 +259,36 @@ docket_table %>%
   scroll_box(height = "400px")
 ```
 
-Load comments matched to org names
+
+### Load asset data 
+```{r}
+#FDIC-density
+# load(here("data", "FDIC_resources.Rdata"))
+
+# CSVs for simplicity 
+FDIC_resources <- read_csv(here::here("data", "merged_resources", "FDIC_Institutions.csv"))
+
+#load the full population of campaign donors 
+creditunions <- read_csv(here("Data" , "creditunions.csv") %>% str_remove("finreg/") )
+
+#load the full population of campaign donors 
+opensecrets <- read_csv(here("data" , "merged_resources", 
+"opensecrets_resources_JwVersion.csv") )
+
+# all nonprofit data from IRS 
+nonprofit_resources <- read_csv(here("data", "merged_resources", "nonprofits_resources.csv"))
+
+# CIK org names + market cap from compustat (in casees where the compustat version of the name matched better )
+cik <- read_csv(here("data/merged_resources/CIK.csv"))
+
+compustat <- read_csv(here("data/merged_resources/compustat_resources.csv"))
+
+# CIK org names + market cap from compustat (in casees where the compustat version of the name matched better )
+sec <- read_csv(here("data/merged_resources/SEC_Institutions.csv")) %>% 
+  rename(cik = CIK)
+```
+
+### Load comments matched to org names
 ```{r data-match-clean}
 # clean match data from finreg_commenter_covariates
 load(here("data", "match_data_clean.Rdata"))
@@ -301,10 +330,6 @@ d %<>%
     parentID =    `opensecrets_resources_jwVersion-bestMatch:parentID`
   )
 ```
-
-
-
-
 
 
 
@@ -575,11 +600,6 @@ d %>% group_by(Agency) %>%
 ### FDIC Data 
 
 ```{r FDIC-density, fig.height=2, fig.width=3, out.width="50%"}
-#FDIC-density
-# load(here("data", "FDIC_resources.Rdata"))
-
-# CSVs for simplicity 
-FDIC_resources <- read_csv(here::here("data", "merged_resources", "FDIC_Institutions.csv"))
 
 # FDIC DATA ARE UNIQUE TO CERT but not to RSSD 
  FDIC_resources %>% count(NAME,  CERT, sort = T)
@@ -592,7 +612,7 @@ d_banks <- d %>% filter(org_type2 == "Bank")
 FDIC_resources %<>%
   dplyr::select(NAME, NAMEHCR, STALP, STNAME, BKCLASS, ASSET, CERT, FED_RSSD) %>% 
   mutate(org_name = str_to_lower(NAME)) %>% 
-  mutate(commented = org_name %in% d_banks$best_match_name | org_name %in% d_banks$FDIC_Institutions_name | CERT %in% d_banks$`FDIC_Institutions-bestMatch:CERT` | FED_RSSD %in% d_banks$rssd)
+  mutate(commented = org_name %in% d_banks$best_match_name | org_name %in% d_banks$FDIC_Institutions_name |  org_name %in%  d_banks$organization | CERT %in% d_banks$CERT | FED_RSSD %in% d_banks$rssd)
 
 FDIC_resources %>% count(commented)
 
@@ -691,9 +711,12 @@ This appears to be caused by commenting organizations matching to other FDIC cla
 FDIC_resources %>% filter(BKCLASS == "N") %>% distinct(org_name, ASSET, Commented) %>% arrange(-ASSET) %>% kablebox()
 
 # jpmorgan and wells fargo banks 
-FDIC_resources %>% filter(str_detect(org_name, "jpmorgan|wells fargo|^bank of america|capital one|td bank|chase bank")) %>% distinct(BKCLASS, org_name, ASSET, Commented) %>% arrange(-ASSET) %>% kablebox()
+FDIC_resources %>% filter(str_detect(org_name, "morgan|jp morgan|morgan chase|wells fargo|^bank of america|capital one|td bank|chase bank")) %>% distinct(BKCLASS, org_name, ASSET, CERT, Commented) %>% arrange(-ASSET) %>% kablebox()
 
+d %>% filter(str_dct(org_name, "jp morgan chase bank")) %>% kablebox()
 
+# FIXME ???? WHERE IS JP MORGAN CHACE IN THE FDIC DATA? 
+FDIC_resources %>% filter(CERT == 3249 | CERT == 23614)
 
 FDIC_resources %>% count(Commented) %>% mutate(percent = n/nrow(FDIC_resources))
 
@@ -760,7 +783,7 @@ FDIC_resources %<>%
 
 # density plot without N and OI
 FDIC_resources %>%
-   densityplot(caption = str_c("Welch t-test of difference in means, p = ", fdic_t$p.value %>% signif(1), "\nOmits foreign banks and national associations"))
+   densityplot(caption = str_c("Welch t-test of difference in means, p = ", fdic_t$p.value  %>% round(20) %>% signif(1), "\nOmits foreign banks and national associations"))
 ```
 
 ```{r FDIC-count-select, fig.height=3, fig.width=4, out.width="50%"}
@@ -780,7 +803,7 @@ FDIC_resources %>%
   scale_x_log10() + 
   labs(title = str_c("U.S. FDIC-Insured Banks, N = ", nrow(FDIC_resources)%>% prettyNum(big.mark = ",")) ,
        fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", fdic_t$p.value %>% signif(1), "\nOmits foreign banks and national associations")) + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_t$p.value  %>% round(20) %>% signif(1), "\nOmits foreign banks and national associations")) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -801,7 +824,7 @@ FDIC_resources %>%
     geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
   scale_x_log10() + 
   labs(title = "FDIC-Insured Commercial Banks",fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", fdic_tNM$p.value %>% signif(1)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tNM$p.value  %>% round(20) %>% signif(1)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -820,7 +843,7 @@ FDIC_resources %>%
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
   scale_x_log10() + 
   labs(title = "FDIC-Insured Savings Banks",fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSB$p.value %>% signif(1)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSB$p.value  %>% round(20) %>% signif(1)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -840,7 +863,7 @@ FDIC_resources %>%
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
 scale_x_log10() + 
   labs(title = "FDIC-Insured State Banks",fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSM$p.value %>% signif(1)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSM$p.value  %>% round(20) %>% signif(1)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -859,7 +882,7 @@ FDIC_resources %>%
       geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
 scale_x_log10() + 
   labs(title = "FDIC-Insured Savings Associations",fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSA$p.value %>% signif(1)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSA$p.value  %>% round(20) %>% signif(1)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -872,26 +895,26 @@ FDIC_resources %>%
   densityplot(
     title = "FDIC-Insured Commercial Banks",
     x = "Assets (Thousands)",
-    caption = str_c("Welch t-test of difference in means, p = ", fdic_tNM$p.value %>% signif(1)))
+    caption = str_c("Welch t-test of difference in means, p = ", fdic_tNM$p.value  %>% round(20) %>% signif(1)))
   
 
 FDIC_resources %>%
   filter(ASSET > 10, BKCLASS %in% c("SB")) %>% 
   densityplot(title = "FDIC-Insured Savings Banks", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSB$p.value %>% signif(1)))
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSB$p.value  %>% round(20) %>% signif(1)))
 
 
 FDIC_resources %>%
   filter(ASSET > 10, BKCLASS %in% c("SM")) %>% 
   densityplot(title = "FDIC-Insured State Banks",
               x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSM$p.value %>% signif(1)))
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSM$p.value  %>% round(20) %>% signif(1)))
 
 FDIC_resources %>%
   filter(ASSET > 10, BKCLASS %in% c("SA")) %>% 
   densityplot(title = "FDIC-Insured Savings Associations",
               x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSA$p.value %>% signif(1)))
+       caption = str_c("Welch t-test of difference in means, p = ", fdic_tSA$p.value  %>% round(20) %>% signif(1)))
 ```
 
 
@@ -937,9 +960,6 @@ states %>%
 # nonprofits in commenter data 
 d_nonprofits <- d %>% filter(org_type2 %in% c("Credit Union", "Other Nonprofit"))
 
-# all nonprofit data from IRS 
-nonprofit_resources <- read_csv(here("data", "merged_resources", "nonprofits_resources.csv"))
-
 # inspect 
 nonprofit_resources %>% kablebox()
 
@@ -948,7 +968,7 @@ nonprofit_resources %>% kablebox()
 nonprofit_resources %<>% distinct(name, ein, assets, revenue)
 
 # indicator variable for commenting 
-nonprofit_resources %<>% mutate(commented = str_to_lower(name) %in% d_nonprofits$org_name | ein %in% d_nonprofits$`nonprofits_resources-bestMatch:ein`) #
+nonprofit_resources %<>% mutate(commented = str_to_lower(name) %in% d_nonprofits$org_name | str_to_lower(name) %in% d_nonprofits$organization | ein %in% d_nonprofits$`nonprofits_resources-bestMatch:ein`) #
 
 # join in comment counts 
 # nonprofit_resources %<>% left_join(org_count %>% mutate(name = org_name) , n))
@@ -1021,7 +1041,7 @@ nonprofit_resources %>%
               by = 1000,
               title = "Non-profits",
                x = "Assets (Thousands)",
-              caption = str_c("Welch t-test of difference in means, p = ", nonprofit_t$p.value %>% signif(1))) 
+              caption = str_c("Welch t-test of difference in means, p = ", nonprofit_t$p.value  %>% round(20) %>% signif(1))) 
 
 
 nonprofit_resources %>% 
@@ -1030,7 +1050,7 @@ nonprofit_resources %>%
               by = 1000,
               title = "Non-profits",
                x = "Revenue (Thousands)",
-              caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value %>% signif(1))) 
+              caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value  %>% round(20) %>% signif(1))) 
 
 # old density plots 
 nonprofit_resources %>% 
@@ -1041,7 +1061,7 @@ nonprofit_resources %>%
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
        fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_t$p.value %>% signif(1)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_t$p.value  %>% round(20) %>% signif(1)))  + 
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1055,7 +1075,7 @@ nonprofit_resources %>%
   scale_x_log10() + 
   labs(fill = "", y = "", x = "Revenue (Thousands)",
        title = str_c("Non-profits, N = ", nrow(nonprofit_resources)),
-       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value %>% signif(1)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value  %>% round(20) %>% signif(1)))  + 
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -1104,7 +1124,7 @@ nonprofit_resources %>%
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources) %>% prettyNum(big.mark = ",") ),
        fill = "", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_t$p.value  %>% signif(1)
+       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_t$p.value   %>% round(20) %>% signif(1)
                        ))  + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -1121,7 +1141,7 @@ nonprofit_resources %>%
   scale_x_log10() + 
   labs(title = str_c("Non-profits, N = ", nrow(nonprofit_resources)%>% prettyNum(big.mark = ",")),
        fill = "", y= "", x = "Revenue ($1,000s)",
-       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value  %>% signif(1)
+       caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value   %>% round(20) %>% signif(1)
                        ))  + 
   facet_grid(Commented ~ ., scales = "free_y")+
   theme(panel.grid.major.y = element_blank(),
@@ -1149,9 +1169,6 @@ nonprofit_resources %>%
 ```{r creditunion-density, fig.height= 3, fig.width=4, out.width="50%"}
 #creditunion-density
 
-#load the full population of campaign donors 
-creditunions <- read_csv(here("Data" , "creditunions.csv") %>% str_remove("finreg/") )
-
 creditunions %<>% 
   group_by(CU_NAME) %>% 
   top_n(1, `Total Assets`) %>% 
@@ -1159,7 +1176,7 @@ creditunions %<>%
 
 creditunions %<>% mutate(org_name = tolower(CU_NAME),
                          assets = `Total Assets`,
-                         commented = org_name %in% d$best_match_name | RSSD %in% d$rssd,
+                         commented = org_name %in% d$best_match_name | org_name %in% d$organization | RSSD %in% d$rssd,
                          Commented = ifelse(commented, "Commented", "Did not comment"))
 
 creditunions %>% count(Commented) %>% mutate(percent = n/nrow(creditunions))
@@ -1175,7 +1192,7 @@ creditunions %>%
               by = 1000000,
               x = "Assets (Millions)",
               title = "Credit Unions", 
-              caption = str_c("Welch t-test of difference in means, p = ", creditunion_t$p.value %>% signif(1)))
+              caption = str_c("Welch t-test of difference in means, p = ", creditunion_t$p.value  %>% round(20) %>% signif(1)))
   
 #   
 # creditunions %>% 
@@ -1187,7 +1204,7 @@ creditunions %>%
 #   labs(fill = "", x = "Assets (Millions)", 
 #        title = str_c("Credit Unions, N = ", nrow(creditunions)%>% prettyNum(big.mark = ",")),
 #        fill = "", y = "",
-#        caption = str_c("Welch t-test of difference in means, p = ", creditunion_t$p.value %>% signif(1)))  + 
+#        caption = str_c("Welch t-test of difference in means, p = ", creditunion_t$p.value  %>% round(20) %>% signif(1)))  + 
 #   theme(panel.grid.major.y = element_blank(),
 #         panel.grid.minor.y = element_blank(),
 #         axis.text.y = element_blank())
@@ -1221,7 +1238,7 @@ creditunions %>%
   scale_x_log10() + 
   labs(title = str_c("Credit Unions, N = ", nrow(creditunions)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test of difference in means, p = ", creditunion_t$p.value %>% signif(1)))  + 
+       caption = str_c("Welch t-test of difference in means, p = ", creditunion_t$p.value  %>% round(20) %>% signif(1)))  + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -1239,18 +1256,12 @@ creditunions %>%
 ```{r opensecrets-density, fig.height=3, fig.width=4, out.width="50%"}
 #opensecrets-density
 
-#load the full population of campaign donors 
-opensecrets <- read_csv(here("data" , "merged_resources", 
-"opensecrets_resources_JwVersion.csv") )
-
-
-
 
 # indicator for whether they commented
 opensecrets %<>% 
   mutate(org_name = orgName %>% str_to_lower(),
          Commented = ifelse(
-    org_name %in% d$best_match_name | org_name %in% d$opensecrets_resources_name | parentID %in% d$parentID, # FIXME this name does not exactly match across datasets 
+    org_name %in% d$best_match_name | org_name %in% d$organization | org_name %in% d$opensecrets_resources_name | parentID %in% d$parentID, # FIXME this name does not exactly match across datasets 
     "Commented", 
     "Did not comment"))
 
@@ -1298,7 +1309,7 @@ opensecrets %>%
               by = 1000,
               title = "Campaign Donors",
               x =  "Mean Contribution ($1,000s, 2010-2017)",
-       caption = str_c("Welch t-test of difference in means, p = ", opensecrets_t$p.value %>% signif(1))
+       caption = str_c("Welch t-test of difference in means, p = ", opensecrets_t$p.value  %>% round(20) %>% signif(1))
        )
 
 opensecrets %>% 
@@ -1348,7 +1359,7 @@ opensecrets %>%
   scale_x_log10() + 
   labs(title = str_c("Campaign Donors, N = ", nrow(opensecrets)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Political Action Committee Donations (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", opensecrets_t$p.value %>% signif(1))
+       caption = str_c("Welch t-test of difference in means, p = ", opensecrets_t$p.value %>% round(20) %>%  signif(1))
        ) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -1373,7 +1384,6 @@ d$cik %<>% str_squish() %>% as.numeric() %>% formatC(width = 10, format = "d", f
 d_companies = d %>% filter(org_type2 %in% c("Bank", "Other Company"))
 
 
-compustat <- read_csv(here("data/merged_resources/compustat_resources.csv"))
 compustat$cik %>% nchar() %>% unique()
 
 # WE CANT JUST MERGE ON CIK
@@ -1391,8 +1401,7 @@ compustat %>% kablebox()
 ### CIK data
 
 ```{r}
-# CIK org names + market cap from compustat (in casees where the compustat version of the name matched better )
-cik <- read_csv(here("data/merged_resources/CIK.csv"))
+
 
 cik$cik %>% nchar() %>% unique()
 
@@ -1417,9 +1426,7 @@ cik %>% kablebox()
 ### SEC data
 
 ```{r}
-# CIK org names + market cap from compustat (in casees where the compustat version of the name matched better )
-sec <- read_csv(here("data/merged_resources/SEC_Institutions.csv")) %>% 
-  rename(cik = CIK)
+
 
 sec$cik %>% nchar() %>% unique()
 
@@ -1462,7 +1469,7 @@ compustat %>% filter(str_detect(conm, "MBMI RESOURCES INC"))
 
 compustat %<>% mutate(
   org_name = coalesce(conm, company_name, Name) %>% str_to_lower(),
-  commented = cik %in% d_companies$cik,
+  commented = cik %in% d_companies$cik | org_name %in% d_companies$organization,
   Commented = ifelse(commented, "Commented", "Did not comment")
 )
 
@@ -1538,7 +1545,7 @@ compustat %>%
               by = 1000000, 
               title = "Publicly-traded Companies",
        x = "Market Capitalization (Millions)",
-       caption = str_c("Welch t-test of difference in means, p = ", compustat_t$p.value %>% signif(1) )
+       caption = str_c("Welch t-test of difference in means, p = ", compustat_t$p.value  %>% round(20) %>% signif(1) )
        )
 ```
 
@@ -1568,7 +1575,7 @@ compustat %>%
   scale_x_log10() + 
   labs(title = str_c("Publicly-traded Companies, N = ", nrow(compustat)%>% prettyNum(big.mark = ",")),
        fill = "", y = "", x = "Market Cap (Millions)",
-       caption = str_c("Welch t-test of difference in means, p = ", compustat_t$p.value %>% signif(1))
+       caption = str_c("Welch t-test of difference in means, p = ", compustat_t$p.value  %>% round(20) %>% signif(1))
        ) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -1576,10 +1583,67 @@ compustat %>%
         legend.position = "none")
 ```
 
-## Merging in asset data 
+
+
+
+# Post-hoc corrections 
+
+```{r posthoc}
+# FIXME 
+# A FEW IMPORTANT  POST HOC CORRECTIONS 
+nonprofit_resources %>% filter(str_dct(name, "chamber of commerce")) %>%
+  mutate(name = str_to_lower(name) )%>% 
+  arrange(-assets) %>% 
+           kablebox()
+
+opensecrets %>% filter(str_dct(org_name, "chamber of commerce")) %>%
+  arrange(-TotalContribAmount) %>% 
+           kablebox()
+
+d %>% filter(str_dct(org_name, "chamber")) %>%
+  distinct(organization, comment_org_name, org_name, ein) %>% 
+           kablebox()
+
+d %<>% 
+  mutate(ein = ifelse(comment_org_name %in% c("us chamber commerce", "chamber commerce"), 
+                       530045720,
+                       ein),
+         org_name = ifelse(comment_org_name %in% c("us chamber commerce", "chamber commerce"), 
+                       "us chamber of commerce",
+                       org_name))
+
+
+# API 
+nonprofit_resources %>% filter(str_dct(name, "petroleum institute")) %>%
+  mutate(name = str_to_lower(name) )%>% 
+  arrange(-assets) %>% 
+           kablebox()
+
+d %>% filter(str_dct(org_name, "petroleum institute")) %>%
+  distinct(organization, comment_org_name, org_name, ein) %>% 
+           kablebox()
+
+opensecrets %>% filter(str_dct(org_name, "petroleum institute")) %>%
+  arrange(-TotalContribAmount) %>% 
+           kablebox()
+
+
+d %<>% 
+  mutate(ein = ifelse(comment_org_name %in% c("petroleum institute", "petroleum institute"), 
+                       130433430,
+                       ein),
+         org_name = ifelse(comment_org_name %in% c("petroleum institute", "petroleum institute"), 
+                       "american petroleum institute",
+                       org_name)
+         )
+
+```
+
+
+
+# Merging in asset data 
 
 ```{r merge}
-
 #FIXME 
 # WE SHOULD NOT BE MERGING ON ORG NAME UNLESS IT IS A UNIQUE ID
 # AS OF 20-04-2023, org name is not the same as the names in these datasets, so I'm merging nonprofits on ein
@@ -1804,7 +1868,9 @@ d %<>% left_join(irs)
 
 ## Save asset data
 ```{r save}
-#FIXME ideally, all edits to these data would be in clean_match_data
+#FIXME ideally, all edits to these data would be in clean_asset_data.R
+# however, that requires knowing all of the asset data we want 
+
 # market cap
 
 d  %<>% mutate(
@@ -1991,7 +2057,7 @@ asset_counts %>%
   scale_x_log10() + 
   labs(title = "Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
         fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_nonprofits_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_nonprofits_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2004,7 +2070,7 @@ asset_counts %>%
   scale_x_log10() + 
   labs(title = "Nonprofits" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
         fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_nonprofits_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_nonprofits_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2066,7 +2132,7 @@ asset_counts %>%
   labs(title = "FDIC-Insured Banks" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting",
        y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_fdic_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_fdic_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2079,7 +2145,7 @@ asset_counts %>%
   labs(title = "FDIC-Insured Banks" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting",
        y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_fdic_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_fdic_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2143,7 +2209,7 @@ asset_counts %>%
   labs(title = "Credit Unions" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting",
        y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_creditunion_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_creditunion_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2156,7 +2222,7 @@ asset_counts %>%
   labs(title = "Credit Unions" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting",
        y = "", x = "Assets (Millions)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_creditunion_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_creditunion_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2175,7 +2241,7 @@ modelsummary(list(m_creditunion_count))
 ```
 
 
-For every additional billion in assets, a credit union comments on about `r round(m_creditunion_count$coefficients[2]* 10,0) ` additional rules. 
+For every additional 10 billion in assets, a credit union comments on about `r round(m_creditunion_count$coefficients[2]* 10,0) ` additional rules. 
 
 
 ---
@@ -2224,7 +2290,7 @@ asset_counts %>%
   scale_x_log10() + 
   labs(title = "Publicly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_compustat_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_compustat_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2237,7 +2303,7 @@ asset_counts %>%
   scale_x_log10() + 
   labs(title = "Publicly-Traded Companies" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
        fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_compustat_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_compustat_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2256,7 +2322,7 @@ modelsummary(list(m_compustat_count))
 ```
 
 
-For every additional 10 billion in assets, a nonprofit comments on about `r round(m_compustat_count$coefficients[2]* 10,0) ` additional rules. 
+For every additional 100 billion in market cap, a company comments on about `r round(m_compustat_count$coefficients[2]* 100,0) ` additional rules. 
 
 ---
 
@@ -2300,7 +2366,7 @@ asset_counts %>%
   labs(title = "Campaign Donors" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
         fill = "Frequency of\nCommenting", 
        y = "", x = "PAC Donations (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_pac_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_pac_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2314,7 +2380,7 @@ asset_counts %>%
   labs(title = "Campaign Donors" %>% str_c(", N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
         fill = "Frequency of\nCommenting", 
        y = "", x = "PAC Donations (Thousands)",
-       caption = str_c("Welch t-test of difference in means, p = ", rules_pac_t$p.value %>% signif(1)))+
+       caption = str_c("Welch t-test of difference in means, p = ", rules_pac_t$p.value  %>% round(20) %>% signif(1)))+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.y = element_blank())
@@ -2715,7 +2781,8 @@ all <- full_join(
   creditunions %>% dplyr::select(assets, commented) %>% mutate(org_type = "Credit union")
   )
 
-all %<>% mutate(assets_b = assets  / 100000000) # %>% filter(org_type != " SB", org_type != " SM")
+all %<>% mutate(assets_b = assets  / 100000000,
+                assets_b2 = assets_b^2) # %>% filter(org_type != " SB", org_type != " SM")
 
 mpAll <- glm(commented ~ assets_b + org_type,
            data = all, 
@@ -2733,11 +2800,11 @@ mpAllilog <- glm(commented ~ log(assets_b+1) * org_type,
            data = all, 
              family=binomial(link="logit"))
 
-mpAllquad <- glm(commented ~ assets_b + assets_b^2 + org_type,
+mpAllquad <- glm(commented ~ assets_b + assets_b2 + org_type,
            data = all, 
              family=binomial(link="logit"))
 
-mpAlliquad <- glm(commented ~ assets_b * org_type + assets_b^2 * org_type ,
+mpAlliquad <- glm(commented ~ assets_b * org_type + assets_b2 * org_type ,
            data = all, 
              family=binomial(link="logit"))
 
@@ -2777,7 +2844,8 @@ range(all$ASSET)
 # A data frame of values at which to estimate probabilities:
 values <- all %>% 
   #filter(org_type == "Bank") %>% 
-  tidyr::expand(assets_b = seq(0,1,.1), org_type)#, org_type = "Bank") 
+  tidyr::expand(assets_b = seq(0,1,.1), org_type) %>% 
+  mutate(assets_b2 = assets_b^2)
 ```
 
 ### Base model with interactions (2) 
