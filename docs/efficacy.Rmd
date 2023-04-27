@@ -528,7 +528,7 @@ eXsplot +
 
 
 ```{r efficacyXvol, fig.height=3.5, fig.width=5}
-
+#efficacyXvol
 
 efficacyXvol <- commenter_assets %>% 
   left_join(efficacy) %>% 
@@ -610,9 +610,8 @@ p <- b %>%
   aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
       y = Total_Legal_Citations ) + 
   geom_point(alpha = .5) + 
-  geom_smooth(method = "lm",
-  color = "light blue"
-  ) + 
+  geom_smooth(method = "lm") +
+  geom_smooth(color = "light blue") + 
   labs(x = "Assets",
        y = "Legal Citations", 
        title = "FDIC-Insured Banks")
@@ -629,8 +628,8 @@ p <- b %>%
   aes(x = assets, 
       y = Total_Legal_Citations) + 
   geom_jitter(alpha = .5) + 
-  geom_smooth(method = "lm"
-  )+ 
+  geom_smooth(method = "lm" )+ 
+    geom_smooth(color = "light blue") + 
   labs(x = "Assets",
        y = "Legal Citations",
        title = "Nonprofits")
@@ -649,6 +648,7 @@ p <- b %>%
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
+    geom_smooth(color = "light blue") + 
   labs(x = "Mean PAC Contribution ($1,000)",
        y = "Legal Citations",
        title = "Campaign Donors")
@@ -669,6 +669,7 @@ p <- b %>%
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
+    geom_smooth(color = "light blue") + 
   labs(x = "Market Capitalization (Billions)",
        y = "Legal Citations",
        title = "Publicly-Traded Companies")
@@ -703,6 +704,7 @@ p <- t %>%
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
+    geom_smooth(color = "light blue") + 
   labs(x = "Assets ($1,000)",
        y = "Technical Terms",
        title = "Nonprofits")
@@ -724,6 +726,7 @@ p <- t %>%
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
+    geom_smooth(color = "light blue") + 
   labs(x = "Assets ($1,000)",
        y = "Technical Terms",
        title = "Credit Unions")
@@ -745,6 +748,7 @@ p <- t %>%
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
+    geom_smooth(color = "light blue", formula = y ~ poly(x, 3)) + 
   labs(x = "Market Capitalization ($1,000,000)",
        y = "Technical Terms",
        title = "Publicly-Traded Companies")
@@ -766,6 +770,7 @@ p <- t %>%
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
+    geom_smooth(color = "light blue") + 
   labs(x = "Assets ($1,000)",
        y = "Technical Terms", 
        title = "FDIC-Insured Banks")
@@ -794,6 +799,7 @@ p <- t %>%
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
+    geom_smooth(color = "light blue") + 
   labs(x = "Mean PAC Contribution ($1,000)",
        y = "Technical Terms",
        title = "Campaign Donors")
@@ -828,7 +834,7 @@ p <- e %>%
 
 p
 
-p + 
+p +     geom_smooth(color = "light blue") + 
   scale_y_log10() +
   scale_x_log10()
 
@@ -847,23 +853,25 @@ p <- e %>%
 
 p
 
-p + 
+p +     geom_smooth(color = "light blue") + 
   scale_y_log10() +
   scale_x_log10()
 
 
 
+e %>% drop_na(marketcap2) %>%  count(marketcap2, org_name, sort = T)
 
 
 # market cap
 p <- e %>% 
-  filter(!is.na(marketcap2)) %>% 
+  filter(!is.na(marketcap2), marketcap2 > 1000000) %>% 
   ggplot() +
   aes(x = marketcap2/1000000, 
       y = efficacy) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
+  #geom_smooth(color = "light blue", formula=lm(y ~ poly(x, 3))) + 
   labs(x = "Market Capitalization ($1,000,000)",
        y = "Words in Comment\nAdded to Final Rule",
        title = "Publicly-traded Companies")
@@ -871,6 +879,7 @@ p <- e %>%
 p
 
 p + 
+    geom_smooth(color = "light blue") + 
   scale_y_log10() +
   scale_x_log10()
 
@@ -882,15 +891,15 @@ p <- e %>%
       y = efficacy# , color = BKCLASS #TODO 
       ) + 
   geom_point(alpha = .5) + 
-  geom_smooth(method = "lm"
-  ) + 
+  geom_smooth(method = "lm" ) + 
+  #geom_smooth() + 
   labs(x = "Assets ($1,000)",
        y = "Words in Comment\nAdded to Final Rule", 
        title = "FDIC-Insured Banks")
 
 p
 
-p + 
+p +     geom_smooth(color = "light blue") + 
   scale_y_log10() +
   scale_x_log10()
 
@@ -917,6 +926,7 @@ p <- e %>%
 p
 
 p + 
+      geom_smooth(color = "light blue") + 
   scale_y_log10() +
   scale_x_log10()
 ```
@@ -937,6 +947,7 @@ p <- e %>%
 p
 
 p + 
+      geom_smooth(color = "light blue") + 
   scale_y_log10() +
   scale_x_log10()
 ```
@@ -955,7 +966,7 @@ p <- e %>%
 
 p
 
-p + 
+p +     geom_smooth(color = "light blue") + 
   scale_y_log10() +
   scale_x_log10()
 ```
@@ -1178,8 +1189,8 @@ mediator = "Total_Legal_Citations")
 
 summary(med.cont)
 
-plot(med.cont, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success", 
-     xlab = "Words From Comment Added to Final Rule")
+plot(med.cont, main = "Legal Citations", 
+     xlab = "Words From Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 #modelplot(med.cont) + labs()
 ```
 
@@ -1354,8 +1365,8 @@ mediator = "dictionary_terms")
 summary(med.cont)
 
 plot(med.cont, 
-     main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
-     xlab = "Words from Comment Added to Final Rule")
+     main = "Technical Terms",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 ```
 
 
@@ -1393,13 +1404,15 @@ mediator = "Total_Legal_Citations")
 summary(med.cont)
 
 plot(med.cont, 
-     main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success",       
+     main = "Legal Citations",       
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 ```
 
 
 ### Market cap x technical terms 
 ```{r mediation-marketcap-terms, fig.width=4.5, fig.height=3}
+#mediation-marketcap-terms
+
 # model predicting mediator, sophistication 
 model.m <- lm(dictionary_terms ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
@@ -1428,13 +1441,15 @@ mediator = "dictionary_terms")
 summary(med.cont)
 
 plot(med.cont, 
-     main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",     
+     main = "Technical Terms",     
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 ```
 
 ### Market cap x technical terms  x legal citations 
 
 ```{r mediation-marketcap-terms-bluebook, fig.width=4.5, fig.height=3}
+# mediation-marketcap-terms-blueboo
+
 # model predicting mediator, sophistication 
 model.m1.terms <- lm(dictionary_terms ~ marketcap2,  
               data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
@@ -1468,7 +1483,7 @@ save(models.med1, rows, file = here::here("models", "models.med2.Rdata"))
 med.terms <- mediate(model.m1.terms, model.y, sims=1000, treat = "marketcap2",
 mediator = "dictionary_terms")
 
-plot(med.terms, main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
+plot(med.terms, main = "Technical Terms",       
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
 med.legal <- mediate(model.m1.legal, model.y, sims=1000, treat = "marketcap2",
@@ -1476,7 +1491,7 @@ mediator = "Total_Legal_Citations")
 
 summary(med.legal)
 
-plot(med.legal, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success",       
+plot(med.legal, main = "Legal Citations",       
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
 #FI
@@ -1484,7 +1499,8 @@ plot(med.legal, main = "Legal Citations as a Mediator Between\nAssets and Lobbyi
 ```
 
 ## Market Cap x Political Spending 
-```{r mediation-marketcap-lobbying, fig.width=4.75, fig.height=3}
+```{r mediation-marketcap-lobbying, fig.width=4.5, fig.height=3}
+#mediation-marketcap-lobbying
 
 lobbying_and_contributions <- read_csv( here::here("data", "Lobbying_and_Contributions.csv")  )
 
@@ -1560,11 +1576,11 @@ modelsummary(models.med.spending)
 
 save(models.med.spending, rows, file = here::here("models", "models.med.spending.Rdata"))
 
-plot(med.cont, main = "Political Contributions as a Mediator Between\nAssets and Lobbying Success",       
-     xlab = "Words from Comment Added to Final Rule")
+plot(med.cont, main = "Political Contributions",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
-plot(med.lob, main = "Lobbying Expenditure as a Mediator Between\nAssets and Lobbying Success",       
-     xlab = "Words from Comment Added to Final Rule\nPer Million Dollars in Total Lobbying Expenditure")
+plot(med.lob, main = "Lobbying Expenditure",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
 
 
@@ -1574,7 +1590,8 @@ plot(med.lob, main = "Lobbying Expenditure as a Mediator Between\nAssets and Lob
 
 
 ## Market Cap mediated by Sophistication or Political Spending
-```{r mediation-marketcap-terms-lobbying, fig.width=4.75, fig.height=3}
+```{r mediation-marketcap-terms-lobbying, fig.width=4.5, fig.height=3}
+#mediation-marketcap-terms-lobbying
 model.m2.lob <- lm(TotalLobbyingAmount ~ marketcap2,  
               data = mediation_data  %>% 
                 drop_na(TotalLobbyingAmount, efficacy, marketcap2))
@@ -1617,11 +1634,11 @@ modelsummary(models.m2)
 
 
 
-plot(med.terms.2, main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
-     xlab = "Words from Comment Added to Final Rule")
+plot(med.terms.2, main = "Technical Terms",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
-plot(med.lob.2, main = "Lobbying Expenditure as a Mediator Between\nAssets and Lobbying Success",       
-     xlab = "Words from Comment Added to Final Rule\nPer Million Dollars in Total Lobbying Expenditure")
+plot(med.lob.2, main = "Lobbying Expenditure",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
 
 
@@ -1638,7 +1655,9 @@ plot(med.lob.2, main = "Lobbying Expenditure as a Mediator Between\nAssets and L
 - Technical Terms
 - Legal Citations
 
-```{r mediation-4way, fig.width=4.75, fig.height=3}
+```{r mediation-4way, fig.width=4.5, fig.height=3}
+# mediation-4way
+
 mediation_data4 <- mediation_data  %>% 
                 drop_na(efficacy,
                         marketcap2, 
@@ -1700,26 +1719,61 @@ attr(rows, 'position') <- c(0)
 
 modelsummary(models.m4)
 
-save(models.m4, file = here::here("models", "models.m4.Rdata"))
+save(models.m4, rows, file = here::here("models", "models.m4.Rdata"))
 
 
-plot(med.terms.4, main = "Technical Terms as a Mediator Between\nAssets and Lobbying Success",       
+plot(med.terms.4, main = "Technical Terms",       
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
 
-plot(med.legal.4, main = "Legal Citations as a Mediator Between\nAssets and Lobbying Success",       
+plot(med.legal.4, 
+     main = "Legal Citations",       
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
-plot(med.cont.4, main = "Political Spending as a Mediator Between\nAssets and Lobbying Success",       
+plot(med.cont.4, main = "Political Spending",       
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
-plot(med.lob.4, main = "Lobbying Expenditure as a Mediator Between\nAssets and Lobbying Success",       
+plot(med.lob.4, main = "Lobbying Expenditure",       
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+```
+
+### ACME 
+
+TODO: use `multimed`
+```{r mediation-4way-acme, fig.width=4.5, fig.height=1.65}
+#mediation-4way-acme
+extract_acme <- function(x){
+ tibble(  
+  term = x$mediator,
+  d0 = x$d0,
+  d0.ci_low = x$d0.ci[1],
+    d0.ci_high = x$d0.ci[2],
+  )
+}
+
+extract_acme(med.lob.4)
+
+models <- list(med.cont.4, med.lob.4, med.terms, med.legal)
+
+acme <- purrr::map_df(models, extract_acme)
 
 
+acme %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount", "PAC Spending") %>% 
+         str_replace( "TotalLobbyingAmount", "Lobbying Spending") %>% 
+         str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
+         str_replace("dictionary_terms", " Technical Sophistication")) %>% 
+  ggplot() +
+  aes(x = d0, 
+      xmin = d0.ci_low, 
+      xmax = d0.ci_high, 
+      y = term) + 
+    geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
+  geom_pointrange() + 
+  labs(y = "Mediator", x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
+  theme(panel.grid.major.y = element_blank())
 
-#FI
-# modelsummary::modelsummary(med.cont)
+
 ```
 
 
