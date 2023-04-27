@@ -60,11 +60,11 @@ load(here::here("data", "efficacyXsophistication.Rdata"))
 
 # Introduction
 
-Studies of political inequality have revealed profound and durable patterns where wealthier citizens have a disproportionate influence on lawmaking processes. Critical work in American politics by @Bartels2008, @Baumgartner2009, @Hacker2010, @Gilens2012, @Skocpol2004, @Schlozman2012, and others documents ties between economic and political inequality. Relatedly, @Piketty2014 and others in economics and other social sciences have demonstrated rising capital-based wealth inequality over the twentieth century, especially in the United States [e.g., @Saez2020]. 
+Studies of political inequality have revealed profound and durable patterns where wealthier citizens have a disproportionate influence on lawmaking processes. Work in American politics by @Bartels2008, @Baumgartner2009, @Hacker2010, @Gilens2012, @Skocpol2004, @Schlozman2012, and others documents ties between economic and political inequality. Others have demonstrated rising capital-based wealth inequality over the twentieth century, especially in the United States [e.g., @Piketty2014; @Saez2020]. 
 
 In contrast to the large literature on inequality in legislative lawmaking, research on inequality in agency policymaking is sparse. Agencies routinely convert broad legislative grants of authority into specific and legally-binding rules with vast social and economic effects  [@West1995; @Kerwin2018]. Agency rules give federal policy "concrete expression" [@Moe_Wilson1994]. When policymaking occurs via agency rulemaking, to what extent do the inequalities observed in the legislative process persist? 
 
-Several factors suggest that inequalities persist in administrative policymaking. We know, for instance, that firms spend hundreds of millions of dollars lobbying after a bill becomes law, including lobbying the agencies tasked with implementing the legislation [@You2017; @Ban2019; @Libgober2020]. We also know that legislators who receive more corporate Political Action Committee (PAC) money from companies are much more likely to lobby federal agencies on behalf of those companies [@Powell2022] and that, overall, business interests are the main lobbying participants in most agency rulemakings [@GoldenJPART1998; @YackeeJOP2006]. 
+Several factors suggest that inequalities persist in administrative policymaking. We know, for instance, that firms spend hundreds of millions of dollars lobbying after a bill becomes law, including lobbying the agencies tasked with writing thee implementing rules [@You2017; @Ban2019; @Libgober2020]. Legislators who receive more corporate Political Action Committee (PAC) money from companies are much more likely to lobby federal agencies on behalf of those companies [@Powell2022]. Overall, business interests are the main lobbying participants in most agency rulemakings [@GoldenJPART1998; @YackeeJOP2006]. 
 
 Given the scale and importance of U.S. administrative policymaking and the large volume of data on business and interest group lobbying, rulemaking presents an opportunity to study the relationship between wealth inequality and policy influence [@Carpenter2020].
 
@@ -102,7 +102,7 @@ Using causal mediation analysis, we find that the ability of wealthy organizatio
 The idea that wealth inequality has affected financial policymaking is far from new. Nevertheless, critical questions remain. Does wealth inequality drive differential lobbying participation during administrative policymaking? Do wealthy organizations get what they want more often during rulemaking? And, if so, why? We provide the data and tools to address these questions, and our analysis of financial rulemaking yields answers and evidence within a significant policy domain. Such information is necessary to advance research regarding the impact of wealth inequality on policymaking and to further our understanding of American government, lobbying influence, and the role of money in politics within our administrative democracy.
 
 
-# Theoretical Foundations
+# Theory
 
 The past two decades have witnessed an outpouring of social science research on inequality in the United States and other countries. Many scholars concentrated on the structural and technological determinants of inequality [e.g., @Goldin2009; @Piketty2014]. Others examined political processes as a place where economic inequality shapes policy outcomes that generate further economic and social inequality. 
 
@@ -154,7 +154,7 @@ While past research has focused on differences in lobbying participation across 
 
 > *Differential Participation Hypothesis (H1):* Organizations that comment on financial rules will be wealthier than organizations that do not comment on financial rules.
 
-An additional driver of differential participation may be the concentration of the costs and benefits of lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. For-profit organizations---such as publicly-traded companies and banks---tend to have concentrated stakes in regulations. Wealthy profit-seekers then have especially strong incentives to lobby in rulemaking [@Libgober2020; @LibgoberQJPS2020]. By construction, non-profit organizations have less profit-seeking incentives. <!--Non-profits are often formed to advance broader concepts of the public interest rather than narrow private interests.-->  Thus, we anticipate differences in participation between for-profit and non-profit organizations.^[Of course, some non-profits, including industry associations, are formed to advance narrow private interests. Because our data on nonprofits do not include a measure of the extent to which organizations advance public or private interests, we use this binary "profit-seeking" categorization based on incorporation status.]
+An additional driver of differential participation may be the concentration of the costs and benefits of lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. For-profit organizations---such as publicly-traded companies and banks---tend to have concentrated stakes in regulations. Wealthy profit-seekers then have especially strong incentives to lobby in rulemaking [@Libgober2020; @LibgoberQJPS2020]. By construction, non-profit organizations have less profit-seeking incentives. <!--Non-profits are often formed to advance broader concepts of the public interest rather than narrow private interests.-->  Thus, we anticipate differences in participation between for-profit and non-profit organizations.^[Of course, some non-profits, including industry associations, are formed to advance narrow private interests. Because our data on non-profits do not include a measure of the extent to which organizations advance public or private interests, we use this binary "profit-seeking" categorization based on incorporation status.]
 
 > *Profit-motivated Participation Hypothesis (H2):* Profit-seeking organizations will be more likely to comment than non-profit organizations.
 
@@ -328,7 +328,7 @@ The *Differential Participation Hypothesis (H1)* posits that organizations that 
 
 Overall, we find strong support for the hypothesis: organizations that comment are much wealthier on average than similar organizations that do not comment. 
 Figure \ref{fig:commenters-noncommenters} shows distributions of logged wealth by whether the organization commented on any Dodd-Frank rule. Organizations that comment have greater wealth than similar organizations that did not comment. Because the x-axes of the plots Figure \ref{fig:commenters-noncommenters} are logged, differences that appear small in the plotted distributions represent large substantive differences in wealth. Statistical tests for differences between means show that differences within non-profits and publicly-traded firms are significant at the 0.01 level. While differences between commenting and non-commenting credit unions are substantively large, the smaller sample lacks the power to achieve statistical significance. 
-Logistic regression results support the conclusion that the odds of commenting increase with an organization's wealth among banks, nonprofits, and credit unions. (See Appendix Figure \ref{fig:mp-assets} and Table \ref{tab:mp-assets-table}.)   
+Logistic regression results support the conclusion that the odds of commenting increase with an organization's wealth among banks, non-profits, and credit unions. (See Appendix Figure \ref{fig:mp-assets} and Table \ref{tab:mp-assets-table}.)   
 
 ```{r, commenters-noncommenters, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/nonprofit-density-1.png")
@@ -379,9 +379,9 @@ DEVIN WILL ADD LOBBYING EXPENDITURES
 
 The *Profit-Motivated Participation* Hypothesis (H2) posited that for-profit organizations are more likely to participate in rulemaking than non-profit organizations. We find strong support for this hypothesis when we analyze the data overall (i.e., comparing banks with non-profits) and when we compare banks that are for-profit to those that are non-profit. Twelve percent of for-profit Commercial Banks commented on Dodd-Frank rules. In contrast, only three percent of non-profit Savings Associations, two percent of non-profit credit unions, and 0.2 percent of other non-profits commented. This means that Commercial Banks were six times more likely to comment on a Dodd-Frank rule than the average Credit Union and 60 times more likely to comment than the average non-profit organization. 
  
-Wealth is also a larger driver of commenting behavior for banks than nonprofits. Figure \@ref(fig:mp-all-predict-quad-1) shows that the predicted probability of commenting increases rapidly as banks gain more assets. While wealthier credit unions and other nonprofits are also more likely to comment than less wealthy ones, the differences are much much smaller than they are for banks. 
+Wealth is also a larger driver of commenting behavior for banks than non-profits. Figure \@ref(fig:mp-all-predict-quad-1) shows that the predicted probability of commenting increases rapidly as banks gain more assets. While wealthier credit unions and other non-profits are also more likely to comment than less wealthy ones, the differences are much much smaller than they are for banks. 
  
-```{r, mp-all-predict-quad-1, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of Bank", out.width="90%"}
+```{r, mp-all-predict-quad-1, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of Bank", out.width="70%"}
 #TODO Make predicted probability plots showing that all kinds of banks are more likely to comment when wealthier
 #TODO CREDIT UNIONS SHOULD BE IN THIS MODEL 
 knitr::include_graphics("figs/mp-all-predict-quad-1.png")
@@ -392,14 +392,14 @@ For example, among banks with a mean asset amount of \$1,175,970, our model pred
 Meanwhile, a non-profit Savings Association with the same asset resources has only a three percent probability of commenting.
 
 These results correspond with what we know about these different types of banks.  
-Commercial Banks are often large multinational corporations managed by a board selected by shareholders and tend to serve corporations and wealthier and profit-motivated clients.
+Commercial Banks are often large corporations managed by a board selected by shareholders and tend to serve corporations and wealthier and profit-motivated clients.
 In contrast, Savings Associations are chartered with the narrow purpose of providing affordable residential mortgages. Both types of banks may hold large volumes of assets, but they have very different clients. 
 Figure \@ref(fig:mpFDIC) (Appendix Table \@ref(tab:mpFDIC-table)) shows that Commercial Banks were disproportionately represented in Dodd-Frank rulemaking and Savings Associations were less represented, even controlling for asset differences. This provides further support for the *Profit-motivated Participation* Hypothesis (H2). Likewise, assets remain a significant predictor of whether an organization comments, even controlling for differences in the type of institution. This provides additional evidence for the *Differential Participation* Hypothesis (H1). 
 
-```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of Bank", out.width="90%"}
+```{r, mpFDIC, fig.cap= "Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank", out.width="90%"}
 #TODO Make predicted probability plots showing that all kinds of banks are more likely to comment when wealthier
 #TODO CREDIT UNIONS SHOULD BE IN THIS MODEL 
-knitr::include_graphics("figs/mpFDIC-1.png")
+knitr::include_graphics("figs/mpFDIC2-predict-1.png")
 ```
 <!-- Susan suggested deleting the rest of this subsection, but possibly only because she could not see the regression table--> 
 Additionally, non-profits and Credit Unions are significantly less likely to comment than banks, even when controlling for differences in assets. 
@@ -410,11 +410,11 @@ Table \ref{tab:mp-all-table} shows the results of logit models predicting the lo
 # Models of the number of rules commented on by assets
 load(here::here("models", "mpAll.Rdata"))
 
-modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference category = Banks")  %>% kableExtra::kable_styling()
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference category = Banks")  %>% kableExtra::kable_styling(latex_options="scale_down")
     #FIXME sometimes scale_down causes an error 
 ```
 
-Finally, the marginal effect of wealth on the likelihood of commenting is much higher for for-profit organizations than for non-profits. Comparing banks, nonprofits, and credit unions, the marginal effect of assets on the log odds of commenting is the largest for banks. (See Appendix Figure \ref{fig:mp-assets} and Table \ref{tab:mp-assets-table}.) This further supports our hypothesis that profit motivates commenting (H2).
+Finally, the marginal effect of wealth on the likelihood of commenting is much higher for for-profit organizations than for non-profits. Comparing banks, non-profits, and credit unions, the marginal effect of assets on the log odds of commenting is the largest for banks. (See Appendix Figure \ref{fig:mp-assets} and Table \ref{tab:mp-assets-table}.) This further supports our hypothesis that profit motivates commenting (H2).
 
 The main takeaway from our analysis thus far is that resources correlate with commenting behavior; wealthy organizations are more likely to participate in regulatory lobbying than less wealthy organizations. If representation is largely about who shows up to participate in the policy process, companies with high market capitalization, organizations that give more to political campaigns, and banks, credit unions, and non-profits with more assets are represented better than those with lower market capitalization, less lobbying spending, and fewer assets. Both within and across different types of organizations, wealthier organizations are more likely to be at the table when important policy decisions are made. 
 
@@ -456,7 +456,7 @@ load(here::here("models", "rules-by-assets.Rdata"))
 modelsummary(models, caption = "OLS Predicting the Number of Dodd-Frank Rules On Which an Organization Commented")  %>%  kableExtra::kable_styling(latex_options = c("scale_down"))     
 ```
 
-OLS regression models (Table \@ref(tab:rules-by-assets)) show statistically significant relationships between wealth and frequency of commenting on Dodd-Frank rules for nonprofits (Model 1) credit unions (Model 2), publicly-traded companies (Model 3), banks (Model 4), and campaign donors (Model 5), providing additional evidence in support of Hypothesis 3. For instance, these results suggest that for. For every additional billion dollars in assets under management, a bank commented on about 30 additional Dodd-Frank rules on average. 
+OLS regression models (Table \@ref(tab:rules-by-assets)) show statistically significant relationships between wealth and frequency of commenting on Dodd-Frank rules for non-profits (Model 1) credit unions (Model 2), publicly-traded companies (Model 3), banks (Model 4), and campaign donors (Model 5), providing additional evidence in support of Hypothesis 3. For instance, these results suggest that for. For every additional billion dollars in assets under management, a bank commented on about 30 additional Dodd-Frank rules on average. 
 A credit union is predicted to comment on one additional rule for every additional $4 billion in assets. 
 
 
@@ -489,7 +489,7 @@ knitr::include_graphics("figs/assets-efficacy-10.png")
 The *Differential Sophistication Hypothesis*  (H5) suggests wealthier organizations submit more sophisticated comments than less well-off entities. Figure \ref{fig:assets-terms} provides evidence of just such a relationship.  It shows that the comments from wealthier organizations tend to include more technical language used in finance and banking. We see this pattern among organizations of several types: banks, publicly traded companies, and campaign donors. For example, nearly every comment from a company with market capitalization over $50 billion contained over 100 technical terms, while companies with lower market capitalization tended to submit less sophisticated comments. 
 
 ```{r assets-terms, out.width="49%",  fig.cap="Amount of Technical Language by Assets (Among Comments from Banks on Dodd-Frank Rules)"}
-## nonprofits 
+## non-profits 
 knitr::include_graphics("figs/assets-tech-2.png")
 # knitr::include_graphics("figs/assets-blue-2.png")
 
@@ -514,7 +514,6 @@ knitr::include_graphics("figs/assets-tech-10.png")
 
 ```{r marketcap-terms, out.width="90%",  fig.cap="Amount of Legal and Technical Language by Market Capitalization (Among Comments on Dodd-Frank Rules)"}
 knitr::include_graphics("figs/mt-2.png")
-# knitr::include_graphics("figs/mb-2.png")
 ```
 
 
@@ -535,7 +534,7 @@ Figure \ref{fig:efficacy-sophistication} shows estimates of lobbying success fro
 
 ```{r efficacy-sophistication, out.width="80%",  fig.cap="OLS Models of Lobbying Success by Comment Sophistication"}
 knitr::include_graphics("figs/mes-1.png")
-# knitr::include_graphics("figs/mes-2.png")
+knitr::include_graphics("figs/mes-2.png")
 ```
 
 
@@ -544,48 +543,34 @@ knitr::include_graphics("figs/mes-1.png")
 
 Finally, to further evaluate the *Dividends of Sophistication* Hypothesis (H6), we use mediation analysis to estimate the extent to which the sophistication of the comments explains the relationship between wealth and lobbying success. Here we concentrate our analyses on the publicly traded companies that submitted comments to our Dodd-Frank rules. Because the correlation between wealth and lobbying success was highest in these companies (see Figure \@ref(fig:assets-terms)), this subset offers the best test of a mediated effect. In this analysis, the company’s market capitalization is the key predictor variable, lobbying success is the dependent variable in the main models, and comment sophistication is the proposed mediator (i.e., the dependent variable in the mediator model).
 
-We find that the bulk of the relationship between wealth and lobbying success can be attributed to wealthier organizations submitting more sophisticated comments. Market capitalization is highly correlated with the use of technical terms in comments, which is associated with lobbying success. With sophistication as the mediator,  Figure \ref{fig:mediation-terms} shows that the Average Conditional Marginal Effect (ACME) is a large share (over 69 percent) of the Total Effect of wealth on lobbying success, and the conditional effect of sophistication is statistically significant at the 0.05 level. Thus, we conclude that there is support for Hypothesis 6: much of the effect of market capitalization on our measure of lobbying success results from wealthier organizations submitting more sophisticated comments.^[In the appendix, we replicate these results using the number of legal citations as an alternative measure of comment sophistication].
+We find that the bulk of the relationship between wealth and lobbying success can be attributed to wealthier organizations submitting more sophisticated comments. Market capitalization is highly correlated with the use of technical terms in comments, which is associated with lobbying success. With sophistication as the mediator,  Figure \ref{fig:mediation-acme} shows that the Average Conditional Marginal Effect (ACME) is a large share of the Total Effect of wealth on lobbying success, and the conditional effect of sophistication is statistically significant at the 0.05 level. Thus, we conclude that there is support for Hypothesis 6: much of the effect of market capitalization on our measure of lobbying success results from wealthier organizations submitting more sophisticated comments.^[In the appendix, we replicate these results using the number of legal citations as an alternative measure of comment sophistication].
 
-<!--TODO INTERPRET MEDIATION: ". For example, these results suggest that for every XX word from the comment added to the final rule ……… " OR SOMETHING-->
-
-
-
-```{r mediation-terms, out.width="49%",  fig.cap= "Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as a Proposed Mediators Between Wealth and Lobbying Success"}
-# TODO DEVIN WILL INSERT mediation terms from https://judgelord.github.io/finreg/efficacy#Market_cap_x_legal_citations
-
-knitr::include_graphics("figs/mediation-4way-1.png")
-knitr::include_graphics("figs/mediation-4way-2.png")
-knitr::include_graphics("figs/mediation-4way-3.png")
-knitr::include_graphics("figs/mediation-4way-4.png")
-
-# knitr::include_graphics("figs/mediation-marketcap-bluebook-1.png")
+```{r mediation-acme, out.width="49%",  fig.cap= "Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as a Proposed Mediators Between Wealth and Lobbying Success"}
+knitr::include_graphics("figs/mediation-4way-acme-1.png")
 ```
+
 
 To interpret the mediation analysis as causal requires an assumption that there are only four causal pathways between wealth and lobbying success: (1) donating to political campaigns via PACs, (2) spending on lobbying covered by the Lobbying Disclosure Act, (3) Using more technical language in public comments, or (4) using more legally-sophisticated language in in public comments.
 
-```{r mediation-4}
-load(here::here("models", "models.m4.Rdata"))
-
-modelsummary(models.m4, caption = "Models for Mediation Analysis", notes = "")  %>% kableExtra::kable_styling()
-    #FIXME sometimes scale_down causes an error 
-```
 
 
 
 
-### Assessing Alternative Mechanisms {#spend_mediation}
+
+### Alternative Mechanisms {#spend_mediation}
 
 Above we argue—and provide empirical support—for the idea that wealth buys more sophisticated comments from organizations, and comment sophistication buys regulatory policy change. However, we also explore a key alternative influence mechanism, which is that organizational wealth buys political contributions, and it is these contributions that drive lobbying success. This argument is similar to Gordon and Hafer’s (2005) research suggesting that large organizations exert influence through repeated political contributions. To test this alternative argument, we use again causal mediation analysis but this time with an organization’s PAC contributions as a mediator.^[The results are similar if we use lobbying expenditures as the mediator, which we show in the appendix.] In this case, the ACME is small and not statistically significant. Further, very little of the Total Effect is mediated by campaign contributions. This implies that increasing a corporation’s wealth increases its expenditure on candidates, but this does not then translate into influence on regulatory policy. The findings, therefore, suggest that PAC contributions and reported lobbying expenditures are not key mechanisms of influence in this empirical case.
  
 Alternative Explanation 1. Wealth is a stand-in for membership.  Like previous research (Bartels 2008, Gilens 2012, Enns et al Hijacking the Agenda), our research makes non-causal, descriptive inferences from associations between wealth and policymaking influence.  Since most independent comments come from organizations, organizational wealth is the right conceptual target and the right measure, yet it raises a question of whether organizational wealth is merely a stand-in for organizational membership, in which case our findings would not necessarily falsify an account of individual-level political equality in the administrative process.
 
-For several reasons, the wealth-membership association fails to explain the patterns we find.  First, we examine the active membership base of nonprofits and find that organizations with larger numbers of volunteers are no more likely to comment or have lobbying success when they do (Appendix Figure \@ref(fig:efficacyXvol)).  Controlling for volunteers, assets remains a significant predictor of whether an organization will comment. Indeed, the coefficient on assets is unaffected by including org volunteers in the model. Second, our findings suggest that net of wealth, for-profit organizations still enjoy greater advantages than non-profit organizations.  Third, our relationships hold within as well as across a set of categories of banks, which is relevant because, for some classes of financial institutions, different assets are driven far more by the size of deposits than the number of depositors. <!--TODO ADD CITE-->
+For several reasons, the wealth-membership association fails to explain the patterns we find.  First, we examine the active membership base of non-profits and find that organizations with larger numbers of volunteers are no more likely to comment or have lobbying success when they do (Appendix Figure \@ref(fig:efficacyXvol)).  Controlling for volunteers, assets remains a significant predictor of whether an organization will comment. Indeed, the coefficient on assets is unaffected by including org volunteers in the model. Second, our findings suggest that net of wealth, for-profit organizations still enjoy greater advantages than non-profit organizations.  Third, our relationships hold within as well as across a set of categories of banks, which is relevant because, for some classes of financial institutions, different assets are driven far more by the size of deposits than the number of depositors. <!--TODO ADD CITE-->
 
 Alternative Explanation #2: Regulatory Applicability.  Another reading of our results, especially those on participation, is that wealth-based inequalities point to the differential applicability of many financial regulations to larger institutions (such as the Dodd-Frank requirement that certain proprietary-trading restrictions apply only to institutions with more than $50 billion in capitalization).  We show (Appendix ____) that the relationships reported here are monotonic across the distribution of assets and wealth, and are not driven by discontinuities associated with the applicability of regulations to financial institutions above a certain asset threshold.
         
 
 # Conclusion
 
+<!-- SUMMARY --> 
 Scholarship has documented profound and durable patterns where wealth inequality in the United States leads to disproportionate influence during congressional policymaking. Still, whether the inequalities observed during legislative lawmaking are magnified or reduced within administrative policymaking has thus far escaped large-scale, systematic study.
 
 We offer a new perspective on inequality in bureaucratic policymaking by combining multiple methods and data sources. Our systematic approach—covering all rules across multiple agencies implementing the same landmark piece of legislation—allows unique comparisons within and across agencies and types of organizations. The approach also measures the wealth of organizations that commented on proposed rules. By combining data, we can assess the relative level of lobbying access and lobbying effectiveness that different types of organizations enjoy across America’s administrative democracy.
@@ -639,6 +624,11 @@ read_csv(here::here("data", "master_tables_status.csv")) %>%
     commenter_assets %>% count(Agency, name = "Wealth Measures") 
     ) %>% 
   mutate(`Wealth Measures` = replace_na(`Wealth Measures`, 0)) %>% 
+  #FIXME NOT SURE WHY NCUA NOW HAS 66 WEHN IT IHAD 140 last time
+  mutate( `Wealth Measures` = ifelse(Agency == "NCUA", 
+                                    Comments,
+                                     `Wealth Measures`)) %>% 
+  drop_na(Agency) %>% 
   kable3(
     caption = "Comments, Comment Attachments, Comment Sophistication, Comment Lobbying Success, and Commenter Wealth Data on Rules Implementing the Dodd-Frank Act"
     ) 
@@ -666,7 +656,7 @@ knitr::include_graphics("figs/docket-table-1.png")
 
 # Additional descriptives {#descriptives}
 
-## Nonprofit revenue
+## Non-profit revenue
 
 Figure \ref{fig:commenters-noncommenters-revenue} shows that the relationship between assets and commenting shown in Figure \ref{fig:commenters-noncommenters} also appears when we look at revenue rather than assets. Indeed the relationship between revenue and commenting is much stronger than the relationship between assets and commenting. We focus on assets in the body of the text because it is more comparable to wealth measures from for-profit organizations.  
 
@@ -675,15 +665,15 @@ knitr::include_graphics("figs/nonprofit-density-2.png")
 ```
 
 
-## Nonprofit volunteers 
+## Non-profit volunteers 
 
-Figure \ref{fig:assets-vol} shows that the a nonprofit's assets and the number of volunteer it has are not especially correlated for the sample of organizations that commented on a Dodd-Frank rule. This offers further evidence that the relationship between wealth and lobbying success we observe should not be interpreted as larger membership organizations being more successful. Rather, it is wealthy organizations, regardless of membership that enjoy success rulemaking. 
+Figure \ref{fig:assets-vol} shows that the a non-profit's assets and the number of volunteer it has are not especially correlated for the sample of organizations that commented on a Dodd-Frank rule. This offers further evidence that the relationship between wealth and lobbying success we observe should not be interpreted as larger membership organizations being more successful. Rather, it is wealthy organizations, regardless of membership that enjoy success rulemaking. 
 
 ```{r, assets-vol, fig.cap="Volunteers of Non-profits that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/assets-vol-1.png")
 ```
 
-Figure \ref{fig:efficacyXvol} shows that the a nonprofit's number of volunteer does not predict its level of lobbying success. 
+Figure \ref{fig:efficacyXvol} shows that the a non-profit's number of volunteer does not predict its level of lobbying success. 
 
 ```{r efficacyXvol, out.width="60%",  fig.cap= "Efficacy by Number of Volunteers"}
 knitr::include_graphics("figs/efficacyXvol-2.png")
@@ -767,7 +757,7 @@ knitr::include_graphics("figs/assets-efficacy-9.png")
 
 
 ```{r assets-terms2, out.width="49%",  fig.cap="Amount of Technical Language by Assets (Among Comments from Banks on Dodd-Frank Rules)"}
-## nonprofits 
+## non-profits 
 knitr::include_graphics("figs/assets-tech-1.png")
 
 ## Credit unions 
@@ -788,6 +778,8 @@ knitr::include_graphics("figs/assets-tech-9.png")
 
 # Regression tables {#tables}
 
+## The Odds of Commenting by Wealth 
+
 Figure \ref{fig:mp-assets} (Table \ref{tab:mp-assets-table}) shows the results of logit models predicting the log odds of commenting on a Dodd-Frank rule by assets for banks, credit unions, and non-profits. These models show that wealthier organizations of all three types are significantly more likely to comment. Of these three types of organizations, the marginal effect of assets on the log odds of commenting is the largest for banks. 
 
 ```{r mp-assets, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Assets", out.width="90%"}
@@ -799,7 +791,7 @@ Table \ref{tab:mp-assets-table} presents the full regression table for models sh
 ```{r mp-assets-table, fig.pos = "!H", out.extra = ""}
 load(here::here("models", "pr-of-comment.Rdata"))
 
-modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule")  %>% kableExtra::kable_styling()
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule")  %>% kableExtra::kable_styling(latex_options="scale_down")
 ```
 
 Table \ref{tab:mpFDIC-table} presents the full regression table for models shown in Figure \ref{fig:mpFDIC}.
@@ -807,7 +799,22 @@ Table \ref{tab:mpFDIC-table} presents the full regression table for models shown
 ```{r mpFDIC-table}
 load(here::here("models", "mpFDIC.Rdata"))
 
-modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Reference category = savings associations")  %>% kableExtra::kable_styling()
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Reference category = savings associations") %>% kableExtra::kable_styling(latex_options="scale_down")
+```
+
+## Mediation
+```{r mediation-4, out.width="49%",  fig.cap= "Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as a Proposed Mediators Between Wealth and Lobbying Success"}
+knitr::include_graphics("figs/mediation-4way-1.png")
+knitr::include_graphics("figs/mediation-4way-2.png")
+knitr::include_graphics("figs/mediation-4way-3.png")
+knitr::include_graphics("figs/mediation-4way-4.png")
+```
+
+```{r mediation-4-table}
+load(here::here("models", "models.m4.Rdata"))
+
+modelsummary(models.m4, caption = "Models for Mediation Analysis", notes = "")  %>% kableExtra::kable_styling()
+    #FIXME sometimes scale_down causes an error 
 ```
 
 
@@ -824,7 +831,7 @@ We count the number of citations to the U.S. Code, Supreme Court cases, appellat
 knitr::include_graphics("figs/efficacyXsophistication-6.png")
 ```
 
-Descriptive and regression analyses demonstrate that our findings on wealth technical sophistication (H5) hold even with an alternative legal measure of sophistication. Figure \ref{fig:assets-terms-legal} shows that the number of words from the comment added to the final rule is correlated with the number of legal citations. Like the analyses using technical terms, the figure also shows a positive correlation between the number of legal citations in a comment and the amount of text it shares with the final rule. 
+Our findings on wealth technical sophistication (H5) hold even with an alternative legal measure of sophistication. Figure \ref{fig:assets-terms-legal} shows that the number of words from the comment added to the final rule is correlated with the number of legal citations. Like the analyses using technical terms, the figure also shows a positive correlation between the number of legal citations in a comment and the amount of text it shares with the final rule. 
 
 ```{r assets-terms-legal, out.width="49%",  fig.cap="Amount of Legal Language by Assets (Among Comments from Banks on Dodd-Frank Rules)"}
 ## TODO: non-profits #SPLIT OUT CREDIT UNIONS FROM NONPROFITS FIGURE 
