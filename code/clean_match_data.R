@@ -1,6 +1,8 @@
 source("code/setup.R")
 library(tidyverse)
 
+d_frs <- here("Data", "finreg_commenter_covariates_df_20230421.csv") %>% read_csv() %>% filter(comment_agency == "FRS")
+
 
 d_raw <- here(#"data", "match_data", # old in match_data
               #"finreg_commenter_covariates_df_20210824.csv"
@@ -9,10 +11,25 @@ d_raw <- here(#"data", "match_data", # old in match_data
               #"finreg_commenter_covariates_df_20220405.csv"
               #"finreg_commenter_covariates_df_20220510.csv"
               #"finreg_commenter_covariates_df_20230418.csv"
-              "finreg_commenter_covariates_df_20230421.csv"
+              #"finreg_commenter_covariates_df_20230421.csv"
+              "finreg_commenter_covariates_df_20230427.csv"
               ) %>%
   #str_remove("finreg") %>% # up a level to root
   read_csv()
+
+
+#TODO WE NEED COMMENT TITLE BACK IN THE FRS COMMENTS TABLE
+d_raw %>% filter(comment_agency == "FRS") %>% drop_na(`CIK-orgMatch:CIK`) %>% select(contains("name")) %>% kablebox()
+
+d_raw %>% filter(comment_agency == "FRS") %>%
+  drop_na(`CIK-orgMatch:CIK`) %>%
+  select(contains("name")) %>% write_csv(here("data", "inspect", "FRS-CIK-matches.csv"))
+
+comments %>% filter(agency_acronym == "FRS") %>% drop_na(`organization`) %>% kablebox()
+
+d_raw %<>%  filter(comment_agency != "FRS")
+
+d_raw %<>% full_join(d_frs)
 
 # remove extraneous column
 d_raw %<>%
