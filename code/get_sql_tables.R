@@ -20,11 +20,13 @@ attachments <- dbGetQuery(con, "SELECT comment_url, attachment_url FROM attachme
 
 head(attachments)
 
+attachments %>% write_csv(file = here::here("Data", "attachments.csv"))
+
 
 comments %>% count(agency_acronym, name = "comments table")
 
 
-attachments %<>% left_join(comments %>% dplyr::select(comment_url, agency_acronym))
+attachments %<>% left_join(comments %>% dplyr::distinct(comment_url, agency_acronym))
 
 
 
