@@ -180,7 +180,7 @@ d <- commenter_assets
 d$org_type <- d$org_type2
 
 #FIXME MOVE TO TOP 
-d$comment_url %<>% str_replace("document\\?D=", "comment/")
+# d$comment_url %<>% str_replace("document\\?D=", "comment/")
 
 
 d %>% arrange(assets) %>% 
@@ -220,8 +220,39 @@ Other efficacy measures that we are not using:
 - longest_repeated_text
 
 ```{r efficacy}
-# efficacy
+# attachments table 
+# lookup table 
+attachments <- read_csv(here::here("Data", "attachments.csv"))
+
+# many to many 
+attachments %>% distinct() %>% add_count(attachment_url, sort = T)
+
+# efficacy data 
 efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.csv")  %>% str_remove("finreg/")  )
+efficacy_raw %>% kablebox()
+
+efficacy_raw %>% count(is.na(url))
+# check for OCC comments (missing as of May 2022)
+# 
+efficacy_raw %>% filter(str_detect(comment_url, "OCC"))
+attachments %>% filter(str_detect(comment_url, "OCC"))
+
+
+# merge in comment url from attachments table 
+
+# drop empty url
+efficacy_raw %<>% select(-comment_url)
+
+efficacy_raw %>% count(attachment_url, sort = T)
+
+
+# JOINING LOOKUP TABLE DOES MUCH BETTER THAN USING URL VAR 
+#FIXME 
+efficacy_raw %<>% left_join(attachments)
+
+#efficacy_raw %<>% mutate(comment_url = url)
+
+# efficacy_raw %>% filter(url == comment_url)
 
 # inspect 
 # efficacy_raw %>% distinct() %>% dplyr::select(attachment_url, fr_document_id_final) %>% add_count(attachment_url) %>% arrange(-n) %>%   kablebox()
@@ -237,34 +268,15 @@ efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.c
 # select needed vars. URL is comment URL (even for attachments)
 efficacy <- efficacy_raw %>% 
   # make comment URL 
-  mutate(comment_url2 = attachment_url %>% 
-           str_replace("https://downloads.regulations.gov/", 
-                       "https://www.regulations.gov/comment/" ) %>% 
-           str_remove("/attachment_.*"),
-         comment_url = coalesce(comment_url, comment_url2),
-         efficacy = cumulative_sequence_length_over_10 %>% as.numeric()
-         ) %>% 
-  dplyr::select(comment_url,
-         efficacy) %>% 
-  distinct() 
+         mutate(efficacy = cumulative_sequence_length_over_10 %>% as.numeric()  )%>% 
+  dplyr::distinct(comment_url,  efficacy)
 
-# check for OCC comments (missing as of May 2022)
-# efficacy %>% filter(str_detect(comment_url, "OCC"))
+efficacy %>% count(comment_url, sort = T)
 
-# check for CFPB comments (not missing, but failing to merge with d on URL?)
-# efficacy %>% filter(str_detect(comment_url, "CFPB"))
+# take most efficacious attachment per comment 
+efficacy %<>% group_by(comment_url) %>% slice_max(order_by = efficacy) %>% ungroup()
 
-
-
-efficacy %<>% drop_na(efficacy) 
-
-
-# take max
-efficacy %<>% 
-  group_by(comment_url) %>% 
-  summarise_all(base::max)
-
-efficacy %>% arrange(-efficacy) #%>% kablebox()
+efficacy %>% arrange(-efficacy) %>% kablebox()
 
 # d$comment_url %in% efficacy$comment_url %>% sum
 
@@ -272,9 +284,40 @@ efficacy %>% arrange(-efficacy) #%>% kablebox()
 
 #efficacy %>% filter(str_detect(comment_url, "CFPB")) %>%  kablebox()
 
-d  %<>% left_join(efficacy) 
+d  %<>% 
+   mutate(comment_url = comment_url %>% 
+            str_replace("\\?", "QUESTIONMARK")
+          )  %>% 
+  left_join(efficacy %>% mutate(comment_url = comment_url %>% 
+                                        str_replace("\\?", "QUESTIONMARK")
+                                ) 
+  )
 
+# transform back
+d  %<>% 
+   mutate(comment_url = comment_url %>% 
+            str_replace("QUESTIONMARK", "\\?")
+          ) 
+
+d %>% count(is.na(efficacy))
 d %>% group_by(Agency) %>% count(is.na(efficacy))
+```
+
+
+```{r inspect, eval=FALSE}
+d%>% filter(is.na(efficacy), # missing from efficacy
+            comment_url %in% attachments$comment_url) %>% # but in attachments 
+  group_by(Agency) %>% slice_head(n = 10) %>% select(comment_url) %>% kablebox()
+
+# missing 
+efficacy %>% filter(str_dct(comment_url,"61025"))
+efficacy_raw %>% filter(str_dct(attachment_url,"61025"))
+attachments %>% filter(str_dct(comment_url,"=61025"))
+
+
+# No attachments 
+efficacy %>% filter(str_dct(comment_url,"CLAppraisal20140609J"))
+efficacy %>% filter(str_dct(comment_url,"CFPB-2016-0020-0008"))
 ```
 
 
