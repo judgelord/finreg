@@ -89,7 +89,7 @@ Variables:
 
 ```{r sophistication}
 # sophistication 
-load(here("data", "Dictionary_Terms.Rdata")  %>% str_remove("finreg")  )
+load(here::here("Data", "Dictionary_Terms.Rdata")  %>% str_remove("finreg/")  )
 
 # drop duplicates 
 technical_terms_comments %<>% 
@@ -221,7 +221,7 @@ Other efficacy measures that we are not using:
 
 ```{r efficacy}
 # efficacy
-efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.csv")  %>% str_remove("finreg")  )
+efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.csv")  %>% str_remove("finreg/")  )
 
 # inspect 
 # efficacy_raw %>% distinct() %>% dplyr::select(attachment_url, fr_document_id_final) %>% add_count(attachment_url) %>% arrange(-n) %>%   kablebox()
@@ -595,8 +595,9 @@ d %>%
 
 ```{r assets-blue, fig.height=2.5, fig.width=3, out.width="50%"}
 # assets-blue
+d %>% count(is.na(dictionary_terms))
 
-b <- d %>% filter(!is.na(dictionary_terms))
+b <- d %>% filter(!is.na(dictionary_terms)) #TODO CHECK FOR MISSING MARKETCAP
 
 b %>% dplyr::select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  
   drop_na(org_name, org_resources) %>%
@@ -605,9 +606,9 @@ b %>% dplyr::select(org_name, Total_Legal_Citations, org_resources, comment_url)
 # FDIC ASSETS 
 # FDIC ASSETS 
 p <- b %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
+  filter(!is.na(`ASSET`)) %>% 
   ggplot() +
-  aes(x = `FDIC_Institutions-bestMatch:ASSET`, # %>% log(), 
+  aes(x = ASSET, # %>% log(), 
       y = Total_Legal_Citations ) + 
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm") +
@@ -649,7 +650,7 @@ p <- b %>%
   geom_smooth(method = "lm"
   ) + 
     geom_smooth(color = "light blue") + 
-  labs(x = "Mean PAC Contribution ($1,000)",
+  labs(x = "Mean PAC Contribution (Thousands USD)",
        y = "Legal Citations",
        title = "Campaign Donors")
 
@@ -699,13 +700,13 @@ p <- t %>%
   filter(!is.na(nonprofits_resources_name),
          assets > 10) %>% 
   ggplot() +
-  aes(x = assets/1000, 
+  aes(x = assets/1000000, 
       y = dictionary_terms) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
     geom_smooth(color = "light blue") + 
-  labs(x = "Assets ($1,000)",
+  labs(x = "Assets (Millions USD)",
        y = "Technical Terms",
        title = "Nonprofits")
 
@@ -721,13 +722,13 @@ p <- t %>%
   filter(!is.na(CreditUnions_name),
          assets > 10) %>% 
   ggplot() +
-  aes(x = assets/1000, 
+  aes(x = assets/1000000, 
       y = dictionary_terms) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) +
     geom_smooth(color = "light blue") + 
-  labs(x = "Assets ($1,000)",
+  labs(x = "Assets (Millions USD)",
        y = "Technical Terms",
        title = "Credit Unions")
 
@@ -749,7 +750,7 @@ p <- t %>%
   geom_smooth(method = "lm"
   ) +
     geom_smooth(color = "light blue", formula = y ~ poly(x, 3)) + 
-  labs(x = "Market Capitalization ($1,000,000)",
+  labs(x = "Market Capitalization (Millions USD)",
        y = "Technical Terms",
        title = "Publicly-Traded Companies")
 
@@ -762,16 +763,16 @@ p +
 
 # FDIC ASSETS 
 p <- t %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`),
-         `FDIC_Institutions-bestMatch:ASSET` > 10) %>% 
+  filter(!is.na(ASSET),
+         ASSET > 10) %>% 
   ggplot() +
-  aes(x = `FDIC_Institutions-bestMatch:ASSET`/1000, # %>% log(), 
+  aes(x = ASSET/1000000, # %>% log(), 
       y = dictionary_terms ) + 
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
     geom_smooth(color = "light blue") + 
-  labs(x = "Assets ($1,000)",
+  labs(x = "Assets (Millions USD)",
        y = "Technical Terms", 
        title = "FDIC-Insured Banks")
 
@@ -782,8 +783,8 @@ p +
   scale_x_log10()
 
 t %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`),
-         `FDIC_Institutions-bestMatch:ASSET` > 10,
+  filter(!is.na(ASSET),
+         ASSET > 10,
          dictionary_terms == 0) %>%
   dplyr::select(org_name, everything() ) %>% 
   kablebox()
@@ -800,7 +801,7 @@ p <- t %>%
   geom_smooth(method = "lm"
   ) +
     geom_smooth(color = "light blue") + 
-  labs(x = "Mean PAC Contribution ($1,000)",
+  labs(x = "Mean PAC Contribution (Thousands USD)",
        y = "Technical Terms",
        title = "Campaign Donors")
 
@@ -823,12 +824,12 @@ e <- d %>% drop_na(efficacy)
 p <- e %>% 
   filter(!is.na(nonprofits_resources_name)) %>% 
   ggplot() +
-  aes(x = assets/1000, 
+  aes(x = assets/1000000, 
       y = efficacy) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Assets ($1,000)",
+  labs(x = "Assets (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule", 
        title = "Nonprofits")
 
@@ -842,12 +843,12 @@ p +     geom_smooth(color = "light blue") +
 p <- e %>% 
   filter(!is.na(CreditUnions_name)) %>% 
   ggplot() +
-  aes(x = assets/1000, 
+  aes(x = assets/1000000, 
       y = efficacy) + 
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Assets ($1,000)",
+  labs(x = "Assets (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule", 
        title = "Credit Unions")
 
@@ -872,7 +873,7 @@ p <- e %>%
   geom_smooth(method = "lm"
   ) +
   #geom_smooth(color = "light blue", formula=lm(y ~ poly(x, 3))) + 
-  labs(x = "Market Capitalization ($1,000,000)",
+  labs(x = "Market Capitalization (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule",
        title = "Publicly-traded Companies")
 
@@ -885,15 +886,15 @@ p +
 
 # FDIC ASSETS 
 p <- e %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`)) %>% 
+  filter(!is.na(ASSET)) %>% 
   ggplot() +
-  aes(x = `FDIC_Institutions-bestMatch:ASSET`/1000, # %>% log(), 
+  aes(x = ASSET/1000000, # %>% log(), 
       y = efficacy# , color = BKCLASS #TODO 
       ) + 
   geom_point(alpha = .5) + 
   geom_smooth(method = "lm" ) + 
   #geom_smooth() + 
-  labs(x = "Assets ($1,000)",
+  labs(x = "Assets (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule", 
        title = "FDIC-Insured Banks")
 
@@ -905,7 +906,7 @@ p +     geom_smooth(color = "light blue") +
 
 
 e %>% 
-  filter(!is.na(`FDIC_Institutions-bestMatch:ASSET`), efficacy == 0) %>%
+  filter(!is.na(ASSET), efficacy == 0) %>%
   dplyr::select(org_name, everything() ) %>% 
   kablebox()
 
@@ -919,7 +920,7 @@ p <- e %>%
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Mean PAC Contribution ($1,000)",
+  labs(x = "Mean PAC Contribution (Thousands USD)",
        y = "Words in Comment\nAdded to Final Rule",
        title = "Campaign Donors")
 
@@ -1148,28 +1149,40 @@ modelplot(models) + theme(legend.position = "none") +
 
 ---
 
-## Efficacy by Assets Mediated by Sophistication
+## Efficacy by Assets 
+
+### Mediated by Sophistication
 
 To assess sophistication as a mediator between wealth and the influence of public comments on rules (efficacy), we estimate the average conditional marginal effect (ACME, conditional on the number of technical terms or legal citations) and average direct effect (ADE) of wealth using mediation analysis. 
 
 
 These models have the prefix `mem_`. The dependent variable is the efficacy score. The mediator is technical terms.
 
-### Assets x legal citations
+### Legal citations
 ```{r mediation-assets-bluebook, fig.width=4.5, fig.height=3}
 library(mediation)
+b %>% count(is.na(efficacy))
+
+mediation_data <- b %>% 
+  drop_na(efficacy)
+
+mediation_data %>% drop_na(MeanLobbyingAmount) %>% select(assets, efficacy, contains("lobby"), contains("contrib")) %>% kablebox()
 
 b$org_type %>% unique
 
+mediation_data <- b  %<>% mutate(
+  assets = coalesce(assets, `Total Assets`, ASSET),
+  assets_m = assets/1000000) %>% 
+  drop_na(Total_Legal_Citations, efficacy, assets_m, org_type)
+
 
 # model predicting mediator, sophistication 
-model.m <- lm(Total_Legal_Citations ~ assets * org_type,  
-              data = b  %>% mutate(assets = assets/10000000000) %>% 
-                drop_na(Total_Legal_Citations, efficacy))
+model.m <- lm(Total_Legal_Citations ~ assets_m * org_type,  
+              data = mediation_data)
 
 # model predicting DV
-model.y <- glm(efficacy ~ Total_Legal_Citations + assets * org_type,  
-               data = b  %>% mutate(assets = assets/10000000000))
+model.y <- glm(efficacy ~ Total_Legal_Citations + assets_m * org_type,  
+               data =mediation_data)
 
 models <- list(model.m, model.y)
 
@@ -1184,167 +1197,141 @@ attr(rows, 'position') <- c(0)
 
 modelsummary(models)
 
-med.cont <- mediate(model.m, model.y, sims=1000, treat = "assets",
+med.legal <- mediate(model.m, model.y, sims=1000, treat = "assets_m",
 mediator = "Total_Legal_Citations")
 
-summary(med.cont)
+summary(med.legal)
 
-plot(med.cont, main = "Legal Citations", 
-     xlab = "Words From Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+plot(med.legal, main = "Legal Citations", 
+     xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
 #modelplot(med.cont) + labs()
 ```
 
-### Mediation with Campaign Expenditure and Lobbying Dollars
+### Campaign Expenditure and Lobbying Dollars 
+
+With Zeros 
 
 ```{r}
-lobbying_and_contributions <- read_csv( here::here("data", "Lobbying_and_Contributions.csv")  )
-
-lobbying_and_contributions %<>%
-  mutate(best_match_name = tolower(orgName)) %>%
-  dplyr::select(best_match_name, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) 
-
-mediation_data <- b %>%
-  tidylog::left_join(lobbying_and_contributions, by = "best_match_name") %>%
-  tidylog::distinct(comment_url, .keep_all = T) %>%
+b %<>%
   mutate(
-    assets = assets/10000000000,
-    TotalLobbyingAmountNo0 = ifelse(is.na(TotalLobbyingAmount), 0, TotalLobbyingAmount), 
-    TotalContribAmountNo0 = ifelse(is.na(TotalContribAmount), 0, TotalContribAmount)) 
+    assets_m = assets/1000000,
+    TotalLobbyingAmountNo0 = replace_na(MeanLobbyingAmount, 0)/1000, 
+    MeanContribAmountNo0 = replace_na(MeanContribAmount, 0)/1000,
+    TotalLobbyingAmountNo0 = replace_na(TotalLobbyingAmount, 0)/1000,
+    TotalContribAmountNo0 = replace_na(TotalContribAmount, 0)/1000 ) 
+
+mediation_data <- b %>% 
+  drop_na(efficacy)
+
+mediation_data %>% drop_na(MeanLobbyingAmount) %>% select(assets, efficacy, contains("lobby"), contains("contrib")) %>% kablebox()
 
 
-# Show mediation doesn't work for contributions without imputing 0s for the non-contirbutors 
-# you can't estimate the assets:org_typeNonprofit coefficient in the efficacy regression
-# model.m.doesntwork <- lm(TotalContribAmount ~ assets * org_type,  
-#               data = b %>%
-#                 mutate(
-#                   assets = assets/10000000000))
-# 
-# # model predicting DV
-# model.y.doesntwork <- lm(efficacy ~ TotalContribAmount + assets * org_type,  
-#                data = b %>%
-#                 mutate(
-#                   assets = assets/10000000000))
-# 
-# med.cont.alt <- mediate(model.m.doesntwork, model.y.doesntwork, sims=1000, treat = "assets", mediator = "TotalContribAmount")
-
-model.m.pac.contrib <- lm(TotalContribAmountNo0 ~ assets * org_type,
-              data = mediation_data %>% drop_na(efficacy))
+# WITH ZEROS 
+model.m.pac.contrib <- lm(TotalContribAmountNo0 ~ assets_m * org_type,
+              data = mediation_data )
 
 # model predicting DV
-model.y.pac.contrib <- lm(efficacy ~ TotalContribAmountNo0 + assets * org_type,
-               data = mediation_data %>% drop_na(efficacy))
+model.y.pac.contrib <- lm(efficacy ~ TotalContribAmountNo0 + assets_m * org_type,
+               data = mediation_data)
 
-med.cont.pac <- mediate(model.m.pac.contrib, model.y.pac.contrib, sims=1000, treat = "assets", mediator = "TotalContribAmountNo0",  control.value = .1, treat.value = 1, boot = T)
+med.cont.pac <- mediate(model.m.pac.contrib,
+                        model.y.pac.contrib, 
+                        sims=1000, 
+                        treat = "assets_m", 
+                        mediator = "TotalContribAmountNo0",  
+                        control.value = 1, 
+                        treat.value = 10, 
+                        boot = T)
 
 summary(med.cont.pac)
+# plot(med.cont.pac, main = "PAC Spending",   xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
 
-model.m.pac.lobby <- lm(TotalLobbyingAmountNo0 ~ assets * org_type,
-              data = mediation_data %>% drop_na(efficacy))
+
+model.m.lobby <- lm(TotalLobbyingAmountNo0 ~ assets_m * org_type,
+              data = mediation_data)
 
 # model predicting DV
-model.y.pac.lobby <- lm(efficacy ~ TotalLobbyingAmountNo0 + assets * org_type,
-               data = mediation_data %>% drop_na(efficacy))
+model.y.lobby <- lm(efficacy ~ TotalLobbyingAmountNo0 + assets_m * org_type,
+               data = mediation_data)
 
 mediation_data %>% 
   dplyr::select(TotalLobbyingAmountNo0, assets) %>%
   skimr::skim()
 
-# Going from 10 billion to 100 billion
-# "Since the treatment
-# variable is a continuous variable, we use the values of 3 and 4 as the control and treatment
-# values, respectively, and estimate the quantities of interest in terms of these values.""
-med.cont.lobby <- mediate(model.m.pac.lobby, model.y.pac.lobby, sims=1000, treat = "assets", mediator = "TotalLobbyingAmountNo0",  control.value = .1, treat.value = 1, boot = T)
+# Going from 1 million to 10 million 
+med.cont.lobby <- mediate(model.m.lobby,
+                          model.y.lobby, 
+                          sims=1000, 
+                          treat = "assets_m", mediator = "TotalLobbyingAmountNo0",  
+                          control.value = 1, treat.value = 10, boot = T)
+
+summary(med.cont.lobby)
+#plot(med.cont.lobby, main = "Lobbying Expendature",  xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
+```
+
+### Without zeros 
+
+```{r mediation-assets-opensecrets, fig.width=4.5, fig.height=3}
+
+# WITHOUT ZEROS 
+model.m.pac.contrib <- lm(TotalContribAmount ~ assets_m * org_type,
+              data = mediation_data )
+
+# model predicting DV
+model.y.pac.contrib <- lm(efficacy ~ TotalContribAmount + assets_m * org_type,
+               data = mediation_data)
+
+med.cont.pac <- mediate(model.m.pac.contrib, 
+                        model.y.pac.contrib, 
+                        sims=1000, treat = "assets_m", 
+                        mediator = "TotalContribAmount",  control.value = 1, treat.value = 10, boot = T)
+
+plot(med.cont.pac, main = "PAC Spending", 
+     xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
 
 summary(med.cont.pac)
-summary(med.cont.lobby)
+
+mediation_data %>% count(TotalLobbyingAmount)
+
+#WTF
+# model.m.lobby <- lm(TotalLobbyingAmount ~ assets_m * org_type, data = mediation_data)
+
+# # model predicting DV
+# model.y.lobby <- lm(efficacy ~ TotalLobbyingAmount + assets_m * org_type,  data = mediation_data)
+# 
+# mediation_data %>% 
+#   dplyr::select(TotalLobbyingAmount, assets_m) %>%
+#   skimr::skim()
+# 
+# # Going from 1 million to 10 million 
+# # "Since the treatment
+# # variable is a continuous variable, we use the values of 3 and 4 as the control and treatment
+# # values, respectively, and estimate the quantities of interest in terms of these values.""
+# med.cont.lobby <- mediate(model.m.lobby, 
+#                           model.y.lobby, 
+#                           sims=1000, 
+#                           treat = "assets_m", 
+#                           mediator = "TotalLobbyingAmount",  
+#                           control.value = 1, treat.value = 10, 
+#                           boot = T)
+# 
+# plot(med.cont.lobby, main = "Lobbying Expendature", 
+#      xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
 ```
 
-### Mediation with two mediators
-
-TotalContribAmount is PAC expenditure
-
-multimed can't do the sensitivity analysis with a continuous treatment variable
-
-In the case of a continuous treatment
-variable, the researcher would specify two values of the treatment to make the contrast (Imai
-et al. 2010a). 
-
-https://cran.r-project.org/web/packages/mediation/mediation.pdf page 40
-```{r mediation-multiple, eval = FALSE}
-
-lobbying_and_contributions <- read_csv( here::here("data", "Lobbying_and_Contributions.csv")  )
-
-lobbying_and_contributions %<>%
-  mutate(best_match_name = tolower(orgName)) %>%
-  dplyr::select(best_match_name, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) 
-
-mediation_data <- b %>%
-  tidylog::left_join(lobbying_and_contributions, by = "best_match_name") %>%
-  tidylog::distinct() %>%
-  mutate(TotalLobbyingAmount = ifelse(is.na(TotalLobbyingAmount), 0, TotalLobbyingAmount),
-         TotalContribAmount = ifelse(is.na(TotalContribAmount), 0, TotalContribAmount)) 
-
-#temp <- mediation_data  %>% mutate(assets = assets/10000000000) 
-                    # drop_na(efficacy, MeanContribAmount, TotalContribAmount, Total_Legal_Citations, assets,org_comments, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) %>%
-
-temp <- mediation_data  %>% mutate(assets = as.numeric(assets > 1000000)) 
-temp <- mediation_data  %>% mutate(assets = assets/10000000000) 
-
-temp %<>% dplyr::select(efficacy, Total_Legal_Citations, assets,org_comments, TotalLobbyingAmount, TotalContribAmount) %>% drop_na(efficacy, Total_Legal_Citations, assets,org_comments, TotalLobbyingAmount) %>%
-  data.frame()
-
-temp %>%
-  skimr::skim(  )
-
-Xnames <- c("org_comments")
-
-m.med <- multimed(outcome = "efficacy", med.main = "TotalContribAmount", med.alt = "TotalLobbyingAmount",
-                  treat = "assets", covariates = Xnames,
-                  data = temp, sims = 1000, )
-
-# Sensitivity Analysis is blank b/c of some error, need to figure out why
-summary(m.med)
-
-plot(m.med, type = "point")
-
-plot(m.med, type = c("sigma", "R2-total"), tgroup = c("treated", "control"))
-
-summary(lm(formula = efficacy ~ TotalContribAmount + Total_Legal_Citations + assets + org_comments, data = b  %>% mutate(assets = assets/10000000000) %>%
-                    drop_na(efficacy, TotalContribAmount, Total_Legal_Citations, assets,org_comments)))
-
-
-## package data
-Xnames <- c("age", "educ", "gender", "income")
-
-lapply(X = framing, class)
-
-framing %<>%
-  mutate(cond_int = as.numeric(as.character(cond)))
-
-m.med <- multimed(outcome = "immigr", med.main = "emo", med.alt = "p_harm",
-                  treat = "treat", covariates = Xnames,
-                  data = framing, sims = 100)
-
-summary(m.med)
-
-m.med.cont <- multimed(outcome = "immigr", med.main = "emo", med.alt = "p_harm",
-                  treat = "cond_int", covariates = Xnames,
-                  data = framing, sims = 100)
-
-summary(m.med.cont)
-
-```
 
 ### Assets x technical terms
 ```{r mediation-assets-terms, fig.width=4.5, fig.height=3}
+mediation_data <- b %>% 
+  drop_na(efficacy, dictionary_terms)
+
 # model predicting mediator, sophistication 
 model.m <- lm(dictionary_terms ~ assets,  
-              data = b  %>% mutate(assets = assets/10000000000) %>% 
-                drop_na(dictionary_terms, efficacy))
+              data = mediation_data)
 
 # model predicting DV
 model.y <- glm(efficacy ~ dictionary_terms + assets,  
-               data = b  %>% mutate(assets = assets/10000000000))
+               data = mediation_data)
 
 models <- list(model.m, model.y)
 
@@ -1375,15 +1362,21 @@ plot(med.cont,
 
 ### Market cap x legal citations
 ```{r mediation-marketcap-bluebook, fig.width=4.5, fig.height=3}
+b %<>% mutate(marketcap_b = marketcap2/1000000000)
+
+#b %>% count(commented, is.na(marketcap2))
+
+mediation_data <- b %>% 
+  drop_na(efficacy,
+    marketcap2)
 
 # model predicting mediator, sophistication 
-model.m <- lm(Total_Legal_Citations ~ marketcap2,  
-              data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
-                drop_na(Total_Legal_Citations, efficacy) )
+model.m <- lm(Total_Legal_Citations ~ marketcap_b,  
+              data = mediation_data )
 
 # model predicting DV
-model.y <- glm(efficacy ~ Total_Legal_Citations + marketcap2,  
-               data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
+model.y <- glm(efficacy ~ Total_Legal_Citations + marketcap_b,  
+               data = mediation_data)
 
 models <- list(model.m, model.y)
 
@@ -1398,12 +1391,12 @@ attr(rows, 'position') <- c(0)
 
 modelsummary(models)
 
-med.cont <- mediate(model.m, model.y, sims=1000, treat = "marketcap2",
+med.cont.legal <- mediate(model.m, model.y, sims=1000, treat = "marketcap_b",
 mediator = "Total_Legal_Citations")
 
 summary(med.cont)
 
-plot(med.cont, 
+plot(med.cont.legal, 
      main = "Legal Citations",       
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 ```
@@ -1414,13 +1407,12 @@ plot(med.cont,
 #mediation-marketcap-terms
 
 # model predicting mediator, sophistication 
-model.m <- lm(dictionary_terms ~ marketcap2,  
-              data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
-                drop_na(dictionary_terms, efficacy))
+model.m <- lm(dictionary_terms ~ marketcap_b,  
+              data = mediation_data)
 
 # model predicting DV
-model.y <- glm(efficacy ~ dictionary_terms + marketcap2,  
-               data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
+model.y <- glm(efficacy ~ dictionary_terms + marketcap_b,  
+               data = mediation_data)
 
 models <- list(model.m, model.y)
 
@@ -1435,7 +1427,7 @@ attr(rows, 'position') <- c(0)
 
 modelsummary(models)
 
-med.cont <- mediate(model.m, model.y, sims=1000, treat = "marketcap2",
+med.cont <- mediate(model.m, model.y, sims=1000, treat = "marketcap_b",
 mediator = "dictionary_terms")
 
 summary(med.cont)
@@ -1451,17 +1443,15 @@ plot(med.cont,
 # mediation-marketcap-terms-blueboo
 
 # model predicting mediator, sophistication 
-model.m1.terms <- lm(dictionary_terms ~ marketcap2,  
-              data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
-                drop_na(dictionary_terms, efficacy))
+model.m1.terms <- lm(dictionary_terms ~ marketcap_b,  
+              data = mediation_data)
 
-model.m1.legal <- lm(Total_Legal_Citations ~ marketcap2,  
-              data = b  %>% mutate(marketcap2 = marketcap2/10000000000) %>% 
-                drop_na(Total_Legal_Citations, efficacy))
+model.m1.legal <- lm(Total_Legal_Citations ~ marketcap_b,  
+              data = mediation_data)
 
 # model predicting DV
-model.y <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations +  marketcap2,  
-               data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
+model.y <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations +  marketcap_b,  
+               data = mediation_data)
 
 
 models.med1 <- list(model.m1.terms, model.m1.legal, model.y)
@@ -1480,13 +1470,13 @@ modelsummary(models.med1)
 
 save(models.med1, rows, file = here::here("models", "models.med2.Rdata"))
 
-med.terms <- mediate(model.m1.terms, model.y, sims=1000, treat = "marketcap2",
+med.terms <- mediate(model.m1.terms, model.y, sims=1000, treat = "marketcap_b",
 mediator = "dictionary_terms")
 
 plot(med.terms, main = "Technical Terms",       
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 
-med.legal <- mediate(model.m1.legal, model.y, sims=1000, treat = "marketcap2",
+med.legal <- mediate(model.m1.legal, model.y, sims=1000, treat = "marketcap_b",
 mediator = "Total_Legal_Citations")
 
 summary(med.legal)
@@ -1502,60 +1492,40 @@ plot(med.legal, main = "Legal Citations",
 ```{r mediation-marketcap-lobbying, fig.width=4.5, fig.height=3}
 #mediation-marketcap-lobbying
 
-lobbying_and_contributions <- read_csv( here::here("data", "Lobbying_and_Contributions.csv")  )
-
-lobbying_and_contributions %<>%
-  mutate(best_match_name = tolower(orgName)) %>%
-  dplyr::select(best_match_name, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) 
-
-mediation_data <- b %>%
-  tidylog::left_join(lobbying_and_contributions, by = "best_match_name") %>%
-  tidylog::distinct(comment_url, .keep_all = T) %>%
-  mutate(TotalLobbyingAmount = ifelse(is.na(TotalLobbyingAmount), 0, TotalLobbyingAmount),
-         TotalContribAmount = ifelse(is.na(TotalContribAmount), 0, TotalContribAmount),
-         marketcap2 = marketcap2/10000000000,
-         TotalLobbyingAmount = TotalLobbyingAmount/1000000, 
-         TotalContribAmount = TotalContribAmount/1000000, ) 
-
 mediation_data %>% 
-  dplyr::select(marketcap2, TotalContribAmount, TotalLobbyingAmount) %>% 
-  drop_na(marketcap2) %>%
+  dplyr::select(marketcap_b, TotalContribAmount, TotalLobbyingAmount) %>% 
+  drop_na(marketcap_b) %>%
   skimr::skim()
 
 # model predicting mediator, sophistication 
-model.cont <- lm(TotalContribAmount ~ marketcap2,  
-              data = mediation_data  %>% 
-                drop_na(TotalContribAmount, efficacy, marketcap2))
+model.cont <- lm(TotalContribAmount ~ marketcap_b,  
+              data = mediation_data  )
 
 # model predicting DV
-model.y.cont <- glm(efficacy ~ TotalContribAmount + marketcap2,  
-               data = mediation_data %>% 
-                drop_na(TotalContribAmount, efficacy, marketcap2) )
+model.y.cont <- glm(efficacy ~ TotalContribAmount + marketcap_b,  
+               data = mediation_data  )
 
-med.cont <- mediate(model.cont, model.y.cont, sims=1000, treat = "marketcap2", 
+med.cont <- mediate(model.cont, model.y.cont, sims=1000, treat = "marketcap_b", 
                     mediator = "TotalContribAmount", robustSE = T, boot = T, 
                     control.value = 1, treat.value = 2)
 
 summary(med.cont)
 
-model.lob <- lm(TotalLobbyingAmount ~ marketcap2,  
-              data = mediation_data  %>% 
-                drop_na(TotalLobbyingAmount, efficacy, marketcap2))
+model.lob <- lm(TotalLobbyingAmount ~ marketcap_b,  
+              data = mediation_data  )
 
-model.y.lob <- glm(efficacy ~ TotalLobbyingAmount + marketcap2,  
-               data = mediation_data %>% 
-                drop_na(TotalLobbyingAmount, efficacy, marketcap2) )
+model.y.lob <- glm(efficacy ~ TotalLobbyingAmount + marketcap_b,  
+               data = mediation_data)
 
-med.lob <- mediate(model.lob, model.y.lob, sims=1000, treat = "marketcap2", 
+med.lob <- mediate(model.lob, model.y.lob, sims=1000, treat = "marketcap_b", 
                    mediator = "TotalLobbyingAmount",
                    robustSE = T, boot = T, 
                     control.value = 1, treat.value = 2)
 
 summary(med.lob)
 
-model.y <- glm(efficacy ~ TotalLobbyingAmount + TotalContribAmount + marketcap2,  
-               data = mediation_data %>% 
-                drop_na(TotalLobbyingAmount, efficacy, marketcap2) )
+model.y <- glm(efficacy ~ TotalLobbyingAmount + TotalContribAmount + marketcap_b,  
+               data = mediation_data )
 
 
 
@@ -1592,24 +1562,21 @@ plot(med.lob, main = "Lobbying Expenditure",
 ## Market Cap mediated by Sophistication or Political Spending
 ```{r mediation-marketcap-terms-lobbying, fig.width=4.5, fig.height=3}
 #mediation-marketcap-terms-lobbying
-model.m2.lob <- lm(TotalLobbyingAmount ~ marketcap2,  
-              data = mediation_data  %>% 
-                drop_na(TotalLobbyingAmount, efficacy, marketcap2))
+model.m2.lob <- lm(TotalLobbyingAmount ~ marketcap_b,  
+              data = mediation_data  )
 
-model.m2.terms <- lm(dictionary_terms ~ marketcap2,  
-              data = mediation_data  %>% 
-                drop_na(dictionary_terms, efficacy, marketcap2))
+model.m2.terms <- lm(dictionary_terms ~ marketcap_b,  
+              data = mediation_data %>% drop_na(TotalLobbyingAmount))
 
-model.y2 <- glm(efficacy ~ TotalLobbyingAmount + marketcap2+ dictionary_terms,  
-               data = mediation_data %>% 
-                drop_na(TotalLobbyingAmount, efficacy, marketcap2, dictionary_terms) )
+model.y2 <- glm(efficacy ~ TotalLobbyingAmount + marketcap_b+ dictionary_terms,  
+               data = mediation_data  )
 
-med.lob.2 <- mediate(model.m2.lob, model.y2, sims=1000, treat = "marketcap2", 
+med.lob.2 <- mediate(model.m2.lob, model.y2, sims=1000, treat = "marketcap_b", 
                    mediator = "TotalLobbyingAmount",
                    robustSE = T, boot = T, 
                     control.value = 1, treat.value = 2)
 
-med.terms.2 <- mediate(model.m2.terms, model.y2, sims=1000, treat = "marketcap2", 
+med.terms.2 <- mediate(model.m2.terms, model.y2, sims=1000, treat = "marketcap_b", 
                    mediator = "dictionary_terms",
                    robustSE = T, boot = T, 
                     control.value = 1, treat.value = 2)
@@ -1660,44 +1627,44 @@ plot(med.lob.2, main = "Lobbying Expenditure",
 
 mediation_data4 <- mediation_data  %>% 
                 drop_na(efficacy,
-                        marketcap2, 
+                        marketcap_b, 
                         TotalLobbyingAmount, 
                         TotalContribAmount,
                         dictionary_terms,
                         Total_Legal_Citations)
 
-model.m4.cont <- lm(TotalContribAmount ~ marketcap2,  
+model.m4.cont <- lm(TotalContribAmount ~ marketcap_b,  
               data = mediation_data4)
 
-model.m4.lob <- lm(TotalLobbyingAmount ~ marketcap2,  
+model.m4.lob <- lm(TotalLobbyingAmount ~ marketcap_b,  
               data = mediation_data4)
 
-model.m4.terms <- lm(dictionary_terms ~ marketcap2,  
+model.m4.terms <- lm(dictionary_terms ~ marketcap_b,  
               data = mediation_data4)
 
-model.m4.legal <- lm(Total_Legal_Citations ~ marketcap2,  
+model.m4.legal <- lm(Total_Legal_Citations ~ marketcap_b,  
               data = mediation_data4)
 
 
-model.y4 <- glm(efficacy ~ marketcap2 + TotalLobbyingAmount + TotalContribAmount + dictionary_terms + Total_Legal_Citations,  
+model.y4 <- glm(efficacy ~ marketcap_b + TotalLobbyingAmount + TotalContribAmount + dictionary_terms + Total_Legal_Citations,  
                data = mediation_data4 )
 
-med.cont.4 <- mediate(model.m4.cont, model.y4, sims=1000, treat = "marketcap2", 
+med.cont.4 <- mediate(model.m4.cont, model.y4, sims=1000, treat = "marketcap_b", 
                    mediator = "TotalContribAmount",
                    robustSE = T, boot = T, 
                     control.value = 1, treat.value = 2)
 
-med.lob.4 <- mediate(model.m4.lob, model.y4, sims=1000, treat = "marketcap2", 
+med.lob.4 <- mediate(model.m4.lob, model.y4, sims=1000, treat = "marketcap_b", 
                    mediator = "TotalLobbyingAmount",
                    robustSE = T, boot = T, 
                     control.value = 1, treat.value = 2)
 
-med.terms.4 <- mediate(model.m4.terms, model.y4, sims=1000, treat = "marketcap2", 
+med.terms.4 <- mediate(model.m4.terms, model.y4, sims=1000, treat = "marketcap_b", 
                    mediator = "dictionary_terms",
                    robustSE = T, boot = T, 
                     control.value = 1, treat.value = 2)
 
-med.legal.4 <- mediate(model.m4.legal, model.y4, sims=1000, treat = "marketcap2", 
+med.legal.4 <- mediate(model.m4.legal, model.y4, sims=1000, treat = "marketcap_b", 
                    mediator = "Total_Legal_Citations",
                    robustSE = T, boot = T, 
                     control.value = 1, treat.value = 2)
@@ -1739,7 +1706,6 @@ plot(med.lob.4, main = "Lobbying Expenditure",
 
 ### ACME 
 
-TODO: use `multimed`
 ```{r mediation-4way-acme, fig.width=4.5, fig.height=1.65}
 #mediation-4way-acme
 extract_acme <- function(x){
@@ -1753,7 +1719,9 @@ extract_acme <- function(x){
 
 extract_acme(med.lob.4)
 
-models <- list(med.cont.4, med.lob.4, med.terms, med.legal)
+models <- list(med.cont, med.lob, med.terms, med.legal)
+
+models <- list(med.cont.4, med.lob.4, med.terms.4, med.legal.4)
 
 acme <- purrr::map_df(models, extract_acme)
 
@@ -1775,6 +1743,239 @@ acme %>%
 
 
 ```
+
+
+### Including 0-dollar PAC donors 
+
+```{r mediation-4wayNo0, fig.width=4.5, fig.height=3}
+ # mediation-4wayNo0
+
+mediation_data4 <- mediation_data  %>% 
+                drop_na(efficacy,
+                        marketcap_b, 
+                        TotalLobbyingAmountNo0, 
+                        TotalContribAmountNo0,
+                        dictionary_terms,
+                        Total_Legal_Citations)
+
+model.m4.cont <- lm(TotalContribAmountNo0 ~ marketcap_b,  
+              data = mediation_data4)
+
+model.m4.lob <- lm(TotalLobbyingAmountNo0 ~ marketcap_b,  
+              data = mediation_data4)
+
+model.m4.terms <- lm(dictionary_terms ~ marketcap_b,  
+              data = mediation_data4)
+
+model.m4.legal <- lm(Total_Legal_Citations ~ marketcap_b,  
+              data = mediation_data4)
+
+
+model.y4 <- glm(efficacy ~ marketcap_b + TotalLobbyingAmountNo0 + TotalContribAmountNo0 + dictionary_terms + Total_Legal_Citations,  
+               data = mediation_data4 )
+
+med.cont.4 <- mediate(model.m4.cont, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "TotalContribAmountNo0",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+
+med.lob.4 <- mediate(model.m4.lob, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "TotalLobbyingAmountNo0",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+summary(med.lob.4)
+
+med.terms.4 <- mediate(model.m4.terms, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "dictionary_terms",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+summary(med.terms.4)
+
+
+med.legal.4 <- mediate(model.m4.legal, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "Total_Legal_Citations",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+
+
+models.m4No0 <- list(model.m4.cont, 
+                     model.m4.lob, 
+                     model.m4.terms, 
+                     model.m4.legal, 
+                     model.y4)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+   `1` = "PAC Spending",
+     `2` = "Lobbying Spending",
+  `3` = "Technical Terms",
+     `4` = "Legal Citations",
+    `5` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models.m4)
+
+save(models.m4No0, rows, file = here::here("models", "models.m4No0.Rdata"))
+
+
+plot(med.terms.4, main = "Technical Terms",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+
+
+plot(med.legal.4, 
+     main = "Legal Citations",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+
+plot(med.cont.4, main = "Political Spending",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+
+plot(med.lob.4, main = "Lobbying Expenditure",       
+     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+```
+
+
+
+### ACME including 0-dolar PAC 
+
+```{r mediation-4wayNo0-acme, fig.width=4.5, fig.height=1.65}
+#mediation-4way-acme
+
+extract_acme(med.lob.4)
+
+models <- list(med.cont.4, 
+               med.lob.4, 
+               #med.legal.4,
+               med.cont.legal, 
+               med.terms.4)
+
+acme <- purrr::map_df(models, extract_acme)
+
+
+acme %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount.*", "PAC Spending") %>% 
+         str_replace( "TotalLobbyingAmount.*", "Lobbying Spending") %>% 
+         str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
+         str_replace("dictionary_terms", " Technical Sophistication")) %>% 
+  ggplot() +
+  aes(x = d0, 
+      xmin = d0.ci_low, 
+      xmax = d0.ci_high, 
+      y = term) + 
+    geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
+  geom_pointrange() + 
+  labs(y = "Mediator", x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
+  theme(panel.grid.major.y = element_blank())
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Mediation with two mediators
+
+TotalContribAmount is PAC expenditure
+
+`multimed` can't do the sensitivity analysis with a continuous treatment variable
+
+In the case of a continuous treatment
+variable, the researcher would specify two values of the treatment to make the contrast (Imai
+et al. 2010a). 
+
+https://cran.r-project.org/web/packages/mediation/mediation.pdf page 40
+
+
+```{r mediation-multiple, eval = FALSE}
+#mediation-multiple
+
+#temp <- mediation_data  %>% mutate(assets = assets/10000000000) 
+                    # drop_na(efficacy, MeanContribAmount, TotalContribAmount, Total_Legal_Citations, assets,org_comments, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) %>%
+
+temp <- mediation_data  %>% mutate(assets = as.numeric(assets > 1000000)) 
+temp <- mediation_data  %>% mutate(assets = assets/10000000000) 
+
+temp %<>% dplyr::select(efficacy, Total_Legal_Citations, assets,org_comments, TotalLobbyingAmount, TotalContribAmount) %>% drop_na(efficacy, Total_Legal_Citations, assets,org_comments, TotalLobbyingAmount) %>%
+  data.frame()
+
+temp %>%
+  skimr::skim(  )
+
+Xnames <- c("org_comments")
+
+m.med <- multimed(outcome = "efficacy", med.main = "TotalContribAmount", med.alt = "TotalLobbyingAmount",
+                  treat = "assets", covariates = Xnames,
+                  data = temp, sims = 1000, )
+
+# Sensitivity Analysis is blank b/c of some error, need to figure out why
+summary(m.med)
+
+plot(m.med, type = "point")
+
+plot(m.med, type = c("sigma", "R2-total"), tgroup = c("treated", "control"))
+
+summary(lm(formula = efficacy ~ TotalContribAmount + Total_Legal_Citations + assets + org_comments, data = b  %>% mutate(assets = assets/10000000000) %>%
+                    drop_na(efficacy, TotalContribAmount, Total_Legal_Citations, assets,org_comments)))
+
+```
+
+
+
+
+### Multimed
+
+```{r multi-mediation, eval=FALSE}
+mmed.terms.lobby <- multimed(outcome = "efficacy",#  model.y, 
+                             med.main = "dictionary_terms",# med.terms.4, 
+                             med.alt = "TotalLobbyingAmount",# med.cont.lobby,
+                             sims=1000, 
+                             treat = "marketcap_b", 
+                             data = mediation_data4 
+                             #robustSE = T, boot = T, 
+                             #control.value = 1, treat.value = 2
+                             )
+
+mmed.terms.lobby
+
+mmed.terms.lobby %>% plot(type = "point")
+
+```
+
+
+
+
+
 
 
 

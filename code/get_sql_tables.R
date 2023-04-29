@@ -34,7 +34,7 @@ attachments %>%
   count(agency_acronym, name = "attachments_table") %>%
   full_join(comments %>% count(agency_acronym, name = "comments table")) %>%
   full_join(d_raw %>%
-              count(comment_agency, name = "covariates_20220510") %>%
+              count(comment_agency, name = "covariates_20230427") %>%
               rename(agency_acronym = comment_agency))
 
 
@@ -67,10 +67,23 @@ status <- attachments %>%
               count(agency_acronym, name = "comments table")) %>%
   full_join(term_counts)
 
-status
 
 # it appears that FDIC attachments are not merging on comment_url,
 # but these NAs are actually OCC and CFPB comments
 
+# missing some?
+comments %>% filter(agency_acronym == "NCUA")
+d_raw %>% filter(comment_agency == "NCUA")
+d_raw %>% filter(comment_agency == "NCUA") %>% count(comment_url, sort = T) %>% kablebox()
+
+
+
+status
+
+
 write_csv(status, file = here::here("data", "master_tables_status.csv"))
+
+
+
+
 
