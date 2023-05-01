@@ -309,6 +309,10 @@ match_data_clean %>% count(comment_agency)
 
 d <- match_data_clean  
 
+d %>% count(comment_url, sort = T)
+
+d %>% add_count(comment_url) %>% arrange(-n) %>% select(comment_url, organization, n, best_match_name) %>%  filter(n>1) %>% write_csv(here::here("data", "inspect", "duplicate_comment_urls.csv"))
+
 # unique ids to merge on 
 d %<>% 
   mutate(
@@ -379,6 +383,12 @@ d %>% distinct(Agency, org_type2, org_name) %>%
   geom_col() + 
   labs(fill = "Type of Organization",
        y = "Number of Organizations")
+
+ # caption = "Consumer Financial Protection Bureau (CFPB)
+ #       Commodity Futures Trading Commission (CFTC)
+ #       Federal Reserve (FRS)
+ #       National Credit Union Administration (NCUA)
+ #       Securities and Exchange Commission (SEC)"
 
 
 org_count_agency <- d %>% 
@@ -2520,7 +2530,7 @@ attr(rows, 'position') <- c(0)
 
 modelsummary(models)
 
-save(models, rows, cm, gof_map, modelsummary,
+save(models, rows, 
      file = here::here("models", "rules-by-assets.Rdata"))
 ```
 
@@ -2660,7 +2670,7 @@ caption = "Reference Category = Savings Associations") +
   scale_color_viridis_d(end = .6)
 
 
-save(models, rows, cm, gof_map, modelsummary,
+save(models, rows, 
      file = here::here("models", "mpFDIC.Rdata"))
 ```
 
@@ -2774,7 +2784,7 @@ caption = "Reference Category = Commercial Bank") +
   scale_color_viridis_d(end = .6)
 
 
-save(models, rows, cm, gof_map, modelsummary,
+save(models, rows,
      file = here::here("models", "mpFDIC2.Rdata"))
 ```
 
@@ -2914,7 +2924,7 @@ attr(rows, 'position') <- c(0)
 
 modelsummary(models)
 
-save(models, rows, cm, gof_map, modelsummary, 
+save(models, rows, 
      file = here::here("models", "pr-of-comment.Rdata"))
 ```
 
@@ -3125,7 +3135,7 @@ modelsummary(models)
 
 # modelplot(models)
 
-save(models, rows, cm, gof_map, modelsummary,
+save(models, rows,
      file = here::here("models", "mpAll.Rdata"))
 ```
 
@@ -3155,14 +3165,14 @@ names(predicted)
 # As a plot
 p <- predicted %>% 
   ggplot() + 
-  aes(x = assets_b, y = estimate#, shape = org_type, color = org_type
+  aes(x = assets_b*1000, y = estimate#, shape = org_type, color = org_type
       ) + 
   geom_pointrange(aes(ymin = conf.low,
                   ymax = conf.high), alpha = .7, position = position_dodge(width = 0.010) )  + 
   geom_hline(yintercept = 0, linetype = 2) +
   #coord_flip() +
   labs(y = 'Probability of Commenting', 
-       x = "Assets (Billions)",
+       x = "Assets (Millions)",
        color = "",#color = '"Environmental Justice"\nRaised by Comments',
        shape = "",#shape = '"Environmental Justice"\nRaised by Comments', 
        title = "") + 
