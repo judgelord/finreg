@@ -224,18 +224,37 @@ Other efficacy measures that we are not using:
 # lookup table 
 attachments <- read_csv(here::here("Data", "attachments.csv"))
 
-# many to many 
+# attachments table is many to many 
 attachments %>% distinct() %>% add_count(attachment_url, sort = T)
+
+# the matched data are generally in the attachments table (or they are not attachments)
+d %>% count(comment_url %in% attachments$comment_url, comment_agency)
 
 # efficacy data 
 efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.csv")  %>% str_remove("finreg/")  )
 efficacy_raw %>% kablebox()
+efficacy_raw %>% count(is.na(cumulative_sequence_length_over_10))
 
-efficacy_raw %>% count(is.na(url))
-# check for OCC comments (missing as of May 2022)
-# 
-efficacy_raw %>% filter(str_detect(comment_url, "OCC"))
-attachments %>% filter(str_detect(comment_url, "OCC"))
+# url is comment url, but missing many 
+efficacy_raw %>% count(url %in% attachments$comment_url)
+# those dockets we have
+efficacy_raw %>% filter(url %in% attachments$comment_url) %>% count(docket_id) %>% kablebox()
+# those we dont have 
+efficacy_raw %>% filter(!url %in% attachments$comment_url) %>% count(docket_id) %>% kablebox()
+
+
+# comment_url is blank
+efficacy_raw %>% count(comment_url %in% attachments$comment_url)
+efficacy_raw %>% count(url %in% attachments$comment_url)
+
+# attachment_url is  correct
+efficacy_raw %>% count(attachment_url %in% attachments$attachment_url)
+# except for the additional headers
+efficacy_raw %>% filter(!attachment_url %in% attachments$attachment_url) %>% kablebox()
+
+# check for OCC comments (missing as of May 2023)
+efficacy_raw %>% filter(str_detect(attachment_url, "OCC"))
+attachments %>% filter(str_detect(attachment_url, "OCC"))
 
 
 # merge in comment url from attachments table 
@@ -245,10 +264,9 @@ efficacy_raw %<>% select(-comment_url)
 
 efficacy_raw %>% count(attachment_url, sort = T)
 
-
 # JOINING LOOKUP TABLE DOES MUCH BETTER THAN USING URL VAR 
 #FIXME 
-efficacy_raw %<>% left_join(attachments)
+efficacy_raw %<>% left_join(attachments) %>% distinct()
 
 #efficacy_raw %<>% mutate(comment_url = url)
 
@@ -273,8 +291,11 @@ efficacy <- efficacy_raw %>%
 
 efficacy %>% count(comment_url, sort = T)
 
+# dropping 17k 
+efficacy %<>% drop_na(efficacy)
+
 # take most efficacious attachment per comment 
-efficacy %<>% group_by(comment_url) %>% slice_max(order_by = efficacy) %>% ungroup()
+efficacy %<>%  group_by(comment_url) %>% slice_max(order_by = efficacy) %>% ungroup()
 
 efficacy %>% arrange(-efficacy) %>% kablebox()
 
@@ -299,8 +320,13 @@ d  %<>%
             str_replace("QUESTIONMARK", "\\?")
           ) 
 
+
+
 d %>% count(is.na(efficacy))
-d %>% group_by(Agency) %>% count(is.na(efficacy))
+
+# we should have efficacy for these
+d %>% filter(comment_url %in% attachments$comment_url) %>% group_by(comment_agency) %>% count(is.na(efficacy))
+
 ```
 
 
@@ -318,6 +344,9 @@ attachments %>% filter(str_dct(comment_url,"=61025"))
 # No attachments 
 efficacy %>% filter(str_dct(comment_url,"CLAppraisal20140609J"))
 efficacy %>% filter(str_dct(comment_url,"CFPB-2016-0020-0008"))
+
+
+efficacy %>% filter(!comment_url %in% attachments$comment_url)
 ```
 
 
@@ -1287,7 +1316,7 @@ med.cont.pac <- mediate(model.m.pac.contrib,
                         boot = T)
 
 summary(med.cont.pac)
-# plot(med.cont.pac, main = "PAC Spending",   xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
+# plot(med.cont.pac, main = "Campaign (PAC) Spending",   xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
 
 
 model.m.lobby <- lm(TotalLobbyingAmountNo0 ~ assets_m * org_type,
@@ -1329,7 +1358,7 @@ med.cont.pac <- mediate(model.m.pac.contrib,
                         sims=1000, treat = "assets_m", 
                         mediator = "TotalContribAmount",  control.value = 1, treat.value = 10, boot = T)
 
-plot(med.cont.pac, main = "PAC Spending", 
+plot(med.cont.pac, main = "Campaign (PAC) Spending", 
      xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
 
 summary(med.cont.pac)
@@ -1470,12 +1499,12 @@ attr(rows, 'position') <- c(0)
 
 modelsummary(models)
 
-med.cont <- mediate(model.m, model.y, sims=1000, treat = "marketcap_b",
+med.cont.terms <- mediate(model.m, model.y, sims=1000, treat = "marketcap_b",
 mediator = "dictionary_terms")
 
 summary(med.cont)
 
-plot(med.cont, 
+plot(med.cont.terms, 
      main = "Technical Terms",     
      xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
 ```
@@ -1718,8 +1747,8 @@ models.m4 <- list(model.m4.cont, model.m4.lob, model.m4.terms, model.m4.legal, m
 
 rows <- tibble(
   term = c("Dependent Variable"),
-   `1` = "PAC Spending",
-     `2` = "Lobbying Spending",
+   `1` = "Campaign (PAC) Spending",
+     `2` = "Lobbying (LDA) Spending",
   `3` = "Technical Terms",
      `4` = "Legal Citations",
     `5` = "Efficacy"
@@ -1770,8 +1799,8 @@ acme <- purrr::map_df(models, extract_acme)
 
 
 acme %>% 
-  mutate(term = term %>% str_replace("TotalContribAmount", "PAC Spending") %>% 
-         str_replace( "TotalLobbyingAmount", "Lobbying Spending") %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount", "Campaign (PAC) Spending") %>% 
+         str_replace( "TotalLobbyingAmount", "Lobbying (LDA) Spending") %>% 
          str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
          str_replace("dictionary_terms", " Technical Sophistication")) %>% 
   ggplot() +
@@ -1853,8 +1882,8 @@ models.m4No0 <- list(model.m4.cont,
 
 rows <- tibble(
   term = c("Dependent Variable"),
-   `1` = "PAC Spending",
-     `2` = "Lobbying Spending",
+   `1` = "Campaign (PAC) Spending",
+     `2` = "Lobbying (LDA) Spending",
   `3` = "Technical Terms",
      `4` = "Legal Citations",
     `5` = "Efficacy"
@@ -1886,36 +1915,123 @@ plot(med.lob.4, main = "Lobbying Expenditure",
 
 ### ACME including 0-dolar PAC 
 
-```{r mediation-4wayNo0-acme, fig.width=4.5, fig.height=1.65}
+```{r mediation-4wayNo0-acme, fig.width=6.5, fig.height=1.75}
 #mediation-4way-acme
 
 extract_acme(med.lob.4)
 
-models <- list(med.cont.4, 
-               med.lob.4, 
-               #med.legal.4,
+# single
+models <- list(med.cont, 
+               med.lob, 
                med.cont.legal, 
-               med.terms.4)
+               med.cont.terms)
 
 acme <- purrr::map_df(models, extract_acme)
 
+acme$Model <- "Single Mediator"
+
+# multiple 
+models <- list(med.cont.4, 
+               med.lob.4, 
+               med.legal.4,
+               med.terms.4)
+
+acme.m <- purrr::map_df(models, extract_acme)
+
+acme.m$Model <- "Multiple Mediation"
 
 acme %>% 
-  mutate(term = term %>% str_replace("TotalContribAmount.*", "PAC Spending") %>% 
-         str_replace( "TotalLobbyingAmount.*", "Lobbying Spending") %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount.*", "Campaign (PAC) Spending") %>% 
+         str_replace( "TotalLobbyingAmount.*", "Lobbying (LDA) Spending") %>% 
          str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
          str_replace("dictionary_terms", " Technical Sophistication")) %>% 
   ggplot() +
   aes(x = d0, 
       xmin = d0.ci_low, 
       xmax = d0.ci_high, 
-      y = term) + 
+      y = term,
+      color = Model) + 
     geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
-  geom_pointrange() + 
-  labs(y = "Mediator", x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
-  theme(panel.grid.major.y = element_blank())
+  geom_pointrange(position = position_dodge(width = 0.30),
+                  alpha = .8) + 
+  labs(color = "Model Assumption",
+    y = "Mediator", 
+       x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
+  theme(panel.grid.major.y = element_blank()) + 
+  scale_color_viridis_d(begin = .8, end = .8, option = 2)
 
 
+acme.m %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount.*", "Campaign (PAC) Spending") %>% 
+         str_replace( "TotalLobbyingAmount.*", "Lobbying (LDA) Spending") %>% 
+         str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
+         str_replace("dictionary_terms", " Technical Sophistication")) %>% 
+  ggplot() +
+  aes(x = d0, 
+      xmin = d0.ci_low, 
+      xmax = d0.ci_high, 
+      y = term,
+      color = Model) + 
+    geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
+  geom_pointrange(position = position_dodge(width = 0.30),
+                  alpha = .8) + 
+  labs(color = "Model Assumption",
+    y = "Mediator", 
+       x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
+  theme(panel.grid.major.y = element_blank()) + 
+  scale_color_viridis_d(begin = .1, end = .8, option = 2)
+
+
+
+acme %>% full_join(acme.m) %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount.*", "Campaign (PAC) Spending") %>% 
+         str_replace( "TotalLobbyingAmount.*", "Lobbying (LDA) Spending") %>% 
+         str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
+         str_replace("dictionary_terms", " Technical Sophistication")) %>% 
+  ggplot() +
+  aes(x = d0, 
+      xmin = d0.ci_low, 
+      xmax = d0.ci_high, 
+      y = term,
+      color = Model) + 
+    geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
+  geom_pointrange(position = position_dodge(width = 0.30),
+                  alpha = .8) + 
+  labs(color = "Model Assumption",
+    y = "Mediator", 
+       x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
+  theme(panel.grid.major.y = element_blank()) + 
+  scale_color_viridis_d(begin = .1, end = .8, option = 2)
+```
+
+
+```{r, eval=FALSE}
+# single
+models <- list(med.cont, 
+               med.lob, 
+               med.cont.legal, 
+               med.cont.terms)
+
+models.m <- list(model.cont, model.y.cont, 
+                model.lob, model.y.lob,
+                model.legal,  model.y.legal, # TODO 
+                model.terms, model.y.terms# TODO RENAME THESE ABOVE TO FIT 
+                )
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+   `1` = "Campaign (PAC) Spending",
+     `2` = "Lobbying (LDA) Spending",
+  `3` = "Technical Terms",
+     `4` = "Legal Citations",
+    `5` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models.m)
+
+save(models.m, rows, file = here::here("models", "models.m.Rdata"))
 ```
 
 
