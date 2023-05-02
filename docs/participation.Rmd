@@ -1136,8 +1136,8 @@ The median nonprofits that commented on Dodd-Frank rules had assets of `r median
 nonprofit_resources %>% 
   filter(assets > 10) %>% 
   mutate(Commented = Commented %>% paste(
-    "\n(median = $", round(median_assets/10000000, 2), " million, ",
-    "mean = $", round(mean_assets/10000000, 1), " million)"
+    "\n(median = $", round(median_assets/1000000, 2), " million, ",
+    "mean = $", round(mean_assets/1000000, 1), " million)"
     )) %>% 
   ggplot() + 
   aes(x = assets/1000, fill = Commented, color = Commented) + 
