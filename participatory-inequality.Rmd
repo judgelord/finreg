@@ -231,18 +231,20 @@ We then linked these comments to the organization with the best matching name or
 These procedures resulted in a dataset of `r n_orgs` distinct organizations that submitted  `r n_assets` unique comments on one or more Dodd-Frank rules. Below, we use these data to compare the wealth of commenting organizations to the `r n_orgs_total` similar organizations in one of the above wealth databases that did not comment on a Dodd-Frank regulation.
 
 ```{r org-types, fig.cap="Number of Organizations by Type and Agency to which they Commented", out.width = "80%"}
+#  Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)
 knitr::include_graphics("figs/org_count_type-2.png")
 ```
+
+```{r comment-types, fig.cap = "Number of Comments by Authoring Organization Type and Agency", out.width = "80%"}
+knitr::include_graphics("figs/org_count_type-1.png")
+```
+
 
 The remainder of this section describes the distribution of lobbying participation by organizations.  Figure \ref{fig:org-types} shows the number of unique commenting organizations matched to each database by the agency or agencies to which they submitted comments. Across all agencies except for the Federal Reserve (FRS), most commenting organizations are non-profits. The next most common type of commenter was federally-insured (FDIC-insured) banks (hereafter "banks"). Organizations that filed with the SEC and donors to PACs were less common. Figure \ref{fig:comment-types} shows the number of comments submitted to each agency by an organization matched to each database described above. There was considerable variation in the number of comments from organizations per rule. 
 <!--For example, the CFPB rules regulating payday loans generated the largest number of comments from organizations (3,898) in our data. At the same time, many low-salience rules received few comments. Several rules received no comments from organizations with publicly-available wealth data. However,--> 
 For all rules that received more than 25 comments, we matched at least two organizations to asset data. The agency with the largest median number of comments from organizations was the CFPB at 21. 
 
 
-```{r comment-types, fig.cap = "Number of Comments by Authoring Organization Type and Agency", out.width = "80%"}
-#  Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)
-knitr::include_graphics("figs/org_count_type-1.png")
-```
 
 ## Profit Motives 
 
@@ -419,12 +421,11 @@ Overall, while these differences are not statistically significant, the general 
 
 ```{r, dockets-percentile, fig.cap="Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
 knitr::include_graphics(c(
-    "figs/nonprofit-rules-3.png",
+  "figs/nonprofit-rules-3.png",
   "figs/creditunion-rules-3.png",
   "figs/compustat-rules-3.png",
-    "figs/fdic-rules-3.png",
-  "figs/opensecrets-rules-3.png"#TODO , "figs/lobbying-rules-3.png"
-))
+  "figs/fdic-rules-3.png"
+  ))
 ```
 
 <!--
