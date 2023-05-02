@@ -35,6 +35,8 @@ The root for this script is `finreg`. Most of the data are in `finreg/data` (som
 
 ## Sophistication 
 
+We measure comment sophistication in two ways. First, we measure technical sophistication by the number of words in a comment that are found in a dictionary of technical banking and finance terms. Second, we measure legal sophistication by the number of legal citations, as indicated by the Blue Book (a legal citation manual).
+
 
 File: `Data/Dictionary_Terms.RData` contains six objects (3 sets of measures for both comments and attachments)
 
@@ -686,7 +688,7 @@ p <- b %>%
   geom_smooth(method = "lm") +
   geom_smooth(color = "light blue") + 
   labs(x = "Assets",
-       y = "Legal Citations", 
+       y = "Legal Sophistication", 
        title = "FDIC-Insured Banks")
 
 p
@@ -704,7 +706,7 @@ p <- b %>%
   geom_smooth(method = "lm" )+ 
     geom_smooth(color = "light blue") + 
   labs(x = "Assets",
-       y = "Legal Citations",
+       y = "Legal Sophistication",
        title = "Nonprofits")
 
 p
@@ -723,7 +725,7 @@ p <- b %>%
   ) + 
     geom_smooth(color = "light blue") + 
   labs(x = "Mean PAC Contribution (Thousands USD)",
-       y = "Legal Citations",
+       y = "Legal Sophistication",
        title = "Campaign Donors")
 
 p
@@ -744,7 +746,7 @@ p <- b %>%
   ) + 
     geom_smooth(color = "light blue") + 
   labs(x = "Market Capitalization (Billions)",
-       y = "Legal Citations",
+       y = "Legal Sophistication",
        title = "Publicly-Traded Companies")
 
 p
@@ -1014,7 +1016,7 @@ p <- e %>%
   geom_jitter(alpha = .5) + 
   geom_smooth(method = "lm"
   ) + 
-  labs(x = "Legal Citations",
+  labs(x = "Legal Sophistication",
        y = "Words in Comment\nAdded to Final Rule") 
 
 p
@@ -1425,7 +1427,7 @@ summary(med.cont)
 
 plot(med.cont, 
      main = "Technical Terms",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 ```
 
 
@@ -1470,7 +1472,7 @@ summary(med.cont)
 
 plot(med.cont.legal, 
      main = "Legal Citations",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 ```
 
 
@@ -1506,7 +1508,7 @@ summary(med.cont)
 
 plot(med.cont.terms, 
      main = "Technical Terms",     
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 ```
 
 ### Market cap x technical terms  x legal citations 
@@ -1546,7 +1548,7 @@ med.terms <- mediate(model.m1.terms, model.y, sims=1000, treat = "marketcap_b",
 mediator = "dictionary_terms")
 
 plot(med.terms, main = "Technical Terms",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 med.legal <- mediate(model.m1.legal, model.y, sims=1000, treat = "marketcap_b",
 mediator = "Total_Legal_Citations")
@@ -1554,7 +1556,7 @@ mediator = "Total_Legal_Citations")
 summary(med.legal)
 
 plot(med.legal, main = "Legal Citations",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 #FI
 # modelsummary::modelsummary(med.cont)
@@ -1619,10 +1621,10 @@ modelsummary(models.med.spending)
 save(models.med.spending, rows, file = here::here("models", "models.med.spending.Rdata"))
 
 plot(med.cont, main = "Political Contributions",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 plot(med.lob, main = "Lobbying Expenditure",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 
 
@@ -1674,10 +1676,10 @@ modelsummary(models.m2)
 
 
 plot(med.terms.2, main = "Technical Terms",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 plot(med.lob.2, main = "Lobbying Expenditure",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 
 
@@ -1762,18 +1764,18 @@ save(models.m4, rows, file = here::here("models", "models.m4.Rdata"))
 
 
 plot(med.terms.4, main = "Technical Terms",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 
 plot(med.legal.4, 
      main = "Legal Citations",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 plot(med.cont.4, main = "Political Spending",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 plot(med.lob.4, main = "Lobbying Expenditure",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 ```
 
 ### ACME 
@@ -1810,7 +1812,7 @@ acme %>%
       y = term) + 
     geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
   geom_pointrange() + 
-  labs(y = "Mediator", x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
+  labs(y = "Mediator", x = "ACME\nWords from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization") + 
   theme(panel.grid.major.y = element_blank())
 
 
@@ -1897,18 +1899,18 @@ save(models.m4No0, rows, file = here::here("models", "models.m4No0.Rdata"))
 
 
 plot(med.terms.4, main = "Technical Terms",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 
 plot(med.legal.4, 
      main = "Legal Citations",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 plot(med.cont.4, main = "Political Spending",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 
 plot(med.lob.4, main = "Lobbying Expenditure",       
-     xlab = "Words from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization")
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
 ```
 
 
@@ -1956,7 +1958,7 @@ acme %>%
                   alpha = .8) + 
   labs(color = "Model Assumption",
     y = "Mediator", 
-       x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
+       x = "ACME\nWords from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization") + 
   theme(panel.grid.major.y = element_blank()) + 
   scale_color_viridis_d(begin = .8, end = .8, option = 2)
 
@@ -1977,7 +1979,7 @@ acme.m %>%
                   alpha = .8) + 
   labs(color = "Model Assumption",
     y = "Mediator", 
-       x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
+       x = "ACME\nWords from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization") + 
   theme(panel.grid.major.y = element_blank()) + 
   scale_color_viridis_d(begin = .1, end = .8, option = 2)
 
@@ -1999,7 +2001,7 @@ acme %>% full_join(acme.m) %>%
                   alpha = .8) + 
   labs(color = "Model Assumption",
     y = "Mediator", 
-       x = "ACME\nWords from Comment Added to Final Rule\nPer Billion Dollars in Market Capitalization") + 
+       x = "ACME\nWords from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization") + 
   theme(panel.grid.major.y = element_blank()) + 
   scale_color_viridis_d(begin = .1, end = .8, option = 2)
 ```
