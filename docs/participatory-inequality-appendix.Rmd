@@ -24,13 +24,15 @@ read_csv(here::here("data", "master_tables_status.csv")) %>%
          Comments = `comments table`,
          Agency = agency_acronym) %>% 
   left_join(
-    commenter_assets %>% count(Agency, name = "Wealth Measures") 
+    commenter_assets %>% 
+      drop_na(best_match_name) %>% 
+      count(Agency, name = "Wealth Measures") 
     ) %>% 
   mutate(`Wealth Measures` = replace_na(`Wealth Measures`, 0)) %>% 
-  #FIXME NOT SURE WHY NCUA NOW HAS 66 WEHN IT IHAD 140 last time
-  mutate( `Wealth Measures` = ifelse(Agency == "NCUA", 
-                                    Comments,
-                                     `Wealth Measures`)) %>% 
+  # #FIXME NOT SURE WHY NCUA NOW HAS 66 WEHN IT IHAD 140 last time
+  # mutate( `Wealth Measures` = ifelse(Agency == "NCUA", 
+  #                                   Comments,
+  #                                    `Wealth Measures`)) %>% 
   drop_na(Agency) %>% 
   kable3(
     caption = "Comments, Comment Attachments, Comment Sophistication, Comment Lobbying Success, and Commenter Wealth Data on Rules Implementing the Dodd-Frank Act"
@@ -97,16 +99,18 @@ The top-right panel of Figure \ref{fig:FDIC-density-by-class} shows that commerc
 Similarly, the bottom-left panel of Figure \ref{fig:FDIC-density-by-class} shows that the average assets of state banks that commented were three times the average assets of the state banks that did not comment. While savings associations are less likely to comment than more profit-oriented banks, such as commercial banks (see Figure \ref{fig:mp-FDIC}), the bottom-right panel of Figure \ref{fig:FDIC-density-by-class} shows that when savings associations do comment, they tend to be the wealthier ones. 
 
 ```{r, FDIC-density-by-class, fig.cap="Financial Resources of Banks that Did and Did Not Comment", out.width= "49%"}
-knitr::include_graphics("figs/FDIC-density-by-class-1.png")
-knitr::include_graphics("figs/FDIC-density-by-class-2.png")
-knitr::include_graphics("figs/FDIC-density-by-class-3.png")
-knitr::include_graphics("figs/FDIC-density-by-class-4.png")
+# knitr::include_graphics("figs/FDIC-density-by-class-1.png")
+# knitr::include_graphics("figs/FDIC-density-by-class-2.png")
+# knitr::include_graphics("figs/FDIC-density-by-class-3.png")
+# knitr::include_graphics("figs/FDIC-density-by-class-4.png")
+knitr::include_graphics("figs/FDIC-count-by-class-1.png")
+knitr::include_graphics("figs/FDIC-count-by-class-2.png")
+knitr::include_graphics("figs/FDIC-count-by-class-3.png")
+knitr::include_graphics("figs/FDIC-count-by-class-4.png")
 ```
 
 
-## Counts
-
-Figures \ref{fig:commenters-noncommenters-counts}, \ref{fig:FDIC-count-by-class}, and \ref{fig:opensecrets-count} present histograms---a more detailed version of the density plots in Figures \ref{fig:commenters-noncommenters},  \ref{fig:FDIC-density-by-class}, and \ref{fig:opensecrets-density}.
+Figures \ref{fig:commenters-noncommenters-counts}, \ref{fig:FDIC-density-by-class}, and \ref{fig:opensecrets-count} present histograms of wealth distributions by whether an organization commented on a Dodd-Frank rule.
 
 ```{r, commenters-noncommenters-counts, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/nonprofit-count-1.png")
@@ -119,12 +123,14 @@ knitr::include_graphics("figs/FDIC-count-select-1.png")
 knitr::include_graphics("figs/opensecrets-count-1.png")
 ```
 
+<!--
 ```{r, FDIC-count-by-class, fig.cap="Financial Resources of Banks that Did and Did Not Comment", out.width= "49%"}
 knitr::include_graphics("figs/FDIC-count-by-class-1.png")
 knitr::include_graphics("figs/FDIC-count-by-class-2.png")
 knitr::include_graphics("figs/FDIC-count-by-class-3.png")
 knitr::include_graphics("figs/FDIC-count-by-class-4.png")
 ```
+--> 
 
 ```{r, number-of-dockets, fig.cap= "Number of Dockets on Which Each Type of Organization Commented", out.width="49%", fig.show= "hold"}
 knitr::include_graphics(c(
@@ -148,6 +154,7 @@ knitr::include_graphics(c(
 
 \clearpage 
 
+<!--
 Figures \@ref(fig:repeated-text-assets2) and  \@ref(fig:assets-terms2) are the same as figures Figures \@ref(fig:repeated-text-assets) and  \@ref(fig:assets-terms) except with the x-axis unlogged. 
 
 ```{r repeated-text-assets2, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="47%"}
@@ -179,6 +186,8 @@ knitr::include_graphics("figs/assets-tech-9.png")
 
 \clearpage
 
+-->
+
 # Regression tables {#tables}
 
 ## The Odds of Commenting by Wealth 
@@ -197,7 +206,15 @@ load(here::here("models", "pr-of-comment.Rdata"))
 modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule")  %>% kableExtra::kable_styling()
 ```
 
-Table \ref{tab:mp-FDIC-table} presents the full regression table for models shown in Figure \ref{fig:mp-FDIC}.
+Figure \@ref(fig:mp-FDIC) and Table \@ref(tab:mp-FDIC-table) show that commercial banks were disproportionately represented in Dodd-Frank rulemaking and non-commercial banks (e.g. savings associations) were less represented, even controlling for asset differences. This provides further support for the *Profit-motivated Participation* Hypothesis (H2). 
+
+Likewise, assets remain a significant predictor of whether an organization comments even controlling for differences in the type of bank institution. This provides additional evidence for the *Differential Participation* Hypothesis (H1). 
+
+```{r, mp-FDIC, fig.cap= "Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank", out.width="70%"}
+#TODO CREDIT UNIONS SHOULD BE IN THIS MODEL 
+knitr::include_graphics("figs/mp-FDIC-predict-1.png")
+```
+
 
 ```{r mp-FDIC-table}
 load(here::here("models", "mpFDIC.Rdata"))
@@ -205,47 +222,6 @@ load(here::here("models", "mpFDIC.Rdata"))
 modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Reference category = savings associations") %>% kableExtra::kable_styling()
 ```
 
-
-# Mediation
-
-We investigate the role of technical and legal sophistication in lobbying success with causal mediation analysis. Here we make the significant assumption that the relationship between wealth and lobbying success is causal and has only one of 4 possible mediators. That is, we assume there is a direct effect of wealth and a mediated effect through the proposed mediator. We test each mediator individually. Figure \ref{fig:mediation} demonstrates that the Average Conditional Marginal Effect for technical sophistication is nearly identical to the Total Effect of market capitalization on lobbying success. This means that technical sophistication explains nearly all of the greater success of wealthier companies.  Legal sophistication also explains a large share of the total relationship when we use legal citations as an alternative mediator. This means that legal citations explain much of the greater success of wealthier companies. 
-
-```{r mediation, out.width="49%",  fig.cap= "Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as a Proposed Mediators Between Wealth and Lobbying Success"}
-knitr::include_graphics("figs/mediation-marketcap-lobbying-1.png")
-knitr::include_graphics("figs/mediation-marketcap-lobbying-2.png")
-knitr::include_graphics("figs/mediation-marketcap-bluebook-1.png")
-knitr::include_graphics("figs/mediation-marketcap-terms-1.png")
-```
-
-```{r mediation-table}
-# load(here::here("models", "models.m.Rdata")) # FIXME
-load(here::here("models", "models.m4No0.Rdata")) # FIXME this is multi-mediation models data 
-
-modelsummary(models.m4No0, caption = "Models for Mediation Analysis", notes = "")  %>% kableExtra::kable_styling(latex_options = "scale_down")
-    #FIXME sometimes scale_down causes an error 
-```
-
-
-
-
-
-
-<!--
-### Multiple mediation 
-```{r mediation-4, out.width="49%",  fig.cap= "Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as a Proposed Mediators Between Wealth and Lobbying Success"}
-knitr::include_graphics("figs/mediation-4way-1.png")
-knitr::include_graphics("figs/mediation-4way-2.png")
-knitr::include_graphics("figs/mediation-4way-3.png")
-knitr::include_graphics("figs/mediation-4way-4.png")
-```
-
-```{r mediation-4-table}
-load(here::here("models", "models.m4No0.Rdata"))
-
-modelsummary(models.m4No0, caption = "Models for Mediation Analysis", notes = "")  %>% kableExtra::kable_styling()
-    #FIXME sometimes scale_down causes an error 
-```
--->
 
 \clearpage
 
@@ -283,11 +259,52 @@ knitr::include_graphics("figs/mb-2.png")
 ```
 
 
-Analyses on sophistication and influence (H6) also hold up when using a measure of legal sophistication. \ref{fig:efficacyXsophistication-legal} shows that comments using more legal language are more likely to contain text added in the final rule. Substantively, each additional legal citation in an organization's comment is associated with 34 additional words in the final rule. 
+Analyses on sophistication and influence (H6) also hold up when using a measure of legal sophistication. \ref{fig:efficacyXsophistication-legal} shows that comments using more legal language are more likely to contain text added in the final rule. 
 <!-- (Angelo 7/14/2022: Will have the change exact prediction amount when Poisson conducted) -->
 
 ```{r efficacy-sophistication-second, out.width="80%",  fig.cap="OLS Models of Lobbying Success by Legal Language"}
 knitr::include_graphics("figs/mes-2.png")
 ```
 
+
+# Mediation
+
+ Figure \ref{fig:mediation} demonstrates that the Average Conditional Marginal Effect for technical sophistication is nearly identical to the Total Effect of market capitalization on lobbying success. This means that technical sophistication explains nearly all of the greater success of wealthier companies.  Legal sophistication also explains a large share of the total relationship when we use legal citations as an alternative mediator. This means that legal citations explain much of the greater success of wealthier companies. 
+
+```{r mediation, out.width="49%",  fig.cap= "Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as a Proposed Mediators Between Wealth and Lobbying Success"}
+knitr::include_graphics("figs/mediation-marketcap-lobbying-1.png")
+knitr::include_graphics("figs/mediation-marketcap-lobbying-2.png")
+knitr::include_graphics("figs/mediation-marketcap-bluebook-1.png")
+knitr::include_graphics("figs/mediation-marketcap-terms-1.png")
+```
+
+```{r mediation-table}
+# load(here::here("models", "models.m.Rdata")) # FIXME
+load(here::here("models", "models.m4No0.Rdata")) # FIXME this is multi-mediation models data 
+
+modelsummary(models.m4No0, caption = "Models for Mediation Analysis", notes = "")  %>% kableExtra::kable_styling(latex_options = "scale_down")
+    #FIXME sometimes scale_down causes an error 
+```
+
+
+
+
+
+
+<!--
+### Multiple mediation 
+```{r mediation-4, out.width="49%",  fig.cap= "Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as a Proposed Mediators Between Wealth and Lobbying Success"}
+knitr::include_graphics("figs/mediation-4way-1.png")
+knitr::include_graphics("figs/mediation-4way-2.png")
+knitr::include_graphics("figs/mediation-4way-3.png")
+knitr::include_graphics("figs/mediation-4way-4.png")
+```
+
+```{r mediation-4-table}
+load(here::here("models", "models.m4No0.Rdata"))
+
+modelsummary(models.m4No0, caption = "Models for Mediation Analysis", notes = "")  %>% kableExtra::kable_styling()
+    #FIXME sometimes scale_down causes an error 
+```
+-->
 
