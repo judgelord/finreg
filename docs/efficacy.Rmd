@@ -911,7 +911,7 @@ p
 
 p +     geom_smooth(color = "light blue") + 
   scale_y_log10() +
-  scale_x_log10()
+  scale_x_log10(labels = function(x) format(x, scientific = TRUE))
 
 # creditunions
 p <- e %>% 

@@ -335,3 +335,58 @@ modelsummary(models.m4No0, caption = "Models for Mediation Analysis", notes = ""
 ```
 -->
 
+# Measuring change between draft and final rules
+
+In dealing with endogeneity, one methodological choice merits elaboration: we excluded text from the proposed rule when measuring lobbying success but not when measuring sophistication. This choice rests on the underlying concepts we are attempting to measure. In measuring text reuse, we aim to capture ideas that were not yet in the policy when the comment was submitted. Thus, text copied from the agency's proposal must be excluded. Indeed, text that appears in both the draft and final rule is what did *not* change. If a commenter attached a marked-up version of the proposed rule, we aim to exclude all but their suggested changes. 
+
+In contrast, in measuring sophistication, we aim to assess how much the commenter utilizes expertise to engage in technical policy debates. Here, attaching a marked-up version of the proposed rule captures the underlying concept of sophistication. Thus, our counts of technical banking terms do not exclude the text of the draft rule. Even if they are the agency's terms, engaging with its texts indicates sophistication. For example, the comment with the most legal terms from a bank contained a 4-page comment and 112 pages of attachments, 105 of which were the full proposed rule. These 105 pages were excluded from our measure of text reuse but included in the legal and banking terms count.  
+
+
+# Validation of text re-use as a measure of lobbying success
+
+Our algorithm works in the following steps:
+Match each comment to the proposed rule that came after the proposed rule and before the final rule.  For a simple sequence (1) proposed rule, (2) comment, (3) final rule, this step is perfunctory.  Not all rulemaking sequences, however, follow this template.  Some have multiple proposed rules.  Suppose a rule has 2 proposed rules and a final rule and a comment came after the second proposed rule (i.e. (1) proposed rule, (2) proposed rule two, (3) comment, and (4) final rule).  We would match the comment to the second proposed rule, since this comment is likely responding to that version of the proposed rule rather than the first one.
+
+For the proposed-final pair, tokenize the proposed and final rule into sentences and then remove the text of the proposed rule from the final rule.  
+Re-tokenize both the proposed and final rules into 10-grams.   Find the overlap between proposed and final rules, keeping track of the position index of the 10-grams.  10-grams that are consecutive in the proposed rule should be treated as consecutive n-grams for the purpose of counting consecutive words.  In this manner, two consecutive 10-grams would have a sequence length of 11 and not 20. 
+
+This algorithm has a few notable strengths.  First, it focuses on text that is both legally binding and the explanation for why it is legally binding.  Second, the results are easy to interpret: efficacy is simply the number of words in a comment and its corresponding final rule.  (Third, comments that score highly… .)  There are, however, several drawbacks.  Notably, not all sequences in both comments and final rules are equally influential.  Second, when there are multiple proposed or final rules, the results of the algorithm are   
+
+Below, we shed light on why several comments have efficacy values that are particularly high.  
+
+1) https://www.sec.gov/comments/s7-33-10/s73310-110.pdf, Efficacy score = 10131
+
+This letter is unusual in that its members (Americans for Limited Government, Ryder Systems, Inc., Financial Services Institute, Inc., U.S. Chamber of Commerce, Verizon, and White & Case, LLP) are all part of multiple coalitions and submitted multiple comments.  The Chamber of Commerce, for example, submitted five comments and attended seven meetings and was a part of two separate coalitions.  
+
+2) https://www.sec.gov/comments/s7-33-10/s73310-35.pdf, Efficacy score =             10131
+
+This is the same letter as above, submitted twice to the SEC.  Reassuringly it has the same efficacy!
+
+3) https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275, Efficacy score =      7593
+
+4) https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205, Efficacy score =      7411
+
+5) https://www.sec.gov/comments/s7-41-11/s74111-230.pdf, Efficacy score =             7312
+
+The following three comments (https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275, https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205, https://www.sec.gov/comments/s7-41-11/s74111-230.pdf) are all related.  The CFTC, OCC, FRB, FDIC, and SEC all worked together to develop rules to prohibit banking companies from engaging in proprietary trading (trading securities with their own money instead of clients’).  While all five agencies worked together to write a final rule, in the end the CFTC wrote one rule and the OCC, FRB, FDIC, and SEC wrote another.  Despite the different final rules, the agencies “the CFTC and the other agencies have worked closely together to develop the same rule text and supplementary information, except for information specific to the CFTC or the other agencies, as applicable.”
+
+The comment https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275 is a 340-page letter from Occupy the SEC, a group affiliated with Occupy Wall Street, submitted on the CFTC’s version of the final rule.  It was cited 285 times in the preamble to the final rule.
+
+The comment https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205 is a 325-page letter from Occupy the SEC and was submitted on the CFTC’s version of the final rule.  It was cited 284 times in the preamble to the final rule.
+
+The comment https://www.sec.gov/comments/s7-41-11/s74111-230.pdf is a 325-page letter from Occupy the SEC and was submitted to the OCC, FRB, FDIC, and SEC’s version of the rule.  It was cited 284 times  in the preamble to the final rule.    
+
+6) https://www.sec.gov/comments/s7-25-11/s72511-55.pdf, Efficacy score =                    5809
+
+SIFMA is cited over 500 times  by the CFTC in the preamble to the final rule.
+
+7) https://www.sec.gov/comments/s7-18-11/s71811-32.pdf, Efficacy score =                    5563
+
+Standard & Poors’s letter to the SEC is cited over 200 times  by the SEC in the preamble to the final rule.
+
+8) https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=25016, Efficacy score =            4965
+
+Not only did the FIA help develop the guidelines that were codified into a final rule, the FIA’s letter was cited 98 separate times by the CFTC in the preamble to the final rule.
+
+
+

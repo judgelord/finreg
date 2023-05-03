@@ -2796,7 +2796,7 @@ save(models, rows,
  # A data frame of values at which to estimate probabilities:
 values <- FDIC_resources %>% 
   #filter(org_type == "Bank") %>% 
-  tidyr::expand(ASSETS_m = seq(0,100,10),
+  tidyr::expand(ASSETS_m = seq(0,200,50),
                 Class2)#, org_type = "Bank") 
 
 predicted <- marginaleffects::predictions(mpFDICxBKCLASS,
@@ -3150,7 +3150,7 @@ range(all$ASSET)
 # A data frame of values at which to estimate probabilities:
 values <- all %>% 
   #filter(org_type == "Bank") %>% 
-  tidyr::expand(assets_b = seq(0,1,.1), org_type) %>% 
+  tidyr::expand(assets_b = seq(0,5,1), org_type) %>% 
   mutate(assets_b2 = assets_b^2)
 ```
 
@@ -3189,7 +3189,7 @@ p  +  aes(color = org_type) + labs(color = "")
 # p +   facet_wrap("org_type", ncol = 1) #+ ylim(0,.5) 
 
 
-#p +  facet_wrap("org_type", ncol = 1, scales = "free") +  aes(color = org_type) + labs(color = "") # + ylim(0,.5) 
+p +  facet_wrap("org_type", ncol = 1, scales = "free") +  aes(color = org_type) + labs(color = "") # + ylim(0,.5) 
 ```
 
 
