@@ -24,7 +24,7 @@ editor_options:
 
 
 ```{r setup, include = FALSE}
-source(here::here("code", "setup.R"))
+#source(here::here("code", "setup.R"))
 short = "false"
 exclude_stepwise = "false"
 exclude_extra = "false"
@@ -236,13 +236,9 @@ knitr::include_graphics("figs/mp-all-predict-quad-1.png")
 
 ---
 
-```{r mp-all-table}
-# Models of commenting by assets
-load(here::here("models", "mpAll.Rdata"))
-
-modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference category = Banks")  %>% kableExtra::kable_styling(latex_options="scale_down")
-    #FIXME sometimes scale_down causes an error 
-```
+background-image: url("figs/mp-all-table.png") 
+background-position: center
+background-size: cover
 
 
 ---
@@ -263,11 +259,9 @@ knitr::include_graphics("figs/mp-FDIC2-predict-1.png")
 
 ---
 
-```{r mp-FDIC2-table}
-load(here::here("models", "mpFDIC2.Rdata"))
-
-modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Non-commercial banks include savings associations, national associations, and commercial banks.") %>% kableExtra::kable_styling(latex_options="scale_down")
-```
+background-image: url("figs/mp-FDIC2-table.png") 
+background-position: center
+background-size: cover
 
 ---
 
@@ -329,15 +323,6 @@ knitr::include_graphics("figs/assets-efficacy-6.png")
 knitr::include_graphics("figs/assets-efficacy-8.png")
 ```
 
----
-
-##  💰 $\rightsquigarrow$ lobbying success
-
-```{r repeated-text-assets10, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
-knitr::include_graphics("figs/assets-efficacy-10.png")
-```
-
-
 
 ---
 
@@ -356,8 +341,26 @@ The x-axis here is the number of words that appear in dictionaries of legal and 
 
 ---
 
-## 💰 $\rightsquigarrow$ PAC Donations $\nrightarrow$ lobbying success
+## 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
 
+--
+
+```{r, acme, fig.cap="Lobbying Success by Comment Sophistication", out.width= "100%"}
+knitr::include_graphics("figs/mediation-4wayNo0-acme-1.png")
+```
+
+---
+
+## 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
+
+
+```{r, acme2, fig.cap="Lobbying Success by Comment Sophistication", out.width= "100%"}
+knitr::include_graphics("figs/mediation-4wayNo0-acme-3.png")
+```
+
+---
+
+## 💰 $\rightsquigarrow$ PAC Donations $\nrightarrow$ lobbying success
 
 ```{r mediation-pac, out.width="60%",  fig.cap= "PAC Donations as a Mediator Between Wealth and Lobbying Success"}
 # TODO DEVIN WILL INSERT mediation terms from https://judgelord.github.io/finreg/efficacy#Market_cap_x_legal_citations
@@ -365,11 +368,9 @@ The x-axis here is the number of words that appear in dictionaries of legal and 
 knitr::include_graphics("figs/mediation-marketcap-lobbying-1.png")
 ```
 
-
 ---
 
 ## 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
-
 
 ```{r mediation-terms, out.width="60%",  fig.cap= "Technical Language as a Proposed Mediator Between Wealth and Lobbying Success"}
 # TODO DEVIN WILL INSERT mediation terms from https://judgelord.github.io/finreg/efficacy#Market_cap_x_legal_citations
@@ -387,7 +388,6 @@ knitr::include_graphics("figs/mediation-marketcap-terms-bluebook-1.png")
 
 --
 - sophisticated comments are just more "correct" (?)
-
 
 --
 

@@ -358,7 +358,7 @@ knitr::include_graphics("figs/mp-FDIC2-predict-1.png")
 ```{r mp-FDIC2-table}
 load(here::here("models", "mpFDIC2.Rdata"))
 
-modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Non-commercial banks include savings associations, national associations, and commercial banks.") %>% kableExtra::kable_styling(latex_options="scale_down")
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = 'Non-commercial banks ("thrifts") include savings associations, savings banks, and national associations.') %>% kableExtra::kable_styling(latex_options="scale_down")
 ```
 
 The main takeaway from our analysis thus far is that resources correlate with commenting behavior; wealthy organizations are more likely to participate in regulatory lobbying than less wealthy organizations. If representation is largely about who shows up to participate in the policy process, companies with high market capitalization, organizations that give more to political campaigns, and banks, credit unions, and non-profits with more assets are represented better than those with lower market capitalization, less lobbying spending, and fewer assets. Both within and across different types of organizations, wealthier organizations are more likely to be at the table when important policy decisions are made. 
