@@ -1,13 +1,12 @@
 ---
 title: "Inequality in Administrative Democracy"
-subtitle: "Evidence from Financial Rulemaking"
+subtitle: "Methods and Evidence from Financial Rulemaking"
 author: "Daniel P. Carpenter, Angelo Dagonel, Devin Judge-Lord, Christopher T. Kenny,  Brian Libgober,  Steven Rashin, Jacob Waggoner, Susan Webb Yackee"
-#date: "Paper, slides, & data: [judgelord.github.io/research/finreg](https://judgelord.github.io/research/finreg)"
-urlcolor: cyan
+date: "Paper, slides, & data: [judgelord.github.io/research/finreg](https://judgelord.github.io/research/finreg)"
 output:
   xaringan::moon_reader:
     self_contained: true
-    footer: These slides available at http://bit.ly/myslides
+    footer: These slides available at http://judgelord.github.io
     lib_dir: libs
     mathjax: "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"
     css: "xaringan-themer.css" #["footer-header.css", "xaringan-themer.css"]
@@ -25,6 +24,7 @@ editor_options:
 
 
 ```{r setup, include = FALSE}
+source(here::here("code", "setup.R"))
 short = "false"
 exclude_stepwise = "false"
 exclude_extra = "false"
@@ -142,9 +142,11 @@ Among commenters, 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\right
 - Agencies are more likely to adopt language from sophisticated comments
 --
 
-- Near all of the relationship between wealth and lobbying success* can be attributed to lobbying sophistication
+- Much of the relationship between wealth and lobbying success* can be attributed to lobbying sophistication**
 
 *We observe only a small slice of influence that is most likely to be the result of specific sophisticated lobbying. 
+
+**Much more to do on mediation
  
 
 ???
@@ -167,7 +169,7 @@ https://clsbluesky.law.columbia.edu/2022/06/29/rolling-back-dodd-frank-investors
 
 ## 📊 DATA  
 
-- All 200+ Dodd-Frank Rulemakings (800+ policy documents)
+- All 200+ Dodd-Frank Rulemakings (800+ policy documents) 2010-2018
 - All ~300k comments on these rules
 
 ???
@@ -226,31 +228,46 @@ knitr::include_graphics("figs/FDIC-density-select-1.png")
 ##  💰 $\rightsquigarrow$ seat at the table, especially if profit-motivated
   
   
-```{r, mpFDIC, fig.cap= "Log Odds of Participating in Dodd-Frank Rulemaking by Type of FDIC-Insured Bank", out.width="100%"}
-#TODO Make predicted probability plots showing that all kinds of banks are more likely to comment when wealthier
-knitr::include_graphics("figs/mpFDIC-1.png")
+```{r, mp-all-predict-quad-1, fig.cap= "Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets", out.width="55%"}
+knitr::include_graphics("figs/mp-all-predict-quad-1.png")
+#TODO: THIS SHOULD SPLIT OUT COMMERCIAL BANKS AND COMBINE WITH THE BANK MODELS BELOW FOR TWO FIGURES BUT ONE TABLE. (STILL ESTIMATE A MODEL WITH BANKS SEPARATELY THO)--> 
 ```
+
 
 ---
 
+```{r mp-all-table}
+# Models of commenting by assets
+load(here::here("models", "mpAll.Rdata"))
 
-##  💰 $\rightsquigarrow$ seat at the table, especially if profit-motivated
-
-
-```{r mp-assets, fig.cap= "", out.width="100%"}
-knitr::include_graphics("figs/mp-nonprofit-credit-unions-1.png")
-#knitr::include_graphics("figs/pr-bank.png")
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule", notes = "Reference category = Banks")  %>% kableExtra::kable_styling(latex_options="scale_down")
+    #FIXME sometimes scale_down causes an error 
 ```
+
+
+---
+
+class: middle
+
+> ## [Comercial Banks]() were [four]() times more likely to comment on a Dodd-Frank rule than the average non-profit [Savings Association](), [six]() times more likely to comment than the average [Credit Union]() and [60]() times more likely to comment than the average [non-profit](). 
 
 ---
 
 ##  💰 $\rightsquigarrow$ seat at the table, especially if profit-motivated
 
-
-```{r mp-pr-bank, fig.cap= "", out.width="60%"}
-knitr::include_graphics("figs/pr-bank.png")
+```{r, mp-FDIC2, fig.cap= "Predicted Probability of Participating by Type of Bank", out.width="70%"}
+#TODO CREDIT UNIONS SHOULD BE IN THIS MODEL 
+knitr::include_graphics("figs/mp-FDIC2-predict-1.png")
 ```
 
+
+---
+
+```{r mp-FDIC2-table}
+load(here::here("models", "mpFDIC2.Rdata"))
+
+modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Non-commercial banks include savings associations, national associations, and commercial banks.") %>% kableExtra::kable_styling(latex_options="scale_down")
+```
 
 ---
 
@@ -381,7 +398,7 @@ Wealthier organizations "represent" more people (?)
 --
 
 - employees? customers? shareholders? 
-- members vs. memberless?
+- volunteers? members vs. memberless?
 - regulated industry vs. consumers?
 - narrow private aims (US Chambers) vs. broad public aims (US PIRG)?
 
