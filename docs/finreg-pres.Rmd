@@ -129,12 +129,12 @@ knitr::include_graphics("figs/clip-lobbying-info.png")
 
 💰 $\rightsquigarrow$ seat at the table
 
-- Wealthy organizations are more likely to comment 
+- Wealthier organizations are more likely to comment 
 - Among commenters, frequent commenters are wealthier 
 
 --
 
-Among commenters, 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
+💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
 
 - Wealthy organizations submit more sophisticated comments
 --
@@ -144,9 +144,9 @@ Among commenters, 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\right
 
 - Much of the relationship between wealth and lobbying success* can be attributed to lobbying sophistication**
 
-*We observe only a small slice of influence that is most likely to be the result of specific sophisticated lobbying. 
+*We observe only a type of influence that is most likely to be the result of specific sophisticated lobbying.
 
-**Much more to do on mediation
+**More to do on mediation
  
 
 ???
@@ -243,12 +243,6 @@ background-size: cover
 
 ---
 
-class: middle
-
-> ## [Comercial Banks]() were [four]() times more likely to comment on a Dodd-Frank rule than the average non-profit [Savings Association](), [six]() times more likely to comment than the average [Credit Union]() and [60]() times more likely to comment than the average [non-profit](). 
-
----
-
 ##  💰 $\rightsquigarrow$ seat at the table, especially if profit-motivated
 
 ```{r, mp-FDIC2, fig.cap= "Predicted Probability of Participating by Type of Bank", out.width="70%"}
@@ -262,6 +256,12 @@ knitr::include_graphics("figs/mp-FDIC2-predict-1.png")
 background-image: url("figs/mp-FDIC2-table.png") 
 background-position: center
 background-size: cover
+
+---
+
+class: middle
+
+> ## [Comercial banks]() were [four]() times more likely to comment on a Dodd-Frank rule than the average non-profit [aavings association](), [six]() times more likely to comment than the average [credit union]() and [60]() times more likely to comment than the average [non-profit](). 
 
 ---
 
@@ -287,6 +287,8 @@ class: middle center
 
 much harder to measure
 
+a Any award made pursuant to these rules will be paid from the Securities and Exchange Commission Investor Protection Fund the Fund b A recipient of a whistleblower award is entitled to payment on the award only to the extent that a monetary sanction is collected in the Commission action or in a related action upon which the award is based c Payment of a whistleblower award for a monetary sanction collected in a Commission action or related action shall be made following the later of 1 The date on which the monetary sanction is collected or 2 The completion of the appeals process for all whistleblower award claims arising from i The Notice of Covered Action in the case of any payment of an award for a monetary sanction collected in a Commission action or ii The related action in the case of any payment of an award for a monetary sanction collected in a related action d If there are insufficient amounts available in the Fund to pay the entire amount of an award payment within a reasonable period of time from the time for payment specified by paragraph c of this section then subject to the following terms the balance of the payment shall be paid when amounts become available in the Fund as follows 1 Where multiple whistleblowers are owed payments from the Fund based on awards that do not arise from the same Notice of Covered Action or related action priority in making these payments will be determined based upon the date that the collections for which the whistleblowers are owed payments occurred If two or more of these collections occur on the same date those whistleblowers owed payments based on these collections will be paid on a pro rata basis until sufficient amounts become become available in the Fund to pay their entire payments	
+
 ---
 
 ##  💰 $\rightsquigarrow$ lobbying success
@@ -311,17 +313,18 @@ knitr::include_graphics("figs/assets-efficacy-4.png")
 
 ##  💰 $\rightsquigarrow$ lobbying success
 
-```{r repeated-text-assets6, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
-knitr::include_graphics("figs/assets-efficacy-6.png")
+```{r repeated-text-assets8, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
+knitr::include_graphics("figs/assets-efficacy-8.png")
 ```
 
 ---
 
 ##  💰 $\rightsquigarrow$ lobbying success
 
-```{r repeated-text-assets8, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
-knitr::include_graphics("figs/assets-efficacy-8.png")
+```{r repeated-text-assets6, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
+knitr::include_graphics("figs/assets-efficacy-6.png")
 ```
+
 
 
 ---
@@ -397,10 +400,13 @@ Wealthier organizations "represent" more people (?)
 
 --
 
+- Non-profit volunteers? members vs. memberless? (❌)
 - employees? customers? shareholders? 
-- volunteers? members vs. memberless?
+--
 - regulated industry vs. consumers?
 - narrow private aims (US Chambers) vs. broad public aims (US PIRG)?
+ - 501(c) 3 vs 4 vs 5 vs 6 (🔜)
+
 
 --
 
@@ -427,6 +433,7 @@ Selection model --- I am not convinced that Heckman is what we want or that ther
 
 # Next: 
 
+- Multiple mediation 
 - Compare lobbying on rules that regulate big banks vs. other rules
 - **Benchmarks** to compare lobbying inequality across Congress and the bureaucracy? 
 - Assess other **mechanisms**? 
@@ -441,12 +448,12 @@ Selection model --- I am not convinced that Heckman is what we want or that ther
 
 💰 $\rightsquigarrow$ seat at the table
 
-- Wealthy organizations are more likely to comment 
+- Wealthier organizations are more likely to comment 
 - Among commenters, frequent commenters are wealthier 
 
 --
 
-Among commenters, 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
+💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\rightsquigarrow$ lobbying success
 
 - Wealthy organizations submit more sophisticated comments
 --
@@ -454,9 +461,9 @@ Among commenters, 💰 $\rightsquigarrow$ sophistication (e.g., lawyers) $\right
 - Agencies are more likely to adopt language from sophisticated comments
 --
 
-- Near all of the relationship between wealth and lobbying success* can be attributed to lobbying sophistication
+- Much of the relationship between wealth and lobbying success* can be attributed to lobbying sophistication
 
-*We observe only a small slice of influence that is most likely to be the result of specific sophisticated lobbying
+*We observe only a type of influence that is most likely to be the result of specific sophisticated lobbying
 
 ---
 
