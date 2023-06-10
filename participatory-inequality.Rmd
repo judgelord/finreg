@@ -61,7 +61,7 @@ Our data cover over eight hundred regulatory actions ( `r n_rules` rulemaking pr
 <!--2. METHODS-->
 Second, we develop a suite of new measurement and analytic tools to study who lobbies during rulemaking, how sophisticated their advocacy efforts are, and which organizations influence final rules (as well as which do not). 
 <!--3. ANALYSIS SHOWING INEQUALITY--> 
-Third, we leverage these data and tools to provide the first large-scale assessment of the impacts of wealth inequality during agency policymaking. In doing so, we answer questions on inequality and lobbying participation which were, up to now, only answerable in the legislative process.  Our research design advances past work by comparing commenting behavior among similar types of organizations. For example, we compare the commenting behavior of large banks to other large banks. In doing so, we control for many known sources of variance in commenting behavior, which yields cleaner tests of the hypotheses.
+Third, we leverage these data and tools to provide the first large-scale assessment of the impacts of wealth inequality during agency policymaking. In doing so, we answer questions on inequality and lobbying participation which were, up to now, only answerable in the legislative process. Our research design advances past work by comparing commenting behavior among similar organizations. For example, we compare the commenting behavior of large banks to other large banks. In doing so, we control for many known sources of variance in commenting behavior, which yields cleaner tests of the relationship between wealth and policy influence.
 
 <!---FINDINGS ---> 
 We show that wealthier organizations enjoy material advantages in administrative policymaking. Six main findings support the conclusion. 
@@ -133,36 +133,37 @@ We investigate the role that wealth inequality may play during the development o
 
 ### Differential Lobbying Participation
 
-Wealthy organizations can better able to pay the up-front costs of lobbying. While past research has focused on differences in lobbying participation *across* different organization types (i.e., business firms versus public interest groups), we go a step further to address the effects of wealth differentials *within* organizations of a similar type. For example, we theorize that, even among banks, wealthier banks will participate in rulemaking via the submission of comments on financial rules more often than banks with fewer assets. By comparing similar organizations we can better isolate whether wealth inequality drives differential lobbying participation in rulemaking.
+Wealthy organizations are better able to pay the up-front costs of lobbying. While past research has focused on differences in lobbying participation *across* different organization types (i.e., business firms versus public interest groups), we go a step further to address the effects of wealth differentials *within* organizations of a similar type. For example, we theorize that, even among banks, wealthier banks will participate in rulemaking via the submission of comments on financial rules more often than banks with fewer assets. By comparing similar organizations we can better isolate whether wealth inequality drives differential lobbying participation in rulemaking.
 
 > *Differential Participation Hypothesis (H1):* Organizations that comment on proposed rules are wealthier than organizations that do not comment on proposed rules.
 
-Differential participation may also be driven by the concentration of the costs and benefits of lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. For-profit organizations tend to have concentrated stakes in regulations. Wealthy profit-seekers then have especially strong incentives to lobby in rulemaking [@Libgober2020; @LibgoberQJPS2020]. Thus, we anticipate differences in participation between for-profit businesses and the industry associations that represent them and other non-profit organizations. 
+Differential participation may also be driven by the concentration of the costs and benefits of lobbying on government regulations [see broadly, @Lowi1964; @Olson1965; @Wilson1989]. For-profit organizations---especially regulated firms---tend to have concentrated stakes in regulations. Wealthy profit-seekers, then, have especially strong both incentives and ability to lobby in rulemaking [@Libgober2020; @LibgoberQJPS2020]. Thus, we anticipate differences in participation between for-profit businesses and the industry associations that represent them and other non-profit organizations. 
 
 > *Profit-motivated Participation Hypothesis (H2):* Profit-seeking organizations and industry associations will be more likely to comment than other non-profit organizations.
 
 Moreover, we theorize that wealth inequalities in lobbying participation will persist even among those organizations that can pay the initial costs of rulemaking participation. Stated differently, when focused on those entities that have submitted at least one comment to a Dodd-Frank regulation, we argue that more wealthy organizations will, again, hold an advantage over less wealthy organizations by participating in more rulemaking processes. 
 
-> *Differential Frequency of Participation Hypothesis (H3):* Among organizations commenting on financial rulemaking, organizations with greater wealth will comment on a larger number of financial rules.
+> *Differential Frequency of Participation Hypothesis (H3):* Among organizations commenting on rulemaking, organizations with greater wealth comment on more rules.
 
 ### Differential Lobbying Success
 
-Existing research hints at a differential lobbying benefit attached to wealth during rulemaking. For instance, @Haeder2015 find more policy change during rulemaking when business interests are more active than other types of organizations, such as public interest groups. Yet, such research does not provide a clean test of wealth inequality. After all, some businesses are large while some are small; some non-profits hold major financial assets while others are poor. We thus seek to understand whether wealth is a common factor driving lobbying influence during rulemaking. As a result, we theorize that, among similar organizations, wealthier ones will see greater lobbying success during financial rulemaking.
+<!---FIXME: THIS PARAGRAPH REPEATS A BIT FROM THE THEORY SECTION-->
+Existing research hints at a differential lobbying benefit attached to wealth during rulemaking. For instance, @Haeder2015 find more policy change during rulemaking when business interests are more active than other types of organizations, such as public interest groups. Yet, such research does not provide a clean test of wealth inequality. After all, some businesses are large while some are small; some non-profits hold major financial assets while others do not. We thus seek to understand whether wealth inequality drives lobbying influence during rulemaking. We thus investigate whether wealthier organizations see greater lobbying success during rulemaking.
 
-> *Differential Lobbying Success Hypothesis (H4):* Comments from wealthier organizations will be more successful in shifting the content of agency rules.
+> *Differential Lobbying Success Hypothesis (H4):* Wealthier organizations are more successful in shifting the content of agency rules.
 
-Research suggests wealthier organizations are more influential because they can better deploy sophisticated technical information than less well-off entities [@WagnerALR2011]. Put differently, large organizations are disproportionately able to marshal the technical expertise necessary to write sophisticated comments for rules. Moreover, agency officials pay greater attention to abstract and technical arguments, such as those in comments from business organizations, while often minimizing the moral and personal arguments found in less sophisticated comments from individuals [@JewellJPART2006]. Additionally, non-industry comments often lacked the specificity and detail that agencies needed to change policy [@Krawiec2013]. Consequently, we hypothesize that wealthier entities will utilize their resources to produce comments that hold greater sophistication than less prosperous groups, and these comments will be more impactful.
+Research suggests wealthier organizations are more influential because they are disproportionately able to marshal the technical expertise necessary to write sophisticated comments for rules [@WagnerALR2011]. Moreover, agency officials pay greater attention to abstract and technical arguments, such as those in comments from business organizations, while often minimizing the moral and personal arguments found in less sophisticated comments from individuals [@JewellJPART2006; @Mendelson2011]. Additionally, non-industry comments often lack the specificity and detail that agencies needed to change policy [@Krawiec2013]. Consequently, we hypothesize that wealthier entities utilize their resources to produce comments with greater sophistication than less well-resourced groups and that these more sophisticated comments will be more impactful.
 
 > *Differential Sophistication Hypothesis (H5):* Wealthier organizations will use more technical and sophisticated language when commenting on proposed rules.
 
 > *Dividends of Sophistication Hypothesis (H6):* Comments from wealthier organizations will be more successful in affecting the content of agency rules because of comment sophistication.  
 
-Together, these hypotheses test for two major kinds of potential bias in policymaking: that (1) wealthy organizations are better able to participate and (2) even when the less wealthy participate, wealthy organizations are more likely to have their demands met. The hypotheses also identify a major theorized mechanism of lobbying influence: that wealthy organizations achieve regulatory policy influence via the legal and technical sophistication of their comments on proposed rules.
+Together, these hypotheses test for the role of wealth inequality in creating biases in both who participates and who has influence. They can be summarised as (1) wealthy organizations are better able to participate and (2) even when the less wealthy participate, wealthy organizations are more likely to have their demands met. The hypotheses also identify a major theorized mechanism of lobbying influence: that wealthy organizations achieve regulatory policy influence via the legal and technical sophistication of their comments on proposed rules.
 
 
 # Data and Methods {#data}
 
-To assess the extent of inequality in financial rulemaking, we assembled data on draft and final rules, comments on those rules, and organization wealth and lobbying expenditures. Data sources included the Federal Register, Regulations.gov, Wharton Research Data Services, the Center for Responsive Politics, Federal Financial Institutions Examinations Council (FFIEC), the Internal Revenue Service (IRS), the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), the Federal Deposit Insurance Corporation (FDIC), Federal Reserve (FRS), National Credit Union Administration (NCUA), Office of the Comptroller of the Currency (OCC), the Securities and Exchange Commission (SEC). This expansive data collection effort includes data on agency administrative data, public comment, rule texts, and measures of organization wealth.
+To assess the extent of inequality in financial rulemaking, we assembled data on draft and final rules, comments on those rules, the wealth of various organizations, political spending, and lobbying spending. Data sources included the Federal Register, Regulations.gov, Wharton Research Data Services, the Center for Responsive Politics, Federal Financial Institutions Examinations Council (FFIEC), the Internal Revenue Service (IRS), the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), the Federal Deposit Insurance Corporation (FDIC), Federal Reserve (FRS), National Credit Union Administration (NCUA), Office of the Comptroller of the Currency (OCC), the Securities and Exchange Commission (SEC). Using comment text and metadata, we link comments to the organizations that submitted them and metadata about these transitions that allow us to measure the resources of each organization. 
 
 ## Agency Rules & Public Comments
 
@@ -385,10 +386,10 @@ Figure \ref{fig:repeated-text-assets} provides descriptive support for Hypothesi
 The positive slope for each of the relationships captures the extent to which wealth is correlated with lobbying success (as measured by the amount of text added to an agency’s final policy documents containing exact phrases used by or suggested by an organization’s comment).
 
 ```{r repeated-text-assets, fig.cap="Amount of Text Repeated in Final Rules by Commenter Resources", out.width="49%"}
-knitr::include_graphics("figs/assets-efficacy-2.png")
-knitr::include_graphics("figs/assets-efficacy-4.png")
-knitr::include_graphics("figs/assets-efficacy-6.png")
-knitr::include_graphics("figs/assets-efficacy-8.png")
+knitr::include_graphics("figs/boxplot-assets-efficacy-2.png")
+knitr::include_graphics("figs/boxplot-assets-efficacy-4.png")
+knitr::include_graphics("figs/boxplot-assets-efficacy-6.png")
+knitr::include_graphics("figs/boxplot-assets-efficacy-8.png")
 #knitr::include_graphics("figs/assets-efficacy-10.png")
 #TODO ADD CORRELATION COEFFICIENTS TO THESE PLOTS 
 ```
@@ -400,16 +401,16 @@ The *Differential Sophistication Hypothesis*  (H5) suggests wealthier organizati
 
 ```{r assets-terms, out.width="49%",  fig.cap="Amount of Technical Language by Assets (Among Comments from Banks on Dodd-Frank Rules)"}
 ## non-profits 
-knitr::include_graphics("figs/assets-tech-2.png")
+knitr::include_graphics("figs/boxplot-assets-tech-2.png")
 # knitr::include_graphics("figs/assets-blue-2.png")
 ## Credit unions 
-knitr::include_graphics("figs/assets-tech-4.png")
+knitr::include_graphics("figs/boxplot-assets-tech-4.png")
 # knitr::include_graphics("figs/assets-blue-4.png")
 ## Market Cap
-knitr::include_graphics("figs/assets-tech-6.png")
+knitr::include_graphics("figs/boxplot-assets-tech-6.png")
 # knitr::include_graphics("figs/assets-blue-6.png")
 ## FDIC 
-knitr::include_graphics("figs/assets-tech-8.png")
+knitr::include_graphics("figs/boxplot-assets-tech-8.png")
 # knitr::include_graphics("figs/assets-blue-8.png")
 ```
 
@@ -490,6 +491,8 @@ With the rise of the administrative state, scholars have documented the importan
 #   Refrences {-}
 
 \singlespacing
+
+
 
 
 
