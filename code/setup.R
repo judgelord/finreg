@@ -1,5 +1,14 @@
 
 requires <- c("bookdown",
+              "xaringan",
+              "xaringanthemer",
+              "fixest",
+              "flextable",
+              "marginaleffects",
+              "latex2exp",
+              "ggthemes",
+              "RSQLite",
+              "english",
               "cowplot", #FIXME not sure where this is called but modelsummary seems to want it?
               "maps",
               "scales",
@@ -7,6 +16,7 @@ requires <- c("bookdown",
               "readxl",
               #"broom",
               "here",
+              "ggridges",
               #"msm",
               "kableExtra",
               "modelsummary",
@@ -17,7 +27,7 @@ requires <- c("bookdown",
               #"fixest",
               #"flextable",
               #"magick",
-              "equatiomatic",
+              #"equatiomatic",
               #"tidytext",
               #"latex2exp",
               "tidyverse")
@@ -25,6 +35,10 @@ to_install <- c(requires %in% rownames(installed.packages()) == FALSE)
 install.packages(c(requires[to_install], "NA"), repos = "https://cloud.r-project.org/" )
 rm(requires, to_install)
 
+library(bookdown)
+library(fixest)
+library(flextable)
+library(ggthemes)
 library(scales)
 library(magrittr)
 library(readxl)

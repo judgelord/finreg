@@ -280,6 +280,18 @@ opensecrets <- read_csv( here::here("data", "Lobbying_and_Contributions.csv")  )
 # all nonprofit data from IRS 
 nonprofit_resources <- read_csv(here("data", "merged_resources", "nonprofits_resources.csv"))
 
+# load IRS data with c3-c6 variable (this is large)
+load(here::here("data", "IRS990-2012-2021.RData"))
+skimr::skim(IRS990_2012_2021)
+
+IRS990_2012_2021 %<>% distinct(EIN, NAME, SUBSECTION, AFFILIATION)
+
+IRS990_2012_2021 %>% count(SUBSECTION)
+
+IRS990_2012_2021 %>% count(EIN, sort = T)
+
+IRS990_2012_2021 %<>% distinct(EIN, ORGANIZATION, SUBSECTION)
+
 nonprofit_resources %>% 
   filter(
     #str_dct(name, "^chamber of commerce$")
