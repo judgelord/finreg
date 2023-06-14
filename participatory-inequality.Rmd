@@ -278,10 +278,11 @@ The *Differential Participation Hypothesis (H1)* posits that organizations that 
 Overall, we find strong support for the hypothesis: organizations that comment are much wealthier on average than similar organizations that do not comment. Figure \ref{fig:commenters-noncommenters} shows distributions of wealth for organizations that commented on any Dodd-Frank rule and those that did not. Organizations that comment have greater wealth than similar organizations that did not comment. Because the x-axes of the plots in Figure \ref{fig:commenters-noncommenters} are logged, small differences on the right side of the plotted distributions represent large substantive differences in wealth. Statistical tests for differences between means show that differences within non-profits, banks, and publicly-traded firms are significant at the 0.01 level. While differences between commenting and non-commenting credit unions are substantively large, the smaller sample lacks the power to achieve statistical significance.  Logistic regression results (Table \ref{tab:mp-all-table}) support the conclusion that the odds of commenting increase with an organization's wealth among banks, non-profits, and credit unions.
 
 ```{r, commenters-noncommenters, fig.cap="Financial Resources of Organizations that Did and Did Not Comment", out.width= "49%"}
-knitr::include_graphics("figs/nonprofit-density-1.png")
-knitr::include_graphics("figs/creditunion-density-1.png")
-knitr::include_graphics("figs/compustat-density-1.png")
-knitr::include_graphics("figs/FDIC-density-select-1.png")
+knitr::include_graphics(c("figs/nonprofit-density-1.png",
+                        "figs/creditunion-density-1.png",
+                        "figs/ind-assoc-density-1.png",
+                        "figs/compustat-density-1.png",
+                        "figs/FDIC-density-select-1.png"))
 ```
 
 **Non-profits.** The top left panel in Figure \ref{fig:commenters-noncommenters} shows that non-profits that comment on proposed financial regulations tend to be significantly better resourced than we would expect from a random sample of non-profits. The average assets of commenting non-profits were about ten times larger than non-profits that did not participate; the average non-profit that did not comment had about \$9 million in assets, whereas the average non-profit that did comment had approximately \$83 million in assets. 
@@ -372,6 +373,7 @@ Overall, while these differences are not statistically significant, the general 
 knitr::include_graphics(c(
   "figs/nonprofit-rules-3.png",
   "figs/creditunion-rules-3.png",
+  "figs/ind-assoc-rules-3.png",
   "figs/compustat-rules-3.png",
   "figs/fdic-rules-3.png"
   ))

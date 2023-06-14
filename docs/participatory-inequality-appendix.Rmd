@@ -61,6 +61,14 @@ knitr::include_graphics("figs/docket-table-1.png")
 
 # Additional descriptives {#descriptives}
 
+## Types of Non-Profits 
+
+Figure \ref{fig:commenters-noncommenters-section} shows that the relationship between assets and commenting shown in Figure \ref{fig:commenters-noncommenters} also appears when we look at different types of non-profits.  Specifically, we focus on the difference between business leagues - 501(c)(6)s - and charities - 501(c)(3)s.  The difference between the groups means are statistically significant using a one-way ANOVA, although we note that in the six pairwise t-tests between all the groups the differences between the 501(c)(6)s that commented and the 501(c)(3) that did not and the 501(c)(6)s that commented and those that did not were not statistically significant.
+
+```{r, commenters-noncommenters-section, fig.cap="Revenue of Non-profits that Did and Did Not Comment", out.width= "49%"}
+knitr::include_graphics("figs/nonprofit-density-by-section-1.png")
+```
+
 ## Non-profit revenue
 
 Figure \ref{fig:commenters-noncommenters-revenue} shows that the relationship between assets and commenting shown in Figure \ref{fig:commenters-noncommenters} also appears when we look at revenue rather than assets. Indeed the relationship between revenue and commenting is much stronger than the relationship between assets and commenting. We focus on assets in the body of the text because it is more comparable to wealth measures from for-profit organizations.  
@@ -156,6 +164,14 @@ knitr::include_graphics(c(
 ))
 ```
 
+```{r, dockets-percentile-five-np, fig.cap="Frequent and Infrequent Commenters (By the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale) For Non-Profits By IRS Subsection", out.width="49%", fig.show= "hold"}
+knitr::include_graphics(c(
+    "figs/subsection-top10-nonprofit-rules-2.png",
+      "figs/subsection-5plus-nonprofit-rules-2.png"
+))
+```
+
+
 <!--
 ```{r rules-by-assets}
 # Models of the number of rules commented on by assets
@@ -227,6 +243,8 @@ Figure \@ref(fig:mp-FDIC) and Table \@ref(tab:mp-FDIC-table) show that commercia
 
 Likewise, assets remain a significant predictor of whether an organization comments even controlling for differences in the type of bank institution. This provides additional evidence for the *Differential Participation* Hypothesis (H1). 
 
+Figure \@ref(mp-np-by-subsection) shows that business leagues (Non-profit 06) were disproportionately represented in Dodd-Frank rulemaking compared to non business leagues (Non-profit 03).  We note, however, that their probabilities of commenting are much lower than any type of bank as shown in Figure \@ref(fig:mp-FDIC).
+
 ```{r, mp-FDIC, fig.cap= "Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank", out.width="70%"}
 #TODO CREDIT UNIONS SHOULD BE IN THIS MODEL 
 knitr::include_graphics("figs/mp-FDIC-predict-1.png")
@@ -237,6 +255,12 @@ knitr::include_graphics("figs/mp-FDIC-predict-1.png")
 load(here::here("models", "mpFDIC.Rdata"))
 
 modelsummary(models, caption = "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type", notes = "Reference category = savings associations") %>% kableExtra::kable_styling()
+```
+
+```{r, mp-np-by-subsection, fig.cap= "Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Non-Profit", out.width="49%"}
+#TODO CREDIT UNIONS SHOULD BE IN THIS MODEL 
+knitr::include_graphics("figs/only-np-sep-mp-all-predict-quad-1.png")
+knitr::include_graphics("figs/np-sep-mp-all-predict-quad-1.png.png")
 ```
 
 

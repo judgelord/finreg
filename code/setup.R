@@ -27,13 +27,17 @@ requires <- c("bookdown",
               #"fixest",
               #"flextable",
               #"magick",
-              #"equatiomatic",
+              "equatiomatic",
               #"tidytext",
               #"latex2exp",
               "tidyverse")
 to_install <- c(requires %in% rownames(installed.packages()) == FALSE)
 install.packages(c(requires[to_install], "NA"), repos = "https://cloud.r-project.org/" )
 rm(requires, to_install)
+
+if(!"equatiomatic" %in% rownames(installed.packages())){
+  remotes::install_github("datalorax/equatiomatic")
+}
 
 library(bookdown)
 library(fixest)
@@ -256,6 +260,12 @@ cm = c("ASSET" = "Assets",
        "log(assets_b + 1)" = "Log Assets",
        "log(assets_b + 1):org_typeCredit union" = "Log Assets x Credit Union",
        "org_typeCredit union:assets_b2" = "Assets Squared x Credit Union",
+       "log(assets_b + 1):org_typeIndustry assoc." = "Log Assets x Industry assoc.",
+       "assets_b:org_typeIndustry assoc." = "Assets x Industry assoc.",
+       "org_typeIndustry assoc.:assets_b2" = "Assets Squared x Industry assoc.",
+       "log(assets_b + 1):org_typeOther non-profit" = "Log Assets x Other non-profit",
+       "assets_b:org_typeOther non-profit" = "Assets x Other non-profit",
+       "org_typeOther non-profit:assets_b2" = "Assets Squared x Other non-profit",
        "log(assets_b + 1):org_typeNon-profit" = "Log Assets x Non-profit",
        "org_typeNon-profit:assets_b2" = "Assets Squared x Non-profit",
        "marketcap_b" = "Market Capitalization (Billions)",
@@ -276,6 +286,8 @@ cm = c("ASSET" = "Assets",
        "ASSETS:Class NM" = "Assets x Commercial Bank",
        "org_typeCredit union" = "Credit union",
        "org_typeNon-profit" = "Non-profit",
+       "org_typeIndustry assoc." = "Industry assoc.",
+       "org_typeOther non-profit" = "Other non-profit",
        "assets_b:org_typeCredit union" = "Assets x Credit union",
        "assets_b:org_typeNon-profit" = "Assets x Non-profit",
        "marketcap2" =  "Market Capitalization",
@@ -285,7 +297,8 @@ cm = c("ASSET" = "Assets",
        "TotalLobbyingAmount" = "Lobbying",
        "TotalContribAmount" = "PAC Donations",
        "TotalContribAmountNo0" = "PAC Spending",
-       "TotalLobbyingAmountNo0" = "Lobbying Spending")
+       "TotalLobbyingAmountNo0" = "Lobbying Spending",
+       "ind_assocTRUE" = "Industry Assoc.")
 
 gm = list("Num.Obs." = "Number of Comments",
           "R2" = "R2",
@@ -365,6 +378,8 @@ densityplot <- function(data,
           panel.grid.minor.y = element_blank(),
           legend.position = "bottom",
           plot.caption = element_text(hjust = 0),
-          axis.text.y = element_blank())
+          axis.text.y = element_blank(),
+          plot.title = element_text(vjust = -6),
+          plot.subtitle = element_text(vjust = -6))
 }
 
