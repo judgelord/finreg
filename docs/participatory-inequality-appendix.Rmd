@@ -65,7 +65,7 @@ knitr::include_graphics("figs/docket-table-1.png")
 
 Figure \ref{fig:commenters-noncommenters-section} shows that the relationship between assets and commenting shown in Figure \ref{fig:commenters-noncommenters} also appears when we look at different types of non-profits.  Specifically, we focus on the difference between business leagues - 501(c)(6)s - and charities - 501(c)(3)s.  The difference between the groups means are statistically significant using a one-way ANOVA, although we note that in the six pairwise t-tests between all the groups the differences between the 501(c)(6)s that commented and the 501(c)(3) that did not and the 501(c)(6)s that commented and those that did not were not statistically significant.
 
-```{r, commenters-noncommenters-section, fig.cap="Revenue of Non-profits that Did and Did Not Comment", out.width= "49%"}
+```{r, commenters-noncommenters-section, fig.cap="Non-profits that Did and Did Not Comment by Type", out.width= "90%"}
 knitr::include_graphics("figs/nonprofit-density-by-section-1.png")
 ```
 
@@ -74,7 +74,8 @@ knitr::include_graphics("figs/nonprofit-density-by-section-1.png")
 Figure \ref{fig:commenters-noncommenters-revenue} shows that the relationship between assets and commenting shown in Figure \ref{fig:commenters-noncommenters} also appears when we look at revenue rather than assets. Indeed the relationship between revenue and commenting is much stronger than the relationship between assets and commenting. We focus on assets in the body of the text because it is more comparable to wealth measures from for-profit organizations.  
 
 ```{r, commenters-noncommenters-revenue, fig.cap="Revenue of Non-profits that Did and Did Not Comment", out.width= "49%"}
-knitr::include_graphics("figs/nonprofit-density-2.png")
+knitr::include_graphics(c("figs/nonprofit-density-2.png",
+                          "figs/ind-assoc-density-2.png"))
 ```
 
 

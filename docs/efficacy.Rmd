@@ -8,6 +8,8 @@ output:
       toc_float: true
       code_folding: hide
       number_sections: false
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -522,7 +524,9 @@ efficacyXsophistication %>%
 ```
 
 ### Efficacy by Sophistication Boxplot for Paper
-```{r efficacyXsophistication boxplot with label}
+```{r boxplot-efficacyXsophistication, fig.height=3.5, fig.width=5}
+#boxplot-efficacyXsophistication
+
 boxplotXefficacyXsophistication <- efficacyXsophistication %>% 
   dplyr::filter(org == "Matched organization") %>%
   #filter(efficacy > 0) %>%
@@ -543,15 +547,17 @@ boxplotXefficacyXsophistication <- efficacyXsophistication %>%
   filter(!is.na(group)) %>%
   ggplot(aes(x=bin, y=efficacy)) +
   geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white") +
-  geom_point(aes(x=4,y=10131),colour="red",  shape = 0, size = 3) +
-  annotate(y = 10131, x = 3, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = -.8, hjust = -0.1, size = 3.5)+ 
-  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,14000), expand = c(0,0)) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = .1) +
+  geom_point(aes(x=4, y=10131),colour="red",  shape = 0, size = 3) +
+  annotate(y = 10131, x = 3, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = 0, hjust = .7, size = 3.5) + 
+  scale_y_continuous(trans = scales::log10_trans(), breaks = c(1, 10, 100, 1000, 10000), lim = c(10,14000), expand = c(0,0)) +
   labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
        y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
-       x = "Binned Technical Terms in Comment",
-       color = "") +
-  theme(axis.title = element_text(size = 14))
+       x = "Technical Terms in Comment",
+       color = "") #+ theme(axis.title = element_text(size = 14))
+
+boxplotXefficacyXsophistication
+
 ggsave(plot = boxplotXefficacyXsophistication, filename = "figs/boxplot-efficacyXsophistication-2.png",bg="white")
 ```
 
@@ -676,7 +682,7 @@ efficacyXsophistication %>%
   filter(!is.na(group)) %>%
   ggplot(aes(x=bin, y=efficacy)) +
   geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
-  geom_boxplot(width=0.75, fill="white") + 
+  geom_boxplot(width=0.75, fill="white", outlier.alpha = 0) + 
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,10000), expand = c(0,0)) +
   labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ","),
                        "\n x-axis are bins on the log scale"),
@@ -777,7 +783,7 @@ p <- b %>%
   geom_smooth(color = "light blue") + 
   labs(x = "Assets",
        y = "Legal Sophistication", 
-       title = "FDIC-Insured Banks")
+       title = "Banks")
 
 p
 
@@ -853,7 +859,7 @@ b %>% filter(Total_Legal_Citations>10,
 
 ### Technical terms x assets
 
-```{r assets-tech, fig.height=2.5, fig.width=3, out.width="50%"}
+```{r assets-tech, fig.height=2.5, fig.width=3.5, out.width="50%"}
 #assets-tech
 t <- d %>% drop_na(dictionary_terms)
 
@@ -936,7 +942,7 @@ p <- t %>%
     geom_smooth(color = "light blue") + 
   labs(x = "Assets (Millions USD)",
        y = "Technical Terms", 
-       title = "FDIC-Insured Banks")
+       title = "Banks")
 
 p 
 
@@ -975,14 +981,16 @@ p +
 ```
 
 ## Boxplots Amount of Technical Language by Assets (Among Comments from Banks on Dodd-Frank Rules)
-```{r}
+```{r boxplot-assets-tech, fig.height=2.5, fig.width=3.5, out.width="50%"}
+#boxplot-assets-tech
+
 #Non-Profits
 #binning here is a bit tricky because of the log transformation necessary at the back end
 # bins are 0 to 1,000,000 then 1,000,000 to 10,000,000, then 10 to 100 million, 100 million to a billion
-t <- d %>% drop_na(dictionary_terms)
 
 NP_tech <- t %>% 
-  filter(!is.na(nonprofits_resources_name)) %>%
+  drop_na(assets, nonprofits_resources_name) %>%
+  filter(assets>0) %>% 
   mutate(
     log_dictionary_terms = log10(dictionary_terms + 1),
     assets_in_millions = assets/1000000,
@@ -997,17 +1005,49 @@ NP_tech <- t %>%
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=dictionary_terms)) +
   geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white") +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000, 100000), lim = c(1,200000), expand = c(0,0)) +
-  labs(x = "Binned Assets (Millions USD)",
+  labs(x = "Assets (Millions USD)",
        y = "Technical Terms", 
        title = "Nonprofits")
+
+# Industry associations 
+IA_tech <- t %>% 
+  drop_na(assets, nonprofits_resources_name) %>%
+  filter(SUBSECTION == "06", assets < 1000000000, assets > 0) %>% 
+  mutate(
+    log_dictionary_terms = log10(dictionary_terms + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000 ),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #select(assets, bin) %>% group_by(bin) %>%
+  #skimr::skim()
+  ggplot(aes(x=bin, y=dictionary_terms)) +
+  geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),
+                     breaks = c(1, 10, 100, 1000, 10000, 100000), 
+                     lim = c(1,200000), 
+                     expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Technical Terms", 
+       title = "Industry Associations")
+
 
 # Credit Unions
        #caption = "x-axis are bins represing the log10 scale, so the first bin is organizations with assets from $0 to $1 million") 
 
 CU_tech <- t %>% 
-  filter(!is.na(CreditUnions_name) & !is.na(assets) & assets > 0) %>%
+  filter(!is.na(CreditUnions_name),
+         !is.na(assets),
+         assets < 10000000000,
+         assets > 0) %>%
   mutate(
     log_dictionary_terms = log10(dictionary_terms + 1),
     assets_in_millions = assets/1000000,
@@ -1022,9 +1062,9 @@ CU_tech <- t %>%
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=dictionary_terms)) +
   geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white") +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(0, 1, 10, 100, 1000, 10000), lim = c(1,10000), expand = c(0,0))  +
-  labs(x = "Binned Assets (Millions USD)",
+  labs(x = "Assets (Millions USD)",
        y = "Technical Terms", 
        title = "Credit Unions")
 
@@ -1044,9 +1084,9 @@ PTC_tech <- t %>%
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=dictionary_terms)) +
   geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white") +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans() ,breaks = c(1, 10, 100, 1000, 10000), expand = c(0,0)) +
-  labs(x = "Binned Market Capitalization (Millions USD)",
+  labs(x = "Market Capitalization (Millions USD)",
        y = "Technical Terms", 
        title = "Publicly-traded Companies")
   
@@ -1066,15 +1106,38 @@ FDIC_Banks_tech <- t %>%
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=dictionary_terms)) +
   geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white") +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000)) +
-  labs(x = "Binned Assets (Millions USD)",
+  labs(x = "Assets (Millions USD)",
        y = "Technical Terms", 
-       title = "FDIC-Insured Banks")
+       title = "Banks")
+
+NP_tech
+
+NP_tech
 
 ggsave(plot = NP_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-2.png",bg="white")
+
+CU_tech
+
+CU_tech
+
 ggsave(plot = CU_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-4.png",bg="white")
+
+
+IA_tech 
+IA_tech 
+
+PTC_tech
+
+PTC_tech
+
 ggsave(plot = PTC_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-6.png",bg="white")
+
+FDIC_Banks_tech
+
+FDIC_Banks_tech
+
 ggsave(plot = FDIC_Banks_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-8.png",bg="white")
 ```
 
@@ -1082,7 +1145,7 @@ ggsave(plot = FDIC_Banks_tech + theme(axis.title = element_text(size = 14)), fil
 ## Efficacy x assets
 
 
-```{r assets-efficacy}
+```{r assets-efficacy, fig.height=2.5, fig.width=3.5, out.width="50%"}
 e <- d %>% drop_na(efficacy)
 
 
@@ -1163,7 +1226,7 @@ p <- e %>%
   #geom_smooth() + 
   labs(x = "Assets (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule", 
-       title = "FDIC-Insured Banks")
+       title = "Banks")
 
 p
 
@@ -1201,7 +1264,7 @@ p +
 
 ## Amount of Text Repeated in Final Rules by Commenter Resources Boxplot
 
-```{r}
+```{r boxplot-assets-efficacy, fig.height=2.5, fig.width=3.5, out.width="50%"}
 #Non-Profits
 #binning here is a bit tricky because of the log transformation necessary at the back end
 # bins are 0 to 1,000,000 then 1,000,000 to 10,000,000, then 10 to 100 million, 100 million to a billion
@@ -1221,17 +1284,15 @@ NP <- e %>%
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=efficacy)) +
   geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white") +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,10000), expand = c(0,0)) +
-  labs(x = "Binned Assets (Millions USD)",
+  labs(x = "Assets (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule", 
        title = "Nonprofits")
 
-# Credit Unions
-       #caption = "x-axis are bins represing the log10 scale, so the first bin is organizations with assets from $0 to $1 million") 
 
-CU <- e %>% 
-  filter(!is.na(CreditUnions_name) & !is.na(assets) & assets > 0) %>%
+IA <- e %>% 
+  filter(!is.na(nonprofits_resources_name) & !is.na(assets) & assets > 0, SUBSECTION == "06") %>%
   mutate(
     log_efficacy = log10(efficacy + 1),
     assets_in_millions = assets/1000000,
@@ -1246,9 +1307,38 @@ CU <- e %>%
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=efficacy)) +
   geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white") +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,10000), expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Words in Comment\nAdded to Final Rule", 
+       title = "Industry Associations")
+
+# Credit Unions
+       #caption = "x-axis are bins represing the log10 scale, so the first bin is organizations with assets from $0 to $1 million") 
+
+CU <- e %>% 
+  filter(!is.na(CreditUnions_name),
+         !is.na(assets),
+         #assets < 10000000000,
+         assets > 0
+         ) %>%
+  mutate(
+    log_efficacy = log10(efficacy + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=efficacy)) +
+  geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,1000), expand = c(0,0)) +
-  labs(x = "Binned Assets (Millions USD)",
+  labs(x = "Assets (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule", 
        title = "Credit Unions")
 
@@ -1268,9 +1358,9 @@ PTC <- e %>%
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=efficacy)) +
   geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white") +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,5000), expand = c(0,0)) +
-  labs(x = "Binned Market Capitalization (Millions USD)",
+  labs(x = "Market Capitalization (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule", 
        title = "Publicly-traded Companies")
   
@@ -1290,16 +1380,34 @@ FDIC_Banks <- e %>%
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=efficacy)) +
   geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white") +
-  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,5000), expand = c(0,0)) +
-  labs(x = "Binned Assets (Millions USD)",
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(0, 1, 10, 100, 1000, 10000), lim = c(10,5000), expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule", 
-       title = "FDIC-Insured Banks")
+       title = "Banks")
 
-ggsave(plot = NP + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-2.png",bg="white")
-ggsave(plot = CU + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-4.png",bg="white")
-ggsave(plot = PTC + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-6.png",bg="white")
-ggsave(plot = FDIC_Banks + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-8.png",bg="white")
+NP
+NP
+
+ggsave(plot = NP + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-np.png",bg="white")
+
+CU
+CU
+
+ggsave(plot = CU + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-cu.png",bg="white")
+
+IA
+IA
+
+PTC
+PTC
+
+ggsave(plot = PTC + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-ptc.png",bg="white")
+
+FDIC_Banks
+FDIC_Banks
+
+ggsave(plot = FDIC_Banks + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-banks.png",bg="white")
 
 ```
 
@@ -2092,7 +2200,7 @@ extract_acme <- function(x){
 
 extract_acme(med.lob.4)
 
-models <- list(med.cont, med.lob, med.terms, med.legal)
+#models <- list(med.cont, med.lob, med.terms, med.legal)
 
 models <- list(med.cont.4, med.lob.4, med.terms.4, med.legal.4)
 
