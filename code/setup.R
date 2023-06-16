@@ -344,11 +344,12 @@ options(scipen=999)
 
 densityplot <- function(data,
                         var = "ASSET",
-                        title = "FDIC-Insured Banks",
+                        title = "Banks",
                         by = 1000000,
                         x = "Assets (Millions)",
                         caption = "",
-                        fill = "", y = ""){
+                        fill = "",
+                        y = ""){
   data$var <- data %>% pull(var)
   data$by <- by
 
@@ -369,7 +370,9 @@ densityplot <- function(data,
     geom_density(alpha = .5, color = NA) +
     scale_x_log10() +
     labs(title = title,
-         subtitle = str_c("N = ", nrow(data) %>% pretty_num()),
+         subtitle = str_c("N = ",
+                          data %>% drop_na(var) %>% nrow() %>% pretty_num()
+                          ),
          fill = "", y = "", x = x,
          caption = caption)+
     scale_fill_discrete(guide = guide_legend(reverse = TRUE) ) +

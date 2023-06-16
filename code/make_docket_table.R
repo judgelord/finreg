@@ -28,7 +28,7 @@ docket_table %<>% mutate(Percent  = scales::percent( org_resources / comment_doc
 
 # select vars we want in the table
 docket_table %<>%
-  select(Agency = comment_agency,
+  dplyr::select(Agency = comment_agency,
          docket_id,
          docket_comment_count = comment_docket_count,
          any_org_assets_measure = org_resources,
@@ -36,7 +36,8 @@ docket_table %<>%
          contains("ASSET"),
          contains("revenue"),
          contains("marketcap"),
-         contains("amount"))
+         contains("amount")
+         )
 # drop things we don't want in the table
 
 # docket_table %<>%
