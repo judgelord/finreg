@@ -24,7 +24,7 @@ knitr::opts_chunk$set(cache = FALSE,
                       fig.height = 3,
                       fig.width = 7)
 
-#Steve specific code - this is the secret sauce to make it work on my mac.  Why is this the key?  
+# Steve-specific code - this is the secret sauce to make it work on my mac.  Why is this the key?  
 #setwd("/Users/stevenrashin/Dropbox/FINREGRULEMAKE2/finreg/")
 #here::i_am("code/setup.R")
 ```
@@ -253,7 +253,7 @@ docket_table %>%
   scroll_box(height = "400px")
 ```
 
-### Dockets with the fewest commments matched
+### Dockets with the fewest comments matched
 ```{r data-docket-table}
 docket_table %<>% 
   arrange(`Any Resources Measure`) 
@@ -276,6 +276,8 @@ docket_table %>%
 
 # CSVs for simplicity 
 FDIC_resources <- read_csv(here::here("data", "merged_resources", "FDIC_Institutions.csv"))
+
+FDIC_resources$ASSET <- FDIC_resources$ASSET*1000
 
 #load the full population of campaign donors 
 creditunions <- read_csv(here("Data" , "creditunions.csv") %>% str_remove("finreg/") )
@@ -321,14 +323,14 @@ nonprofit_resources %>%
     ) %>%
   arrange(-assets) %>%  kablebox()
 
-# CIK org names + market cap from compustat (in casees where the compustat version of the name matched better )
+# CIK org names + market cap from compustat (in cases where the compustat version of the name matched better )
 cik <- read_csv(here("data/merged_resources/CIK.csv"))
 
 compustat <- read_csv(here("data/merged_resources/compustat_resources.csv"))
 
 compustat %>% add_count(cik, marketcap) %>% arrange(-n) %>% kablebox()
 
-# CIK org names + market cap from compustat (in casees where the compustat version of the name matched better )
+# CIK org names + market cap from compustat (in cases where the compustat version of the name matched better )
 sec <- read_csv(here("data/merged_resources/SEC_Institutions.csv")) %>% 
   rename(cik = CIK)
 ```
@@ -537,7 +539,7 @@ d_rin_lookup  %>%
 Some of these appear to be over-matched, but it is also possible that the comment counts are wrong. 
 
 ```{r rins-table-comments-counts}
-# 6 over matched 
+# 6 overmatched 
 d_rin_lookup %>% 
   filter(comment_count < comments_matched) %>%
   #arrange(comment_url) %>% 
@@ -598,7 +600,7 @@ false_match <- "nknown|private investor|individual investor|private individual|s
 
 sus_match <- "national rural electric cooperative association|st louis community credit union|advance america|american financial services association|check cash"
 
-# possible false positives
+# Possible false positives
 d %>% drop_na(best_match_name) %>% filter(str_detect(comment_org_name, false_match)) %>% nrow() %>% paste("potential false matches")
 
 # false positive orgs 
@@ -639,7 +641,7 @@ d %>%
 ```{r sus-matches}
 sus_match <- "national rural electric cooperative association|st louis community credit union|advance america"
 
-# possible false positives
+# Possible false positives
 d %>% drop_na(best_match_name) %>% filter(str_detect(comment_org_name, sus_match)) %>% nrow() %>% paste("potential false matches")
 
 # false positive orgs 
@@ -746,7 +748,7 @@ FDIC_resources %<>%
   mutate(Commented = ifelse(commented, "Commented", "Did not comment")) 
   
 FDIC_resources %>% 
-  #filter(assets > 100) %>% 
+  filter(ASSET > 1000000) %>% 
   ggplot() + 
   aes(x = ASSET/1000000, fill = Commented) + 
   geom_density(alpha = .5, color = NA) + 
@@ -767,8 +769,8 @@ Counts
 #     "Commented", 
 #     "Did not comment")) 
 
-# Dropping banks with less than $100
-FDIC_resources %<>%  filter(ASSET > 1000) 
+# Dropping banks with less than $100k
+FDIC_resources %<>%  filter(ASSET > 100000) 
 
 FDIC_resources %<>%  
     group_by(Commented) %>% 
@@ -796,17 +798,17 @@ FDIC_resources %>% distinct(Commented, BKCLASS, mean_ASSET_type, median_ASSET_ty
 
 
 FDIC_resources %>%
-  filter(ASSET > 10) %>% 
+  filter(ASSET > 1000000) %>% 
   mutate(Commented = Commented %>% paste0(         
     "\n(median = $", round(median_ASSET, 0) %>% prettyNum(big.mark = ",") ,
          ", mean = $", round(mean_ASSET, 0) %>% prettyNum(big.mark = ","), ")")) %>% 
   ggplot() + 
-  aes(x = ASSET/1000, fill = Commented, color = Commented) + 
+  aes(x = ASSET/1000000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_ASSET/1000)) + 
-    geom_vline( aes(xintercept = median_ASSET/1000), linetype = 2) + 
+  geom_vline( aes(xintercept = mean_ASSET/1000000)) + 
+    geom_vline( aes(xintercept = median_ASSET/1000000), linetype = 2) + 
   scale_x_log10() + 
-  labs(title = "All U.S. Banks",fill = "", y = "", x = "Assets (Thousands)") + 
+  labs(title = "All U.S. Banks",fill = "", y = "", x = "Assets (Millions)") + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -834,7 +836,7 @@ FDIC_resources %>% filter(str_detect(org_name, "morgan|jp morgan|morgan chase|we
 
 d %>% filter(str_dct(org_name, "jp morgan chase bank")) %>% kablebox()
 
-# FIXME ???? WHERE IS JP MORGAN CHACE IN THE FDIC DATA? 
+# FIXME ???? WHERE IS JP MORGAN CHASE IN THE FDIC DATA? 
 FDIC_resources %>% filter(CERT == 3249 | CERT == 23614)
 
 FDIC_resources %>% count(Commented) %>% mutate(percent = n/nrow(FDIC_resources))
@@ -863,19 +865,19 @@ fdic_tSA <- t.test(FDIC_resources %>% filter(commented, BKCLASS == "SA") %>% pul
 fdic_tSA
 
 FDIC_resources %>%
-  filter(ASSET > 10, BKCLASS %in% c("N")) %>% 
+  filter(ASSET > 1000000, BKCLASS %in% c("N")) %>% 
   mutate(Commented = Commented %>% paste0(
          "\n(median = $", round(median_ASSET_type, 0) %>% prettyNum(big.mark = ",") ,
          ", mean = $", round(mean_ASSET_type, 0) %>% prettyNum(big.mark = ","), ")"
     )) %>% 
   ggplot() + 
-  aes(x = ASSET/1000, fill = Commented, color = Commented) + 
+  aes(x = ASSET/1000000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
-      geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
+  geom_vline( aes(xintercept = mean_ASSET_type/1000000)) + 
+      geom_vline( aes(xintercept = median_ASSET_type/1000000), linetype = 2) +
   scale_x_log10() + 
   labs(title = "National Associations",
-       fill = "", y = "", x = "Assets (Thousands)") + 
+       fill = "", y = "", x = "Assets (Millions)") + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -883,10 +885,6 @@ FDIC_resources %>%
 ```
 
 
-#### Dropping National Associations
-
-
-Now omitting class national associations and foreign banks (Class IO are foreign banks and did not comment)
 
 ```{r FDIC-density-select, fig.height=3, fig.width=4, out.width="50%"}
 #FDIC-density-select
@@ -902,7 +900,7 @@ FDIC_resources %<>%
 
 # density plot without N and OI
 FDIC_resources %>%
-   densityplot(caption = str_c("Welch t-test of difference in means, p = ", fdic_t$p.value  %>% round(20) %>% signif(1), "\nOmits foreign banks and national associations"))
+   densityplot(caption = str_c("Welch t-test of difference in means, p = ", fdic_t$p.value  %>% round(20) %>% signif(1), "\nOmits foreign banks"))
 ```
 
 ```{r FDIC-count-select, fig.height=3, fig.width=4, out.width="50%"}
@@ -910,18 +908,18 @@ FDIC_resources %>%
 FDIC_resources %>% distinct(Commented, mean_ASSET) %>% kable()
 
 FDIC_resources %>%
-  filter(ASSET > 10) %>% 
+  filter(ASSET > 1000000) %>% 
   mutate(Commented = Commented %>% paste0(         
     "\n(median = $", round(median_ASSET/1000000, 2) , " million",
          ", mean = $", round(mean_ASSET/1000000, 1) %>% prettyNum(big.mark = ","), " million)")) %>% 
   ggplot() + 
-  aes(x = ASSET/1000, fill = Commented, color = Commented) + 
+  aes(x = ASSET/1000000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_ASSET/1000)) + 
-    geom_vline( aes(xintercept = median_ASSET/1000), linetype = 2) + 
+  geom_vline( aes(xintercept = mean_ASSET/1000000)) + 
+    geom_vline( aes(xintercept = median_ASSET/1000000), linetype = 2) + 
   scale_x_log10() + 
   labs(title = str_c("U.S. Banks, N = ", nrow(FDIC_resources)%>% prettyNum(big.mark = ",")) ,
-       fill = "", y = "", x = "Assets (Thousands)",
+       fill = "", y = "", x = "Assets (Millions)",
        caption = str_c("Welch t-test of difference in means, p = ", fdic_t$p.value  %>% round(20) %>% signif(1), "\nOmits foreign banks and national associations")) + 
   facet_wrap("Commented", ncol = 1, scales = "free_y", strip.position = "top")+
   theme(panel.grid.major.y = element_blank(),
@@ -931,18 +929,18 @@ FDIC_resources %>%
 
 ```{r FDIC-count-by-class, fig.height=3,  fig.width=4, out.width="49%"}
 FDIC_resources %>%
-  filter(ASSET > 10, BKCLASS %in% c("NM")) %>% 
+  filter(ASSET > 1000000, BKCLASS %in% c("NM")) %>% 
   mutate(Commented = Commented %>% paste0(
          "\n(median = $", round(median_ASSET_type, 0) %>% prettyNum(big.mark = ",") ,
          ", mean = $", round(mean_ASSET_type, 0) %>% prettyNum(big.mark = ","), ")"
     )) %>% 
   ggplot() + 
-  aes(x = ASSET/1000, fill = Commented, color = Commented) + 
+  aes(x = ASSET/1000000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
-    geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
+  geom_vline( aes(xintercept = mean_ASSET_type/1000000)) + 
+    geom_vline( aes(xintercept = median_ASSET_type/1000000), linetype = 2) +
   scale_x_log10() + 
-  labs(title = "Commercial Banks",fill = "", y = "", x = "Assets (Thousands)",
+  labs(title = "Commercial Banks",fill = "", y = "", x = "Assets (Millions)",
        caption = str_c("Welch t-test of difference in means, p = ", fdic_tNM$p.value  %>% round(20) %>% signif(1)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
@@ -950,18 +948,18 @@ FDIC_resources %>%
         legend.position = "none")
 
 FDIC_resources %>%
-  filter(ASSET > 10, BKCLASS %in% c("SB")) %>% 
+  filter(ASSET > 1000000, BKCLASS %in% c("SB")) %>% 
   mutate(Commented = Commented %>% paste0(
          "\n(median = $", round(median_ASSET_type, 0) %>% prettyNum(big.mark = ",") ,
          ", mean = $", round(mean_ASSET_type, 0) %>% prettyNum(big.mark = ","), ")"
     )) %>% 
     ggplot() + 
-  aes(x = ASSET/1000, fill = Commented, color = Commented) + 
+  aes(x = ASSET/1000000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
-      geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
+  geom_vline( aes(xintercept = mean_ASSET_type/1000000)) + 
+      geom_vline( aes(xintercept = median_ASSET_type/1000000), linetype = 2) +
   scale_x_log10() + 
-  labs(title = "Savings Banks",fill = "", y = "", x = "Assets (Thousands)",
+  labs(title = "Savings Banks",fill = "", y = "", x = "Assets (Millions)",
        caption = str_c("Welch t-test of difference in means, p = ", fdic_tSB$p.value  %>% round(20) %>% signif(1)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
@@ -970,18 +968,18 @@ FDIC_resources %>%
 
 
 FDIC_resources %>%
-  filter(ASSET > 10, BKCLASS %in% c("SM")) %>% 
+  filter(ASSET > 1000000, BKCLASS %in% c("SM")) %>% 
   mutate(Commented = Commented %>% paste0(
          "\n(median = $", round(median_ASSET_type, 0) %>% prettyNum(big.mark = ",") ,
          ", mean = $", round(mean_ASSET_type, 0) %>% prettyNum(big.mark = ","), ")"
     )) %>% 
     ggplot() + 
-  aes(x = ASSET/1000, fill = Commented, color = Commented) + 
+  aes(x = ASSET/1000000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
-      geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
+  geom_vline( aes(xintercept = mean_ASSET_type/1000000)) + 
+      geom_vline( aes(xintercept = median_ASSET_type/1000000), linetype = 2) +
 scale_x_log10() + 
-  labs(title = "State Banks",fill = "", y = "", x = "Assets (Thousands)",
+  labs(title = "State Banks",fill = "", y = "", x = "Assets (Millions)",
        caption = str_c("Welch t-test of difference in means, p = ", fdic_tSM$p.value  %>% round(20) %>% signif(1)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
@@ -989,18 +987,18 @@ scale_x_log10() +
         legend.position = "none")
 
 FDIC_resources %>%
-  filter(ASSET > 10, BKCLASS %in% c("SA")) %>% 
+  filter(ASSET > 1000000, BKCLASS %in% c("SA")) %>% 
   mutate(Commented = Commented %>% paste0(
          "\n(median = $", round(median_ASSET_type, 0) %>% prettyNum(big.mark = ",") ,
          ", mean = $", round(mean_ASSET_type, 0) %>% prettyNum(big.mark = ","), ")"
     )) %>% 
     ggplot() + 
-  aes(x = ASSET/1000, fill = Commented, color = Commented) + 
+  aes(x = ASSET/1000000, fill = Commented, color = Commented) + 
   geom_histogram(alpha = .5, color = NA) + 
-  geom_vline( aes(xintercept = mean_ASSET_type/1000)) + 
-      geom_vline( aes(xintercept = median_ASSET_type/1000), linetype = 2) +
+  geom_vline( aes(xintercept = mean_ASSET_type/1000000)) + 
+      geom_vline( aes(xintercept = median_ASSET_type/1000000), linetype = 2) +
 scale_x_log10() + 
-  labs(title = "Savings Associations",fill = "", y = "", x = "Assets (Thousands)",
+  labs(title = "Savings Associations",fill = "", y = "", x = "Assets (Millions)",
        caption = str_c("Welch t-test of difference in means, p = ", fdic_tSA$p.value  %>% round(20) %>% signif(1)))  + 
   facet_wrap("Commented",  scales = "free_y", nrow = 2)+
   theme(panel.grid.major.y = element_blank(),
@@ -1010,29 +1008,29 @@ scale_x_log10() +
 
 ```{r FDIC-density-by-class, fig.height=3,  fig.width=4, out.width="49%"}
 FDIC_resources %>%
-  filter(ASSET > 10, BKCLASS %in% c("NM")) %>% 
+  filter(ASSET > 1000000, BKCLASS %in% c("NM")) %>% 
   densityplot(
     title = "Commercial Banks",
-    x = "Assets (Thousands)",
+    x = "Assets (Millions)",
     caption = str_c("Welch t-test of difference in means, p = ", fdic_tNM$p.value  %>% round(20) %>% signif(1))) 
   
 
 FDIC_resources %>%
-  filter(ASSET > 10, BKCLASS %in% c("SB")) %>% 
-  densityplot(title = "Savings Banks", x = "Assets (Thousands)",
+  filter(ASSET > 1000000, BKCLASS %in% c("SB")) %>% 
+  densityplot(title = "Savings Banks", x = "Assets (Millions)",
        caption = str_c("Welch t-test of difference in means, p = ", fdic_tSB$p.value  %>% round(20) %>% signif(1)))
 
 
 FDIC_resources %>%
-  filter(ASSET > 10, BKCLASS %in% c("SM")) %>% 
+  filter(ASSET > 1000000, BKCLASS %in% c("SM")) %>% 
   densityplot(title = "State Banks",
-              x = "Assets (Thousands)",
+              x = "Assets (Millions)",
        caption = str_c("Welch t-test of difference in means, p = ", fdic_tSM$p.value  %>% round(20) %>% signif(1)))
 
 FDIC_resources %>%
-  filter(ASSET > 10, BKCLASS %in% c("SA")) %>% 
+  filter(ASSET > 1000000, BKCLASS %in% c("SA")) %>% 
   densityplot(title = "Savings Associations",
-              x = "Assets (Thousands)",
+              x = "Assets (Millions)",
        caption = str_c("Welch t-test of difference in means, p = ", fdic_tSA$p.value  %>% round(20) %>% signif(1)))
 ```
 
@@ -1088,7 +1086,7 @@ states %>%
 
 ### Among nonprofits that commented on Dodd-Frank rules
 
-```{r danta-nonprofit-commented}
+```{r data-nonprofit-commented}
 # nonprofits in commenter data 
 d_nonprofits <- d %>% filter(org_type2 %in% c("Credit Union", "Other Nonprofit", "Industry Assoc."))
 
@@ -1116,7 +1114,7 @@ nonprofit_resources %<>%
 
 
 # make unique ( there are nearly 5k different rotary internationals and several APIs )
-# select org entry with highest assets 
+# select the org entry with the highest assets 
 nonprofit_resources %<>% group_by(name) %>% 
   top_n(1, assets) %>% 
   ungroup()
@@ -1174,8 +1172,9 @@ ind_assoc_resources <- nonprofit_resources %>% filter(SUBSECTION == "06")
 ind_assoc_resources %>% count(commented)
 ind_assoc_resources %>% count(Commented)
 
+ind_assoc_resources %>% filter(str_dct(name, "american bankers")) %>% kablebox()
 
-ind_assoc_resources %>% arrange(-assets) %>% kablebox()
+ind_assoc_resources %>% arrange(-assets) %>% kablebox() 
 
 # look for top industry associations in comment data
 d %>% filter(str_dct(org_name, "MICHIGAN CATASTROPHIC|SECURITIES INVESTOR|PROTECTION CORPORATION|INDUSTRY REGULATORY AUTHORITY|PGA|BUREAU OF SHIPPING|CAROLINA INSURANCE|AMERICAN MEDICAL ASSOCIATION|^AMA$|TEXAS PROPERTY AND CASUALTY|SELF INSURERS|SECURITY FUND|SOUNDEXCHANGE|GOLFERS|WISCONSIN COMPENSATION RATING|CFA INSTITUTE|PENNSYLVANIA PROFESSIONAL|JERSEY PROPERTY|ASSOCIATION OF REALTORS|MASSACHUSETTS MEDICAL|SOUTHWEST POWER|AMERICAN BAR|PROJECT MANAGEMENT|AMERICAN PATHOLOGISTS|ACADEMY OF MOTION PICTURE|MUTUAL SHARE INSURANCE|AMERICAN HOSPITAL ASSOCIATION|RURAL ELECTRIC COOPERATIVE|CERTIFIED PUBLIC ACCOUNTANTS|NATIONAL ASSOCIATION OF BROADCASTERS|CALIFORNIA DENTAL|MISSOURI LIFE AND HEALTH INSURANCE|HUMAN RESOURCE MANAGEMENT|CONSUMER TECHNOLOGY|FLORIDA WORKERS COMPENSATION|MASSACHUSETTS INSURERS INSOLVENCY|AMERICAN DENTAL|GS1|AMERICAN PHARMACISTS|GSMA|OREGON INSURANCE GUARANTY|CONNECTICUT INSURANCE GUARANTY|NATIONAL RESTAURANT|BIOTECHNOLOGY INDUSTRY|CAN DO INC|NATIONAL CABLE|INSTITUTE OF ARCHITECTS")) %>% distinct(org_name)
@@ -1247,7 +1246,7 @@ nonprofit_resources %>%
                x = "Revenue (Thousands)",
               caption = str_c("Welch t-test of difference in means, p = ", nonprofit_revenue_t$p.value  %>% round(20) %>% signif(1))) 
 
-# old density plots 
+# Old density plots 
 nonprofit_resources %>% 
   filter(assets > 10) %>% 
   ggplot() + 
@@ -1288,14 +1287,14 @@ nonprofit_resources %>% distinct(Commented, mean_assets, mean_revenue) %>% kable
 
 
 # mean assets
-mean_commented <- nonprofit_resources %>% filter(Commented == "Commented") %>% distinct(mean_assets/1000000) %>% round(1) %>%  paste("million")
+mean_commented <- nonprofit_resources %>% filter(Commented == "Commented") %>% distinct(mean_assets/1000) %>% round(1) %>%  paste("million")
 
-mean_not_commented <- nonprofit_resources %>% filter(Commented != "Commented") %>% distinct(mean_assets/1000000) %>% round(1) %>%  paste("million")
+mean_not_commented <- nonprofit_resources %>% filter(Commented != "Commented") %>% distinct(mean_assets/1000) %>% round(1) %>%  paste("million")
 
 # median assets
-median_commented <- nonprofit_resources %>% filter(Commented == "Commented") %>% distinct(median_assets/1000000) %>% round(2) %>%  paste("million")
+median_commented <- nonprofit_resources %>% filter(Commented == "Commented") %>% distinct(median_assets/1000) %>% round(2) %>%  paste("million")
 
-median_not_commented <- nonprofit_resources %>% filter(Commented != "Commented") %>% distinct(median_assets/1000000) %>% round(2) %>%  paste("million")
+median_not_commented <- nonprofit_resources %>% filter(Commented != "Commented") %>% distinct(median_assets/1000) %>% round(2) %>%  paste("million")
 ```
 
 
@@ -1373,8 +1372,8 @@ ggsave(plot = np_by_irs_subsection, filename = "figs/nonprofit-density-1-by-sect
 nonprofit_resources %>% 
   filter(assets > 10) %>% 
   mutate(Commented = Commented %>% paste(
-    "\n(median = $", round(median_assets/1000000, 2), " million, ",
-    "mean = $", round(mean_assets/1000000, 1), " million)"
+    "\n(median = $", round(median_assets/1000, 2), " million, ",
+    "mean = $", round(mean_assets/1000, 1), " million)"
     )) %>% 
   ggplot() + 
   aes(x = assets/1000, fill = Commented, color = Commented) + 
@@ -1416,7 +1415,7 @@ nonprofit_resources %>%
 
 # TODO 
 # - biggest nonprofits by assets and revenue (e.eg. chamber )
-# - compartaitve ratios at key levels
+# - comparative ratios at key levels
 # - percent nonprofits 
 # - side by side histograms
 # missing fed in matching, but could compare FDIC regulator to agency commented on
@@ -1850,7 +1849,7 @@ opensecrets %>%
 ```{r compustat-data}
 d$cik %>% nchar() %>% unique()
 
-# make cik 10 digets to be consistent 
+# make cik 10 digits to be consistent 
 d$cik %<>% str_squish() %>% as.numeric() %>% formatC(width = 10, format = "d", flag = "0") 
 
 # companies in commenter data 
@@ -1862,7 +1861,7 @@ compustat$cik %>% nchar() %>% unique()
 # WE CANT JUST MERGE ON CIK
 compustat %>% filter(is.na(cik))
 
-# make cik 10 digets to be consistent 
+# make cik 10 digits to be consistent 
 compustat$cik %<>% str_squish() %>% as.numeric() %>%  formatC(width = 10, format = "d", flag = "0") 
 
 # compustat %>% filter(is.na(cik))
@@ -1910,7 +1909,7 @@ cik %>% kablebox()
 ```{r sec-data}
 sec$cik %>% nchar() %>% unique()
 
-# make cik 10 digets to be consistent 
+# make cik 10 digits to be consistent 
 sec$cik %<>% as.numeric() %>% formatC(width = 10, format = "d", flag = "0") 
 # drop NA 
 sec %<>% filter(cik !="        NA") 
@@ -2050,7 +2049,7 @@ compustat_t <- t.test(compustat %>% filter(commented) %>% pull(marketcap2),
 compustat_t
 
 compustat %>% 
-  filter(marketcap2 > 1000) %>% 
+  filter(marketcap2 > 10000) %>% 
   densityplot(var = "marketcap2",
               by = 1000000, 
               title = "Publicly-traded Companies",
@@ -2107,7 +2106,7 @@ compustat %>%
 # WE SHOULD NOT BE MERGING ON ORG NAME UNLESS IT IS A UNIQUE ID
 # AS OF 20-04-2023, org name is not the same as the names in these datasets, so I'm merging nonprofits on ein
 
-# check for unique ides
+# check for unique ids
 FDIC_resources %>% count(CERT, sort = T)
 
 # import FDIC ASSET Var to d 
@@ -2160,7 +2159,7 @@ d %<>%
     nonprofit_resources %>% ungroup() %>%  drop_na(ein) %>% 
       dplyr::select(`nonprofits_resources-bestMatch:ein` = ein, assets, revenue) ) 
 
-# check for unique CIK ids
+# Check for unique CIK ids
 compustat %>% distinct(marketcap, cik) %>%  count(cik, sort = T)
 # compustat %>% count(org_name, cik, sort = T)
 # compustat %>% distinct(org_name, cik, marketcap, naics, sort = T)
@@ -2340,7 +2339,7 @@ d  %<>%
 
 ## Save asset data
 ```{r save, cache=FALSE}
-#FIXME ideally, all edits to these data would be in clean_asset_data.R
+#FIXME Ideally, all edits to these data would be in clean_asset_data.R
 # however, that requires knowing all of the asset data we want 
 
 # market cap

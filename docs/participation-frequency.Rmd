@@ -41,9 +41,9 @@ d <- commenter_assets
 
 #FIXME WE SHOULD NOT NEED THIS 
 # load IRS data with c3-c6 variable (this is large)
-load(here::here("data", "IRS990-2012-2021.RData"))
-
-IRS990_2012_2021 %<>% distinct(EIN, ORGANIZATION, SUBSECTION, .keep_all = T)
+# load(here::here("data", "IRS990-2012-2021.RData"))
+# 
+# IRS990_2012_2021 %<>% distinct(EIN, ORGANIZATION, SUBSECTION, .keep_all = T)
 ```
 
 ---
@@ -140,18 +140,18 @@ For every additional 10 billion in assets, an organization comments on about `r 
 ## Among nonprofits that commented on a Dodd-Frank rule
 
 ```{r nonprofit-rules, fig.width=4, fig.height= 2, out.width= "50%"}
-ein_subsection <- IRS990_2012_2021 %>%
-  dplyr::select(EIN,SUBSECTION) %>%
-  mutate(ein = as.double(EIN)) %>%
-  dplyr::select(-EIN) %>%
-  distinct() #%>%
-  #group_by(EIN) %>% tally() %>% arrange(desc(n))
+# ein_subsection <- IRS990_2012_2021 %>%
+#   dplyr::select(EIN,SUBSECTION) %>%
+#   mutate(ein = as.double(EIN)) %>%
+#   dplyr::select(-EIN) %>%
+#   distinct() #%>%
+#   #group_by(EIN) %>% tally() %>% arrange(desc(n))
 
 
 asset_counts <- d %>% 
   filter(assets > 10) %>%
   distinct(org_name, docket_id, assets, .keep_all = T) %>% 
-  left_join(ein_subsection, by = "ein") %>% ### ADDED SUBSECTION HERE ## NOTE INCASE CODE GOES ROGUE
+  #left_join(ein_subsection) %>% ### ADDED SUBSECTION HERE ## NOTE INCASE CODE GOES ROGUE
   count(org_name, assets, ein, SUBSECTION) %>% # length stays at 6283 when ein added, so no change here!
   filter(!is.na(assets)) %>% 
   mutate(nnp = quantile(n, probs = .9),
@@ -297,7 +297,7 @@ For every additional 10 billion in assets, a nonprofit comments on about `r roun
 asset_counts <- d %>% 
   filter(assets > 10) %>%
   distinct(org_name, docket_id, assets, .keep_all = T) %>% 
-  left_join(ein_subsection) %>% ### ADDED SUBSECTION HERE ## NOTE INCASE CODE GOES ROGUE
+  #left_join(ein_subsection) %>% ### ADDED SUBSECTION HERE ## NOTE INCASE CODE GOES ROGUE
   filter(SUBSECTION == "06") %>% 
   count(org_name, assets, ein) %>% # length stays at 6283 when ein added, so no change here!
   filter(!is.na(assets)) %>% 

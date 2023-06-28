@@ -186,11 +186,15 @@ d$org_type <- d$org_type2
 #FIXME MOVE TO TOP 
 # d$comment_url %<>% str_replace("document\\?D=", "comment/")
 
+# inspect largest banks 
+# Make sure ASSET variable is adjusted (in the raw data it was in thousands)
+d %>% arrange(-ASSET) %>% 
+  dplyr::select(org_name, ASSET, comment_url) %>% kablebox()
 
-d %>% arrange(assets) %>% 
+d %>% arrange(-assets) %>% 
   dplyr::select(org_name, assets, revenue, comment_url) %>% kablebox()
 
-d %>% arrange(marketcap2) %>% 
+d %>% arrange(-marketcap2) %>% 
   dplyr::select(org_name, marketcap, comment_url) %>% kablebox()
 
 d %>% arrange(-MeanContribAmount) %>% 
@@ -558,7 +562,7 @@ boxplotXefficacyXsophistication <- efficacyXsophistication %>%
 
 boxplotXefficacyXsophistication
 
-ggsave(plot = boxplotXefficacyXsophistication, filename = "figs/boxplot-efficacyXsophistication-2.png",bg="white")
+# ggsave(plot = boxplotXefficacyXsophistication, filename = "figs/boxplot-efficacyXsophistication-2.png",bg="white")
 ```
 
 ```{r efficacyXsophistication, fig.height=3.5, fig.width=5}
@@ -980,8 +984,8 @@ p +
   scale_x_log10()
 ```
 
-## Boxplots Amount of Technical Language by Assets (Among Comments from Banks on Dodd-Frank Rules)
-```{r boxplot-assets-tech, fig.height=2.5, fig.width=3.5, out.width="50%"}
+### Boxplots Amount of Technical Language by Assets (Among Comments from Banks on Dodd-Frank Rules)
+```{r boxplot-assets-tech, fig.height=2.5, fig.width=4, out.width="50%"}
 #boxplot-assets-tech
 
 #Non-Profits
@@ -1001,7 +1005,7 @@ NP_tech <- t %>%
       as.numeric(),
     bin = round(10^bin) %>%
       as.factor() %>%
-      prettyNum(big.mark = ",")
+      prettyNum(big.mark = ",") 
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=dictionary_terms)) +
   geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
@@ -1010,6 +1014,10 @@ NP_tech <- t %>%
   labs(x = "Assets (Millions USD)",
        y = "Technical Terms", 
        title = "Nonprofits")
+
+NP_tech
+
+NP_tech
 
 # Industry associations 
 IA_tech <- t %>% 
@@ -1026,7 +1034,7 @@ IA_tech <- t %>%
     bin = round(10^bin) %>%
       as.factor() %>%
       prettyNum(big.mark = ",")
-  ) %>% #select(assets, bin) %>% group_by(bin) %>%
+  ) %>% #view() #select(assets, bin) %>% group_by(bin) %>%
   #skimr::skim()
   ggplot(aes(x=bin, y=dictionary_terms)) +
   geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
@@ -1039,6 +1047,9 @@ IA_tech <- t %>%
        y = "Technical Terms", 
        title = "Industry Associations")
 
+IA_tech
+
+IA_tech
 
 # Credit Unions
        #caption = "x-axis are bins represing the log10 scale, so the first bin is organizations with assets from $0 to $1 million") 
@@ -1047,7 +1058,7 @@ CU_tech <- t %>%
   filter(!is.na(CreditUnions_name),
          !is.na(assets),
          assets < 10000000000,
-         assets > 0) %>%
+         assets > 0) %>% #pull(assets) %>% max(na.rm = T)
   mutate(
     log_dictionary_terms = log10(dictionary_terms + 1),
     assets_in_millions = assets/1000000,
@@ -1067,6 +1078,11 @@ CU_tech <- t %>%
   labs(x = "Assets (Millions USD)",
        y = "Technical Terms", 
        title = "Credit Unions")
+
+CU_tech
+
+CU_tech
+
 
 PTC_tech <- t %>% 
   filter(!is.na(marketcap2), marketcap2 > 1000000) %>% 
@@ -1089,9 +1105,14 @@ PTC_tech <- t %>%
   labs(x = "Market Capitalization (Millions USD)",
        y = "Technical Terms", 
        title = "Publicly-traded Companies")
-  
+
+PTC_tech
+
+PTC_tech
+
+
 FDIC_Banks_tech <- t %>% 
-  filter(!is.na(ASSET)) %>% 
+  filter(!is.na(ASSET), ASSET >1000000) %>% 
     mutate(
     log_dictionary_terms = log10(dictionary_terms + 1),
     assets_in_millions = ASSET/1000000,
@@ -1102,7 +1123,7 @@ FDIC_Banks_tech <- t %>%
       as.numeric(),
     bin = round(10^bin) %>%
       as.factor() %>%
-      prettyNum(big.mark = ",")
+      prettyNum(big.mark = ",")%>% str_replace("1,000,000", "10^6")
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=dictionary_terms)) +
   geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
@@ -1112,33 +1133,17 @@ FDIC_Banks_tech <- t %>%
        y = "Technical Terms", 
        title = "Banks")
 
-NP_tech
-
-NP_tech
-
-ggsave(plot = NP_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-2.png",bg="white")
-
-CU_tech
-
-CU_tech
-
-ggsave(plot = CU_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-4.png",bg="white")
-
-
-IA_tech 
-IA_tech 
-
-PTC_tech
-
-PTC_tech
-
-ggsave(plot = PTC_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-6.png",bg="white")
-
 FDIC_Banks_tech
 
 FDIC_Banks_tech
 
-ggsave(plot = FDIC_Banks_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-8.png",bg="white")
+#ggsave(plot = NP_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-2.png",bg="white")
+
+#ggsave(plot = CU_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-4.png",bg="white")
+
+#ggsave(plot = PTC_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-6.png",bg="white")
+
+#ggsave(plot = FDIC_Banks_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-8.png",bg="white")
 ```
 
 
@@ -1264,7 +1269,7 @@ p +
 
 ## Amount of Text Repeated in Final Rules by Commenter Resources Boxplot
 
-```{r boxplot-assets-efficacy, fig.height=2.5, fig.width=3.5, out.width="50%"}
+```{r boxplot-assets-efficacy, fig.height=2.5, fig.width=4, out.width="50%"}
 #Non-Profits
 #binning here is a bit tricky because of the log transformation necessary at the back end
 # bins are 0 to 1,000,000 then 1,000,000 to 10,000,000, then 10 to 100 million, 100 million to a billion
@@ -1365,7 +1370,7 @@ PTC <- e %>%
        title = "Publicly-traded Companies")
   
 FDIC_Banks <- e %>% 
-  filter(!is.na(ASSET)) %>% 
+  filter(!is.na(ASSET), ASSET > 1000000) %>% 
     mutate(
     log_efficacy = log10(efficacy + 1),
     assets_in_millions = ASSET/1000000,
@@ -1376,25 +1381,30 @@ FDIC_Banks <- e %>%
       as.numeric(),
     bin = round(10^bin) %>%
       as.factor() %>%
-      prettyNum(big.mark = ",")
+      prettyNum(big.mark = ",") %>% str_replace("1,000,000", "10^6")
   ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
   ggplot(aes(x=bin, y=efficacy)) +
-  geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
-  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
-  scale_y_continuous(trans = scales::log10_trans(),breaks = c(0, 1, 10, 100, 1000, 10000), lim = c(10,5000), expand = c(0,0)) +
+  geom_jitter(aes(x=bin, y=efficacy), 
+              alpha = 0.1) +
+  geom_boxplot(width=0.65, 
+               fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),
+                     breaks = c(0, 1, 10, 100, 1000, 10000), 
+                     lim = c(10,5000), 
+                     expand = c(0,0)) +
   labs(x = "Assets (Millions USD)",
        y = "Words in Comment\nAdded to Final Rule", 
-       title = "Banks")
+       title = "Banks") 
 
 NP
 NP
 
-ggsave(plot = NP + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-np.png",bg="white")
+#ggsave(plot = NP + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-np.png",bg="white")
 
 CU
 CU
 
-ggsave(plot = CU + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-cu.png",bg="white")
+#ggsave(plot = CU + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-cu.png",bg="white")
 
 IA
 IA
@@ -1402,12 +1412,12 @@ IA
 PTC
 PTC
 
-ggsave(plot = PTC + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-ptc.png",bg="white")
+#ggsave(plot = PTC + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-ptc.png",bg="white")
 
 FDIC_Banks
 FDIC_Banks
 
-ggsave(plot = FDIC_Banks + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-banks.png",bg="white")
+#ggsave(plot = FDIC_Banks + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-banks.png",bg="white")
 
 ```
 
@@ -1599,20 +1609,35 @@ mes_terms <- glm(efficacy ~ dictionary_terms,
 mes_terms_bluebook <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations,
            data = d )
 
-models <- list(mes_terms , mes_bluebook , mes_terms_bluebook )
+mes_bluebooklog <- lm(efficacy ~ log(Total_Legal_Citations +1),
+           data = d )
+
+mes_termslog <- glm(efficacy ~ log(dictionary_terms + 1),
+           data = d)
+
+mes_terms_bluebooklog <- glm(efficacy ~ log(dictionary_terms + 1) + log(Total_Legal_Citations + 1),
+           data = d )
+
+models <- list(mes_terms , mes_bluebook , mes_terms_bluebook,
+               mes_termslog , mes_bluebooklog, mes_terms_bluebooklog)
 
 rows <- tibble(
   term = c("Dependent Variable"),
   `1` = "Efficacy",
    `2` = "Efficacy",
-  `3` = "Efficacy"
+  `3` = "Efficacy",
+  `4` = "Efficacy",
+  `5` = "Efficacy",
+  `6` = "Efficacy"
 )
 
 attr(rows, 'position') <- c(0)
 
 
-# FIXME 
-# modelsummary(models)#, gof_map = gm)
+modelsummary(models)
+
+save(models, rows,
+     file = here::here("models", "mes.Rdata"))
 
 modelplot(mes_terms) + theme(legend.position = "none") +  
   labs(x = "Words Added to Final Rule per Technical Term")
@@ -1627,7 +1652,49 @@ modelplot(models) + theme(legend.position = "none") +
   labs(x = "Words Added to Final Rule")
 ```
 
+Poisson
 
+```{r mes-poisson}
+mes_bluebook <- lm(efficacy ~ Total_Legal_Citations,
+           data = d )
+
+mes_terms <- glm(efficacy ~ dictionary_terms,
+           data = d, family = "poisson")
+
+mes_terms_bluebook <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations,
+           data = d, family = "poisson" )
+
+mes_bluebooklog <- lm(efficacy ~ log(Total_Legal_Citations +1),
+           data = d, family = "poisson" )
+
+mes_termslog <- glm(efficacy ~ log(dictionary_terms + 1),
+           data = d, family = "poisson")
+
+mes_terms_bluebooklog <- glm(efficacy ~ log(dictionary_terms + 1) + log(Total_Legal_Citations + 1),
+           data = d, family = "poisson" )
+
+models <- list(mes_terms , mes_bluebook , mes_terms_bluebook,
+               mes_termslog , mes_bluebooklog, mes_terms_bluebooklog)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Efficacy",
+   `2` = "Efficacy",
+  `3` = "Efficacy",
+  `4` = "Efficacy",
+  `5` = "Efficacy",
+  `6` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+
+# FIXME 
+modelsummary(models)#, gof_map = gm)
+
+save(models, rows,
+     file = here::here("models", "mes-pois.Rdata"))
+```
 ---
 
 ## Efficacy by Assets 

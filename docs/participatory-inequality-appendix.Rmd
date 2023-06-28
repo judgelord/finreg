@@ -293,6 +293,19 @@ knitr::include_graphics("figs/assets-blue-8.png")
 knitr::include_graphics("figs/assets-blue-6.png")
 ```
 
+Findings regarding the relationship between technical sophistication and the number of words from a comment added to final rule (efficacy) are robust to alternative specifications. Table \@ref(tab:efficacy-sophistication-pois) re-estimates the models from Table \@ref(tab:efficacy-sophistication) using Poisson regression. While Poisson regression is more appropriate for counts of words added to the final rule, the coefficients are more difficult to interpret than the OLS results in Table \@ref(tab:efficacy-sophistication-pois).
+
+```{r efficacy-sophistication-pois, out.width="80%"}
+#,  fig.cap="OLS Models of Lobbying Success by Comment Sophistication"}
+#knitr::include_graphics("figs/mes-1.png")
+#knitr::include_graphics("figs/mes-2.png")
+
+load(here::here("models", "mes-pois.Rdata"))
+
+modelsummary(models, caption = "Poisson Models of Lobbying Success by Comment Sophistication", notes = "") %>% kableExtra::kable_styling(latex_options="scale_down")
+```
+
+
 Figure \ref{fig:assets-terms-legal} also corroborates with regression findings on technical sophistication. Here, comments from wealthier organizations tend to include more legal language, a pattern permeated across banks, publicly traded companies, and campaign donors. Similar to the relationship between technical terms and commenter wealth, most of the comments from publicly traded companies with ten or more legal citations were submitted by companies with over \$50 billion in market capitalization.
 
 ```{r marketcap-terms-legal, out.width="90%",  fig.cap="Amount of Legal Language by Market Capitalization (Among Comments  on Dodd-Frank Rules)"}
