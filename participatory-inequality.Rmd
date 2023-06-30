@@ -318,8 +318,10 @@ The *Profit-Motivated Participation* Hypothesis (H2) posited that for-profit org
 Wealth is also a larger driver of commenting behavior for banks than non-profits. Credit unions and other types of non-profits are significantly less likely to comment than banks, even when controlling for differences in assets. Table \ref{tab:mp-all-table} shows the results of logit models predicting the log odds of commenting by organization type (bank, credit union, other non-profit organization) and total assets. Credit unions and other non-profits are much less likely to comment than for-profit banks. 
 Figure \@ref(fig:mp-all-predict-1) shows that the predicted probability of commenting increases rapidly as banks gain more assets (Also see Table \@ref(tab:mp-all-table)). Wealthier credit unions and other non-profits are more likely to comment than less wealthy ones, but the differences are much smaller than they are for banks. 
  
-```{r, mp-all-predict-1, fig.cap= "Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets and Type of Organization", out.width="70%"}
-knitr::include_graphics("figs/mp-all-predict-log-1.png")
+```{r, mp-all-predict-1, fig.cap= "Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets and Type of Organization", out.width=  c("63%", "36%")}
+# c("60%", "40%")
+knitr::include_graphics(c("figs/mp-all-predict-log-1.png",
+                        "figs/mp-compustat-predict-1.png"))
 #TODO: THIS SHOULD SPLIT OUT COMMERCIAL BANKS AND COMBINE WITH THE BANK MODELS BELOW FOR TWO FIGURES BUT ONE TABLE. (STILL, ESTIMATE A MODEL WITH BANKS SEPARATELY THO)--> 
 ```
 
@@ -368,7 +370,7 @@ The bottom-left panel of Figure \ref{fig:dockets-percentile} shows that, among p
 The bottom-right panel of Figure \ref{fig:dockets-percentile} shows that, even among banks, a large share of the most frequent commenters had assets over \$1 million, and many had assets over \$100 million. Yet, nearly all banks that were less frequent commenters---most of which only commented on one rule---had under \$1 million in assets. This difference is significant at the .05 level. 
 Overall, while these differences are not statistically significant, the general pattern across these figures is in the direction predicted by Hypothesis 3: frequent commenters also tend to be more wealthy organizations.
 
-```{r, dockets-percentile, fig.cap="Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)", out.width="49%", fig.show= "hold"}
+```{r, dockets-percentile, fig.cap="Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)", out.width="49%"}
 knitr::include_graphics(c(
   "figs/nonprofit-rules-3.png",
   "figs/creditunion-rules-3.png",
@@ -401,7 +403,6 @@ We now turn to possible explanations for the positive relationship between wealt
 The *Differential Sophistication Hypothesis*  (H5) suggests wealthier organizations submit more sophisticated comments than less well-off entities. Figure \ref{fig:assets-terms} provides evidence of just such a relationship.  It shows that the comments from wealthier organizations tend to include more technical language specific to finance and banking. This pattern is especially strong for banks and publicly traded companies. For example, nearly every comment from a company with market capitalization over $50 billion contained over 100 technical terms, while companies with lower market capitalization tended to submit less sophisticated comments. 
 
 ```{r assets-terms, out.width="49%",  fig.cap="Amount of Technical Language by Assets"}
-## non-profits 
 knitr::include_graphics(c(
   ## Nonprofits
   "figs/boxplot-assets-tech-2.png",

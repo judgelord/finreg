@@ -281,7 +281,7 @@ save(models, rows,
 
 #### Predicted probabibility of commenting by bank type
 
-```{r mp-FDIC2-predict, fig.height=2.5, fig.width=4.5}
+```{r mp-FDIC2-predict, fig.height=2.5, fig.width=3.5}
  
  # A data frame of values at which to estimate probabilities:
 values <- FDIC_resources %>% 
@@ -430,7 +430,7 @@ save(models, rows,
 
 ### Campaign Donors
 
-```{r mp-opensecrets-predict, fig.height=2.5, fig.width=3}
+```{r mp-opensecrets-predict, fig.height=2.5, fig.width=2.5}
 # TODO JOIN org_type2 and lobbying expend
 
 opensecrets %<>% mutate(MeanContribAmount_t = MeanContribAmount/1000,
@@ -446,12 +446,24 @@ mpOpensecrets_total <- glm(commented ~ TotalContribAmount_t,
            data = opensecrets, 
              family=binomial(link="logit"))
 
-models <- list(mpOpensecrets, mpOpensecrets_total)
+
+mpOpensecrets_log <- glm(commented ~ log(MeanContribAmount_t),
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+mpOpensecrets_total_log <- glm(commented ~ log(TotalContribAmount_t),
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+models <- list(mpOpensecrets, mpOpensecrets_total,
+               mpOpensecrets_log, mpOpensecrets_total_log)
 
 rows <- tibble(
   term = c("Dependent Variable"),
   `1` = "Commented",
-  `2` = "Commented"
+  `2` = "Commented",
+  `3` = "Commented",
+  `4` = "Commented"
 )
 
 attr(rows, 'position') <- c(0)
@@ -461,14 +473,15 @@ equatiomatic::extract_eq(models[[1]])
 
 modelsummary(models)
 
+save(models, rows, file =  here::here("models", "mp-opensecrets.Rdata"))
 
 
 # A data frame of values at which to estimate probabilities:
 values <- opensecrets %>% 
   #filter(org_type == "Bank") %>% 
-  tidyr::expand(MeanContribAmount_t = seq(0,500,100) )#, org_type = "Bank") 
+  tidyr::expand(MeanContribAmount_t = c(1,10,100) )#, org_type = "Bank") 
 
-predicted <- marginaleffects::predictions(mpOpensecrets,
+predicted <- marginaleffects::predictions(mpOpensecrets_log,
                          newdata = values) 
 
 names(predicted)
@@ -493,12 +506,100 @@ p <- predicted %>%
         #axis.ticks.y = element_blank(),
         #panel.grid.major.y = element_blank()
         )+
-    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  +
+  scale_x_log10()
 
 p 
 ```
 
+### Lobbying
+
+```{r mp-opensecrets-lobbying-predict, fig.height=2.5, fig.width=2.5}
+# TODO JOIN org_type2 and lobbying expend
+
+opensecrets %<>% mutate(MeanLobbyingAmount_t = MeanLobbyingAmount/1000,
+                        TotalLobbyingAmount_t = TotalLobbyingAmount/1000,
+                        MeanLobbyingAmount_m = MeanLobbyingAmount/1000000,
+                        TotalLobbyingAmount_m = TotalLobbyingAmount/1000000)
+
+mpOpensecrets <- glm(commented ~ MeanLobbyingAmount_t,
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+mpOpensecrets_total <- glm(commented ~ TotalLobbyingAmount_t,
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+
+mpOpensecrets_log <- glm(commented ~ log(MeanLobbyingAmount_t),
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+mpOpensecrets_total_log <- glm(commented ~ log(TotalLobbyingAmount_t),
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+models <- list(mpOpensecrets, mpOpensecrets_total,
+               mpOpensecrets_log, mpOpensecrets_total_log)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented",
+  `4` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+
+equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+#save(models, file =  here::here("models", "mp-opensecrets-lobbying.Rdata"))
+
+
+# A data frame of values at which to estimate probabilities:
+values <- opensecrets %>% 
+  #filter(org_type == "Bank") %>% 
+  tidyr::expand(MeanLobbyingAmount_t = c(1,10,100) )#, org_type = "Bank") 
+
+predicted <- marginaleffects::predictions(mpOpensecrets_log,
+                         newdata = values) 
+
+names(predicted)
+
+
+# As a plot
+p <- predicted %>% 
+  ggplot() + 
+  aes(x = MeanLobbyingAmount_t, y = estimate#, shape = org_type, color = org_type
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), alpha = .7, position = position_dodge(width = 0.010) )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  #coord_flip() +
+  labs(y = 'Probability of Commenting', 
+       x = "PAC Contributions ($1,000s)",
+       color = "",
+       shape = "", 
+       title = "") + 
+  theme_minimal() + 
+  theme(#axis.text.y = element_blank(),
+        #axis.ticks.y = element_blank(),
+        #panel.grid.major.y = element_blank()
+        )+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  +
+  scale_x_log10()
+
+p 
+```
+
+---
+
 ### By Market Cap
+
 ```{r mp-compustat}
 compustat %<>% mutate(commented = Commented == "Commented",
                       marketcap_b = marketcap2/1000000000,
@@ -560,7 +661,7 @@ modelsummary(models)
 
 #### Predicted probabilites by market cap
 
-```{r mp-compustat-predict, fig.height=2.5, fig.width=3}
+```{r mp-compustat-predict, fig.height=2.5, fig.width=2}
  
  # A data frame of values at which to estimate probabilities:
 values <- compustat %>% 
@@ -587,7 +688,7 @@ p <- predicted %>%
   geom_hline(yintercept = 0, linetype = 2) +
   #coord_flip() +
   labs(y = 'Probability of Commenting', 
-       x = "Market Capitalization (Billions)",
+       x = "Market Cap. (Billions)",
        color = "",
        shape = "", 
        title = "") + 
@@ -835,7 +936,7 @@ p +  facet_wrap("org_type", ncol = 2, scales = "free") +  aes(color = org_type) 
 ```{r}
 # A data frame of values at which to estimate probabilities:
 values <- all %>% 
-  tidyr::expand(assets_b = c(1,10,100), org_type) %>% 
+  tidyr::expand(assets_b = c(.1, 1,10,100), org_type) %>% 
   mutate(assets_b2 = assets_b^2)
 ```
 
