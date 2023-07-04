@@ -28,6 +28,7 @@ requires <- c("bookdown",
               #"flextable",
               #"magick",
               "equatiomatic",
+              "DiagrammeR",
               #"tidytext",
               #"latex2exp",
               "tidyverse")
@@ -121,12 +122,20 @@ kablebox <- . %>%
 
 # a function to format kables for different output formats
 kable2 <- function(x, file){
-  if(knitr:::is_html_output() | knitr::is_latex_output() ){
-      x %>% row_spec(row = 1, bold = T, hline_after = TRUE) %>%
-      kable_styling(font_size = 9, full_width = TRUE, latex_options = c("repeat_header"))
-  } else{
-    kableExtra::as_image(x, width = 6.5, file = paste0("figs/", file, ".png"))
-    }
+  #if(knitr:::is_html_output() | knitr::is_latex_output() ){
+  x %>%
+    row_spec(row = 1,
+             bold = T,
+             hline_after = TRUE
+             ) %>%
+      kable_styling(
+        font_size = 9,
+        full_width = TRUE,
+        latex_options = c("repeat_header")
+        )
+  # } else{
+  #   kableExtra::as_image(x, width = 6.5, file = paste0("figs/", file, ".png"))
+  #   }
 }
 
 
@@ -259,19 +268,24 @@ cm = c("ASSET" = "Assets",
        "assets_m" = "Assets (in Millions)",
        "assets_b" = "Assets (in Billions)",
        "assets_b2" = "Assets Squared",
-       "log(assets_b + 1)" = "Log Assets",
-       "log(assets_b + 1):org_typeCredit union" = "Log Assets x Credit Union",
+       "log(assets_b + 1)" = "Log(Assets)",
+       "log(assets_b + 1):org_typeCredit union" = "Log(Assets) x Credit Union",
        "org_typeCredit union:assets_b2" = "Assets Squared x Credit Union",
-       "log(assets_b + 1):org_typeIndustry assoc." = "Log Assets x Industry assoc.",
+       "log(assets_b + 1):org_typeIndustry assoc." = "Log(Assets) x Industry assoc.",
        "assets_b:org_typeIndustry assoc." = "Assets x Industry assoc.",
        "org_typeIndustry assoc.:assets_b2" = "Assets Squared x Industry assoc.",
-       "log(assets_b + 1):org_typeOther non-profit" = "Log Assets x Other non-profit",
+       "log(assets_b + 1):org_typeOther non-profit" = "Log(Assets) x Other non-profit",
        "assets_b:org_typeOther non-profit" = "Assets x Other non-profit",
        "org_typeOther non-profit:assets_b2" = "Assets Squared x Other non-profit",
-       "log(assets_b + 1):org_typeNon-profit" = "Log Assets x Non-profit",
+       "log(assets_b + 1):org_typeNon-profit" = "Log(Assets) x Non-profit",
        "org_typeNon-profit:assets_b2" = "Assets Squared x Non-profit",
        "marketcap_b" = "Market Capitalization (Billions)",
+       "log(marketcap_b)" = "Log(Market Capitalization)",
        "donations_m" = "Campaign Donations (Millions)",
+       "MeanContribAmount_t" = "Avg. PAC Spending (Thousands/Year)",
+       "TotalContribAmount_t" = "Total PAC Spending (Thousands)",
+       "log(MeanContribAmount_t)" = "Log(Avg. PAC Spending)",
+       "log(TotalContribAmount_t)" = "Log(Total PAC Spending)",
        "onepercentTop 1%" = "Top 1% Most Frequent",
        "Class" = "Bank Class",
        "Class2" = "Bank Type",
@@ -311,13 +325,15 @@ gm = list("Num.Obs." = "Number of Comments",
           "AIC" = "AIC")
 
 # table  defaults
-modelsummary <- function(...) modelsummary::modelsummary(...,
-                                                         stars = T,
-                                                         add_rows = rows,
-                                                         coef_rename = cm,
-                                                         gof_omit = "R.*|A.*|B.*",
-                                                         coef_omit = "(Intercept)") %>%
-  row_spec(row = 1, bold = T)
+modelsummary <- function(...){
+  modelsummary::modelsummary(...,
+                             stars = T,
+                             add_rows = rows,
+                             coef_rename = cm,
+                             gof_omit = "R.*|A.*|B.*",
+                             coef_omit = "(Intercept)")# %>%
+    #kableExtra::row_spec(row = 1, bold = T)
+}
 
 # coeficient plot defaults
 modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)", coef_map = cm) +

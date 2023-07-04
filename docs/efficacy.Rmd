@@ -1819,17 +1819,19 @@ mes_termslog <- glm(efficacy ~ log(dictionary_terms + 1),
 mes_terms_bluebooklog <- glm(efficacy ~ log(dictionary_terms + 1) + log(Total_Legal_Citations + 1),
            data = d )
 
-models <- list(mes_terms , mes_bluebook , mes_terms_bluebook,
-               mes_termslog , mes_bluebooklog, mes_terms_bluebooklog)
+models <- list(#mes_terms , mes_bluebook ,
+  mes_terms_bluebook,
+               #mes_termslog , mes_bluebooklog,
+  mes_terms_bluebooklog)
 
 rows <- tibble(
   term = c("Dependent Variable"),
   `1` = "Efficacy",
-   `2` = "Efficacy",
-  `3` = "Efficacy",
-  `4` = "Efficacy",
-  `5` = "Efficacy",
-  `6` = "Efficacy"
+   `2` = "Efficacy"#,
+#  `3` = "Efficacy",
+#  `4` = "Efficacy",
+#  `5` = "Efficacy",
+#  `6` = "Efficacy"
 )
 
 attr(rows, 'position') <- c(0)
@@ -1874,17 +1876,19 @@ mes_termslog <- glm(efficacy ~ log(dictionary_terms + 1),
 mes_terms_bluebooklog <- glm(efficacy ~ log(dictionary_terms + 1) + log(Total_Legal_Citations + 1),
            data = d, family = "poisson" )
 
-models <- list(mes_terms , mes_bluebook , mes_terms_bluebook,
-               mes_termslog , mes_bluebooklog, mes_terms_bluebooklog)
+models <- list(#mes_terms , mes_bluebook ,
+  mes_terms_bluebook,
+               #mes_termslog , mes_bluebooklog,
+  mes_terms_bluebooklog)
 
 rows <- tibble(
   term = c("Dependent Variable"),
   `1` = "Efficacy",
-   `2` = "Efficacy",
-  `3` = "Efficacy",
-  `4` = "Efficacy",
-  `5` = "Efficacy",
-  `6` = "Efficacy"
+   `2` = "Efficacy"#,
+#  `3` = "Efficacy",
+#  `4` = "Efficacy",
+#  `5` = "Efficacy",
+#  `6` = "Efficacy"
 )
 
 attr(rows, 'position') <- c(0)

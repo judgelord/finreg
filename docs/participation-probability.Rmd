@@ -157,7 +157,7 @@ save(models, rows,
 
 #### Predicted probabibility of commenting by bank type
 
-```{r mp-FDIC-predict, fig.height=2.5, fig.width=4.5}
+```{r mp-FDIC-predict, fig.height=2.5, fig.width=6}
 # mp-FDIC-predict
 
  # A data frame of values at which to estimate probabilities:
@@ -657,6 +657,7 @@ modelsummary(models)
  
  # modelplot(mpCompustat_naics)
 
+save(models, rows, file = here::here("models", "mpCompustat.Rdata"))
 ```
 
 #### Predicted probabilites by market cap
