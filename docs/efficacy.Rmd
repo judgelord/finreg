@@ -1366,7 +1366,7 @@ p <- e %>%
   geom_smooth(method = "lm"
   ) + 
   labs(x = "Assets (Millions USD)",
-       y = "Words in Comment\nAdded to Final Rule", 
+       y = "Words from Comment\nAdded to Final Rule", 
        title = "Nonprofits")
 
 p
@@ -1385,7 +1385,7 @@ p <- e %>%
   geom_smooth(method = "lm"
   ) + 
   labs(x = "Assets (Millions USD)",
-       y = "Words in Comment\nAdded to Final Rule", 
+       y = "Words from Comment\nAdded to Final Rule", 
        title = "Credit Unions")
 
 p
@@ -1410,7 +1410,7 @@ p <- e %>%
   ) +
   #geom_smooth(color = "light blue", formula=lm(y ~ poly(x, 3))) + 
   labs(x = "Market Capitalization (Millions USD)",
-       y = "Words in Comment\nAdded to Final Rule",
+       y = "Words from Comment\nAdded to Final Rule",
        title = "Publicly-traded Companies")
 
 p
@@ -1431,7 +1431,7 @@ p <- e %>%
   geom_smooth(method = "lm" ) + 
   #geom_smooth() + 
   labs(x = "Assets (Millions USD)",
-       y = "Words in Comment\nAdded to Final Rule", 
+       y = "Words from Comment\nAdded to Final Rule", 
        title = "Banks")
 
 p
@@ -1457,7 +1457,7 @@ p <- e %>%
   geom_smooth(method = "lm"
   ) + 
   labs(x = "Mean PAC Contribution (Thousands USD)",
-       y = "Words in Comment\nAdded to Final Rule",
+       y = "Words from Comment\nAdded to Final Rule",
        title = "Campaign Donors")
 
 p
@@ -1493,7 +1493,7 @@ NP <- e %>%
   geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,10000), expand = c(0,0)) +
   labs(x = "Assets (Millions USD)",
-       y = "Words in Comment\nAdded to Final Rule", 
+       y = "Words from Comment\nAdded to Final Rule", 
        title = "Nonprofits")
 
 
@@ -1516,7 +1516,7 @@ IA <- e %>%
   geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,10000), expand = c(0,0)) +
   labs(x = "Assets (Millions USD)",
-       y = "Words in Comment\nAdded to Final Rule", 
+       y = "Words from Comment\nAdded to Final Rule", 
        title = "Industry Associations")
 
 # Credit Unions
@@ -1545,7 +1545,7 @@ CU <- e %>%
   geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,1000), expand = c(0,0)) +
   labs(x = "Assets (Millions USD)",
-       y = "Words in Comment\nAdded to Final Rule", 
+       y = "Words from Comment\nAdded to Final Rule", 
        title = "Credit Unions")
 
 PTC <- e %>% 
@@ -1567,7 +1567,7 @@ PTC <- e %>%
   geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
   scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,5000), expand = c(0,0)) +
   labs(x = "Market Capitalization (Millions USD)",
-       y = "Words in Comment\nAdded to Final Rule", 
+       y = "Words from Comment\nAdded to Final Rule", 
        title = "Publicly-traded Companies")
   
 FDIC_Banks <- e %>% 
@@ -1594,7 +1594,7 @@ FDIC_Banks <- e %>%
                      lim = c(10,5000), 
                      expand = c(0,0)) +
   labs(x = "Assets (Millions USD)",
-       y = "Words in Comment\nAdded to Final Rule", 
+       y = "Words from Comment\nAdded to Final Rule", 
        title = "Banks") 
 
 NP
@@ -1634,7 +1634,7 @@ p <- e %>%
   geom_smooth(method = "lm"
   ) + 
   labs(x = "Legal Sophistication",
-       y = "Words in Comment\nAdded to Final Rule") 
+       y = "Words from Comment\nAdded to Final Rule") 
 
 p
 
@@ -1654,7 +1654,7 @@ p <- e %>%
   geom_smooth(method = "lm"
   ) + 
   labs(x = "Technical Terms",
-       y = "Words in Comment\nAdded to Final Rule") 
+       y = "Words from Comment\nAdded to Final Rule") 
 
 p
 
@@ -2459,7 +2459,7 @@ plot(med.lob.4, main = "Lobbying Expenditure",
 
 ### ACME 
 
-```{r mediation-4way-acme, fig.width=4.5, fig.height=1.65}
+```{r mediation-4way-acme, fig.width=4, fig.height=1.65}
 #mediation-4way-acme
 extract_acme <- function(x){
  tibble(  
@@ -2596,7 +2596,7 @@ plot(med.lob.4, main = "Lobbying Expenditure",
 
 ### ACME including 0-dolar PAC 
 
-```{r mediation-4wayNo0-acme, fig.width=6.5, fig.height=1.75}
+```{r mediation-4wayNo0-acme, fig.width=5.5, fig.height=1.75}
 #mediation-4way-acme
 
 extract_acme(med.lob.4)

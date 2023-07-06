@@ -569,6 +569,7 @@ asset_counts %>%
        x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
   
 asset_counts %>% 
+  filter(marketcap_b > .001) %>% 
   ggplot() + 
   aes(x = marketcap_b, fill = five) + 
   geom_density(alpha = .5, color = NA) + 
