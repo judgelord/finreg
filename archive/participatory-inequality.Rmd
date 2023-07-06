@@ -18,7 +18,7 @@ bibliography: '`r here::here("assets/finreg.bib")`'
 biblio-style: '`r here::here("assets/apsr.bst")`'
 ---
 
-```{r, echo=F, message=F, warning=F}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 source(here::here("code/setup.R"))
 
 # overide defaults 
