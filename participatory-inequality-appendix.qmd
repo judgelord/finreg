@@ -416,16 +416,16 @@ knitr::include_graphics(here::here(c(
 
 \clearpage
 
-
+\blandscape
 ```{r}
 #| label: "tbl-mediation-table"
 #| tbl-cap: "Models for Mediation Analysis"
 # load(here::here("models", "models.m.Rdata")) # FIXME
 load(here::here("models", "models.m4No0.Rdata"))
 
-modelsummary(models.m4No0, notes = "") 
+modelsummary(models.m4No0, notes = "")
 ```
-
+\elandscape
 
 \clearpage
 

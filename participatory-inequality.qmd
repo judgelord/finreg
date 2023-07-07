@@ -5,6 +5,12 @@ format:
   # docx: 
       keep-tex: false
       filters: [citeproc.lua, wordcount.lua] # https://github.com/andrewheiss/quarto-wordcount
+      #below indented is steve's attempt to get a sideways table, will delete if doens't work
+      include-in-header: 
+        text: |
+          \usepackage{lscape}
+          \newcommand{\blandscape}{\begin{landscape}}
+          \newcommand{\elandscape}{\end{landscape}}
 linestretch: 1.5
 indent: true
 number-sections: true
