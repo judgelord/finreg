@@ -3,7 +3,11 @@
 
 # Data collection and processing {#collection}
 
-@tbl-master-table and @fig-docket-table show the status of data collection and processing. We have yet to attempt to match comments on rules by the OCC and FDIC to organizations with asset data. These comments will be included in the above analysis shortly. To match comments to organizations found in various databases, we first extract entity names from the text or from comment metadata where available. We then use a custom probabilistic matching algorithm that was iteratively built to correctly match organizations in these data using a combination of term-frequency times inverse document frequency (TF-IDF) and Jaccard distance. For each commenter, we start with the most uncommon token (word) in the entity name string and search for names in each dataset that have that token. For example, if Klamath First Federal Bank submitted a comment, the algorithm first looks for names with the token "Klamath.". We then rank the resulting candidate matches using a modified Jaccard index that scores each token in the commenter's name that matches a token in the candidate name in inverse proportion to the token's frequency in the commenter dataset (normalizing by the sum of the inverse frequencies of all the tokens in the commenter's name, matching or otherwise) so that 'more informative' words contribute more to the 'match score. We then set a threshold match score that, upon inspection, yields correct matches. Finally, we inspect all matches that occurred ten times or more and a sample of others and implement a custom set of corrections.
+@tbl-master-table and @fig-docket-table show the status of data collection and processing. 
+<!---
+We have yet to attempt to match comments on rules by the OCC and FDIC to organizations with asset data. These comments will be included in the above analysis shortly. NB, we've included these now
+--->
+To match comments to organizations found in various databases, we first extract entity names from the text or from comment metadata where available. We then use a custom probabilistic matching algorithm that was iteratively built to correctly match organizations in these data using a combination of term-frequency times inverse document frequency (TF-IDF) and Jaccard distance. For each commenter, we start with the most uncommon token (word) in the entity name string and search for names in each dataset that have that token. For example, if Klamath First Federal Bank submitted a comment, the algorithm first looks for names with the token "Klamath.". We then rank the resulting candidate matches using a modified Jaccard index that scores each token in the commenter's name that matches a token in the candidate name in inverse proportion to the token's frequency in the commenter dataset (normalizing by the sum of the inverse frequencies of all the tokens in the commenter's name, matching or otherwise) so that 'more informative' words contribute more to the 'match score. We then set a threshold match score that, upon inspection, yields correct matches. Finally, we inspect all matches that occurred ten times or more and a sample of others and implement a custom set of corrections.
 
 ```{=html}
 <!--As noted, the data we use in our analysis is the subset of all comments that match an organization with one or more types of wealth data.
@@ -69,13 +73,15 @@ knitr::include_graphics(here::here("figs/nonprofit-density-by-section-1.png"))
 
 ## Non-profit revenue
 
-@fig-commenters-noncommenters-revenue shows that the relationship between assets and commenting shown in Figure @fig-commenters-noncommenters also appears when we look at revenue rather than assets. Indeed the relationship between revenue and commenting is much stronger than the relationship between assets and commenting. We focus on assets in the body of the text because it is more comparable to wealth measures from for-profit organizations.
+@fig-commenters-noncommenters-revenue shows that the relationship between assets and commenting shown in  @fig-commenters-noncommenters also appears when we look at revenue rather than assets. Indeed the relationship between revenue and commenting is much stronger than the relationship between assets and commenting. We focus on assets in the body of the text because it is more comparable to wealth measures from for-profit organizations.
 
 ```{r}
 #| label: "fig-commenters-noncommenters-revenue"
 #| fig-cap: "Revenue of Non-profits that Did and Did Not Comment"
 #| layout-ncol: 2 
-#| fig-subcap: \phantomcaption
+#| fig-subcap: 
+#| - ""
+#| - ""
 knitr::include_graphics(here::here(c(
   "figs/nonprofit-density-2.png",
   "figs/ind-assoc-density-2.png")))
@@ -83,7 +89,7 @@ knitr::include_graphics(here::here(c(
 
 ## Non-profit volunteers
 
-@fig-assets-vol shows that the a non-profit's assets and the number of volunteer it has are not especially correlated for the sample of organizations that commented on a Dodd-Frank rule. This offers further evidence that the relationship between wealth and lobbying success we observe should not be interpreted as larger membership organizations being more successful. Rather, it is wealthy organizations, regardless of membership that enjoy success rulemaking.
+@fig-assets-vol shows that the a non-profit's assets and the number of volunteers it has are not especially correlated for the sample of organizations that commented on a Dodd-Frank rule. This offers further evidence that the relationship between wealth and lobbying success we observe should not be interpreted as larger membership organizations being more successful. Rather, it is wealthy organizations, regardless of membership that enjoy success rulemaking.
 
 ```{r}
 #| label: "fig-assets-vol"
@@ -103,13 +109,17 @@ knitr::include_graphics(here::here("figs/efficacyXvol-2.png"))
 
 ## Histograms
 
-Figures @fig-commenters-noncommenters-counts, @fig-FDIC-density-by-class, and @fig-opensecrets-count present histograms of wealth distributions by whether an organization commented on a Dodd-Frank rule.
+Figures [-@fig-commenters-noncommenters-counts], [-@fig-FDIC-density-by-class], and [-@fig-opensecrets-count] present histograms of wealth distributions by whether an organization commented on a Dodd-Frank rule.
 
 ```{r}
 #| label: "fig-commenters-noncommenters-counts"
 #| fig-cap: "Financial Resources of Organizations that Did and Did Not Comment"
 #| layout-ncol: 2 
-#| fig-subcap: \phantomcaption
+#| fig-subcap: 
+#| - ""
+#| - ""
+#| - ""
+#| - ""
 knitr::include_graphics(here::here(c(
   "figs/nonprofit-count-1.png",
   "figs/creditunion-count-1.png",
@@ -132,7 +142,12 @@ When we look within categories of banks, we see that the wealthier banks within 
 #| label: "fig-FDIC-density-by-class"
 #| fig-cap: "Financial Resources of Banks that Did and Did Not Comment"
 #| layout-ncol: 2 
-#| fig-subcap: \phantomcaption
+#| fig-subcap: 
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+
 knitr::include_graphics(here::here(c(
   "figs/FDIC-count-by-class-1.png",
   "figs/FDIC-count-by-class-2.png",
@@ -146,7 +161,9 @@ knitr::include_graphics(here::here(c(
 #| label: "fig-opensecrets-count"
 #| fig-cap: "Political Spending of Organizations that Did and Did Not Comment"
 #| layout-ncol: 2 
-#| fig-subcap: \phantomcaption
+#| fig-subcap: 
+#| - ""
+#| - ""
 knitr::include_graphics(here::here(c(
   "figs/opensecrets-count-1.png",
   "figs/opensecrets-lobbying-count-1.png")))
@@ -160,7 +177,13 @@ Note that commenting on *more rules* is not the same as submitting *more comment
 #| label: "fig-number-of-dockets"
 #| fig-cap: "Number of Dockets on Which Each Type of Organization Commented"
 #| layout-ncol: 2 
-#| fig-subcap: \phantomcaption
+#| fig-subcap: 
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+#| - ""
 knitr::include_graphics(here::here(c(
     "figs/nonprofit-rules-1.png",
     "figs/ind-assoc-rules-1.png",
@@ -174,7 +197,13 @@ knitr::include_graphics(here::here(c(
 #| label: "fig-dockets-percentile-five"
 #| fig-cap: "Frequent and Infrequent Commenters (By the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
 #| layout-ncol: 2 
-#| fig-subcap: \phantomcaption
+#| fig-subcap: 
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+#| - ""
 knitr::include_graphics(here::here(c(
     "figs/nonprofit-rules-2.png",
     "figs/ind-assoc-rules-2.png",
@@ -255,7 +284,7 @@ modelsummary(models, notes = "Reference category = savings associations") # %>% 
 
 ## The Odds of Commenting by Political Spending
 
-@fig-mp-opensecrets shows the results of logit models predicting the log odds of commenting on a Dodd-Frank rule by each organization's average political action committee contributions (model 4 in @tbl-mp-opensecrets-table). These models show that organizations that spend more on political campaigns are significantly more likely to comment.
+@fig-mp-opensecrets (@tbl-mp-opensecrets-table) shows the results of logit models predicting the log odds of commenting on a Dodd-Frank rule by each organization's average or total political action committee contributions. These models show that organizations that spend more on political campaigns are significantly more likely to comment.
 
 ```{r}
 #| label: "fig-mp-opensecrets"
@@ -310,8 +339,14 @@ Our findings on wealth technical sophistication (H5) hold even with an alternati
 ```{r}
 #| label: "fig-assets-terms-legal"
 #| layout-ncol: 2 
-#| fig-subcap: \phantomcaption
 #| fig-cap: "Amount of Legal Language by Assets (Among Comments from Banks on Dodd-Frank Rules)"
+#| fig-subcap: 
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+
 knitr::include_graphics(here::here(c(
   ## Nonprofits
   "figs/boxplot-assets-legal-2.png",
@@ -405,7 +440,12 @@ Note that while these assumptions are possible, our estimation is not identified
 ```{r}
 #| label: "fig-mediation"
 #| layout-ncol: 2 
-#| fig-subcap: \phantomcaption
+#| fig-subcap:
+#| - ""
+#| - ""
+#| - ""
+#| - ""
+#| - ""
 #| fig-cap: "Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as a Proposed Mediators Between Wealth and Lobbying Success"
 knitr::include_graphics(here::here(c(
   "figs/mediation-marketcap-lobbying-1.png",
@@ -422,7 +462,8 @@ knitr::include_graphics(here::here(c(
 #| tbl-cap: "Models for Mediation Analysis"
 # load(here::here("models", "models.m.Rdata")) # FIXME
 load(here::here("models", "models.m4No0.Rdata"))
-
+rows[,2] <- "PAC Spending"
+rows[,3] <- "LDA Spending"
 modelsummary(models.m4No0, notes = "")
 ```
 \elandscape
@@ -442,7 +483,7 @@ Our algorithm works in the following steps: Match each comment to the proposed r
 For the proposed-final pair, tokenize the proposed and final rule into sentences and then remove the text of the proposed rule from the final rule.\
 Re-tokenize both the proposed and final rules into 10-grams. Find the overlap between proposed and final rules, keeping track of the position index of the 10-grams. 10-grams that are consecutive in the proposed rule should be treated as consecutive n-grams for the purpose of counting consecutive words. In this manner, two consecutive 10-grams would have a sequence length of 11 and not 20.
 
-This algorithm has a few notable strengths. First, it focuses on text that is both legally binding and the explanation for why it is legally binding. Second, the results are easy to interpret: efficacy is simply the number of words in a comment and its corresponding final rule. (Third, comments that score highly... .) There are, however, several drawbacks. Notably, not all sequences in both comments and final rules are equally influential. Second, when there are multiple proposed or final rules, the results of the algorithm are
+This algorithm has a few notable strengths. First, it focuses on text that is both legally binding and the explanation for why it is legally binding. Second, the results are easy to interpret: efficacy is simply the number of words in a comment and its corresponding final rule. There are, however, several drawbacks. Notably, not all sequences in both comments and final rules are equally influential. Second, when there are multiple proposed and final rules, the algorithm relies on the date a comment is submitted to match the comment to the right proposed-final pair.  This is problematic when a comment is written about one proposed rule but submitted after a subsequent proposed rule is released. 
 
 Below, we shed light on why several comments have efficacy values that are particularly high.
 
@@ -452,7 +493,7 @@ This letter is unusual in that its members (Americans for Limited Government, Ry
 
 2)  https://www.sec.gov/comments/s7-33-10/s73310-35.pdf, Efficacy score = 10131
 
-This is the same letter as above, submitted twice to the SEC. Reassuringly it has the same efficacy!
+This is the same letter as above, submitted twice to the SEC although recorded by the SEC as a separate comment. Reassuringly it has the same efficacy!
 
 3)  https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275, Efficacy score = 7593
 
