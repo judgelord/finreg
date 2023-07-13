@@ -255,7 +255,7 @@ modelsummary(models, notes = "Reference category = savings associations") # %>% 
 
 ## The Odds of Commenting by Political Spending
 
-@fig-mp-opensecrets (TODO @tbl-mp-opensecrets-table) shows the results of logit models predicting the log odds of commenting on a Dodd-Frank rule by each organization's average or total political action committee contributions. These models show that organizations that spend more on political campaigns are significantly more likely to comment.
+@fig-mp-opensecrets shows the results of logit models predicting the log odds of commenting on a Dodd-Frank rule by each organization's average political action committee contributions (model 4 in @tbl-mp-opensecrets-table). These models show that organizations that spend more on political campaigns are significantly more likely to comment.
 
 ```{r}
 #| label: "fig-mp-opensecrets"
