@@ -11,7 +11,9 @@ The above linked PDF is genered by `participatory-inequality.Rmd`, which require
 
 ## replication+ files:
 
-- [Wealth and participation](https://judgelord.github.io/finreg/participation) 
+- [Wealth and participation descriptives](https://judgelord.github.io/finreg/participation) 
+- [Wealth and probability of participation](https://judgelord.github.io/finreg/participation-probability)
+- [Wealth and frequency of participation descriptives](https://judgelord.github.io/finreg/participation-frequency)
 - [Wealth, sophistication, and efficacy](https://judgelord.github.io/finreg/efficacy)
 
 These include
