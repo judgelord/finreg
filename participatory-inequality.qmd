@@ -18,7 +18,7 @@ indent: true
 number-sections: true
 cap-location: top
 runningtitle: Inequality in Administrative Democracy
-nonblind: true
+nonblind: false
 runningauthor: Carpenter et al.
 author:
   - name: Daniel P. Carpenter
@@ -218,6 +218,8 @@ DJL: figures often need to be self-contained for journals-->
 #| fig-cap: "Dodd-Frank Act Implementing Actions by Agency"
 #| cache: FALSE
 #| echo: FALSE
+#| out-extra: "\\floatnote{Counts of regulatory acts by agency and by year. Regulatory acts include ANPRM, NPRM, Interim Rule, and Final Rules. Only actions implementing Dodd-Frank are included. Note that one complete rulemaking typically has two and sometimes more associated acts}"
+
 knitr::include_graphics(here::here("figs/actions-1.png"))
 ```
 
@@ -252,6 +254,7 @@ These procedures resulted in a dataset of `r n_orgs` distinct organizations that
 #| label: fig-org-types
 #| fig-cap: "Number of Organizations by Type and Agency to which they Commented"
 #| out.width: 80%
+#| out-extra: "\\floatnote{Counts of distinct organizations that have submitted comments to each financial regulator by organizational type. These counts reflect only those comments that have been matched using organization's name. Note the lowest match rate by agency (at the CFPB) still exceeds 20%. See Appendix Figure 13.}"
 #  Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)
 knitr::include_graphics(here::here("figs/org_count_type-2.png"))
 ```
@@ -260,6 +263,7 @@ knitr::include_graphics(here::here("figs/org_count_type-2.png"))
 #| label: fig-comment-types
 #| fig-cap: "Number of Comments by Authoring Organization Type and Agency"
 #| out-width: 80%
+#| out-extra: "\\floatnote{Counts of distinct organizations that have submitted comments to each financial regulator by organizational type. These counts reflect only those comments that have been matched using organization's name. Details about match rate in Appendix Figure 13.}"
 knitr::include_graphics(here::here("figs/org_count_type-1.png"))
 ```
 
