@@ -116,11 +116,12 @@ long %>%
   scale_fill_viridis_d() +
   labs(fill = "Document Type",
        x = "", 
-       y = "",
-       caption = "Dodd-Frank regulatory actions from  the Consumer Financial Protection Bureau (CFPB),
-Commodity Futures Trading Commission (CFTC), Federal Deposit Insurance Corporation (FIDC), 
-Federal Reserve (FRS), National Credit Union Administration (NCUA), 
-Office of the Comptroller of the Currency (OCC), and Securities and Exchange Commission (SEC)") + 
+       y = ""#,
+#        caption = "Dodd-Frank regulatory actions from  the Consumer Financial Protection Bureau (CFPB),
+# Commodity Futures Trading Commission (CFTC), Federal Deposit Insurance Corporation (FIDC), 
+# Federal Reserve (FRS), National Credit Union Administration (NCUA), 
+# Office of the Comptroller of the Currency (OCC), and Securities and Exchange Commission (SEC)"
+) + 
   theme_minimal() +
   theme(axis.text.x = element_text(hjust = .7, angle = 60),
         panel.grid.major.x = element_blank(),
