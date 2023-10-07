@@ -1,0 +1,6 @@
+models/**
+data/**
+figs/**
+/models/
+/data/
+/figs/
