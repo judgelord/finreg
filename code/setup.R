@@ -36,9 +36,9 @@ to_install <- c(requires %in% rownames(installed.packages()) == FALSE)
 install.packages(c(requires[to_install], "NA"), repos = "https://cloud.r-project.org/" )
 rm(requires, to_install)
 
-if(!"equatiomatic" %in% rownames(installed.packages())){
-  remotes::install_github("datalorax/equatiomatic")
-}
+# if(!"equatiomatic" %in% rownames(installed.packages())){
+#   remotes::install_github("datalorax/equatiomatic")
+# }
 
 library(bookdown)
 library(fixest)

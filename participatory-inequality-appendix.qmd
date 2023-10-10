@@ -14,23 +14,25 @@ Practically, acquiring wealth information for all commenters---including thousan
 #| label: "tbl-master-table"
 #| tbl-cap: "Comments, Comment Attachments, Comment Sophistication, Comment Lobbying Success, and Commenter Wealth Data on Rules Implementing the Dodd-Frank Act"
 #| fig.pos: "b"
-#| out.extra: ""
-#master-table
+#| out-extra: "\\floatnote{Wealth data are only available for comments linked to organizations.}"
+
+
 # source("code/setup.R")
 
 read_csv(here::here("data", "master_tables_status.csv")) %>% 
   mutate(attachments_table = replace_na(attachments_table, 0)) %>% 
   rename(`Attachments` = attachments_table,
-         `Success and\nSophistication Measures` =`term counts`,
+         `Sophistication Measures` =`term counts`,
          Comments = `comments table`,
-         Agency = agency_acronym) %>% 
+         Agency = agency_acronym) %>%
+  mutate(`Success Measures` = `Sophistication Measures`) %>% 
   left_join(
     commenter_assets %>% 
       drop_na(best_match_name) %>% 
-      count(Agency, name = "Wealth Measures") 
+      count(Agency, name = "Wealth Data") 
     ) %>% 
-  mutate(`Wealth Measures` = replace_na(`Wealth Measures`, 0)) %>%
-  drop_na(Agency) %>% 
+  mutate(`Wealth Data` = replace_na(`Wealth Data`, 0) ) %>%
+  drop_na(Agency) %>% #kablebox()
   knitr::kable(#table.attr = 'data-quarto-disable-processing="true"',
     booktabs = T,
     align = "l",
@@ -58,7 +60,7 @@ knitr::include_graphics(here::here("figs/docket-table-1.png"))
 
 ## Types of Non-Profits
 
-@fig-commenters-noncommenters-section shows that the relationship between assets and commenting shown in @fig-commenters-noncommenters also appears when we look at different types of non-profits. Specifically, we focus on the difference between business leagues - 501(c)(6)s - and charities - 501(c)(3)s. The difference between the groups means are statistically significant using a one-way ANOVA, although we note that in the six pairwise t-tests between all the groups the differences between the 501(c)(6)s that commented and the 501(c)(3) that did not and the 501(c)(6)s that commented and those that did not were not statistically significant.
+@fig-commenters-noncommenters-section shows that the relationship between assets and commenting shown in @fig-commenters-noncommenters also appears when we look at different types of non-profits. Specifically, we focus on the difference between business leagues --- 501(c)(6)s --- and charities --- 501(c)(3)s. The difference between the groups means are statistically significant using a one-way ANOVA, although we note that in the six pairwise t-tests between all the groups the differences between the 501(c)(6)s that commented and the 501(c)(3) that did not and the 501(c)(6)s that commented and those that did not were not statistically significant.
 
 ```{r}
 #| label: "fig-commenters-noncommenters-section"

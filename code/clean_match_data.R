@@ -1,6 +1,7 @@
 source("code/setup.R")
 library(tidyverse)
 
+# old data for frs because new matching method did not work so well
 d_frs <- here("Data", "finreg_commenter_covariates_df_20230421.csv") %>% read_csv() %>% filter(comment_agency == "FRS")
 
 
@@ -17,15 +18,16 @@ d_raw <- here(#"data", "match_data", # old in match_data
   #str_remove("finreg") %>% # up a level to root
   read_csv()
 
+d_raw %>% filter(comment_agency == "FDIC") %>% select(comment_org_name, comment_url, contains("best_match_name")) %>% distinct() %>%
+  add_count(comment_org_name, sort = T) %>% write_csv(here("data", "FDIC-comments.csv"))
+
 
 #TODO WE NEED COMMENT TITLE BACK IN THE FRS COMMENTS TABLE
-d_raw %>% filter(comment_agency == "FRS") %>% drop_na(`CIK-orgMatch:CIK`) %>% select(contains("name")) %>% kablebox()
+#d_raw %>% filter(comment_agency == "FRS") %>% drop_na(`CIK-orgMatch:CIK`) %>% select(contains("name")) %>% kablebox()
 
 d_raw %>% filter(comment_agency == "FRS") %>%
-  drop_na(`CIK-orgMatch:CIK`) %>%
+  #drop_na(`CIK-orgMatch:CIK`) %>%
   select(contains("name")) %>% write_csv(here("data", "inspect", "FRS-CIK-matches.csv"))
-
-comments %>% filter(agency_acronym == "FRS") %>% drop_na(`organization`) %>% kablebox()
 
 d_raw %<>%  filter(comment_agency != "FRS")
 
@@ -35,7 +37,16 @@ d_raw %<>% full_join(d_frs)
 d_raw %<>%
   select(-`...1`)
 
+
+# ADD HAND MATCHES
+d_raw  %>%
+  filter(str_dct(comment_org_name, "faith leader"))
+
+
+
 #FIXME best match vs org match only (org match just uses data from org metadata, not also using "submitter" metadata)
+d_raw %>% select(contains("bestMatch"))
+
 names(d_raw) <- str_replace_all(names(d_raw), "orgMatch", "bestMatch")
 
 d_raw %>% count(comment_agency, name = "covariates_20230421")
@@ -44,6 +55,10 @@ d_raw %>% count(comment_agency, name = "covariates_20230421")
 d_raw %>% filter( `nonprofits_resources-bestMatch:best_match_name` != tolower(`nonprofits_resources-bestMatch:name`)) %>%
   distinct( `nonprofits_resources-bestMatch:best_match_name`, `nonprofits_resources-bestMatch:name`) %>%
   kablebox()
+
+# a bunch of names missing where we have ein because we are only taking high-quality name matches
+d_raw %>% filter(comment_agency == "FDIC")%>% drop_na(`nonprofits_resources-bestMatch:ein`)
+
 
 # credit unions whose names for matching are not their exact names
 d_raw %>% filter( `nonprofits_resources-bestMatch:best_match_name` != str_to_lower(`nonprofits_resources-bestMatch:name`,),
@@ -76,11 +91,40 @@ d_raw %<>% mutate(
   best_match_name = coalesce(best_match_name_corp, best_match_name_nonprofit, best_match_name_crp)
 )
 
+# READ IN HAND-VALIDATED MATCHES
+
+hand_match <- read_csv(here::here("data", "hand_match.csv"))
+
+hand_match %<>% mutate(hand_match = tolower(hand_match)) %>%  distinct(comment_org_name, hand_match)
+
+# unique hand matches? CANT HAVE MORE THAN ONE
+hand_match %>% count(comment_org_name, sort = T)
+
+hand_match %<>% mutate(hand_match = coalesce(hand_match, "na"))
+
+hand_match %>% filter(hand_match == "na")
+
+# JOIN IN HAND MATCHES
+d_raw %<>% left_join(hand_match)
+
+# HOW MANY
+d_raw %>% drop_na(hand_match) %>% select(comment_org_name, best_match_name, hand_match)
+
+# TAKE A LOOK AT A FEW MORE
+d_raw %>% drop_na(hand_match) %>% select(comment_org_name, best_match_name, hand_match) %>% kablebox()
+
+
+# REPLACE BEST MATCH WITH HAND MATCH
+d_raw %<>% mutate(best_match_name = coalesce(hand_match, best_match_name))
+
+d_raw %>% count(best_match_name, sort = T)
+d_raw %>% filter(hand_match == "NA")
+
 
 # ID unmatched credit unions
 unmatched_credit_unions <- d_raw %>% filter(str_detect(comment_org_name, "credit union"),
                  is.na(`CreditUnions-bestMatch:best_match_name`)) %>%
-  select(comment_org_name, contains("best_match_name")) %>%
+  select(comment_org_name, hand_match, contains("best_match_name")) %>%
   distinct()
 
 unmatched_credit_unions  %>% kablebox()
@@ -95,7 +139,9 @@ d_raw %<>% mutate(best_match_name = ifelse(str_detect(comment_org_name, "credit 
 
 
 # EXACT MATCHES
-d_raw %>% filter(exact_match_present == 1, best_match_name != comment_org_name, is.na(best_match_name_crp)) %>%
+d_raw %>% filter(exact_match_present == 1,
+                 best_match_name != comment_org_name,
+                 is.na(best_match_name_crp)) %>%
   select(best_match_name, contains("name")) %>%
   distinct() %>%
   kablebox()
@@ -122,16 +168,18 @@ d_raw  %>% filter(exact_match_present == 1,
 
 
 
+
 # set exact matches to the comment string, unless the exact match is from opensecrets
 d_raw %<>% mutate(best_match_name = ifelse(#exact_match_present == 1 & comment_org_name != `opensecrets_resources_jwVersion-bestMatch:best_match_name`,
-                                           exact_match_present == 1 & is.na(best_match_name_crp),
+                                           is.na(hand_match) & exact_match_present == 1 & is.na(best_match_name_crp),
                                            comment_org_name,
                                            best_match_name))
 
 
-
+# odd
 exact_matches_odd <- d_raw  %>%
   filter(exact_match_present == 1,
+         is.na(hand_match),
                   is.na(best_match_name_crp),
                   is.na(best_match_name_corp),
                   is.na(best_match_name_nonprofit)
@@ -210,7 +258,7 @@ write_csv(matched_multiple_rssd, here("data", "inspect", "matched_multiple_rssd.
 
 
 # INSPECT CIK
-cik <- d_raw %>% group_by(comment_url) %>%
+d_raw %>% group_by(comment_url) %>%
   mutate(cik_count = c(`compustat_resources-bestMatch:cik`,
                         `SEC_Institutions-bestMatch:CIK`,
                         `CIK-bestMatch:CIK`) %>%
@@ -246,7 +294,7 @@ d_raw %>%
 
 
 # select only best matches
-d_best <- d_raw %>% select(best_match_name, best_match_name_crp,  best_match_name_nonprofit,
+d_best <- d_raw %>% select(hand_match, best_match_name, best_match_name_crp,  best_match_name_nonprofit,
                            contains("orgMatch:best_match_name"),
                            contains("bestMatch:best_match_name"))
 
@@ -277,6 +325,7 @@ d <- d_raw
 d <-  d_raw %>%
   #filter(is_likely_org == 1) %>%
   dplyr::select(
+    hand_match,
     # comment vars
     dplyr::starts_with("docket"),
     dplyr::starts_with("comment"),
@@ -303,6 +352,8 @@ d <-  d_raw %>%
     # # nonprofits
     `nonprofits_resources-bestMatch:ein`
   )
+
+
 
 
 names(d)
@@ -332,7 +383,86 @@ names(d) %<>%  str_remove("-bestMatch:best_match")
 d %>% select(ends_with("name")) %>% names()
 
 
+# POST HOC FIXES FOCUSING ON FDIC DATA
+d %<>%
+  mutate(
+    # CreditUnions_name = case_when(
+    #   str_dct(comment_org_name, "") ~ ""
+    #   ),
+    nonprofits_resources_name = case_when(
+      str_dct(comment_org_name, "richard whiting") ~ "FINANCIAL SERVICES ROUNDTABLE",
+      str_dct(comment_org_name, "FINANCIAL SERVICES ROUNDTABLE") ~ "FINANCIAL SERVICES ROUNDTABLE",
+      str_dct(comment_org_name, "INDEPENDENT COMMUNITY BANKERS") ~ "INDEPENDENT COMMUNITY BANKERS OF AMERICA",
+      str_dct(comment_org_name, "MORTGAGE BANKERS ASSOCIATION") ~ "MORTGAGE BANKERS ASSOCIATION OF AMERICA",
+      str_dct(comment_org_name, "INVESTMENT COMPANY INSTITUTE") ~ "INVESTMENT COMPANY INSTITUTE",
+      str_dct(comment_org_name, "RURAL UTILITIES COOPERATIVE") ~ "NATIONAL RURAL UTILITIES COOPERATIVE FINANCE CORP",
+      str_dct(comment_org_name, "AMERICAN BANKERS ASSOCIATION") ~ "AMERICAN BANKERS ASSOCIATION",
+      TRUE ~ nonprofits_resources_name
+    ),
+    opensecrets_resources_jwVersion_name = case_when(
+      str_dct(comment_org_name, "richard whiting") ~ "Financial Services Roundtable",
+      str_dct(comment_org_name, "Financial Services Roundtable") ~ "Financial Services Roundtable",
+      str_dct(comment_org_name, "Independent Community Bankers") ~ "Independent Community Bankers of America",
+      str_dct(comment_org_name, "American Council Life Insurers") ~ "American Council of Life Insurers",
+      TRUE ~ opensecrets_resources_jwVersion_name
+    ),
+    compustat_resources_name = case_when(
+      str_dct(comment_org_name, "Wells Fargo Bank") ~ "WELLS FARGO & CO",
+      str_dct(comment_org_name, "MARKIT") ~ "MARKIT LTD",
+      str_dct(comment_org_name, "IHS MARKIT") ~ "IHS MARKIT LTD",
+      str_dct(comment_org_name, "FAIR ISAAC") ~ "FAIR ISAAC CORP",
+      str_dct(comment_org_name, "Federated Investors") ~ "FEDERATED INVESTORS INC",
+      TRUE ~ compustat_resources_name
+    ),
+    CIK_name = case_when(
+      str_dct(comment_org_name, "FAIR ISAAC") ~ "FAIR ISAAC CORP",
+      str_dct(comment_org_name, "MARKIT") ~ "MARKIT LTD.",
+      str_dct(comment_org_name, "IHS MARKIT") ~ "IHS MARKIT LTD.",
+      str_dct(comment_org_name, "RURAL UTILITIES COOPERATIVE") ~ "NATIONAL RURAL UTILITIES COOPERATIVE FINANCE CORP",
+      str_dct(comment_org_name, "Federated Investors") ~ "FEDERATED INVESTORS INC /PA/",
+      TRUE ~ CIK_name
+    ),
+    SEC_Institutions_name = case_when(
+      str_dct(comment_org_name, "FAIR ISAAC") ~ "FAIR ISAAC CORP",
+      str_dct(comment_org_name, "Federated Investors") ~ "Federated Investors Inc",
+      TRUE ~ SEC_Institutions_name
+    )
+    )
 
+d %<>%
+  mutate(
+    # CreditUnions_name = case_when(
+    #   str_dct(comment_org_name, "") ~ ""
+    #   ),
+    best_match_name = case_when(
+      str_dct(comment_org_name, "richard whiting") ~ "FINANCIAL SERVICES ROUNDTABLE",
+      str_dct(comment_org_name, "Wells Fargo Bank") ~ "WELLS FARGO & CO",
+      str_dct(comment_org_name, "FINANCIAL SERVICES ROUNDTABLE") ~ "FINANCIAL SERVICES ROUNDTABLE",
+      str_dct(comment_org_name, "INDEPENDENT COMMUNITY BANKERS") ~ "INDEPENDENT COMMUNITY BANKERS OF AMERICA",
+      str_dct(comment_org_name, "MORTGAGE BANKERS ASSOCIATION") ~ "MORTGAGE BANKERS ASSOCIATION OF AMERICA",
+      str_dct(comment_org_name, "INVESTMENT COMPANY INSTITUTE") ~ "INVESTMENT COMPANY INSTITUTE",
+      str_dct(comment_org_name, "RURAL UTILITIES COOPERATIVE") ~ "NATIONAL RURAL UTILITIES COOPERATIVE FINANCE CORP",
+      str_dct(comment_org_name, "AMERICAN BANKERS ASSOCIATION") ~ "AMERICAN BANKERS ASSOCIATION",
+      str_dct(comment_org_name, "richard whiting") ~ "Financial Services Roundtable",
+      str_dct(comment_org_name, "Financial Services Roundtable") ~ "Financial Services Roundtable",
+      str_dct(comment_org_name, "Independent Community Bankers") ~ "Independent Community Bankers of America",
+      str_dct(comment_org_name, "American Council Life Insurers") ~ "American Council of Life Insurers",
+      str_dct(comment_org_name, "MARKIT") ~ "MARKIT LTD",
+      str_dct(comment_org_name, "IHS MARKIT") ~ "IHS MARKIT LTD",
+      str_dct(comment_org_name, "FAIR ISAAC") ~ "FAIR ISAAC CORP",
+      str_dct(comment_org_name, "Federated Investors") ~ "FEDERATED INVESTORS INC",
+      str_dct(comment_org_name, "FAIR ISAAC") ~ "FAIR ISAAC CORP",
+      str_dct(comment_org_name, "MARKIT") ~ "MARKIT LTD.",
+      str_dct(comment_org_name, "IHS MARKIT") ~ "IHS MARKIT LTD.",
+      str_dct(comment_org_name, "RURAL UTILITIES COOPERATIVE") ~ "NATIONAL RURAL UTILITIES COOPERATIVE FINANCE CORP",
+      str_dct(comment_org_name, "Federated Investors") ~ "FEDERATED INVESTORS INC /PA/",
+      str_dct(comment_org_name, "FAIR ISAAC") ~ "FAIR ISAAC CORP",
+      str_dct(comment_org_name, "Federated Investors") ~ "Federated Investors Inc",
+      TRUE ~ best_match_name
+    )
+  )
+
+d %<>% mutate(across(contains("name"), tolower))
 
 
 # 2k --> 3k
@@ -378,7 +508,7 @@ d %<>% mutate(matches = paste0(CIK_name,"-CIK;",
                 str_remove(";NA-SEC"))
 
 ## ????
-d %>% filter(matches == "") %>% drop_na(best_match_name) %>%  select(exact_match_present, matches, contains("name")) %>%
+d %>% filter(matches == "", is.na(hand_match)) %>% drop_na(best_match_name) %>%  select(exact_match_present, matches, contains("name")) %>%
   kablebox( )
 
 d$matches %>% head()
@@ -412,12 +542,60 @@ d %<>% mutate(org_name = best_match_name,
                 best_match_name == opensecrets_resources_jwVersion_name ~ "Other PAC Donor"),
               org_type2 = ifelse(org_type2 == "NA", NA, org_type2))
 
+# make org_type and org_name
+d %<>% mutate(org_name = best_match_name,
+              org_type2 = case_when(
+                is.na(best_match_name) ~ "NA",
+                best_match_name == CreditUnions_name ~ "Credit Union",
+                best_match_name %in% c(FDIC_Institutions_name,
+                                       FFIECInstitutions_name,
+                                       SEC_Institutions_name) ~ "Bank",
+                comment_org_name %in% c(FDIC_Institutions_name,
+                                       FFIECInstitutions_name,
+                                       SEC_Institutions_name) ~ "Bank",
+                best_match_name == best_match_name_corp ~ "Other Company",
+                comment_org_name == CIK_name ~ "Other Company",
+                comment_org_name == compustat_resources_name ~ "Other Company",
+                str_detect(comment_org_name, CreditUnions_name) ~ "Credit Union",
+                str_detect(CreditUnions_name, comment_org_name) ~ "Credit Union",
+                str_detect(best_match_name, CreditUnions_name) ~ "Credit Union",
+                str_detect(best_match_name, "credit union") ~ "Credit Union",
+                best_match_name == best_match_name_nonprofit ~ "Other Nonprofit",
+                comment_org_name == nonprofits_resources_name ~ "Other Nonprofit",
+                best_match_name == opensecrets_resources_jwVersion_name ~ "Other PAC Donor"),
+              org_type2 = ifelse(org_type2 == "NA", NA, org_type2))
+
+
+# edit org_type and org_name based on exact matches
+d %<>% mutate(org_type2 = case_when(
+                best_match_name %in% c(FDIC_resources$NAME |> tolower(),
+                                       sec$Name |> tolower() ) ~ "Bank",
+                best_match_name %in% c(compustat$conm |> tolower()) ~ "Other Company",
+                best_match_name %in% c(creditunions$CU_NAME |> tolower()) ~ "Credit Union",
+                best_match_name %in% c(nonprofit_resources$name |> tolower()) ~ "Other Nonprofit",
+                best_match_name %in% c(opensecrets$orgName |> tolower()) ~ "Other PAC Donor",
+                TRUE ~ org_type2),
+              org_type2 = ifelse(org_type2 == "NA", NA, org_type2))
+
+# edit org_type and org_name based on exact matches
+d %<>% mutate(org_type2 = case_when(
+                hand_match	 %in% c(FDIC_resources$NAME |> tolower(),
+                                       sec$Name |> tolower() ) ~ "Bank",
+                hand_match	 %in% c(compustat$conm |> tolower()) ~ "Other Company",
+                hand_match	 %in% c(creditunions$CU_NAME |> tolower()) ~ "Credit Union",
+                hand_match	 %in% c(nonprofit_resources$name |> tolower()) ~ "Other Nonprofit",
+                hand_match	 %in% c(opensecrets$orgName |> tolower()) ~ "Other PAC Donor",
+                TRUE ~ org_type2),
+              org_type2 = ifelse(org_type2 == "NA", NA, org_type2))
+
 # matched per type / external dataset
 
 d %>% count(org_type2, is.na(best_match_name))
 
 d %>% drop_na(best_match_name) %>% filter(is.na(org_type2)) %>%
-  select(contains("name"))%>% kablebox()
+  select(hand_match, contains("name"))%>% distinct() %>%
+  count(hand_match, sort = T ) %>%
+  kablebox()
 
 
 
@@ -428,6 +606,7 @@ d %>% drop_na(best_match_name) %>% filter(is.na(org_type2)) %>%
 
 d %>% count(org_type2)
 
+d %>% count(is.na(org_type2), comment_agency)
 
 # adjust variable name
 d %<>% mutate(opensecrets_resources_name = opensecrets_resources_jwVersion_name)
@@ -471,8 +650,6 @@ match_data_clean <- d %>%
   # filter(!is.na(best_match_type)) %>%
   distinct()
 
-
-
 # save comment-level match data
 save(match_data_clean, file = here("data", "match_data_clean.Rdata"))
 
@@ -496,6 +673,25 @@ d_raw %>% filter(str_detect(best_match_name_nonprofit, "yale")) %>%
 # nonprofit_resources %>% filter(str_detect(str_to_lower(name), "yale (u|l|c)")) %>%  distinct() %>% kablebox()
 
 
+d %>% filter(comment_agency == "FDIC") %>% drop_na(best_match_name)
+
+d %>% filter(comment_agency == "FDIC") %>% filter(is.na(best_match_name)) %>%
+  count(comment_org_name,  sort = T) %>% kablebox()
+
+d %>% filter(comment_agency == "FDIC")%>%
+  filter(is.na(best_match_name)) %>%
+  drop_na(`nonprofits_resources-bestMatch:ein`)
 
 
+
+
+# NONPROFITS
+nonprofit_resources %>% filter(str_dct(name, "Securities Industry and Financial Markets Association")) %>%
+  select(name, assets) %>% kablebox()
+
+# IN DATA
+d %>% filter(str_dct(best_match_name, "markit")) %>%
+  select(hand_match, contains("best_match")) %>% kablebox()
+
+d_raw %>% filter(comment_agency == "FDIC")%>% filter(is.na(best_match_name)) %>% drop_na(`nonprofits_resources-bestMatch:ein`)
 
