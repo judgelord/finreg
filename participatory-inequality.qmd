@@ -1,19 +1,19 @@
 ---
 format:
-  #docx: default
+  # docx:
   apsr-pdf:
-      fig-pos: 'h'
-      fig-env: "figure"
-  #pdf:
-    #template: assets/article-template.tex
-      keep-tex: true
-      filters: [citeproc.lua, wordcount.lua] # https://github.com/andrewheiss/quarto-wordcount
+  # pdf:
+  #     template: assets/article-template.tex
+    fig-pos: 'h'
+    fig-env: "figure"
+    keep-tex: true
+    filters: [citeproc.lua, wordcount.lua] # https://github.com/andrewheiss/quarto-wordcount
       #below indented is steve's attempt to get a sideways table, will delete if doens't work
-      include-in-header: 
-        text: |
-          \usepackage{lscape}
-          \newcommand{\blandscape}{\begin{landscape}}
-          \newcommand{\elandscape}{\end{landscape}}
+    include-in-header: 
+      text: |
+        \usepackage{lscape}
+        \newcommand{\blandscape}{\begin{landscape}}
+        \newcommand{\elandscape}{\end{landscape}}
 linestretch: 1.5
 indent: true
 number-sections: true
