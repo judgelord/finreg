@@ -341,23 +341,23 @@ modelplot <- function(...) modelsummary::modelplot(..., coef_omit = "(Intercept)
   aes(shape = model)
 
 
-style_mono_light(base_color = "#000000", # "#F2DFCE",
-                 link_color	 = "#0D7680",
-                 inverse_link_color	 = "#FFCFB3",
-                 background_color = "#FFF1E0",
-                 header_background_content_padding_top = "7rem",
-                 table_row_even_background_color = "#FFCFB3",
-                 header_font_google = google_font("Playfair Display"),
-                 text_font_google = google_font("Playfair Display"),
-                 base_font_size = "30px",
-                 text_font_size = "1rem",
-                 code_font_size = "1rem",
-                 header_h1_font_size = "1.5rem",
-                 header_h2_font_size = "1.25rem",
-                 header_h3_font_size = "1.25rem",
-                 padding = "25px",
-                 code_font_google = google_font("Inconsolata")
-)
+# style_mono_light(base_color = "#000000", # "#F2DFCE",
+#                  link_color	 = "#0D7680",
+#                  inverse_link_color	 = "#FFCFB3",
+#                  background_color = "#FFF1E0",
+#                  header_background_content_padding_top = "7rem",
+#                  table_row_even_background_color = "#FFCFB3",
+#                  header_font_google = google_font("Playfair Display"),
+#                  text_font_google = google_font("Playfair Display"),
+#                  base_font_size = "30px",
+#                  text_font_size = "1rem",
+#                  code_font_size = "1rem",
+#                  header_h1_font_size = "1.5rem",
+#                  header_h2_font_size = "1.25rem",
+#                  header_h3_font_size = "1.25rem",
+#                  padding = "25px",
+#                  code_font_google = google_font("Inconsolata")
+# )
 
 options(scipen=999)
 
