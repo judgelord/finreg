@@ -78,8 +78,8 @@ knitr::include_graphics(here::here("figs/nonprofit-density-by-section-1.png"))
 #| fig-cap: "Revenue of Non-profits that Did and Did Not Comment"
 #| layout-ncol: 2 
 #| fig-subcap: 
-#| - ""
-#| - ""
+#| - " "
+#| - " "
 knitr::include_graphics(here::here(c(
   "figs/nonprofit-density-2.png",
   "figs/ind-assoc-density-2.png")))
@@ -114,10 +114,10 @@ Figures [-@fig-commenters-noncommenters-counts], [-@fig-FDIC-density-by-class], 
 #| fig-cap: "Financial Resources of Organizations that Did and Did Not Comment"
 #| layout-ncol: 2 
 #| fig-subcap: 
-#| - ""
-#| - ""
-#| - ""
-#| - ""
+#| - " "
+#| - " "
+#| - " "
+#| - " "
 knitr::include_graphics(here::here(c(
   "figs/nonprofit-count-1.png",
   "figs/creditunion-count-1.png",
@@ -141,10 +141,10 @@ When we look within categories of banks, we see that the wealthier banks within 
 #| fig-cap: "Financial Resources of Banks that Did and Did Not Comment"
 #| layout-ncol: 2 
 #| fig-subcap: 
-#| - ""
-#| - ""
-#| - ""
-#| - ""
+#| - " "
+#| - " "
+#| - " "
+#| - " "
 
 knitr::include_graphics(here::here(c(
   "figs/FDIC-count-by-class-1.png",
@@ -160,8 +160,8 @@ knitr::include_graphics(here::here(c(
 #| fig-cap: "Political Spending of Organizations that Did and Did Not Comment"
 #| layout-ncol: 2 
 #| fig-subcap: 
-#| - ""
-#| - ""
+#| - " "
+#| - " "
 knitr::include_graphics(here::here(c(
   "figs/opensecrets-count-1.png",
   "figs/opensecrets-lobbying-count-1.png")))
@@ -176,12 +176,12 @@ Note that commenting on *more rules* is not the same as submitting *more comment
 #| fig-cap: "Number of Dockets on Which Each Type of Organization Commented"
 #| layout-ncol: 2 
 #| fig-subcap: 
-#| - ""
-#| - ""
-#| - ""
-#| - ""
-#| - ""
-#| - ""
+#| - " "
+#| - " "
+#| - " "
+#| - " "
+#| - " "
+#| - " "
 knitr::include_graphics(here::here(c(
     "figs/nonprofit-rules-1.png",
     "figs/ind-assoc-rules-1.png",
@@ -196,12 +196,12 @@ knitr::include_graphics(here::here(c(
 #| fig-cap: "Frequent and Infrequent Commenters (By the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
 #| layout-ncol: 2 
 #| fig-subcap: 
-#| - ""
-#| - ""
-#| - ""
-#| - ""
-#| - ""
-#| - ""
+#| - " "
+#| - " "
+#| - " "
+#| - " "
+#| - " "
+#| - " "
 knitr::include_graphics(here::here(c(
     "figs/nonprofit-rules-2.png",
     "figs/ind-assoc-rules-2.png",
@@ -339,11 +339,11 @@ Our findings on wealth technical sophistication (H5) hold even with an alternati
 #| layout-ncol: 2 
 #| fig-cap: "Amount of Legal Language by Assets (Among Comments from Banks on Dodd-Frank Rules)"
 #| fig-subcap: 
-#| - ""
-#| - ""
-#| - ""
-#| - ""
-#| - ""
+#| - " "
+#| - " "
+#| - " "
+#| - " "
+#| - " "
 
 knitr::include_graphics(here::here(c(
   ## Nonprofits
@@ -367,7 +367,7 @@ Findings regarding the relationship between technical sophistication and the num
 
 load(here::here("models", "mes-pois.Rdata"))
 
-modelsummary(models, notes = "")  #%>% kableExtra::kable_styling(latex_options="scale_down")
+modelsummary(models, notes = " ")  #%>% kableExtra::kable_styling(latex_options="scale_down")
 ```
 
 <!--
@@ -439,11 +439,11 @@ Note that while these assumptions are possible, our estimation is not identified
 #| label: "fig-mediation"
 #| layout-ncol: 2 
 #| fig-subcap:
-#| - ""
-#| - ""
-#| - ""
-#| - ""
-#| - ""
+#| - " "
+#| - " "
+#| - " "
+#| - " "
+#| - " "
 #| fig-cap: "Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as a Proposed Mediators Between Wealth and Lobbying Success"
 knitr::include_graphics(here::here(c(
   "figs/mediation-marketcap-lobbying-1.png",
@@ -462,7 +462,7 @@ knitr::include_graphics(here::here(c(
 load(here::here("models", "models.m4No0.Rdata"))
 rows[,2] <- "PAC Spending"
 rows[,3] <- "LDA Spending"
-modelsummary(models.m4No0, notes = "")
+modelsummary(models.m4No0, notes = " ")
 ```
 \elandscape
 

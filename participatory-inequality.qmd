@@ -43,10 +43,12 @@ author:
     affiliations:  
      - name: Harvard University
        department: Department of Government
+       # email: christopherkenny@fas.harvard.edu
   - name: Brian Libgober
     affiliations:  
      - name: Northwestern University
        department: Department of Political Science
+       #email: brian.libgober@northwestern.edu
   - name: Steven Rashin
     affiliations:  
      - name: University of Texas, Austin 
@@ -67,7 +69,7 @@ execute:
   warning: false
 abstract: |
   Research on inequality overlooks administrative policymaking, where most U.S. law is currently made, under pressure from vast flows of money, lobbying, and political mobilization. Analyzing a new database of over 260,000 comments on agency rules implementing the Dodd-Frank Act, we identify the lobbying activities of over 6,000 organizations. Leveraging measures of organizations’ wealth, participation in administrative politics, sophistication, and lobbying success, we provide the first large-scale assessment of wealth-based inequality in agency rulemaking. We find that wealthier organizations are more likely to participate in rulemaking and enjoy more success in shifting the content of federal agency rules. These patterns are not explained by membership differentials. More profit-driven organizations are also more likely to participate and enjoy more success in shifting the content of federal agency rules. Wealthier organizations’ ability to marshal legal and technical expertise appears to be a key mechanism by which wealth leads to lobbying success.
-keywords: "Inequality, Bureaucratic Policymaking, Interest groups, Lobbying, Rulemaking, Financial Regulation"
+keywords: "Inequality; Bureaucratic Policymaking; Interest groups; Lobbying; Rulemaking; Financial Regulation"
 ---
 
 ```{r}
@@ -366,8 +368,8 @@ knitr::include_graphics(here::here(c(
 #| label: fig-opensecrets-density
 #| fig-cap: "Political Spending of Organizations that Did and Did Not Comment"
 #| fig-subcap: 
-#| - " "
-#| - " "
+#| - "Political campaign donations"
+#| - "Disclosed lobbying spending"
 #| layout-ncol: 2
 knitr::include_graphics(here::here(c(
   "figs/opensecrets-density-1.png",
@@ -471,11 +473,11 @@ Overall, while these differences are only statistically significant for industry
 #| fig-cap: "Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
 #| layout-ncol: 2
 #| fig-subcap: 
-#| - " "
-#| - " "
-#| - " "
-#| - " "
-#| - " "
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
 knitr::include_graphics(here::here(c(
   "figs/nonprofit-rules-3.png",
   "figs/creditunion-rules-3.png",
@@ -498,11 +500,11 @@ The differences in means capture the extent to which wealth is correlated with l
 #| fig-cap: "Amount of Text Repeated in Final Rules by Commenter Resources"
 #| layout-ncol: 2
 #| fig-subcap: 
-#| - " "
-#| - " "
-#| - " "
-#| - " "
-#| - " "
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
 knitr::include_graphics(here::here(c(
   "figs/boxplot-assets-efficacy-2.png",
   "figs/boxplot-assets-efficacy-4.png",
@@ -522,11 +524,11 @@ The *Differential Sophistication* Hypothesis  (H5) suggests wealthier organizati
 #| fig-cap: "Amount of Technical Language by Assets"
 #| layout-ncol: 2
 #| fig-subcap: 
-#| - " "
-#| - " "
-#| - " "
-#| - " "
-#| - " "
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
 knitr::include_graphics(here::here(c(
   ## Nonprofits
   "figs/boxplot-assets-tech-2.png",

@@ -11,7 +11,7 @@ output:
 ---
 
 ```{r options, include=FALSE}
-library(marginaleffects)
+library(marginaleffects) 
 library(fixest)
 
 # rmarkdown::render("docs/participation.Rmd")
@@ -281,7 +281,7 @@ FDIC_resources <- read_csv(here::here("data", "merged_resources", "FDIC_Institut
 FDIC_resources$ASSET <- FDIC_resources$ASSET*1000
 
 #load the full population of campaign donors 
-creditunions <- read_csv(here("Data" , "creditunions.csv") %>% str_remove("finreg/") )
+creditunions <- read_csv(here::here("Data" , "creditunions.csv"))
 
 #load the full population of campaign donors 
 opensecrets <- read_csv( here::here("data", "Lobbying_and_Contributions.csv")  )
@@ -343,6 +343,8 @@ load(here("data", "match_data_clean.Rdata"))
 
 
 match_data_clean %>% count(comment_agency)
+
+fdic <- match_data_clean %>% filter(comment_agency == "FDIC")
 
 d <- match_data_clean  
 
@@ -483,6 +485,8 @@ d %>% distinct(Agency, org_type2, org_name) %>%
   geom_col() + 
   labs(fill = "Type of Organization",
        y = "Number of Organizations")
+
+d %>% distinct(Agency, org_type2, org_name)  %>% filter(Agency == "FDIC", is.na(org_type2))
 
  # caption = "Consumer Financial Protection Bureau (CFPB)
  #       Commodity Futures Trading Commission (CFTC)
