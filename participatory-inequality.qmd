@@ -2,7 +2,7 @@
 title: "Inequality in Administrative Democracy: Methods and Evidence from Financial Rulemaking"
 format:
   #docx:
-  apsr-pdf:
+  cmc-article-pdf:
   # pdf:
   #     template: assets/article-template.tex
     fig-pos: 'h'
@@ -61,7 +61,7 @@ author:
     affiliations:  
      - name: University of Wisconsin, Madison
        department: La Follette School of Public Affairs
-bibliography: '`r here::here("assets/finreg.bib")`'
+bibliography: "assets/finreg.bib"
 execute:
   echo: false
   cache: false
@@ -216,8 +216,7 @@ DJL: figures often need to be self-contained for journals-->
 ```{r}
 #| label: fig-actions
 #| out-width: 100%
-#| fig-cap: "Dodd-Frank Act Implementing Actions by Agency"
-# out-extra: "\\floatnote{Counts of regulatory acts by agency and by year. Regulatory acts include ANPRM, NPRM, Interim Rule, and Final Rules. Only actions implementing Dodd-Frank are included. Note that one complete rulemaking process typically has two and sometimes more associated actions.}"
+#| fig-cap: "Dodd-Frank Act Implementing Actions by Agency. Counts of regulatory acts by agency and by year. Regulatory acts include ANPRM, NPRM, Interim Rule, and Final Rules. Only actions implementing Dodd-Frank are included. Note that one complete rulemaking process typically has two and sometimes more associated actions."
 knitr::include_graphics(here::here("figs/actions-1.png"))
 ```
 
@@ -250,9 +249,8 @@ These procedures resulted in a dataset of `r n_orgs` distinct organizations that
 
 ```{r}
 #| label: fig-org-types
-#| fig-cap: "Number of Organizations by Type and Agency to which they Commented"
+#| fig-cap: "Number of Organizations by Type and Agency to which they Commented. Counts of distinct organizations that have submitted comments to each financial regulator by organizational type. These counts reflect only those comments that have been matched to an organization. The lowest match rate (at the CFPB) still exceeds 20%. See the appendix."
 #| out.width: 80%
-# out-extra: "\\floatnote{Counts of distinct organizations that have submitted comments to each financial regulator by organizational type. These counts reflect only those comments that have been matched to an organization. The lowest match rate (at the CFPB) still exceeds 20%. See the appendix.}"
 
 # Agencies include the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC).
 knitr::include_graphics(here::here("figs/org_count_type-2.png"))
@@ -260,9 +258,8 @@ knitr::include_graphics(here::here("figs/org_count_type-2.png"))
 
 ```{r}
 #| label: fig-comment-types
-#| fig-cap: "Number of Comments by Organization Type and Agency"
+#| fig-cap: "Number of Comments by Organization Type and Agency. Counts of comments from organizations that have submitted comments to each financial regulator by organizational type. These counts reflect only those comments that have been matched to an organization. Details about the match rate are in the appendix."
 #| out-width: 80%
-# out-extra: "\\floatnote{Counts of comments from organizations that have submitted comments to each financial regulator by organizational type. These counts reflect only those comments that have been matched to an organization. Details about the match rate are in the appendix.}"
 knitr::include_graphics(here::here("figs/org_count_type-1.png"))
 ```
 
@@ -638,13 +635,13 @@ Future work is needed to extend this article’s findings. For instance, followi
 In the end, this study presents a model for studying inequality in U.S. policymaking. 
 With the rise of the administrative state, scholars have documented the importance of agency rulemaking [@Kerwin2018], institutional bias toward businesses [@YackeeJOP2006], and the massive value businesses gain from lobbying agencies [@LibgoberQJPS2020]. Our data and analysis methods enable a new view of the biases in participation and influence in agency rulemaking. The consistent patterns in wealth disparities and impacts that we uncover advance our understanding of lobbying, money in politics, and how these pressures shape democracy in the modern administrative state.
 
+## References
+<!-- don't need the next div, but this makes it clearer how to move it -->
+::: {#refs}
+:::
+
 \clearpage
 
 {{< include participatory-inequality-appendix.qmd >}}
 
 \clearpage
-
-## References
-<!-- don't need the next div, but this makes it clearer how to move it -->
-::: {#refs}
-:::
