@@ -1,0 +1,1422 @@
+---
+title: "Results By Agency"
+format: 
+  html:
+    embed-resources: true
+code-fold: true
+execute:
+  warning: false
+  error: false
+  message: false
+---
+
+```{r}
+source(here::here("code", "setup.R"))
+```
+
+This section replicates the main analyses separately for subsets of comments submitted to each agency. When comparing commenters and non-commenters in this section, "non-commenters" includes organizations that did comment on Dodd-Frank rules published by other agencies.
+
+## Consumer Financial Protection Bureau (CFPB)
+
+### Wealth inequality in lobbying participation
+
+
+```{r}
+#| label: CFPB-fig-commenters-noncommenters
+#| fig-cap: "(CFPB Only) Financial Resources of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/CFPB/figs/nonprofit-density-1.png", 
+  "docs/CFPB/figs/creditunion-density-1.png", 
+  "docs/CFPB/figs/ind-assoc-density-1.png",
+  "docs/CFPB/figs/FDIC-density-select-1.png",
+  "docs/CFPB/figs/compustat-density-1.png")))
+```
+
+### Organizations that spend  on political campaigns 
+
+```{r}
+#| label: CFPB-fig-opensecrets-density
+#| fig-cap: "(CFPB Only) Political Spending of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Political campaign donations"
+#| - "Disclosed lobbying spending"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/CFPB/figs/opensecrets-density-1.png",
+  "docs/CFPB/figs/opensecrets-lobbying-density-1.png")))
+```
+
+### Profit-driven organizations vs. non-profits 
+
+```{r}
+#| label: CFPB-fig-mp-all-predict
+#| fig-cap: "(CFPB Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets and Type of Organization"
+#| out-width: 65%
+knitr::include_graphics(here::here("docs", "CFPB", "figs", "mp-all-predict-log-1.png"))
+```
+
+
+
+```{r}
+#| label: CFPB-tbl-mp-all-table
+#| tbl-cap: "(CFPB Only) Log Odds of Commenting on Any Dodd-Frank Rule"
+
+# Preferred models of commenting by wealth measures
+load(here::here("models", "CFPB", "mpCompustat.Rdata"))
+mpCompustat <- models[[2]]
+
+load(here::here("models", "CFPB", "mpAll.Rdata"))
+mpAll <- models[[4]]
+
+load(here::here("models", "CFPB", "mpFDIC2.Rdata"))
+mpFDIC <- models[[4]]
+
+models <- list(mpCompustat, mpAll, mpFDIC)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models, notes = "Reference catagory = Banks for model 2, commercial banks for model 3")
+```
+
+
+
+```{r}
+#| label: CFPB-fig-mp-FDIC2
+#| fig-cap: Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank
+#| out-width: 65%
+#TODO CREDIT UNIONS SHOULD BE IN THIS model 
+knitr::include_graphics(here::here("docs", "CFPB", "figs", "mp-FDIC2-predict-1.png"))
+```
+
+```{r}
+#| label: CFPB-fig-mpcompustat
+#| fig-cap: "(CFPB Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Market Capitalization"
+#| out-width: 35%
+knitr::include_graphics(here::here("docs", "CFPB", "figs", "mp-compustat-predict-1.png"))
+```
+
+
+### Frequency of participation
+
+```{r}
+#| label: CFPB-fig-dockets-percentile
+#| fig-cap: "(CFPB Only) Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/CFPB/figs/nonprofit-rules-3.png",
+  "docs/CFPB/figs/creditunion-rules-3.png",
+  "docs/CFPB/figs/ind-assoc-rules-3.png",
+  "docs/CFPB/figs/fdic-rules-3.png",
+  "docs/CFPB/figs/compustat-rules-3.png")))
+```
+
+### Commenter wealth and lobbying success 
+
+```{r}
+#| label: CFPB-fig-repeated-text-assets
+#| fig-cap: "(CFPB Only) Amount of Text Repeated in Final Rules by Commenter Resources"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/CFPB/figs/boxplot-assets-efficacy-2.png",
+  "docs/CFPB/figs/boxplot-assets-efficacy-4.png",
+  "docs/CFPB/figs/boxplot-assets-efficacy-6.png",
+  "docs/CFPB/figs/boxplot-assets-efficacy-10.png",
+  "docs/CFPB/figs/boxplot-assets-efficacy-8.png")))
+#TODO ADD CORRELATION COEFFICIENTS TO THESE PLOTS 
+```
+
+### Wealth and sophisticated lobbying
+
+```{r}
+#| label: CFPB-fig-assets-terms
+#| fig-cap: "(CFPB Only) Amount of Technical Language by Assets"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  ## Nonprofits
+  "docs/CFPB/figs/boxplot-assets-tech-2.png",
+  ## Credit unions 
+  "docs/CFPB/figs/boxplot-assets-tech-4.png",
+  ## Industry Associations 
+  "docs/CFPB/figs/boxplot-assets-tech-6.png",
+  ## FDIC-insured banks 
+  "docs/CFPB/figs/boxplot-assets-tech-10.png",
+  ## Market cap (publicly-traded companies)
+  "docs/CFPB/figs/boxplot-assets-tech-8.png")))
+```
+
+### Comment sophistication and lobbying success 
+
+
+
+```{r}
+#| label: CFPB-fig-efficacyXsophistication
+#| fig-cap: "(CFPB Only)  Lobbying Success by Comment Sophistication "
+#| out-width: 70%
+knitr::include_graphics(here::here("docs", "CFPB", "figs", "boxplot-efficacyXsophistication-1.png")) # 
+```
+
+
+
+```{r}
+#| label: CFPB-tbl-efficacy-sophistication
+#| tbl-cap: "(CFPB Only) OLS Models of Lobbying Success by Comment Sophistication"
+#| out-width: 80%
+
+load(here::here("models", "CFPB", "mes.Rdata"))
+
+modelsummary(models, notes = "Poisson regression yields similar results") 
+```
+
+
+### Legal and technical sophistication as a mediator of the lobbying success of wealthy companies
+
+```{r} 
+#| lable: CFPB-fig-mediation-acme
+#| fig-cap: "(CFPB Only) Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as Proposed Mediators between Wealth and Lobbying Success"
+#| out-width: 100%
+
+knitr::include_graphics(here::here("docs", "CFPB", "figs", "mediation-4wayNo0-acme-1.png")) 
+``` 
+
+
+## Commodity Future Trading Commission (CFTC)
+
+
+### Wealth inequality in lobbying participation
+
+
+```{r}
+#| label: CFTC-fig-commenters-noncommenters
+#| fig-cap: "(CFTC Only) Financial Resources of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/CFTC/figs/nonprofit-density-1.png", 
+  "docs/CFTC/figs/creditunion-density-1.png", 
+  "docs/CFTC/figs/ind-assoc-density-1.png",
+  "docs/CFTC/figs/FDIC-density-select-1.png",
+  "docs/CFTC/figs/compustat-density-1.png")))
+```
+
+### Organizations that spend  on political campaigns 
+
+```{r}
+#| label: CFTC-fig-opensecrets-density
+#| fig-cap: "(CFTC Only) Political Spending of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Political campaign donations"
+#| - "Disclosed lobbying spending"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/CFTC/figs/opensecrets-density-1.png",
+  "docs/CFTC/figs/opensecrets-lobbying-density-1.png")))
+```
+
+### Profit-driven organizations vs. non-profits 
+
+```{r}
+#| label: CFTC-fig-mp-all-predict
+#| fig-cap: "(CFTC Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets and Type of Organization"
+#| out-width: 65%
+knitr::include_graphics(here::here("docs", "CFTC", "figs", "mp-all-predict-log-1.png"))
+```
+
+
+
+```{r}
+#| label: CFTC-tbl-mp-all-table
+#| tbl-cap: "(CFTC Only) Log Odds of Commenting on Any Dodd-Frank Rule"
+
+# Preferred models of commenting by wealth measures
+load(here::here("models", "CFTC", "mpCompustat.Rdata"))
+mpCompustat <- models[[2]]
+
+load(here::here("models", "CFTC", "mpAll.Rdata"))
+mpAll <- models[[4]]
+
+load(here::here("models", "CFTC", "mpFDIC2.Rdata"))
+mpFDIC <- models[[4]]
+
+models <- list(mpCompustat, mpAll, mpFDIC)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models, notes = "Reference catagory = Banks for model 2, commercial banks for model 3")
+```
+
+
+
+```{r}
+#| label: CFTC-fig-mp-FDIC2
+#| fig-cap: Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank
+#| out-width: 65%
+#TODO CREDIT UNIONS SHOULD BE IN THIS model 
+knitr::include_graphics(here::here("docs", "CFTC", "figs", "mp-FDIC2-predict-1.png"))
+```
+
+```{r}
+#| label: CFTC-fig-mpcompustat
+#| fig-cap: "(CFTC Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Market Capitalization"
+#| out-width: 35%
+knitr::include_graphics(here::here("docs", "CFTC", "figs", "mp-compustat-predict-1.png"))
+```
+
+
+### Frequency of participation
+
+```{r}
+#| label: CFTC-fig-dockets-percentile
+#| fig-cap: "(CFTC Only) Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/CFTC/figs/nonprofit-rules-3.png",
+  "docs/CFTC/figs/creditunion-rules-3.png",
+  "docs/CFTC/figs/ind-assoc-rules-3.png",
+  "docs/CFTC/figs/fdic-rules-3.png",
+  "docs/CFTC/figs/compustat-rules-3.png")))
+```
+
+### Commenter wealth and lobbying success 
+
+```{r}
+#| label: CFTC-fig-repeated-text-assets
+#| fig-cap: "(CFTC Only) Amount of Text Repeated in Final Rules by Commenter Resources"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/CFTC/figs/boxplot-assets-efficacy-2.png",
+  "docs/CFTC/figs/boxplot-assets-efficacy-4.png",
+  "docs/CFTC/figs/boxplot-assets-efficacy-6.png",
+  "docs/CFTC/figs/boxplot-assets-efficacy-10.png",
+  "docs/CFTC/figs/boxplot-assets-efficacy-8.png")))
+#TODO ADD CORRELATION COEFFICIENTS TO THESE PLOTS 
+```
+
+### Wealth and sophisticated lobbying
+
+```{r}
+#| label: CFTC-fig-assets-terms
+#| fig-cap: "(CFTC Only) Amount of Technical Language by Assets"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  ## Nonprofits
+  "docs/CFTC/figs/boxplot-assets-tech-2.png",
+  ## Credit unions 
+  "docs/CFTC/figs/boxplot-assets-tech-4.png",
+  ## Industry Associations 
+  "docs/CFTC/figs/boxplot-assets-tech-6.png",
+  ## FDIC-insured banks 
+  "docs/CFTC/figs/boxplot-assets-tech-10.png",
+  ## Market cap (publicly-traded companies)
+  "docs/CFTC/figs/boxplot-assets-tech-8.png")))
+```
+
+### Comment sophistication and lobbying success 
+
+
+
+```{r}
+#| label: CFTC-fig-efficacyXsophistication
+#| fig-cap: "(CFTC Only)  Lobbying Success by Comment Sophistication "
+#| out-width: 70%
+knitr::include_graphics(here::here("docs", "CFTC", "figs", "boxplot-efficacyXsophistication-1.png")) # 
+```
+
+
+
+```{r}
+#| label: CFTC-tbl-efficacy-sophistication
+#| tbl-cap: "(CFTC Only) OLS Models of Lobbying Success by Comment Sophistication"
+#| out-width: 80%
+
+load(here::here("models", "CFTC", "mes.Rdata"))
+
+modelsummary(models, notes = "Poisson regression yields similar results") 
+```
+
+
+### Legal and technical sophistication as a mediator of the lobbying success of wealthy companies
+
+```{r} 
+#| lable: CFTC-fig-mediation-acme
+#| fig-cap: "(CFTC Only) Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as Proposed Mediators between Wealth and Lobbying Success"
+#| out-width: 100%
+
+knitr::include_graphics(here::here("docs", "CFTC", "figs", "mediation-4wayNo0-acme-1.png")) 
+``` 
+
+
+
+<!--
+
+## Federal Deposit Insurance Corporation (FDIC)
+
+
+### Wealth inequality in lobbying participation
+
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: FDIC-fig-commenters-noncommenters
+#| fig-cap: "(FDIC Only) Financial Resources of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/FDIC/figs/nonprofit-density-1.png", 
+  "docs/FDIC/figs/creditunion-density-1.png", 
+  "docs/FDIC/figs/ind-assoc-density-1.png",
+  "docs/FDIC/figs/FDIC-density-select-1.png",
+  "docs/FDIC/figs/compustat-density-1.png")))
+```
+
+### Organizations that spend  on political campaigns 
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: FDIC-fig-opensecrets-density
+#| fig-cap: "(FDIC Only) Political Spending of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Political campaign donations"
+#| - "Disclosed lobbying spending"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/FDIC/figs/opensecrets-density-1.png",
+  "docs/FDIC/figs/opensecrets-lobbying-density-1.png")))
+```
+
+### Profit-driven organizations vs. non-profits 
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: FDIC-fig-mp-all-predict
+#| fig-cap: "(FDIC Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets and Type of Organization"
+#| out-width: 65%
+knitr::include_graphics(here::here("docs", "FDIC", "figs", "mp-all-predict-log-1.png"))
+```
+
+
+
+```{r}
+#| label: FDIC-tbl-mp-all-table
+#| tbl-cap: "(FDIC Only) Log Odds of Commenting on Any Dodd-Frank Rule"
+
+# Preferred models of commenting by wealth measures
+load(here::here("models", "FDIC", "mpCompustat.Rdata"))
+mpCompustat <- models[[2]]
+
+load(here::here("models", "FDIC", "mpAll.Rdata"))
+mpAll <- models[[4]]
+
+load(here::here("models", "FDIC", "mpFDIC2.Rdata"))
+mpFDIC <- models[[4]]
+
+models <- list(mpCompustat, mpAll, mpFDIC)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models, notes = "Reference catagory = Banks for model 2, commercial banks for model 3")
+```
+
+
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: FDIC-fig-mp-FDIC2
+#| fig-cap: Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank
+#| out-width: 65%
+#TODO CREDIT UNIONS SHOULD BE IN THIS model 
+knitr::include_graphics(here::here("docs", "FDIC", "figs", "mp-FDIC2-predict-1.png"))
+```
+
+
+```{r, eval=FALSE }
+#| label: FDIC-fig-mpcompustat
+#| fig-cap: "(FDIC Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Market Capitalization"
+#| out-width: 35%
+knitr::include_graphics(here::here("docs", "FDIC", "figs", "mp-compustat-predict-1.png"))
+```
+
+
+### Frequency of participation
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: FDIC-fig-dockets-percentile
+#| fig-cap: "(FDIC Only) Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/FDIC/figs/nonprofit-rules-3.png",
+  "docs/FDIC/figs/creditunion-rules-3.png",
+  "docs/FDIC/figs/ind-assoc-rules-3.png",
+  "docs/FDIC/figs/fdic-rules-3.png",
+  "docs/FDIC/figs/compustat-rules-3.png")))
+```
+
+### Commenter wealth and lobbying success 
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: FDIC-fig-repeated-text-assets
+#| fig-cap: "(FDIC Only) Amount of Text Repeated in Final Rules by Commenter Resources"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/FDIC/figs/boxplot-assets-efficacy-2.png",
+  "docs/FDIC/figs/boxplot-assets-efficacy-4.png",
+  "docs/FDIC/figs/boxplot-assets-efficacy-6.png",
+  "docs/FDIC/figs/boxplot-assets-efficacy-10.png",
+  "docs/FDIC/figs/boxplot-assets-efficacy-8.png")))
+#TODO ADD CORRELATION COEFFICIENTS TO THESE PLOTS 
+```
+
+### Wealth and sophisticated lobbying
+
+```{r, eval=FALSE}
+#| label: FDIC-fig-assets-terms
+#| fig-cap: "(FDIC Only) Amount of Technical Language by Assets"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  ## Nonprofits
+  "docs/FDIC/figs/boxplot-assets-tech-2.png",
+  ## Credit unions 
+  "docs/FDIC/figs/boxplot-assets-tech-4.png",
+  ## Industry Associations 
+  "docs/FDIC/figs/boxplot-assets-tech-6.png",
+  ## FDIC-insured banks 
+  "docs/FDIC/figs/boxplot-assets-tech-10.png",
+  ## Market cap (publicly-traded companies)
+  "docs/FDIC/figs/boxplot-assets-tech-8.png")))
+```
+
+### Comment sophistication and lobbying success 
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: FDIC-fig-efficacyXsophistication
+#| fig-cap: "(FDIC Only)  Lobbying Success by Comment Sophistication "
+#| out-width: 70%
+knitr::include_graphics(here::here("docs", "FDIC", "figs", "boxplot-efficacyXsophistication-1.png")) # 
+```
+
+
+```{r, eval=FALSE}
+#| label: FDIC-tbl-efficacy-sophistication
+#| tbl-cap: "(FDIC Only) OLS Models of Lobbying Success by Comment Sophistication"
+#| out-width: 80%
+
+load(here::here("models", "FDIC", "mes.Rdata"))
+
+modelsummary(models, notes = "Poisson regression yields similar results") 
+```
+
+
+### Legal and technical sophistication as a mediator of the lobbying success of wealthy companies
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| lable: FDIC-fig-mediation-acme
+#| fig-cap: "(FDIC Only) Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as Proposed Mediators between Wealth and Lobbying Success"
+#| out-width: 100%
+
+knitr::include_graphics(here::here("docs", "FDIC", "figs", "mediation-4wayNo0-acme-1.png")) 
+``` 
+
+-->
+
+
+## Federal Reserve (FRS)
+
+
+### Wealth inequality in lobbying participation
+
+
+```{r}
+#| label: FRS-fig-commenters-noncommenters
+#| fig-cap: "(FRS Only) Financial Resources of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/FRS/figs/nonprofit-density-1.png", 
+  "docs/FRS/figs/creditunion-density-1.png", 
+  "docs/FRS/figs/ind-assoc-density-1.png",
+  "docs/FRS/figs/FDIC-density-select-1.png",
+  "docs/FRS/figs/compustat-density-1.png")))
+```
+
+### Organizations that spend  on political campaigns 
+
+```{r}
+#| label: FRS-fig-opensecrets-density
+#| fig-cap: "(FRS Only) Political Spending of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Political campaign donations"
+#| - "Disclosed lobbying spending"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/FRS/figs/opensecrets-density-1.png",
+  "docs/FRS/figs/opensecrets-lobbying-density-1.png")))
+```
+
+### Profit-driven organizations vs. non-profits 
+
+```{r}
+#| label: FRS-fig-mp-all-predict
+#| fig-cap: "(FRS Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets and Type of Organization"
+#| out-width: 65%
+knitr::include_graphics(here::here("docs", "FRS", "figs", "mp-all-predict-log-1.png"))
+```
+
+
+
+```{r}
+#| label: FRS-tbl-mp-all-table
+#| tbl-cap: "(FRS Only) Log Odds of Commenting on Any Dodd-Frank Rule"
+
+# Preferred models of commenting by wealth measures
+load(here::here("models", "FRS", "mpCompustat.Rdata"))
+mpCompustat <- models[[2]]
+
+load(here::here("models", "FRS", "mpAll.Rdata"))
+mpAll <- models[[4]]
+
+load(here::here("models", "FRS", "mpFDIC2.Rdata"))
+mpFDIC <- models[[4]]
+
+models <- list(mpCompustat, mpAll, mpFDIC)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models, notes = "Reference catagory = Banks for model 2, commercial banks for model 3")
+```
+
+
+
+```{r, fig-mp-FDIC2, fig.cap= "Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank", out.width="90%"}
+#| label: FRS-fig-mp-FDIC2
+#| fig-cap: Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank
+#| out-width: 65%
+#TODO CREDIT UNIONS SHOULD BE IN THIS model 
+knitr::include_graphics(here::here("docs", "FRS", "figs", "mp-FDIC2-predict-1.png"))
+```
+
+```{r}
+#| label: FRS-fig-mpcompustat
+#| fig-cap: "(FRS Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Market Capitalization"
+#| out-width: 35%
+knitr::include_graphics(here::here("docs", "FRS", "figs", "mp-compustat-predict-1.png"))
+```
+
+
+### Frequency of participation
+
+```{r}
+#| label: FRS-fig-dockets-percentile
+#| fig-cap: "(FRS Only) Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/FRS/figs/nonprofit-rules-3.png",
+  "docs/FRS/figs/creditunion-rules-3.png",
+  "docs/FRS/figs/ind-assoc-rules-3.png",
+  "docs/FRS/figs/fdic-rules-3.png",
+  "docs/FRS/figs/compustat-rules-3.png")))
+```
+
+### Commenter wealth and lobbying success 
+
+```{r}
+#| label: FRS-fig-repeated-text-assets
+#| fig-cap: "(FRS Only) Amount of Text Repeated in Final Rules by Commenter Resources"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/FRS/figs/boxplot-assets-efficacy-2.png",
+  "docs/FRS/figs/boxplot-assets-efficacy-4.png",
+  "docs/FRS/figs/boxplot-assets-efficacy-6.png",
+  "docs/FRS/figs/boxplot-assets-efficacy-10.png",
+  "docs/FRS/figs/boxplot-assets-efficacy-8.png")))
+#TODO ADD CORRELATION COEFFICIENTS TO THESE PLOTS 
+```
+
+### Wealth and sophisticated lobbying
+
+```{r}
+#| label: FRS-fig-assets-terms
+#| fig-cap: "(FRS Only) Amount of Technical Language by Assets"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  ## Nonprofits
+  "docs/FRS/figs/boxplot-assets-tech-2.png",
+  ## Credit unions 
+  "docs/FRS/figs/boxplot-assets-tech-4.png",
+  ## Industry Associations 
+  "docs/FRS/figs/boxplot-assets-tech-6.png",
+  ## FDIC-insured banks 
+  "docs/FRS/figs/boxplot-assets-tech-10.png",
+  ## Market cap (publicly-traded companies)
+  "docs/FRS/figs/boxplot-assets-tech-8.png")))
+```
+
+### Comment sophistication and lobbying success 
+
+
+
+```{r}
+#| label: FRS-fig-efficacyXsophistication
+#| fig-cap: "(FRS Only)  Lobbying Success by Comment Sophistication "
+#| out-width: 70%
+knitr::include_graphics(here::here("docs", "FRS", "figs", "boxplot-efficacyXsophistication-1.png")) # 
+```
+
+
+
+```{r}
+#| label: FRS-tbl-efficacy-sophistication
+#| tbl-cap: "(FRS Only) OLS Models of Lobbying Success by Comment Sophistication"
+#| out-width: 80%
+
+load(here::here("models", "FRS", "mes.Rdata"))
+
+modelsummary(models, notes = "Poisson regression yields similar results") 
+```
+
+
+### Legal and technical sophistication as a mediator of the lobbying success of wealthy companies
+
+```{r} 
+#| lable: FRS-fig-mediation-acme
+#| fig-cap: "(FRS Only) Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as Proposed Mediators between Wealth and Lobbying Success"
+#| out-width: 100%
+
+knitr::include_graphics(here::here("docs", "FRS", "figs", "mediation-4wayNo0-acme-1.png")) 
+``` 
+
+
+
+## National Credit Union Administration (NCUA)
+
+
+### Wealth inequality in lobbying participation
+
+
+```{r}
+#| label: NCUA-fig-commenters-noncommenters
+#| fig-cap: "(NCUA Only) Financial Resources of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/NCUA/figs/nonprofit-density-1.png", 
+  "docs/NCUA/figs/creditunion-density-1.png", 
+  "docs/NCUA/figs/ind-assoc-density-1.png",
+  "docs/NCUA/figs/FDIC-density-select-1.png",
+  "docs/NCUA/figs/compustat-density-1.png")))
+```
+
+### Organizations that spend  on political campaigns 
+
+```{r}
+#| label: NCUA-fig-opensecrets-density
+#| fig-cap: "(NCUA Only) Political Spending of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Political campaign donations"
+#| - "Disclosed lobbying spending"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/NCUA/figs/opensecrets-density-1.png",
+  "docs/NCUA/figs/opensecrets-lobbying-density-1.png")))
+```
+
+### Profit-driven organizations vs. non-profits 
+
+```{r}
+#| label: NCUA-fig-mp-all-predict
+#| fig-cap: "(NCUA Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets and Type of Organization"
+#| out-width: 65%
+knitr::include_graphics(here::here("docs", "NCUA", "figs", "mp-all-predict-log-1.png"))
+```
+
+
+
+```{r}
+#| label: NCUA-tbl-mp-all-table
+#| tbl-cap: "(NCUA Only) Log Odds of Commenting on Any Dodd-Frank Rule"
+
+# Preferred models of commenting by wealth measures
+load(here::here("models", "NCUA", "mpCompustat.Rdata"))
+mpCompustat <- models[[2]]
+
+load(here::here("models", "NCUA", "mpAll.Rdata"))
+mpAll <- models[[4]]
+
+load(here::here("models", "NCUA", "mpFDIC2.Rdata"))
+mpFDIC <- models[[4]]
+
+models <- list(mpCompustat, mpAll, mpFDIC)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models, notes = "Reference catagory = Banks for model 2, commercial banks for model 3")
+```
+
+
+
+```{r}
+#| label: NCUA-fig-mp-FDIC2
+#| fig-cap: Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank
+#| out-width: 65%
+#TODO CREDIT UNIONS SHOULD BE IN THIS model 
+knitr::include_graphics(here::here("docs", "NCUA", "figs", "mp-FDIC2-predict-1.png"))
+```
+
+```{r}
+#| label: NCUA-fig-mpcompustat
+#| fig-cap: "(NCUA Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Market Capitalization"
+#| out-width: 35%
+knitr::include_graphics(here::here("docs", "NCUA", "figs", "mp-compustat-predict-1.png"))
+```
+
+
+### Frequency of participation
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: NCUA-fig-dockets-percentile
+#| fig-cap: "(NCUA Only) Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/NCUA/figs/nonprofit-rules-3.png",
+  "docs/NCUA/figs/creditunion-rules-3.png",
+  "docs/NCUA/figs/ind-assoc-rules-3.png",
+  "docs/NCUA/figs/fdic-rules-3.png",
+  "docs/NCUA/figs/compustat-rules-3.png")))
+```
+
+### Commenter wealth and lobbying success 
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: NCUA-fig-repeated-text-assets
+#| fig-cap: "(NCUA Only) Amount of Text Repeated in Final Rules by Commenter Resources"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/NCUA/figs/boxplot-assets-efficacy-2.png",
+  "docs/NCUA/figs/boxplot-assets-efficacy-4.png",
+  "docs/NCUA/figs/boxplot-assets-efficacy-6.png",
+  "docs/NCUA/figs/boxplot-assets-efficacy-10.png",
+  "docs/NCUA/figs/boxplot-assets-efficacy-8.png")))
+#TODO ADD CORRELATION COEFFICIENTS TO THESE PLOTS 
+```
+
+### Wealth and sophisticated lobbying
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: NCUA-fig-assets-terms
+#| fig-cap: "(NCUA Only) Amount of Technical Language by Assets"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  ## Nonprofits
+  "docs/NCUA/figs/boxplot-assets-tech-2.png",
+  ## Credit unions 
+  "docs/NCUA/figs/boxplot-assets-tech-4.png",
+  ## Industry Associations 
+  "docs/NCUA/figs/boxplot-assets-tech-6.png",
+  ## FDIC-insured banks 
+  "docs/NCUA/figs/boxplot-assets-tech-10.png",
+  ## Market cap (publicly-traded companies)
+  "docs/NCUA/figs/boxplot-assets-tech-8.png")))
+```
+
+### Comment sophistication and lobbying success 
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: NCUA-fig-efficacyXsophistication
+#| fig-cap: "(NCUA Only)  Lobbying Success by Comment Sophistication "
+#| out-width: 70%
+knitr::include_graphics(here::here("docs", "NCUA", "figs", "boxplot-efficacyXsophistication-1.png")) # 
+```
+
+
+```{r, eval=FALSE }
+#| label: NCUA-tbl-efficacy-sophistication
+#| tbl-cap: "(NCUA Only) OLS Models of Lobbying Success by Comment Sophistication"
+#| out-width: 80%
+
+load(here::here("models", "NCUA", "mes.Rdata"))
+
+modelsummary(models, notes = "Poisson regression yields similar results") 
+```
+
+
+### Legal and technical sophistication as a mediator of the lobbying success of wealthy companies
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| lable: NCUA-fig-mediation-acme
+#| fig-cap: "(NCUA Only) Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as Proposed Mediators between Wealth and Lobbying Success"
+#| out-width: 100%
+
+knitr::include_graphics(here::here("docs", "NCUA", "figs", "mediation-4wayNo0-acme-1.png")) 
+``` 
+
+
+
+## Office of the Comptroller of the Currency (OCC)
+
+### Wealth inequality in lobbying participation
+
+
+```{r}
+#| label: OCC-fig-commenters-noncommenters
+#| fig-cap: "(OCC Only) Financial Resources of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/OCC/figs/nonprofit-density-1.png", 
+  "docs/OCC/figs/creditunion-density-1.png", 
+  "docs/OCC/figs/ind-assoc-density-1.png",
+  "docs/OCC/figs/FDIC-density-select-1.png",
+  "docs/OCC/figs/compustat-density-1.png")))
+```
+
+### Organizations that spend  on political campaigns 
+
+```{r}
+#| label: OCC-fig-opensecrets-density
+#| fig-cap: "(OCC Only) Political Spending of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Political campaign donations"
+#| - "Disclosed lobbying spending"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/OCC/figs/opensecrets-density-1.png",
+  "docs/OCC/figs/opensecrets-lobbying-density-1.png")))
+```
+
+### Profit-driven organizations vs. non-profits 
+
+```{r}
+#| label: OCC-fig-mp-all-predict
+#| fig-cap: "(OCC Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets and Type of Organization"
+#| out-width: 65%
+knitr::include_graphics(here::here("docs", "OCC", "figs", "mp-all-predict-log-1.png"))
+```
+
+
+
+```{r}
+#| label: OCC-tbl-mp-all-table
+#| tbl-cap: "(OCC Only) Log Odds of Commenting on Any Dodd-Frank Rule"
+
+# Preferred models of commenting by wealth measures
+load(here::here("models", "OCC", "mpCompustat.Rdata"))
+mpCompustat <- models[[2]]
+
+load(here::here("models", "OCC", "mpAll.Rdata"))
+mpAll <- models[[4]]
+
+load(here::here("models", "OCC", "mpFDIC2.Rdata"))
+mpFDIC <- models[[4]]
+
+models <- list(mpCompustat, mpAll, mpFDIC)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models, notes = "Reference catagory = Banks for model 2, commercial banks for model 3")
+```
+
+
+
+```{r}
+#| label: OCC-fig-mp-FDIC2
+#| fig-cap: Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank
+#| out-width: 65%
+#TODO CREDIT UNIONS SHOULD BE IN THIS model 
+knitr::include_graphics(here::here("docs", "OCC", "figs", "mp-FDIC2-predict-1.png"))
+```
+
+```{r}
+#| label: OCC-fig-mpcompustat
+#| fig-cap: "(OCC Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Market Capitalization"
+#| out-width: 35%
+knitr::include_graphics(here::here("docs", "OCC", "figs", "mp-compustat-predict-1.png"))
+```
+
+
+### Frequency of participation
+
+```{r}
+#| label: OCC-fig-dockets-percentile
+#| fig-cap: "(OCC Only) Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/OCC/figs/nonprofit-rules-3.png",
+  "docs/OCC/figs/creditunion-rules-3.png",
+  "docs/OCC/figs/ind-assoc-rules-3.png",
+  "docs/OCC/figs/fdic-rules-3.png",
+  "docs/OCC/figs/compustat-rules-3.png")))
+```
+
+### Commenter wealth and lobbying success 
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: OCC-fig-repeated-text-assets
+#| fig-cap: "(OCC Only) Amount of Text Repeated in Final Rules by Commenter Resources"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/OCC/figs/boxplot-assets-efficacy-2.png",
+  "docs/OCC/figs/boxplot-assets-efficacy-4.png",
+  "docs/OCC/figs/boxplot-assets-efficacy-6.png",
+  "docs/OCC/figs/boxplot-assets-efficacy-10.png",
+  "docs/OCC/figs/boxplot-assets-efficacy-8.png")))
+#TODO ADD CORRELATION COEFFICIENTS TO THESE PLOTS 
+```
+
+### Wealth and sophisticated lobbying
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: OCC-fig-assets-terms
+#| fig-cap: "(OCC Only) Amount of Technical Language by Assets"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  ## Nonprofits
+  "docs/OCC/figs/boxplot-assets-tech-2.png",
+  ## Credit unions 
+  "docs/OCC/figs/boxplot-assets-tech-4.png",
+  ## Industry Associations 
+  "docs/OCC/figs/boxplot-assets-tech-6.png",
+  ## FDIC-insured banks 
+  "docs/OCC/figs/boxplot-assets-tech-10.png",
+  ## Market cap (publicly-traded companies)
+  "docs/OCC/figs/boxplot-assets-tech-8.png")))
+```
+
+### Comment sophistication and lobbying success 
+
+Insufficient data.
+
+```{r, eval=FALSE }
+#| label: OCC-fig-efficacyXsophistication
+#| fig-cap: "(OCC Only)  Lobbying Success by Comment Sophistication "
+#| out-width: 70%
+knitr::include_graphics(here::here("docs", "OCC", "figs", "boxplot-efficacyXsophistication-1.png")) # 
+```
+
+
+```{r, eval=FALSE}
+#| label: OCC-tbl-efficacy-sophistication
+#| tbl-cap: "(OCC Only) OLS Models of Lobbying Success by Comment Sophistication"
+#| out-width: 80%
+
+load(here::here("models", "OCC", "mes.Rdata"))
+
+modelsummary(models, notes = "Poisson regression yields similar results") 
+```
+
+
+### Legal and technical sophistication as a mediator of the lobbying success of wealthy companies
+
+```{r, eval=FALSE} 
+#| lable: OCC-fig-mediation-acme
+#| fig-cap: "(OCC Only) Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as Proposed Mediators between Wealth and Lobbying Success"
+#| out-width: 100%
+
+knitr::include_graphics(here::here("docs", "OCC", "figs", "mediation-4wayNo0-acme-1.png")) 
+``` 
+
+## Securities and Exchange Commission (SEC)
+
+
+### Wealth inequality in lobbying participation
+
+
+```{r}
+#| label: SEC-fig-commenters-noncommenters
+#| fig-cap: "(SEC Only) Financial Resources of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/SEC/figs/nonprofit-density-1.png", 
+  "docs/SEC/figs/creditunion-density-1.png", 
+  "docs/SEC/figs/ind-assoc-density-1.png",
+  "docs/SEC/figs/FDIC-density-select-1.png",
+  "docs/SEC/figs/compustat-density-1.png")))
+```
+
+### Organizations that spend  on political campaigns 
+
+```{r}
+#| label: SEC-fig-opensecrets-density
+#| fig-cap: "(SEC Only) Political Spending of Organizations that Did and Did Not Comment"
+#| fig-subcap: 
+#| - "Political campaign donations"
+#| - "Disclosed lobbying spending"
+#| layout-ncol: 2
+knitr::include_graphics(here::here(c(
+  "docs/SEC/figs/opensecrets-density-1.png",
+  "docs/SEC/figs/opensecrets-lobbying-density-1.png")))
+```
+
+### Profit-driven organizations vs. non-profits 
+
+```{r}
+#| label: SEC-fig-mp-all-predict
+#| fig-cap: "(SEC Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Assets and Type of Organization"
+#| out-width: 65%
+knitr::include_graphics(here::here("docs", "SEC", "figs", "mp-all-predict-log-1.png"))
+```
+
+
+
+```{r}
+#| label: SEC-tbl-mp-all-table
+#| tbl-cap: "(SEC Only) Log Odds of Commenting on Any Dodd-Frank Rule"
+
+# Preferred models of commenting by wealth measures
+load(here::here("models", "SEC", "mpCompustat.Rdata"))
+mpCompustat <- models[[2]]
+
+load(here::here("models", "SEC", "mpAll.Rdata"))
+mpAll <- models[[4]]
+
+load(here::here("models", "SEC", "mpFDIC2.Rdata"))
+mpFDIC <- models[[4]]
+
+models <- list(mpCompustat, mpAll, mpFDIC)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models, notes = "Reference catagory = Banks for model 2, commercial banks for model 3")
+```
+
+
+
+```{r}
+#| label: SEC-fig-mp-FDIC2
+#| fig-cap: Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank
+#| out-width: 65%
+#TODO CREDIT UNIONS SHOULD BE IN THIS model 
+knitr::include_graphics(here::here("docs", "SEC", "figs", "mp-FDIC2-predict-1.png"))
+```
+
+```{r}
+#| label: SEC-fig-mpcompustat
+#| fig-cap: "(SEC Only) Predicted Probability of Participating in Dodd-Frank Rulemaking by Market Capitalization"
+#| out-width: 35%
+knitr::include_graphics(here::here("docs", "SEC", "figs", "mp-compustat-predict-1.png"))
+```
+
+
+### Frequency of participation
+
+Insufficient data.
+
+```{r, eval=FALSE}
+#| label: SEC-fig-dockets-percentile
+#| fig-cap: "(SEC Only) Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/SEC/figs/nonprofit-rules-3.png",
+  "docs/SEC/figs/creditunion-rules-3.png",
+  "docs/SEC/figs/ind-assoc-rules-3.png", #FIXME
+  "docs/SEC/figs/fdic-rules-3.png",
+  "docs/SEC/figs/compustat-rules-3.png")))
+```
+
+### Commenter wealth and lobbying success 
+
+```{r}
+#| label: SEC-fig-repeated-text-assets
+#| fig-cap: "(SEC Only) Amount of Text Repeated in Final Rules by Commenter Resources"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "docs/SEC/figs/boxplot-assets-efficacy-2.png",
+  "docs/SEC/figs/boxplot-assets-efficacy-4.png",
+  "docs/SEC/figs/boxplot-assets-efficacy-6.png",
+  "docs/SEC/figs/boxplot-assets-efficacy-10.png",
+  "docs/SEC/figs/boxplot-assets-efficacy-8.png")))
+#TODO ADD CORRELATION COEFFICIENTS TO THESE PLOTS 
+```
+
+### Wealth and sophisticated lobbying
+
+```{r}
+#| label: SEC-fig-assets-terms
+#| fig-cap: "(SEC Only) Amount of Technical Language by Assets"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  ## Nonprofits
+  "docs/SEC/figs/boxplot-assets-tech-2.png",
+  ## Credit unions 
+  "docs/SEC/figs/boxplot-assets-tech-4.png",
+  ## Industry Associations 
+  "docs/SEC/figs/boxplot-assets-tech-6.png",
+  ## FDIC-insured banks 
+  "docs/SEC/figs/boxplot-assets-tech-10.png",
+  ## Market cap (publicly-traded companies)
+  "docs/SEC/figs/boxplot-assets-tech-8.png")))
+```
+
+### Comment sophistication and lobbying success 
+
+
+
+```{r}
+#| label: SEC-fig-efficacyXsophistication
+#| fig-cap: "(SEC Only)  Lobbying Success by Comment Sophistication "
+#| out-width: 70%
+knitr::include_graphics(here::here("docs", "SEC", "figs", "boxplot-efficacyXsophistication-1.png")) # 
+```
+
+
+
+```{r}
+#| label: SEC-tbl-efficacy-sophistication
+#| tbl-cap: "(SEC Only) OLS Models of Lobbying Success by Comment Sophistication"
+#| out-width: 80%
+
+load(here::here("models", "SEC", "mes.Rdata"))
+
+modelsummary(models, notes = "Poisson regression yields similar results") 
+```
+
+
+### Legal and technical sophistication as a mediator of the lobbying success of wealthy companies
+
+Insufficient data.
+
+```{r, eval=FALSE}
+#| lable: SEC-fig-mediation-acme
+#| fig-cap: "(SEC Only) Political Spending, Lobbying, Technical Sophistication, and Legal Sophistication as Proposed Mediators between Wealth and Lobbying Success"
+#| out-width: 100%
+
+knitr::include_graphics(here::here("docs", "SEC", "figs", "mediation-4wayNo0-acme-1.png")) 
+``` 
+
+
