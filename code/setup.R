@@ -27,7 +27,7 @@ requires <- c("bookdown",
               #"fixest",
               #"flextable",
               #"magick",
-              "equatiomatic",
+              #"equatiomatic",
               "DiagrammeR",
               #"tidytext",
               #"latex2exp",
@@ -395,7 +395,7 @@ densityplot <- function(data,
          subtitle = str_c("N = ",
                           data %>% drop_na(var) %>% nrow() %>% pretty_num()
                           ),
-         fill = "", y = "",
+         fill = fill, y = y,
          x = x,
          caption = caption)+
     scale_fill_discrete(guide = guide_legend(reverse = TRUE) ) +
