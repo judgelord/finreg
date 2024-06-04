@@ -1,25 +1,23 @@
 ---
-title: "Inequality in Administrative Democracy: Methods and Evidence from Financial Rulemaking"
-format:
-  #docx:
+title: "Inequality in Agency Rulemaking"
+format: 
+  #docx
   cmc-article-pdf:
-  # pdf:
-  #     template: assets/article-template.tex
     fig-pos: 'h'
     fig-env: "figure"
-    keep-tex: true
+    keep-tex: false
     filters: [citeproc.lua, wordcount.lua] # https://github.com/andrewheiss/quarto-wordcount
-      #below indented is Steve's attempt to get a sideways table. Will delete it if it doesn't work
-    include-in-header: 
-      text: |
-        \usepackage{lscape}
-        \newcommand{\blandscape}{\begin{landscape}}
-        \newcommand{\elandscape}{\end{landscape}}
+  # below indented is Steve's attempt to get a sideways table. Will delete it if it doesn't work
+    include-in-header:
+        text: |
+          \usepackage{lscape}
+          \newcommand{\blandscape}{\begin{landscape}}
+          \newcommand{\elandscape}{\end{landscape}}
 linestretch: 1.5
 indent: true
 number-sections: true
 cap-location: top
-runningtitle: Inequality in Administrative Democracy
+runningtitle: Inequality in Agency Rulemaking
 nonblind: false
 runningauthor: Carpenter et al.
 author:
@@ -38,7 +36,7 @@ author:
        department: Ford School of Public Policy
     attributes:
       corresponding: true
-    note: "Corresponding author:  judgelor@umich.edu"
+      note: "Corresponding author:  judgelor@umich.edu"
   - name: Christopher T. Kenny
     affiliations:  
      - name: Harvard University
@@ -70,6 +68,7 @@ execute:
 abstract: |
   Research on inequality overlooks administrative policymaking, where most U.S. law is currently made, under pressure from vast flows of money, lobbying, and political mobilization. Analyzing a new database of over 260,000 comments on agency rules implementing the Dodd-Frank Act, we identify the lobbying activities of over 6,000 organizations. Leveraging measures of organizations’ wealth, participation in administrative politics, sophistication, and lobbying success, we provide the first large-scale assessment of wealth-based inequality in agency rulemaking. We find that wealthier organizations are more likely to participate in rulemaking and enjoy more success in shifting the content of federal agency rules. These patterns are not explained by membership differentials. More profit-driven organizations are also more likely to participate and enjoy more success in shifting the content of federal agency rules. Wealthier organizations’ ability to marshal legal and technical expertise appears to be a key mechanism by which wealth leads to lobbying success.
 keywords: "Inequality; Bureaucratic Policymaking; Interest groups; Lobbying; Rulemaking; Financial Regulation"
+date: "`r Sys.Date()`"
 ---
 
 ```{r}
@@ -85,86 +84,93 @@ load(here::here("data", "commenter_assets.Rdata"))
 load(here::here("data", "efficacyXsophistication.Rdata"))
 ``` 
 
+\clearpage 
+
 # Introduction {#sec-intro}
 
-<!--WEALTH MEANS POWER, BUT MOSTLY STUDIED WITH RESPECT TO LEGISLATION-->
-Studies of political inequality have revealed profound and durable patterns where wealthier citizens have a disproportionate influence on legislative processes. Work in American politics by @Bartels2008, @Baumgartner2009, @Hacker2010, @Gilens2012, @Skocpol2004, @Schlozman2012, and others shows ties between economic and political inequality. In contrast to the large literature on inequality in legislative lawmaking, research on inequality in executive-branch agency policymaking is sparse. Fundamental questions about economic and political power have yet to be addressed systematically:  Does wealth inequality drive differential lobbying participation during administrative policymaking? Are agency officials more likely to make policy changes that are suggested by wealthier organizations? And, if so, why? 
 
-<!--WHY THIS MATTERS-->
-Agency rulemaking has become the primary mode of policymaking in the United States. Agencies routinely use broad legislative grants of authority to make specific and legally-binding rules with vast social and economic effects  [@West1995; @Kerwin2018]. Given the scale and importance of agency policymaking and the large volume of data on business and interest group lobbying, rulemaking presents a unique opportunity to study the relationship between wealth inequality and policy influence.<!-- [@Carpenter2020].-->
+Studies of political inequality have revealed profound and durable patterns where wealthier citizens have a disproportionate influence on legislative processes. Work in American politics by @Bartels2008, @Baumgartner2009, @Hacker2010, @Gilens2012, @Skocpol2004, @Schlozman2012, and others shows ties between economic and political inequality. In contrast to the large literature on inequality in legislative lawmaking, research on inequality in executive-branch agency policymaking is sparse. Fundamental questions about economic and political power have yet to be addressed systematically: Does wealth inequality drive differential lobbying participation during administrative policymaking? Are agency officials more likely to make policy changes that are suggested by wealthier organizations? And, if so, why?
 
-<!--WHY WE EXPECT UNEQUAL INFLUENCE-->
+Agency rulemaking has become the primary mode of policymaking in the United States. Agencies routinely use broad legislative grants of authority to make specific and legally-binding rules with vast social and economic effects [@West1995; @Kerwin2018]. Given the scale and importance of agency policymaking and the large volume of data on business and interest group lobbying, rulemaking presents a unique opportunity to study the relationship between wealth inequality and policy influence.
+
 Several factors suggest that inequalities observed in legislative lawmaking persist in administrative policymaking. Business interests are the main lobbying participants in most agency rulemakings [@GoldenJPART1998; @YackeeJOP2006]. Firms collectively spend hundreds of millions of dollars lobbying after a bill becomes law, including lobbying the agencies tasked with writing the implementing rules [@You2017; @Ban2019]. Legislators who receive more corporate Political Action Committee (PAC) money from companies are much more likely to lobby federal agencies on behalf of those companies [@Powell2022].
 
-<!--WHY THIS IS HARD--> 
- Scholars have focused on inequalities in legislative lobbying and influence in part because quantitative data exist in the form of legislative Lobbying Disclosure Act reports and congressional voting records. Parallel quantitative data on lobbying and policy outcomes are critical to understanding agency policymaking. <!--[Carpenter2020; @LibgoberQJPS2020]--> One major barrier to scholarship on inequality in administrative policymaking has been the lack of measures of wealth inequality, participation, and influence of organizations in agency rulemaking. 
+Scholars have focused on inequalities in legislative lobbying and influence in part because quantitative data exist in the form of legislative Lobbying Disclosure Act reports and congressional voting records. Parallel quantitative data on lobbying and policy outcomes are critical to understanding agency policymaking. One major barrier to scholarship on inequality in administrative policymaking has been the lack of measures of wealth inequality, participation, and influence of organizations in agency rulemaking.
 
-<!--WE FOCUS ON DODD-FRANK--> 
 To investigate the link between economic and political inequality, we focus on agency rules implementing the Dodd-Frank Wall Street Reform and Consumer Protection Act of 2010 (hereafter Dodd-Frank).
-<!--CONTRIBUTIONS-->
+
 We make three primary contributions.
-<!--1. DATA-->
-First, we create a new database of all `r n_comments` public comments on proposed rules implementing Dodd-Frank, focusing especially on comments from companies and other organizations.
-Our data cover over eight hundred regulatory actions (part of `r n_rules` rulemaking processes) across seven agencies.<!--^[We define a regulatory action as publishing a proposed or final rule by one agency. We count one joint rule issued by the SEC and the Federal Reserve as two regulatory actions.] -->
-<!--2. METHODS-->
-Second, we develop a suite of new measurement and analytic tools to study who lobbies during rulemaking, how sophisticated their advocacy efforts are, and which organizations influence final rules (and which do not). 
-<!--3. ANALYSIS SHOWING INEQUALITY--> 
+
+First, we create a new database of all `r n_comments` public comments on proposed rules implementing Dodd-Frank, focusing especially on comments from companies and other organizations. Our data cover over eight hundred regulatory actions (part of `r n_rules` rulemaking processes) across seven agencies.
+
+Second, we develop a suite of new measurement and analytic tools to study who lobbies during rulemaking, how sophisticated their advocacy efforts are, and which organizations influence final rules (and which do not).
+
 Third, we leverage these data and tools to provide the first large-scale assessment of the plausible impacts of wealth inequality during agency policymaking. In doing so, we answer questions on inequality and lobbying participation which were, up to now, only answerable in the legislative process. Our research design advances past work by comparing commenting behavior among similar organizations. For example, we compare the commenting behavior of large banks to other large banks. In doing so, we control for many known sources of variance in commenting behavior, which yields cleaner tests of the relationship between wealth and policy influence.
 
-<!---FINDINGS 
-We show that wealthier organizations enjoy material advantages in administrative policymaking. 
----> 
-We show that wealthy organizations are more likely to participate in administrative policymaking, and even when the less wealthy participate, wealthy organizations are more likely to have their demands met.
-Six main findings support the conclusion. 
-First, we find that wealthier organizations participate in agency rulemaking at higher rates than less wealthy organizations. We replicate this result within and across various types of for-profit firms and non-profit organizations. 
-Second, we find that for-profit banks are more likely to participate than non-profit banks such as credit unions and savings associations. 
-Third, we find that organizations that spend more money on political campaigns and lobbying are more likely to participate in rulemaking. 
-Fourth, among organizations that participate in rulemaking, we show that organizations that participate frequently are wealthier than those that participate infrequently. 
-Fifth, wealthier organizations advance more technically and legally sophisticated comments than less wealthy organizations. 
-Finally, wealthier organizations are more successful in shifting the content of federal agency rules through their comments. 
+We show that wealthy organizations are more likely to participate in administrative policymaking, and even when the less wealthy participate, wealthy organizations appear more likely to have their demands met.
 
-Using causal mediation analysis, we find that the ability of wealthy organizations to marshall legal and technical expertise appears to be a key mechanism by which wealth leads to lobbying success. Money buys technical and legal sophistication, and sophistication appears to buy changes to regulatory policy content. The sophistication of lobbying appears to explain a large share of the relationship between wealth and lobbying success. In contrast, campaign donations or total lobbying spending do not appear to explain a significant share of the relationship between wealth and lobbying success.  
+Six main findings support the conclusion.
 
-These results have implications for policy reforms. For example, they suggest that limits on campaign contributions would have little effect on the lobbying success of wealthy organizations at this stage of the policy process. However, to the extent that the sophistication mechanism is causal, our results suggest that reform efforts targeting inequalities in access to legal and technical expertise---such as those giving resource subsidies to poorer organizations to write more sophisticated comments and policy recommendations---may be effective in moderating the disproportionate influence of wealth inequality and thus advance administrative democracy.
+First, we find that wealthier organizations participate in agency rulemaking at higher rates than less wealthy organizations. We replicate this result within and across various types of for-profit firms and non-profit organizations.
+
+Second, we find that for-profit banks are more likely to participate than non-profit banks such as credit unions and savings associations.
+
+Third, we find that organizations that spend more money on political campaigns and lobbying are more likely to participate in rulemaking.
+
+Fourth, among organizations that participate in rulemaking, we show that organizations that participate frequently are wealthier than those that participate infrequently.
+
+Fifth, wealthier organizations advance more technically and legally sophisticated comments than less wealthy organizations.
+
+Finally, wealthier organizations are more successful in shifting the content of federal agency rule preambles through their comments, which suggests critical influence on government regulations.
+
+Using causal mediation analysis, we find that the ability of wealthy organizations to marshall legal and technical expertise appears to be a key mechanism by which wealth leads to lobbying success. Money buys technical and legal sophistication, and sophistication appears to buy changes to regulatory policy content. This suggests that lobbying sophistication explains a large share of the relationship between wealth and lobbying success. In contrast, campaign donations or total lobbying spending do not appear to explain a significant share of the relationship between wealth and lobbying success.
+
+These results hold implications for our understanding of public participation and voice in the policymaking process, as well as for future policy reforms. For example, scholars have long known that the high barriers to participation in the federal rulemaking process have tended to amplify the voices of those who have resources over those who don’t. We know now that this inequality runs much deeper than previously appreciated: our findings suggest that, even amongst those organizations with some wealth and sophistication, it is those that have the most wealth and sophistication that tend to participate in agency rulemaking and influence the regulatory debate. As a result, these findings imply a new understanding of privilege and its impact on American policymaking.
+
+With regard to policy reforms, our findings suggest that limits on campaign contributions would have little effect on the lobbying success of wealthy organizations at this stage of the policy process. However, to the extent that the sophistication mechanism is causal, our results highlight that reform efforts targeting inequalities in access to legal and technical expertise---such as those giving resource subsidies to poorer organizations to write more sophisticated comments and policy recommendations---may be effective in moderating the disproportionate influence of wealth inequality and thus advance administrative policymaking.
+
+
 
 # Theory
 
-<!--THIS FIRST PART OF THE "THEORY" SECTION COULD BE COMBINED WITH THE INTRO. THE REAL THEORY STARTS AT THE HYPOTHESES SUBSECTION-->
-The past two decades have witnessed an outpouring of political science research on how economic inequality shapes policy outcomes that generate further economic and social inequality. @Bartels2008 established an important empirical case for political inequality by showing that legislative voting patterns in the U.S. Senate disproportionately reflect the preferences of those individuals at the highest levels of the income distribution. @Hacker2010 described a "winner-take-all politics" by which wealthier Americans improved and secured their economic prospects under both liberal and conservative political leadership while the prospects for middle- and working-class Americans stagnated. In *Affluence and Influence*, @Gilens2012 further systematized these findings using survey data and legislative voting records. Many studies support and refine these observations [e.g., @Baumgartner2009; @Winters2009; @Kelly2010; @Schlozman2012; @Page2013; @Gilens2014; @Witko2021]. 
+The past two decades have witnessed an outpouring of political science research on how economic inequality shapes policy outcomes that generate further economic and social inequality. @Bartels2008 established an important empirical case for political inequality by showing that legislative voting patterns in the U.S. Senate disproportionately reflect the preferences of those individuals at the highest levels of the income distribution. @Hacker2010 described a "winner-take-all politics" by which wealthier Americans improved and secured their economic prospects under both liberal and conservative political leadership while the prospects for middle- and working-class Americans stagnated. In ]*Affluence and Influence]*, @Gilens2012 further systematized these findings using survey data and legislative voting records. Many studies support and refine these observations [e.g., @Baumgartner2009; @Winters2009; @Kelly2010; @Schlozman2012; @Page2013; @Gilens2014; @Witko2021].
 
-<!-- (Chris 2022-07-22: There have been some grounded criticisms of these lines of work. Can we utilize those criticisms here about the overbroadness or geographic connections to note that our work makes these connections pretty tight? By staying close to the data---the text of the rules---we can track the changes, which offers a finer outcome than elected official behavior.) -->
-
-<!--THE GAP--> 
 This empirical portrait of the relationship between wealth and political inequality in the U.S. remains severely incomplete, however. Policymaking does not stop when Congress passes a law. Many critical policy decisions are made by administrative agencies, in part because the legislature delegates significant policymaking authority and discretion to these agencies to make public policy [@Epstein1999; @Huber2002; @Haeder2020]. Because agencies make policy, moneyed interests spend considerable resources to influence administrative and executive decision-making [@Haeder2015; @You2017]. These dynamics are often studied under the concept of regulatory capture [@Carpenter2013]. Still, few regulatory capture projects speak to questions of wealth-based or economic inequality. Likewise, few studies of political inequality address bureaucratic policymaking.
 
-<!--THIS GAP IS IMPORTANT--> 
-While Congress routinely passes statutes, their implementation almost always requires federal agencies to devise legally binding standards and procedures (i.e., rules) that make the legislation practically effective [@West1995; @Kerwin2018]. This kind of agency policymaking is pervasive; in 2018 alone, federal agencies finalized over 3,300 rules.
+While Congress routinely passes statutes, their implementation almost always requires federal agencies to devise legally binding standards and procedures (i.e., rules) that make the legislation practically effective [@West1995; @Kerwin2018]. This kind of agency policymaking is pervasive; in 2023 alone, federal agencies finalized over 3,000 rules.
 
-The rulemaking process creates opportunities for influence. The Administrative Procedure Act of 1946 (APA) governs the federal rulemaking process. It requires federal agencies to solicit public comments on their draft policy proposals (also called Notices of Proposed Rulemaking or proposed rules) and to consider any substantive comments before issuing a legally-binding final rule. Agency officials have some discretion to make changes to the proposed rule text based on public comments. Given the potential impact of agency-issued regulations, the firms and other organizations most affected often attempt to influence regulatory policy content by submitting public comments.^[Federal agency restrictions on ex parte (or "off the public record") lobbying after the issuance of a proposed rule generally allow researchers to use comments during notice and comment rulemaking to study lobbying [@Yackee2012].] 
-<!--Even where groups may exercise influence in parallel forms of lobbying, they often generally have incentives to enter their arguments and demands into the official rulemaking record via public comments.-->
+The rulemaking process creates opportunities for voice and influence. The Administrative Procedure Act of 1946 (APA) governs the federal rulemaking process. It requires federal agencies to solicit public comments on their draft policy proposals (also called Notices of Proposed Rulemaking or proposed rules) and to consider any substantive comments before issuing a legally-binding final rule. Agency officials have some discretion to make changes to the proposed rule text based on public comments. Given the potential impact of agency-issued regulations, the firms and other organizations most affected often attempt to influence regulatory policy content by submitting public comments.^[Federal agency restrictions on ex parte (or "off the public record") lobbying after the issuance of a proposed rule generally allow researchers to use comments during notice and comment rulemaking to study lobbying [@Yackee2012].] 
 
-<!--THIS GAP IS ESPECIALLY IMPORTANT IN FINANCIAL REGULATION--> 
+The (relative) exclusion of administrative processes from the study of inequality is a major omission, as bureaucracies are “an essential site of political contestation” [@SoRelle2023], especially over policies with diffuse beneficiaries and concentrated costs [@Lowi1964]. For instance, recent research on local administrative policymaking finds that public commenters tend to be unrepresentative of the general public along several common demographic dimensions, including wealth (i.e., homeownership), and that these unrepresentative commenters are more likely to sway the policy decision-making of bureaucratic commissions (Add Sahn AJPS).
 
-The exclusion of administrative processes from the study of inequality is a major omission, as bureaucracies are “an essential site of political contestation” [@SoRelle2023], especially over policies with diffuse beneficiaries and concentrated costs [@Lowi1964]. Financial regulation is a particularly important area as a site of inequality, as the highly balkanized institutional landscape appears set up in such a way as to advantage financial institutions and to frustrate ordinary citizens and consumers [@SoRelle2023]. Indeed, as @Barton2022 notes, financial deregulation since the 1970s has been a surprisingly bipartisan project, with Democrats having advanced these policies even despite their tight relationships with labor unions that have strenuously opposed the weakening of financial rules. Yet policy entrepreneurs in both parties have succeeded in designing laws to delegate decisions to regulators in ways that prevent legislators from being fully aware of their policy choices. Indeed, each rulemaking process presents an opportunity for the financial industry and others to lobby the government agency for policy change. Even the Dodd-Frank Act, which was conceived as an attempt to re-regulate the financial sector, did so while handing considerable authority to federal financial agencies, with over 300 provisions authorizing new rulemaking [@Copeland2010]. At the same time as the Dodd-Frank unquestionably sought (and in many cases succeeded) in strengthening prudential and consumer regulation[@Engel2011], it did so while doing relatively little to change the key structural and individual advantages that financial institutions possess [see, e.g., @Young2012; @Pagliari2017; @Braun2018; @Heilman2017; @James2021].  
+Financial regulation is a particularly important area to study inequality, as the highly balkanized institutional landscape appears set up in such a way as to advantage large financial institutions and to frustrate ordinary citizens and consumers [@SoRelle2023]. Indeed, as @Barton2022 notes, financial deregulation since the 1970s has been a surprisingly bipartisan project, with Democrats having advanced these policies even despite their tight relationships with labor unions that have strenuously opposed the weakening of financial rules. Yet policy entrepreneurs in both parties have succeeded in designing laws to delegate decisions to regulators in ways that prevent legislators from being fully aware of their policy choices. Indeed, each rulemaking process presents an opportunity for the financial industry and others to lobby the government agency for policy change. Even the Dodd-Frank Act, which was conceived as an attempt to re-regulate the financial sector, did so while handing considerable authority to federal financial agencies, with over 300 provisions authorizing new rulemaking [@Copeland2010]. At the same time as the Dodd-Frank unquestionably sought (and in many cases succeeded) in strengthening prudential and consumer regulation[@Engel2011], it did so while doing relatively little to change the key structural and individual advantages that financial institutions possess [see, e.g., @Young2012; @Pagliari2017; @Braun2018; @Heilman2017; @James2021].
 
-<!--MIXED FINDINGS-->
-The handful of existing studies that focus on financial rulemaking also present mixed findings about the policy impact of wealth inequality. These studies---which tend to focus on a single agency or a single rule---raise important questions for future scholarship. 
-<!--PARTICIPATION--> 
-For example, there are mixed findings regarding the extent of bias in who is able to participate in financial rulemaking. @Gordon2020 found that a diverse coalition of actors came together to counter the role of larger and more established regulated entities in credit risk retention regulation [see also @Ziegler2016]. However, @Young2017 found that stakeholders beyond affected firms are much less likely to mobilize in the financial sector, especially when a financial rule is technically complex. 
+<!--SHORTEN THIS--> 
+The structural advantage of large, high-resource organizations means that they enjoy greater influence over policy than smaller, less wealthy, and less powerful organized interests. For example, a few large banks dominated lobbying on Section 1075 of the Dodd-Frank Act concerned the regulation of debit card fees. A key aspect of the law was its exemption for small issuers with less than 10 billion dollars of assets under management. Although formally not subject to swipe regulation, the concern voiced by smaller banks during rule development was that the regulations would still have substantial downstream effects for them because they participate in the same market and operate on the same platform in much the same way that Uber or Lyft changing the rules for electric vehicles on their platform might have implications for drivers operating gas vehicles. In particular, these and other comments from smaller banks note that smaller banks depend more on revenue from interchange fees than large banks and do not have the economies of scale enabling them to minimize costs. A price limit that, in theory, applies to the top-tier set of firms could create a market norm that made debit cards a loser, or so the smaller entity trade associations feared. To prevent this, the ICBA argued that the Federal Reserve should make a rule “requiring the networks to adopt tiered rate schedules (one for exempt institutions at existing market rates and another for regulated institutions).”  (p. 34) While Federal Reserve officials did not implement such a requirement, it is also notable that they met with zero small banks individually while having multiple meetings during rule development with Bank of America, JP Morgan, Wells Fargo, a smattering of larger regional banks individually, but far fewer meetings with the organized representatives of small banks than the peak associations of the entire sector.
 
-<!--WHAT WE KNOW ABOUT PARTICIPATION--->
-Generally, research on bureaucratic politics shows that business interests are well-represented in rulemaking. Wealthier organizations, such as businesses, participate in agency rulemaking by submitting comments at a greater rate than other less wealthy organized interests, such as labor and public interest organizations [@YackeeJOP2006]. Past research theorizes that the high costs associated with public comment submission are one reason for this bias. Knowing when and how to participate as regulation is being formulated requires an organization to monitor the bureaucracy's rulemaking activities, which can be complex and arcane [@Kerwin2018; @Rossi1997]. Business interests may pay these high participation costs more readily [@JewellJPART2006].
-@Krawiec2013 studied public participation patterns early in the rulemaking process for section 619 of Dodd-Frank (commonly known as the Volcker Rule). She found that comments from financial industry firms were more detailed, complex, and lengthy than those from non-financial firms. 
+The handful of existing studies that focus on financial rulemaking also present mixed findings about the policy impact of wealth inequality. These studies---which tend to focus on a single agency or a single rule---raise important questions for future scholarship.
 
+For example, there are mixed findings regarding the extent of bias in who is able to participate in financial rulemaking. @Gordon2020 found that a diverse coalition of actors came together to counter the role of larger and more established regulated entities in credit risk retention regulation [see also @Ziegler2016]. Agencies may benefit from the participation of interest groups with different preferences, such as this, and may try to induce this diversity (Hirsch and Shotts 2018). However, @Young2017 found that stakeholders beyond affected firms are much less likely to mobilize in the financial sector, especially when a financial rule is technically complex.
 
-<!--WHAT WE KNOW ABOUT INFLUENCE--> 
-Research also shows that business interests are influential in rulemaking. <!--@Libgober2020 shows firms that engaged regulators via meeting and commenting achieved abnormally positive stock returns upon the announcement of rules on which they lobbied, that the positive returns associated with lobbying were still worth many billions of dollars even just focusing on comparisons within narrow sets of competitive firms, and further that the extent to which regulators gave commenters what they asked for also predicted the initial stock market reaction to rule announcement. While these findings make a case for firm influence over rulemaking, they only do so within a very elite subpopulation of influence seekers: publicly traded firms. Other studies of influence over rulemaking have focused more on the differences between business commenters and those representing other, often more general, interests. For example,--> Comments from businesses on proposed transportation and labor regulations better predicted policy changes than non-business comments [@YackeeJOP2006]. Similarly, regulatory policy is more likely to change during U.S. Office of Management and Budget's (OMB) review when more business interests lobby OMB [@Haeder2015]. 
-However, the extent to which this bias toward business interests is a result of inequalities in the resources that businesses and non-business interests have for lobbying agencies is less clear.
+Generally, research on bureaucratic politics shows that business interests are well-represented in rulemaking. Wealthier organizations, such as businesses, participate in agency rulemaking by submitting comments at a greater rate than other less wealthy organized interests, such as labor and public interest organizations [@YackeeJOP2006]. Comments from wealthier organizations may be better positioned to provide information to regulators or, alternatively, may be better positioned to subsidize agencies as they seek to create technical and/or legally sophisticated regulations (see broadly, Hall and Deardorff 2006; Schnakenberg and Turner 2024). 
+
+Past research theorizes that the high costs associated with public comment submission are one reason for this bias. Knowing when and how to participate as regulation is being formulated requires an organization to monitor the bureaucracy's rulemaking activities, which can be complex and arcane [@Kerwin2018; @Rossi1997]. Business interests also tend to submit more technical comments suggesting that they are better able to pay the high costs of participation than other types of participants [@JewellJPART2006]. @Krawiec2013 studied public participation patterns early in the rulemaking process for section 619 of Dodd-Frank (commonly known as the Volcker Rule). She found that comments from financial industry firms were more detailed, complex, and lengthy than those from non-financial firms. 
+
+Another reason for this bias may be the type of information conveyed in business comments. Acs and Coglianese (Add 2023 JLEO) demonstrate that agency lobbying often conveys political information, as well as policy information, and their research suggests that better-resourced entities are better able to shape regulatory outcomes by signaling their political strength. This implies that, even among what might be considered “wealthy” businesses or firms, inequality may still be determinative because more wealthy organizations may be able to better signal their political power to agency officials than less-wealthy ones. 
+
+Research suggests that business interests are influential in rulemaking. Comments from businesses on proposed transportation and labor regulations better predicted policy changes than non-business comments [@YackeeJOP2006]. Similarly, regulatory policy is more likely to change during the U.S. Office of Management and Budget's (OMB) review when more business interests lobby OMB [@Haeder2015]. However, the extent to which this bias toward business interests is a result of inequalities in the resources that businesses and non-business interests have for lobbying agencies is less clear. 
+
 Studying a sample of Securities and Exchange Commission rules following Dodd-Frank, @Ban2019 concluded that the resources an organization devotes to lobbying appeared to influence the likelihood that the SEC would list an organization’s name in its final rule. In contrast, @Rashin2020 examined thousands of public comments on SEC rules and found that organization resources did not appear to correlate with a commenter's ability to secure policy changes.
 
-Another strand of recent research has suggested a mechanism by which traditionally disadvantaged interests may curb business influence during rulemaking: band together to lobby in diverse coalitions [@Dwidar2021PSJ; @Dwidar2021APSR]. These studies point to continued inequalities: only certain types of coalitions appear to hold policy influence over agency rules, including those with greater resources. This research suggests that inequalities *among* non-profit interest groups demand scholarly attention, in addition to the relative influence of business *versus* non-profit groups.   
-<!--GAP-->
-Because scholars have yet to directly measure the wealth of interest groups and the sophistication of comments, we do not know if businesses enjoy greater influence *because* of wealth and sophisticated lobbying. The effect of wealth inequality on agency policymaking thus remains an open question. 
+Another strand of recent research has suggested a mechanism by which traditionally disadvantaged interests may curb business influence during rulemaking: band together to lobby in diverse coalitions [@Dwidar2021PSJ; @Dwidar2021APSR]. These studies point to continued inequalities: only certain types of coalitions appear to hold policy influence over agency rules, including those with greater resources. This research suggests that inequalities ]*among]* non-profit interest groups demand scholarly attention, in addition to the relative influence of business ]*versus]* non-profit groups.
+
+Because scholars have yet to directly measure the wealth of interest groups and the sophistication of comments, we do not know if businesses enjoy greater influence ]*because]* of wealth and sophisticated lobbying. The effect of wealth inequality on administrative policymaking thus remains an open question.
+ 
+
+
+ 
+
+
 
 ## Wealth Inequality Hypotheses
 
@@ -361,7 +367,7 @@ knitr::include_graphics(here::here(c(
 
 ### Organizations that spend more on political campaigns are more likely to comment
 
-```{r, out.width="49%"}
+```{r}
 #| label: fig-opensecrets-density
 #| fig-cap: "Political Spending of Organizations that Did and Did Not Comment"
 #| fig-subcap: 
@@ -424,7 +430,7 @@ modelsummary(models, notes = "Reference catagory = Banks for model 2, commercial
 
 To further test this hypothesis, we subset our data to banks and estimate the odds of commenting across different types of banks. @fig-mp-FDIC2 (based on model 3 from @tbl-mp-all-table) shows that for-profit banks (i.e., commercial banks) are significantly more likely to comment than non-commercial banks (i.e., non-profit savings associations and savings associations), further supporting the link between profit motives and lobbying activity. For example, among banks with a mean asset amount of approximately 1 billion USD, our model predicts a commercial bank to have a 29% probability of commenting. Meanwhile, a non-profit savings association with the same asset resources has only a 12% probability of commenting. This further supports the *Profit-motivated Participation* Hypothesis (H2). Moreover, assets remain a significant predictor of whether an organization comments even controlling for differences in the type of bank institution. This provides additional evidence for the *Differential Participation* Hypothesis (H1). 
 
-```{r, fig-mp-FDIC2, fig.cap= "Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank", out.width="90%"}
+```{r}
 #| label: fig-mp-FDIC2
 #| fig-cap: Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank
 #| out-width: 65%
@@ -623,6 +629,8 @@ We find support for our hypotheses predicting that disparities in wealth lead to
 We also find evidence that inequalities in wealth drive lobbying influence. For example, market capitalization is strongly correlated with lobbying success among publicly-traded firms. Market capitalization is also highly correlated with comment sophistication, which, in turn, is associated with lobbying success. 
 Mediation analysis suggests that much of the strong association between organizational wealth and organizational lobbying success is a result of the technical and legal sophistication present within the organization’s comment, not political power gained through campaign contributions or spending on lobbying firms.
 
+Our empirical study also provides stylized facts that address some of the formal literature on administrative policymaking. Of the literature summarized in @Schnakenberg2024, our results cohere most with subsidy-based theories of special interest influence [@Hall2006] and with models of policy development monopolies [@Hirsch2018]. Specifically, there may be a rationale for agencies to follow Hirsch and Shotts’ recommendation that agencies induce information provision (competition) by policy developers with different preferences. Meanwhile, our findings that larger and wealthier organizations are more likely to participate and, conditional on participating, more likely to see their comments incorporated in final rule generation, provide the basis for further theoretical work. Our novel measures of comment sophistication also permit those interested in formal modeling to perform tests of hypotheses on commenting strategy, costly signaling and the mobilization of expertise. That said, this is primarily a descriptive, large-sample empirical study and we do not claim to decisively adjudicate among claims in the formal literature. In focusing on rulemaking, our analysis also leaves aside important issues about venue choice raised in @BoehmkeJPP2013 and other works. A richer empirical study might consider the simultaneous empirical modeling of legislative lobbying and commenting as potential complements or substitutes.
+
 <!--POLICY IMPLICATIONS --> 
 These results hold important implications for reform efforts aimed at ameliorating the effects of wealth inequality on government policy [@OIRA2023]. For instance, reforms that provide resources to select organizations to develop more sophisticated comments and policy recommendations may be an effective means to level the playing field between differentially resourced lobbying entities. Such a strategy would resemble subsidized legal representation used in other kinds of policies. The novel feature is that this would be aimed at reducing inequality in administrative policymaking---i.e., rulemaking. Efforts similar to this are already underway at some agencies, including at the U.S. Federal Energy Regulatory Commission.^[See: https://www.ferc.gov/equity] This article’s findings suggest that such reforms merit close study. 
  
@@ -635,13 +643,18 @@ Future work is needed to extend this article’s findings. For instance, followi
 In the end, this study presents a model for studying inequality in U.S. policymaking. 
 With the rise of the administrative state, scholars have documented the importance of agency rulemaking [@Kerwin2018], institutional bias toward businesses [@YackeeJOP2006], and the massive value businesses gain from lobbying agencies [@LibgoberQJPS2020]. Our data and analysis methods enable a new view of the biases in participation and influence in agency rulemaking. The consistent patterns in wealth disparities and impacts that we uncover advance our understanding of lobbying, money in politics, and how these pressures shape democracy in the modern administrative state.
 
+
+<!-- TODO Figure out how print refs here, not at the end
 ## References
-<!-- don't need the next div, but this makes it clearer how to move it -->
+<!-- don't need the next div, but this makes it clearer how to move it 
 ::: {#refs}
 :::
+-->
 
 \clearpage
 
 {{< include participatory-inequality-appendix.qmd >}}
 
 \clearpage
+
+## References
