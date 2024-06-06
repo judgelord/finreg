@@ -1,6 +1,6 @@
 ---
 title: "Results By Agency"
-format: 
+format: #pdf
   html:
     embed-resources: true
 code-fold: true

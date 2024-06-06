@@ -10,6 +10,8 @@ output:
       number_sections: false
 ---
 
+("Infrequent commenters" may have commented on non-OCC Dodd-Frank rules)
+
 ```{r options, include=FALSE}
 library(marginaleffects)
 library(fixest)

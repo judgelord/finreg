@@ -623,6 +623,12 @@ models <- list(mpCompustat, mpCompustat_naics)
 
 equatiomatic::extract_eq(models[[1]]) 
 
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented"
+)
+
 modelsummary(models)
 
 
