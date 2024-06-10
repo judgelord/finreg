@@ -1,0 +1,2892 @@
+---
+title: "Efficacy in SEC Rulemaking"
+#subtitle: "Appendix and Replication Code"
+output:
+    bookdown::html_document2:
+      highlight: zenburn
+      toc: true
+      toc_float: true
+      code_folding: hide
+      number_sections: false
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+```{r options, include=FALSE}
+# rmarkdown::render("docs/efficacy.Rmd")
+source(here::here("code", "setup.R"))
+
+## Change defaults for R chunks
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  cache = FALSE,
+  fig.path = "figs/", #
+  fig.height=2.3, 
+  fig.width=3.2, 
+  out.width="50%")
+
+```
+
+
+# Data
+
+The root for this script is `finreg`. Most of the data are in `finreg/data` (some in a subfolder `merged_resources`). Others are up one level in `FINREGRULEMAKE2/Data`. This can and should be streamlined significantly. 
+
+
+## Sophistication 
+
+We measure comment sophistication in two ways. First, we measure technical sophistication by the number of words in a comment that are found in a dictionary of technical banking and finance terms. Second, we measure legal sophistication by the number of legal citations, as indicated by the Blue Book (a legal citation manual).
+
+
+File: `Data/Dictionary_Terms.RData` contains six objects (3 sets of measures for both comments and attachments)
+
+### 1. Dictionary counts of technical terms used in comments and attachments
+
+We use the [Oxford Dictionary of Finance and Banking](https://www.oxfordreference.com/view/10.1093/acref/9780199664931.001.0001/acref-9780199664931) and the [Merriam Webster law dictionary](https://www.merriam-webster.com/browse/legal/). While Black's is a more common law dictionary, a complete version is not available online.
+
+
+Objects: `technical_terms_comments` and `technical_terms_attachment`
+
+Variables:
+
+- `doc_id` - the comment_url or attachment_url in the comments and attachments files in master.sqlite
+- `uk_law` - UK law terms - this is in the file as I was curious how many of the terms would be in a UK law dictionary.
+- `banking` - US banking terms in Merriam Webster's banking dictionary
+- `us_law` - US law terms in Merriam Webster's US law dictionary. We didn't use Black's law dictionary because it's incomplete, as shown at the beginning of the `dictionary_and_bluebook.R` file
+- `overlap` - terms in both banking and us_law
+- `dictionary_term`s - banking + us_law - overlap
+- `Comment` - 1 if from the comments file in Master, 0 if from attachments
+
+### 2. Tables and Figures
+
+Counts of Tables and Figures. Looks at the maximum number of tables, with large jumps excluded. For example, a document with tables 1, 2, 3, and 99 would treat 99 as an error and say there were three tables. This mostly comes from bad OCRing or documents that have footnotes in between the word "table" and the table number.
+
+Objects: `Tables_and_Figures_attachments` and `Tables_and_Figures_comments`
+
+Variables:
+
+- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.SQLite
+- `Figures` - counts of figures
+- `Tables`- counts of tables
+- `Comment` - 1 if from comments, 0 if from attachments
+- `Visualizations` - sum of figures + tables
+
+### 3. Bluebook legal citations
+
+Counts of citations to US code, Supreme Court cases, appellate and district court cases, the code of federal regulations, and the federal register
+
+Objects: `bluebok_comments` and `bluebook_attachments`
+
+Variables:
+
+- `Comment` - 1 if from comments, 0 if from attachments
+- `comment_url` - the comment_url or attachment_url in the comments and attachments files in master.SQLite
+- `US_Code` - counts of US code citations
+- `Supreme_Court_Cases` - counts of Supreme Court cases
+- `Appeals_and_District_Court_Cases` - counts of citations to Appeals and district court cases
+- `Code_of_Federal_Regulations` - counts of citations to CFR
+- `Federal_Register_Total` - counts of citations to the federal register
+- `Total_Legal_Citations` - the sum of the above except comment dummy
+
+
+```{r sophistication}
+# sophistication 
+load(here::here("Data", "Dictionary_Terms.Rdata")  %>% str_remove("finreg/")  )
+
+# drop duplicates 
+technical_terms_comments %<>% 
+  distinct()  %>%
+  filter(str_detect(comment_url, "sec.gov"))
+
+# source
+technical_terms_comments$comment_url |> str_extract(".*gov") |> unique()
+
+# drop duplicates 
+technical_terms_attachments %<>% 
+  distinct()  %>%
+  filter(str_detect(comment_url, "sec.gov"))
+
+# source
+technical_terms_attachments$comment_url |> str_extract(".*gov") |> unique()
+
+# drop duplicates 
+bluebook_attachments %<>% 
+  distinct()  %>%
+  filter(str_detect(comment_url, "sec.gov"))
+
+# source
+bluebook_attachments$comment_url |> str_extract(".*gov") |> unique()
+
+# drop duplicates 
+bluebook_comments %<>% 
+  distinct()  %>%
+  filter(str_detect(comment_url, "sec.gov"))
+
+# source
+bluebook_comments$comment_url |> str_extract(".*gov") |> unique()
+```
+
+
+```{r sophistication-join}
+# summarize and merge term counts from comment text boxes and attachments
+# max <- . %>% base::max(na.rm = TRUE)
+
+
+# sum by comment URL 
+#FIXME, why are these not unique! 
+bluebook_c <- bluebook_comments %>% 
+  drop_na(Total_Legal_Citations) %>% 
+  group_by(comment_url) %>% 
+  dplyr::select(-comment) %>% 
+  summarise_all(base::max)
+
+# whereas these should not be unique to comment URL 
+bluebook_a <- bluebook_attachments %>% 
+  drop_na(Total_Legal_Citations) %>% 
+  group_by(comment_url) %>% 
+  dplyr::select(-comment) %>% 
+  summarise_all(base::max)
+
+# join both and max again 
+bluebook <- full_join(bluebook_a,
+                      bluebook_c) %>% 
+  group_by(comment_url) %>% 
+  summarise_all(base::max)
+
+# # check for unique comment_url
+# bluebook %>% count(comment_url, sort = T)
+
+# sum by comment URL 
+#FIXME, why are these not unique!? 
+technical_terms_c <- technical_terms_comments %>% 
+  drop_na(dictionary_terms) %>% 
+  group_by(comment_url) %>% 
+  dplyr::select(-comment) %>% 
+  summarise_all(base::max)
+
+# whereas these should not be unique to comment URL 
+technical_terms_a <- technical_terms_attachments %>% 
+  drop_na(dictionary_terms) %>% 
+  group_by(comment_url) %>% 
+  dplyr::select(-comment) %>% 
+  summarise_all(base::max)
+
+# join both and sum again 
+technical_terms <- full_join(technical_terms_a,
+                             technical_terms_c) %>% 
+  group_by(comment_url) %>% 
+  summarise_all(base::max)
+
+# # check for unique comment_url
+# technical_terms %>% count(comment_url, sort = T)
+
+full_join(technical_terms, bluebook) %>% kablebox()
+
+# check that they are the same 
+# full_join(bluebook, technical_terms)
+```
+
+---
+
+## Assets 
+
+- see https://judgelord.github.io/finreg/participation
+
+```{r asset-data}
+load(here::here("data", "commenter_assets.Rdata"))
+
+d <- commenter_assets |>
+  filter(comment_agency == "SEC") 
+
+# patch since I got rid of the original org type 
+d$org_type <- d$org_type2
+
+#FIXME MOVE TO TOP 
+# d$comment_url %<>% str_replace("document\\?D=", "comment/")
+
+# inspect largest banks 
+# Make sure ASSET variable is adjusted (in the raw data it was in thousands)
+d %>% arrange(-ASSET) %>% 
+  dplyr::select(org_name, ASSET, comment_url) %>% kablebox()
+
+d %>% arrange(-assets) %>% 
+  dplyr::select(org_name, assets, revenue, comment_url) %>% kablebox()
+
+d %>% arrange(-marketcap2) %>% 
+  dplyr::select(org_name, marketcap, comment_url) %>% kablebox()
+
+d %>% arrange(-MeanContribAmount) %>% 
+  dplyr::select(org_name, MeanContribAmount, comment_url) %>% kablebox()
+
+d %>% filter(str_dct(org_name, "chamber")) %>% 
+  dplyr::select(organization, comment_org_name, org_name, assets, revenue, MeanContribAmount, comment_url) %>% kablebox()
+```
+
+---
+
+## Efficacy
+
+File: `Data/attachment_efficacy_w_docket.csv.`
+
+Variables: 
+
+- `efficacy` = `cumulative_sequence_length_over_10`
+
+Other efficacy measures that we are not using: 
+
+- number_of_other_sequences_over_10
+- number_of_other_sequences_over_25
+- number_of_other_sequences_over_50
+- number_of_other_sequences_over_100
+- cumulative_sequence_length_over_10
+- cumulative_sequence_length_over_25
+- cumulative_sequence_length_over_50
+- cumulative_sequence_length_over_100
+- longest_sequence_length
+- longest_repeated_text
+
+```{r efficacy}
+# attachments table 
+# lookup table 
+attachments <- read_csv(here::here("Data", "attachments.csv"))
+
+# attachments table is many to many 
+attachments %>% distinct() %>% add_count(attachment_url, sort = T)
+
+# the matched data are generally in the attachments table (or they are not attachments)
+d %>% count(comment_url %in% attachments$comment_url, comment_agency)
+
+# efficacy data 
+efficacy_raw <- read_csv( here::here("data", "new_attachment_efficacy_w_docket.csv")  %>% str_remove("finreg/")  )
+
+efficacy_raw %>% kablebox()
+
+efficacy_raw %>% count(is.na(cumulative_sequence_length_over_10))
+
+# url is comment url, but missing many 
+efficacy_raw %>% count(url %in% attachments$comment_url)
+# those dockets we have
+efficacy_raw %>% filter(url %in% attachments$comment_url) %>% count(docket_id) %>% kablebox()
+# those we dont have 
+efficacy_raw %>% filter(!url %in% attachments$comment_url) %>% count(docket_id) %>% kablebox()
+
+
+# comment_url is blank
+efficacy_raw %>% count(comment_url %in% attachments$comment_url)
+efficacy_raw %>% count(url %in% attachments$comment_url)
+
+# attachment_url is  correct
+efficacy_raw %>% count(attachment_url %in% attachments$attachment_url)
+# except for the additional headers
+efficacy_raw %>% filter(!attachment_url %in% attachments$attachment_url) %>% kablebox()
+
+
+# merge in comment url from attachments table 
+
+# drop empty url
+efficacy_raw %<>% dplyr::select(-comment_url)
+
+efficacy_raw %>% count(attachment_url, sort = T)
+
+# JOINING LOOKUP TABLE DOES MUCH BETTER THAN USING URL VAR 
+#FIXME 
+efficacy_raw %<>% left_join(attachments) %>% distinct()
+
+#efficacy_raw %<>% mutate(comment_url = url)
+
+# efficacy_raw %>% filter(url == comment_url)
+
+# inspect 
+# efficacy_raw %>% distinct() %>% dplyr::select(attachment_url, fr_document_id_final) %>% add_count(attachment_url) %>% arrange(-n) %>%   kablebox()
+
+# # look for non-numeric values other than headers
+# efficacy_raw %>% 
+#   filter(!is.na(cumulative_sequence_length_over_10),
+#          comment_url != "comment_url") %>% 
+#   mutate(efficacy = cumulative_sequence_length_over_10 %>% as.numeric() ) %>% 
+#   filter(is.na(efficacy)) %>% 
+#   dplyr::select(comment_url, cumulative_sequence_length_over_10)
+
+# select needed vars. URL is comment URL (even for attachments)
+efficacy <- efficacy_raw %>% 
+  # make comment URL 
+         mutate(efficacy = cumulative_sequence_length_over_10 %>% as.numeric()  )%>% 
+  dplyr::distinct(comment_url,  efficacy)
+
+efficacy %>% count(comment_url, sort = T)
+
+# dropping 17k 
+efficacy %<>% drop_na(efficacy)
+
+# take most efficacious attachment per comment 
+efficacy %<>%  group_by(comment_url) %>% slice_max(order_by = efficacy) %>% ungroup()
+
+efficacy %>% arrange(-efficacy) %>% kablebox()
+
+# d$comment_url %in% efficacy$comment_url %>% sum
+
+# efficacy$comment_url %in% d$comment_url %>% sum
+
+#efficacy %>% filter(str_detect(comment_url, "SEC")) %>%  kablebox()
+
+d  %<>% 
+   mutate(comment_url = comment_url %>% 
+            str_replace("\\?", "QUESTIONMARK")
+          )  %>% 
+  left_join(efficacy %>% mutate(comment_url = comment_url %>% 
+                                        str_replace("\\?", "QUESTIONMARK")
+                                ) 
+  )
+
+d$comment_url
+efficacy$comment_url
+
+# transform back
+d  %<>% 
+   mutate(comment_url = comment_url %>% 
+            str_replace("QUESTIONMARK", "\\?")
+          ) 
+
+
+
+d %>% count(is.na(efficacy))
+
+# we should have efficacy for these
+d %>% filter(comment_url %in% attachments$comment_url) %>% group_by(comment_agency) %>% count(is.na(efficacy))
+
+```
+
+
+```{r inspect, eval=FALSE}
+d%>% filter(is.na(efficacy), # missing from efficacy
+            comment_url %in% attachments$comment_url) %>% # but in attachments 
+  group_by(Agency) %>% slice_head(n = 10) %>% select(comment_url) %>% kablebox()
+
+# missing 
+efficacy %>% filter(str_dct(comment_url,"61025"))
+efficacy_raw %>% filter(str_dct(attachment_url,"61025"))
+attachments %>% filter(str_dct(comment_url,"=61025"))
+
+
+# No attachments 
+efficacy %>% filter(str_dct(comment_url,"CLAppraisal20140609J"))
+efficacy %>% filter(str_dct(comment_url,"SEC-2016-0020-0008"))
+
+
+efficacy %>% filter(!comment_url %in% attachments$comment_url)
+```
+
+
+
+```{r testing, eval = FALSE}
+# check the number of NAS 
+bluebook_comments %>%
+  summarise_all(is.na) %>%
+  summarise_all(sum)
+
+# multiple per URL? 
+bluebook_comments %>%  count(comment_url, sort = T)
+
+bluebook_attachments %>%  count(comment_url, sort = T)
+
+# example
+bluebook_attachments %>% filter(comment_url == "https://www.regulations.gov/comment/SEC-2011-0008-0126") %>% kablebox()
+
+bluebook_comments %>% filter(comment_url == "https://www.regulations.gov/comment/SEC-2011-0008-0126") %>% kablebox()
+
+technical_terms_comments %>% count(comment_url, sort = T)
+
+technical_terms_attachments %>% count(comment_url, sort = T)
+```
+
+---
+
+### Join sophistication and asset data
+
+```{r sophistication-assets-join, fig.height=3.5, fig.width=4}
+# Join 
+d %<>% 
+  left_join(bluebook %>% dplyr::select(comment_url, Total_Legal_Citations)) %>% 
+  left_join(technical_terms %>% dplyr::select(comment_url, dictionary_terms)) 
+
+d %>% 
+  dplyr::select(comment_url, org_name, Total_Legal_Citations, dictionary_terms, assets, marketcap, MeanContribAmount) %>% 
+  filter(!is.na(dictionary_terms)) %>% 
+  kablebox()
+
+# write out missing comment URLs
+d %>% 
+  filter(is.na(dictionary_terms)) %>% dplyr::select(comment_url) %>% write_csv(file = "dictionary_terms_missing.csv")
+
+# FIXME Missing as of May 2022
+# bluebook %>% filter(str_detect(comment_url, "SEC-2019-0021-0406"))
+# technical_terms %>% filter(str_detect(comment_url, "SEC-2019-0021-0406"))
+
+
+#FIXME DROP BAD EFFICACY COMMENTS
+efficacy%<>% filter(!comment_url %in% c(
+  "https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=23750",
+  "https://www.regulations.gov/comment/SEC-2012-0029-0054"
+))
+
+
+# look for outliers 
+efficacy %>% arrange(-efficacy) %>% kablebox(
+)
+
+technical_terms %>% 
+      dplyr::select(comment_url, dictionary_terms) %>% 
+  arrange(-dictionary_terms) %>% kablebox()
+
+#FIXME DROP BAD TECHNICAL TERM MEASURE 
+technical_terms %<>% filter(!comment_url %in% c(
+  "https://www.regulations.gov/comment/SEC-2013-0008-0028"
+))
+
+#FIXME DROP BAD TECHNICAL TERM MEASURE 
+technical_terms %<>% filter(!comment_url %in% c(
+  "https://www.regulations.gov/comment/SEC-2013-0008-0028"
+))
+
+bluebook %>% 
+      dplyr::select(comment_url, Total_Legal_Citations) %>% 
+  arrange(-Total_Legal_Citations) %>% kablebox()
+  
+efficacyXsophistication <- bluebook %>% 
+  dplyr::select(comment_url, Total_Legal_Citations) %>% drop_na(Total_Legal_Citations) %>% 
+  left_join(
+    technical_terms %>% 
+      dplyr::select(comment_url, dictionary_terms)
+  ) %>% 
+  left_join(efficacy) %>% 
+  mutate(efficacy = replace_na(efficacy, 0),
+         org = ifelse(comment_url %in% d$comment_url, "Matched organization", "Individual or\nunmatched organization") )
+```
+
+### Matched vs. unmatched comments
+
+```{r matched-by-terms, fig.height=3.5, fig.width=5}
+# matched-by-terms
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = dictionary_terms, fill = org) +
+  geom_histogram() + 
+  facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_y_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Number of Comments",
+       x = "Technical Terms in Comment",
+       fill = "") 
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = dictionary_terms, fill = org) +
+  geom_density(alpha = .5, color = NA) + 
+  #facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_x_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "",
+       x = "Technical Terms in Comment",
+       fill = "") 
+
+```
+
+
+
+```{r matched-by-bluebook, fig.height=3.5, fig.width=5}
+#  matched-by-bluebook
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = Total_Legal_Citations, fill = org) +
+  geom_histogram() + 
+  facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_y_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Number of Comments",
+       x = "Legal Citations in Comment",
+       fill = "") 
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = Total_Legal_Citations, fill = org) +
+  geom_density(alpha = .5, color = NA) + 
+  #facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_x_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "",
+       x = "Legal Citations in Comment",
+       fill = "") 
+```
+
+```{r matched-by-efficacy, fig.height=3.5, fig.width=5}
+# matched-by-efficacy
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = efficacy, fill = org) +
+  geom_histogram() + 
+  facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_y_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Number of Comments",
+       x = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+       fill = "") 
+
+efficacyXsophistication %>% 
+  ggplot() + 
+  aes(x = efficacy, fill = org) +
+  geom_density(alpha = .5, color = NA) + 
+  #facet_wrap("org", ncol = 1, scales = "free_y") + 
+  scale_x_log10() + 
+  labs(title = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Number of Comments",
+       x = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+       fill = "") 
+```
+
+### Efficacy by Sophistication Boxplot for Paper
+
+Technical terms
+```{r boxplot-efficacyXsophistication, fig.height=3.5, fig.width=5}
+#boxplot-efficacyXsophistication
+
+boxplotXefficacyXsophistication <- efficacyXsophistication %>% 
+  dplyr::filter(org == "Matched organization") %>%
+  #filter(efficacy > 0) %>%
+  arrange(dictionary_terms) %>%
+  mutate(
+    log_efficacy = log10(efficacy + 1),
+    log_dictionary_terms = log10(dictionary_terms + 1),
+    log_dictionary_terms_quantiles = ntile(log_dictionary_terms, 10),
+    group = as.factor(log_dictionary_terms_quantiles),
+    bin=cut_width(log_dictionary_terms, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin,-1) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",") 
+  ) %>% 
+  filter(!is.na(group)) %>%
+  ggplot(aes(x=bin, y=efficacy)) +
+  geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = .1) +
+  #geom_point(aes(x=4, y=10131),colour="red",  shape = 0, size = 3) +
+  #annotate(y = 10131, x = 3, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = 0, hjust = .7, size = 3.5) + 
+  scale_y_continuous(trans = scales::log10_trans(), breaks = c(1, 10, 100, 1000, 10000), lim = c(10,14000), expand = c(0,0)) +
+  labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+       x = "Technical Terms in Comment (SEC Comments Only)",
+       color = "") #+ theme(axis.title = element_text(size = 14))
+
+boxplotXefficacyXsophistication
+
+# ggsave(plot = boxplotXefficacyXsophistication, filename = "figs/boxplot-efficacyXsophistication-2.png",bg="white")
+```
+
+
+Legal
+
+```{r boxplot-efficacyXsophistication-legal, fig.height=3.5, fig.width=5}
+#boxplot-efficacyXsophistication
+
+boxplotXefficacyXsophistication <- efficacyXsophistication %>% 
+  dplyr::filter(org == "Matched organization") %>%
+  #filter(efficacy > 0) %>%
+  arrange(Total_Legal_Citations) %>%
+  mutate(
+    log_efficacy = log10(efficacy + 1),
+    log_Total_Legal_Citations = log10(Total_Legal_Citations + 1),
+    log_Total_Legal_Citations_quantiles = ntile(log_Total_Legal_Citations, 10),
+    group = as.factor(log_Total_Legal_Citations_quantiles),
+    bin=cut_width(log_Total_Legal_Citations, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin,-1) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",") 
+  ) %>% 
+  filter(!is.na(group)) %>%
+  ggplot(aes(x=bin, y=efficacy)) +
+  geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = .1) +
+    geom_point(x=2, y=10131, alpha = .1) +
+  geom_point(aes(x=2, y=10131),colour="red",  shape = 0, size = 3) +
+  annotate(y = 10131, x = 2, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = 0, hjust = .7, size = 3.5) + 
+  scale_y_continuous(trans = scales::log10_trans(), breaks = c(1, 10, 100, 1000, 10000), lim = c(10,14000), expand = c(0,0)) +
+  labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+       x = "Legal Citations in Comment",
+       color = "") #+ theme(axis.title = element_text(size = 14))
+
+boxplotXefficacyXsophistication
+
+# ggsave(plot = boxplotXefficacyXsophistication, filename = "figs/boxplot-efficacyXsophistication-2.png",bg="white")
+```
+
+
+```{r efficacyXsophistication, fig.height=3.5, fig.width=5}
+# efficacyXsophistication
+
+efficacyXsophistication %>% arrange(-efficacy) %>% kablebox()
+
+eXsplot <- efficacyXsophistication %>% # filter(efficacy > 0) %>% #FIXME 
+  ggplot() +
+  aes(x = dictionary_terms, y = efficacy) + 
+  geom_point(aes(y = 10131, x = 7705), color = "red", shape = 0, size = 3) +
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm") +
+  geom_smooth(color = "light blue") +
+  labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+       x = "Technical Terms in Comment",
+       color = "") +
+  theme(legend.position = "bottom")
+
+eXsplot + 
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
+
+eXsplot + 
+  scale_x_log10() +
+  scale_y_log10() + 
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
+
+# color 
+eXsplot + 
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", 
+           label = "U.S. Chamber of Commerce et al.", 
+           vjust = .8, hjust = -0.05, size = 3.5) + 
+  aes(color = org) + labs(color = "")
+
+eXsplot + 
+  scale_x_log10() +
+  scale_y_log10() + 
+  aes(color = org)+ labs(color = "") + 
+  annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
+
+# legal citations
+eXsplot <- efficacyXsophistication %>%  # filter(efficacy > 0) %>% #FIXME 
+  ggplot() +
+  aes(x = Total_Legal_Citations, y = efficacy) + 
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm") +
+  geom_smooth(color = "light blue") +
+  labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+       color = "",
+       y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+       x = "Legal Citations in Comment") + 
+  geom_point(aes(x = 31, y = 10131), color = "red", shape = 0, size = 3)+
+  theme(legend.position = "bottom")
+
+
+eXsplot  + 
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
+
+eXsplot + 
+  scale_x_log10() +
+  scale_y_log10() + 
+  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .5, hjust = 1.05, size = 3.5)
+
+# color 
+eXsplot  + 
+  annotate(x = 31, y = 10131, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)  + aes(color = org) + labs(color = "")
+
+eXsplot + 
+  scale_x_log10() +
+  scale_y_log10() + 
+  aes(color = org) + labs(color = "") + 
+  annotate(y = 10131, x = 31, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = 1.05, size = 3.5)
+
+# GGRidges experiment
+# library(ggridges)
+# efficacyXsophistication %>% 
+#   dplyr::filter(org == "Matched organization") %>%
+#   #filter(efficacy > 0) %>%
+#   arrange(dictionary_terms) %>%
+#   mutate(
+#     log_efficacy = log10(efficacy + 1),
+#     log_dictionary_terms = log10(dictionary_terms + 1),
+#     log_dictionary_terms_quantiles = ntile(log_dictionary_terms, 10),
+#     group = as.factor(log_dictionary_terms_quantiles),
+#     #bin=cut_width(log_dictionary_terms, width=1, boundary=0)
+#   ) %>% 
+#   ggplot(aes(x=dictionary_terms, y=efficacy)) +
+#   geom_point(aes(x=dictionary_terms, y=efficacy), alpha = 0.03) + 
+#   geom_vridgeline(aes(width = after_stat(density), fill=group), 
+#                   stat="ydensity", trim=F, alpha = 0.85, scale = 0.25) +
+#   scale_x_log10() +
+#   scale_y_log10() +
+#   #coord_trans(x = scales::exp_trans(10), y = scales::exp_trans(10)) +
+#   geom_smooth() +
+#   #coord_cartesian(ylim = c(1,10000), xlim = c(1,10000)) + #, ylim = c(1,10)) +
+#   scale_fill_discrete(name = "Tech. Q.", labels = c("1-3", "4", "5", "6", "7","8","9","10")) +
+#   labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ",")),
+#        y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+#        x = "Technical Terms in Comment",
+#        color = "") 
+
+# 2 Boxplot
+efficacyXsophistication %>% 
+  dplyr::filter(org == "Matched organization") %>%
+  #filter(efficacy > 0) %>%
+  arrange(dictionary_terms) %>%
+  mutate(
+    log_efficacy = log10(efficacy + 1),
+    log_dictionary_terms = log10(dictionary_terms + 1),
+    log_dictionary_terms_quantiles = ntile(log_dictionary_terms, 10),
+    group = as.factor(log_dictionary_terms_quantiles),
+    bin=cut_width(log_dictionary_terms, width=1, boundary=0,closed = "right") %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin,-1) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",") 
+  ) %>% 
+  filter(!is.na(group)) %>%
+  ggplot(aes(x=bin, y=efficacy)) +
+  geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
+  geom_boxplot(width=0.75, fill="white", outlier.alpha = 0) + 
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,10000), expand = c(0,0)) +
+  labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXsophistication) %>% prettyNum(big.mark = ","),
+                       "\n x-axis are bins on the log scale"),
+       y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+       x = "Technical Terms in Comment",
+       color = "") 
+```
+
+
+### Efficacy by Volunteers  
+
+
+```{r efficacyXvol, fig.height=3.5, fig.width=5}
+#efficacyXvol
+
+efficacyXvol <- commenter_assets %>% 
+  left_join(efficacy) %>% 
+  mutate(efficacy = replace_na(efficacy, 0),
+         org = ifelse(comment_url %in% d$comment_url, "Matched organization", "Individual or\nunmatched organization") )
+
+
+eXvplot <- efficacyXvol %>% # filter(efficacy > 0) %>% #FIXME 
+  ggplot() +
+  aes(x = TotalVolunteersCnt, y = efficacy) + 
+  #geom_point(aes(y = 10131, x = 7705), color = "red", shape = 0, size = 3) +
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm") +
+  geom_smooth(color = "light blue") +
+  labs(caption = str_c("Comments on Dodd-Frank Rules, N = ", nrow(efficacyXvol) %>% prettyNum(big.mark = ",")),
+       y = "Lobbying Success\n(Words From Comment\nAdded to Final Rule)",
+       x = "Volunteers",
+       color = "") +
+  theme(legend.position = "bottom")
+
+eXvplot #+ annotate(y = 10131, x = 7705, color = "red", geom = "text", label = "U.S. Chamber of Commerce et al.", vjust = .8, hjust = -0.05, size = 3.5)
+
+eXvplot + 
+  scale_x_log10() +
+  scale_y_log10()
+```
+
+
+---
+  
+<!-- DO NOT MODIFY MAIN DATA (d) BELOW---> 
+
+---
+
+# Number of comments per agency
+
+Technical terms measured for `r d %>% filter(comment_url %in% technical_terms$comment_url) %>% nrow()` of `r nrow(d)` comments.
+
+```{r techical}
+# matches
+d %>% 
+  count(Agency, name = "n comments matched with org") %>%
+  left_join(
+    d %>% 
+      filter(comment_url %in% technical_terms$comment_url) %>% 
+      count(Agency, name = "n with dictionary terms measured") 
+    )  %>% 
+  left_join(
+    d %>% 
+      dplyr::select(-efficacy) %>% 
+      filter(comment_url %in% efficacy$comment_url) %>% 
+      count(Agency, name = "n with efficacy measured")  
+    )  %>% 
+  kablebox()
+```
+
+---
+
+# Plots
+
+## Sophistication x assets
+
+### Legal citations x assets
+
+```{r assets-blue, fig.height=2.5, fig.width=3, out.width="50%"}
+# assets-blue
+#d %>% count(is.na(dictionary_terms))
+
+b <- d %>% filter(!is.na(dictionary_terms)) #TODO CHECK FOR MISSING MARKETCAP
+
+b %>% dplyr::select(org_name, Total_Legal_Citations, org_resources, comment_url)  %>%  
+  drop_na(org_name, org_resources) %>%
+  kablebox()
+
+# FDIC ASSETS 
+# FDIC ASSETS 
+p <- b %>% 
+  filter(!is.na(`ASSET`)) %>% 
+  ggplot() +
+  aes(x = ASSET, # %>% log(), 
+      y = Total_Legal_Citations ) + 
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm") +
+  geom_smooth(color = "light blue") + 
+  labs(x = "Assets",
+       y = "Legal Sophistication", 
+       title = "(SEC Only) Banks")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
+# nonprofits
+p <- b %>% 
+  ggplot() +
+  aes(x = assets, 
+      y = Total_Legal_Citations) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm" )+ 
+    geom_smooth(color = "light blue") + 
+  labs(x = "Assets",
+       y = "Legal Sophistication",
+       title = "(SEC Only) Nonprofits")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
+# contribution
+p <- b %>% 
+  ggplot() +
+  aes(x = MeanContribAmount/1000, 
+      y = Total_Legal_Citations) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+    geom_smooth(color = "light blue") + 
+  labs(x = "Mean PAC Contribution (Thousands USD)",
+       y = "Legal Sophistication",
+       title = "(SEC Only) Campaign Donors")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+
+
+
+p <- b %>% 
+  #filter(marketcap2 > 1000000) %>% 
+  ggplot() +
+  aes(x = marketcap2/1000000000, 
+      y = Total_Legal_Citations) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+    geom_smooth(color = "light blue") + 
+  labs(x = "Market Capitalization (Billions)",
+       y = "Legal Sophistication",
+       title = "(SEC Only) Publicly-Traded Companies")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10() + 
+  xlim(c(0, 400))
+
+
+# b %>% count(comment_agency, is.na( assets))
+
+b %>% filter(Total_Legal_Citations>10,
+             !is.na(org_name)) %>% dplyr::select(org_name,Total_Legal_Citations, comment_url, everything()) %>% arrange(-Total_Legal_Citations) %>% kablebox()
+```
+
+
+### Boxplots of Legal Citations by Assets (Among Comments from Banks on Dodd-Frank Rules)
+```{r boxplot-assets-legal, fig.height=2.5, fig.width=4, out.width="50%"}
+#boxplot-assets-legal
+
+#Non-Profits
+#binning here is a bit tricky because of the log transformation necessary at the back end
+# bins are 0 to 1,000,000 then 1,000,000 to 10,000,000, then 10 to 100 million, 100 million to a billion
+
+NP_legal <- b %>% 
+  drop_na(assets, nonprofits_resources_name) %>%
+  filter(assets>0) %>% 
+  mutate(
+    log_Total_Legal_Citations = log10(Total_Legal_Citations + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",") 
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=Total_Legal_Citations)) +
+  geom_jitter(aes(x=bin, y=Total_Legal_Citations), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000, 100000), lim = c(1,200000), expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Legal Citations", 
+       title = "(SEC Only) Nonprofits")
+
+NP_legal
+
+NP_legal
+
+# Industry associations 
+IA_legal <- b %>% 
+  drop_na(assets, nonprofits_resources_name) %>%
+  filter(SUBSECTION == "06", assets < 1000000000, assets > 0) %>% 
+  mutate(
+    log_Total_Legal_Citations = log10(Total_Legal_Citations + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000 ),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #view() #select(assets, bin) %>% group_by(bin) %>%
+  #skimr::skim()
+  ggplot(aes(x=bin, y=Total_Legal_Citations)) +
+  geom_jitter(aes(x=bin, y=Total_Legal_Citations), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),
+                     breaks = c(1, 10, 100, 1000, 10000, 100000), 
+                     lim = c(1,200000), 
+                     expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Legal Citations", 
+       title = "(SEC Only) Industry Associations")
+
+IA_legal
+
+IA_legal
+
+# Credit Unions
+       #caption = "x-axis are bins represing the log10 scale, so the first bin is organizations with assets from $0 to $1 million") 
+
+CU_legal <- b %>% 
+  filter(!is.na(CreditUnions_name),
+         !is.na(assets),
+         assets < 10000000000,
+         assets > 0) %>% #pull(assets) %>% max(na.rm = T)
+  mutate(
+    log_Total_Legal_Citations = log10(Total_Legal_Citations + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=Total_Legal_Citations)) +
+  geom_jitter(aes(x=bin, y=Total_Legal_Citations), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(0, 1, 10, 100, 1000, 10000), lim = c(1,10000), expand = c(0,0))  +
+  labs(x = "Assets (Millions USD)",
+       y = "Legal Citations", 
+       title = "(SEC Only) Credit Unions")
+
+CU_legal
+
+CU_legal
+
+
+PTC_legal <- b %>% 
+  filter(!is.na(marketcap2), marketcap2 > 1000000) %>% 
+  mutate(
+    log_Total_Legal_Citations = log10(Total_Legal_Citations + 1),
+    assets_in_millions = marketcap2/1000000,
+    log_assets_in_millions = log10(marketcap2/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=Total_Legal_Citations)) +
+  geom_jitter(aes(x=bin, y=Total_Legal_Citations), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans() ,breaks = c(1, 10, 100, 1000, 10000), expand = c(0,0)) +
+  labs(x = "Market Capitalization (Millions USD)",
+       y = "Legal Citations", 
+       title = "(SEC Only) Publicly-traded Companies")
+
+PTC_legal
+
+PTC_legal
+
+
+FDIC_Banks_legal <- b %>% 
+  filter(!is.na(ASSET), ASSET >1000000) %>% 
+    mutate(
+    log_Total_Legal_Citations = log10(Total_Legal_Citations + 1),
+    assets_in_millions = ASSET/1000000,
+    log_assets_in_millions = log10(ASSET/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")%>% str_replace("1,000,000", "10^6")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=Total_Legal_Citations)) +
+  geom_jitter(aes(x=bin, y=Total_Legal_Citations), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Legal Citations", 
+       title = "(SEC Only) Banks")
+
+FDIC_Banks_legal
+
+FDIC_Banks_legal
+```
+
+---
+
+### Technical terms x assets
+
+```{r assets-tech, fig.height=2.5, fig.width=3.5, out.width="50%"}
+#assets-tech
+t <- d %>% drop_na(dictionary_terms)
+
+# nonprofits
+p <- t %>% 
+  filter(!is.na(nonprofits_resources_name),
+         assets > 10) %>% 
+  ggplot() +
+  aes(x = assets/1000000, 
+      y = dictionary_terms) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) +
+    geom_smooth(color = "light blue") + 
+  labs(x = "Assets (Millions USD)",
+       y = "Technical Terms",
+       title = "(SEC Only) Nonprofits")
+
+p
+
+p +
+  scale_y_log10() +
+  scale_x_log10()
+
+
+# credit unions 
+p <- t %>% 
+  filter(!is.na(CreditUnions_name),
+         assets > 10) %>% 
+  ggplot() +
+  aes(x = assets/1000000, 
+      y = dictionary_terms) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) +
+    geom_smooth(color = "light blue") + 
+  labs(x = "Assets (Millions USD)",
+       y = "Technical Terms",
+       title = "(SEC Only) Credit Unions")
+
+p
+
+p +
+  scale_y_log10() +
+  scale_x_log10()
+
+
+
+# Publicly - traded companies 
+p <- t %>% 
+  filter(!is.na(marketcap2)) %>% 
+  ggplot() +
+  aes(x = marketcap2/1000000, 
+      y = dictionary_terms) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) +
+    geom_smooth(color = "light blue", formula = y ~ poly(x, 3)) + 
+  labs(x = "Market Capitalization (Millions USD)",
+       y = "Technical Terms",
+       title = "(SEC Only) Publicly-Traded Companies")
+
+p 
+
+p + 
+  scale_y_log10() +
+  scale_x_log10() #+ xlim(c(0, 400))
+
+
+# FDIC ASSETS 
+p <- t %>% 
+  filter(!is.na(ASSET),
+         ASSET > 10) %>% 
+  ggplot() +
+  aes(x = ASSET/1000000, # %>% log(), 
+      y = dictionary_terms ) + 
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+    geom_smooth(color = "light blue") + 
+  labs(x = "Assets (Millions USD)",
+       y = "Technical Terms", 
+       title = "(SEC Only) Banks")
+
+p 
+
+p + 
+  scale_y_log10() + 
+  scale_x_log10()
+
+t %>% 
+  filter(!is.na(ASSET),
+         ASSET > 10,
+         dictionary_terms == 0) %>%
+  dplyr::select(org_name, everything() ) %>% 
+  kablebox()
+
+
+
+# PAC contribution
+p <- t %>% 
+  filter(!is.na(MeanContribAmount)) %>%
+  ggplot() +
+  aes(x = MeanContribAmount/1000, 
+      y = dictionary_terms) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) +
+    geom_smooth(color = "light blue") + 
+  labs(x = "Mean PAC Contribution (Thousands USD)",
+       y = "Technical Terms",
+       title = "(SEC Only) Campaign Donors")
+
+p
+
+p + 
+  scale_y_log10() +
+  scale_x_log10()
+```
+
+### Boxplots Amount of Technical Language by Assets (Among Comments from Banks on Dodd-Frank Rules)
+```{r boxplot-assets-tech, fig.height=2.5, fig.width=4, out.width="50%"}
+#boxplot-assets-tech
+
+#Non-Profits
+#binning here is a bit tricky because of the log transformation necessary at the back end
+# bins are 0 to 1,000,000 then 1,000,000 to 10,000,000, then 10 to 100 million, 100 million to a billion
+
+NP_tech <- t %>% 
+  drop_na(assets, nonprofits_resources_name) %>%
+  filter(assets>0) %>% 
+  mutate(
+    log_dictionary_terms = log10(dictionary_terms + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",") 
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=dictionary_terms)) +
+  geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000, 100000), lim = c(1,200000), expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Technical Terms", 
+       title = "(SEC Only) Nonprofits")
+
+NP_tech
+
+NP_tech
+
+# Industry associations 
+IA_tech <- t %>% 
+  drop_na(assets, nonprofits_resources_name) %>%
+  filter(SUBSECTION == "06", assets < 1000000000, assets > 0) %>% 
+  mutate(
+    log_dictionary_terms = log10(dictionary_terms + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000 ),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #view() #select(assets, bin) %>% group_by(bin) %>%
+  #skimr::skim()
+  ggplot(aes(x=bin, y=dictionary_terms)) +
+  geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),
+                     breaks = c(1, 10, 100, 1000, 10000, 100000), 
+                     lim = c(1,200000), 
+                     expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Technical Terms", 
+       title = "(SEC Only) Industry Associations")
+
+IA_tech
+
+IA_tech
+
+# Credit Unions
+       #caption = "x-axis are bins represing the log10 scale, so the first bin is organizations with assets from $0 to $1 million") 
+
+CU_tech <- t %>% 
+  filter(!is.na(CreditUnions_name),
+         !is.na(assets),
+         assets < 10000000000,
+         assets > 0) %>% #pull(assets) %>% max(na.rm = T)
+  mutate(
+    log_dictionary_terms = log10(dictionary_terms + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=dictionary_terms)) +
+  geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(0, 1, 10, 100, 1000, 10000), lim = c(1,10000), expand = c(0,0))  +
+  labs(x = "Assets (Millions USD)",
+       y = "Technical Terms", 
+       title = "(SEC Only) Credit Unions")
+
+CU_tech
+
+CU_tech
+
+
+PTC_tech <- t %>% 
+  filter(!is.na(marketcap2), marketcap2 > 1000000) %>% 
+  mutate(
+    log_dictionary_terms = log10(dictionary_terms + 1),
+    assets_in_millions = marketcap2/1000000,
+    log_assets_in_millions = log10(marketcap2/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=dictionary_terms)) +
+  geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans() ,breaks = c(1, 10, 100, 1000, 10000), expand = c(0,0)) +
+  labs(x = "Market Capitalization (Millions USD)",
+       y = "Technical Terms", 
+       title = "(SEC Only) Publicly-traded Companies")
+
+PTC_tech
+
+PTC_tech
+
+
+FDIC_Banks_tech <- t %>% 
+  filter(!is.na(ASSET), ASSET >1000000) %>% 
+    mutate(
+    log_dictionary_terms = log10(dictionary_terms + 1),
+    assets_in_millions = ASSET/1000000,
+    log_assets_in_millions = log10(ASSET/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")%>% str_replace("1,000,000", "10^6")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=dictionary_terms)) +
+  geom_jitter(aes(x=bin, y=dictionary_terms), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Technical Terms", 
+       title = "(SEC Only) Banks")
+
+FDIC_Banks_tech
+
+FDIC_Banks_tech
+
+#ggsave(plot = NP_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-2.png",bg="white")
+
+#ggsave(plot = CU_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-4.png",bg="white")
+
+#ggsave(plot = PTC_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-6.png",bg="white")
+
+#ggsave(plot = FDIC_Banks_tech + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-tech-8.png",bg="white")
+```
+
+
+## Efficacy x assets
+
+
+```{r assets-efficacy, fig.height=2.5, fig.width=3.5, out.width="50%"}
+e <- d %>% drop_na(efficacy)
+
+
+
+# nonprofits
+p <- e %>% 
+  filter(!is.na(nonprofits_resources_name)) %>% 
+  ggplot() +
+  aes(x = assets/1000000, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  labs(x = "Assets (Millions USD)",
+       y = "Words from Comment\nAdded to Final Rule", 
+       title = "(SEC Only) Nonprofits")
+
+p
+
+p +     geom_smooth(color = "light blue") + 
+  scale_y_log10() +
+  scale_x_log10(labels = function(x) format(x, scientific = TRUE))
+
+# creditunions
+p <- e %>% 
+  filter(!is.na(CreditUnions_name)) %>% 
+  ggplot() +
+  aes(x = assets/1000000, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  labs(x = "Assets (Millions USD)",
+       y = "Words from Comment\nAdded to Final Rule", 
+       title = "(SEC Only) Credit Unions")
+
+p
+
+p +     geom_smooth(color = "light blue") + 
+  scale_y_log10() +
+  scale_x_log10()
+
+
+
+e %>% drop_na(marketcap2) %>%  count(marketcap2, org_name, sort = T)
+
+
+# market cap
+p <- e %>% 
+  filter(!is.na(marketcap2), marketcap2 > 1000000) %>% 
+  ggplot() +
+  aes(x = marketcap2/1000000, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) +
+  #geom_smooth(color = "light blue", formula=lm(y ~ poly(x, 3))) + 
+  labs(x = "Market Capitalization (Millions USD)",
+       y = "Words from Comment\nAdded to Final Rule",
+       title = "(SEC Only) Publicly-traded Companies")
+
+p
+
+p + 
+    geom_smooth(color = "light blue") + 
+  scale_y_log10() +
+  scale_x_log10()
+
+# FDIC ASSETS 
+p <- e %>% 
+  filter(!is.na(ASSET)) %>% 
+  ggplot() +
+  aes(x = ASSET/1000000, # %>% log(), 
+      y = efficacy# , color = BKCLASS #TODO 
+      ) + 
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm" ) + 
+  #geom_smooth() + 
+  labs(x = "Assets (Millions USD)",
+       y = "Words from Comment\nAdded to Final Rule", 
+       title = "(SEC Only) Banks")
+
+p
+
+p +     geom_smooth(color = "light blue") + 
+  scale_y_log10() +
+  scale_x_log10()
+
+
+e %>% 
+  filter(!is.na(ASSET), efficacy == 0) %>%
+  dplyr::select(org_name, everything() ) %>% 
+  kablebox()
+
+
+# contribution
+p <- e %>% 
+  filter(!is.na(MeanContribAmount)) %>%
+  ggplot() +
+  aes(x = MeanContribAmount/1000, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  labs(x = "Mean PAC Contribution (Thousands USD)",
+       y = "Words from Comment\nAdded to Final Rule",
+       title = "(SEC Only) Campaign Donors")
+
+p
+
+p + 
+      geom_smooth(color = "light blue") + 
+  scale_y_log10() +
+  scale_x_log10()
+```
+
+## Amount of Text Repeated in Final Rules by Commenter Resources Boxplot
+
+```{r boxplot-assets-efficacy, fig.height=2.5, fig.width=4, out.width="50%"}
+#Non-Profits
+#binning here is a bit tricky because of the log transformation necessary at the back end
+# bins are 0 to 1,000,000 then 1,000,000 to 10,000,000, then 10 to 100 million, 100 million to a billion
+NP <- e %>% 
+  filter(!is.na(nonprofits_resources_name) & !is.na(assets) & assets > 0) %>%
+  mutate(
+    log_efficacy = log10(efficacy + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=efficacy)) +
+  geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,10000), expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Words from Comment\nAdded to Final Rule", 
+       title = "(SEC Only) Nonprofits")
+
+
+IA <- e %>% 
+  filter(!is.na(nonprofits_resources_name) & !is.na(assets) & assets > 0, SUBSECTION == "06") %>%
+  mutate(
+    log_efficacy = log10(efficacy + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=efficacy)) +
+  geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,10000), expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Words from Comment\nAdded to Final Rule", 
+       title = "(SEC Only) Industry Associations")
+
+# Credit Unions
+       #caption = "x-axis are bins represing the log10 scale, so the first bin is organizations with assets from $0 to $1 million") 
+
+CU <- e %>% 
+  filter(!is.na(CreditUnions_name),
+         !is.na(assets),
+         #assets < 10000000000,
+         assets > 0
+         ) %>%
+  mutate(
+    log_efficacy = log10(efficacy + 1),
+    assets_in_millions = assets/1000000,
+    log_assets_in_millions = log10(assets/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=efficacy)) +
+  geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,1000), expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Words from Comment\nAdded to Final Rule", 
+       title = "(SEC Only) Credit Unions")
+
+PTC <- e %>% 
+  filter(!is.na(marketcap2), marketcap2 > 1000000) %>% 
+  mutate(
+    log_efficacy = log10(efficacy + 1),
+    assets_in_millions = marketcap2/1000000,
+    log_assets_in_millions = log10(marketcap2/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=efficacy)) +
+  geom_jitter(aes(x=bin, y=efficacy), alpha = 0.1) +
+  geom_boxplot(width=0.65, fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),breaks = c(1, 10, 100, 1000, 10000), lim = c(10,5000), expand = c(0,0)) +
+  labs(x = "Market Capitalization (Millions USD)",
+       y = "Words from Comment\nAdded to Final Rule", 
+       title = "(SEC Only) Publicly-traded Companies")
+  
+FDIC_Banks <- e %>% 
+  filter(!is.na(ASSET), ASSET > 1000000) %>% 
+    mutate(
+    log_efficacy = log10(efficacy + 1),
+    assets_in_millions = ASSET/1000000,
+    log_assets_in_millions = log10(ASSET/1000000),
+    bin=cut_width(log_assets_in_millions, width=1, boundary=0) %>%
+      stringr::str_remove("\\(|\\[") %>%
+      stringr::str_remove(",.{1,}") %>%
+      as.numeric(),
+    bin = round(10^bin) %>%
+      as.factor() %>%
+      prettyNum(big.mark = ",") %>% str_replace("1,000,000", "10^6")
+  ) %>% #%>% select(assets, bin) %>% group_by(bin) %>% skimr::skim()
+  ggplot(aes(x=bin, y=efficacy)) +
+  geom_jitter(aes(x=bin, y=efficacy), 
+              alpha = 0.1) +
+  geom_boxplot(width=0.65, 
+               fill="white", outlier.alpha = 0) +
+  scale_y_continuous(trans = scales::log10_trans(),
+                     breaks = c(0, 1, 10, 100, 1000, 10000), 
+                     lim = c(10,5000), 
+                     expand = c(0,0)) +
+  labs(x = "Assets (Millions USD)",
+       y = "Words from Comment\nAdded to Final Rule", 
+       title = "(SEC Only) Banks") 
+
+NP
+NP
+
+#ggsave(plot = NP + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-np.png",bg="white")
+
+CU
+CU
+
+#ggsave(plot = CU + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-cu.png",bg="white")
+
+IA
+IA
+
+PTC
+PTC
+
+#ggsave(plot = PTC + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-ptc.png",bg="white")
+
+FDIC_Banks
+FDIC_Banks
+
+#ggsave(plot = FDIC_Banks + theme(axis.title = element_text(size = 14)), filename = "figs/boxplot-assets-efficacy-banks.png",bg="white")
+
+```
+
+
+## Efficacy x sophistication
+
+```{r efficacy-bluebook}
+p <- e %>% 
+  ggplot() +
+  aes(x = Total_Legal_Citations, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  labs(x = "Legal Sophistication",
+       y = "Words from Comment\nAdded to Final Rule") 
+
+p
+
+p + 
+      geom_smooth(color = "light blue") + 
+  scale_y_log10() +
+  scale_x_log10()
+```
+  
+```{r efficacy-terms}
+p <- e %>% 
+  #filter(!is.na(marketcap2)) %>% 
+  ggplot() +
+  aes(x = dictionary_terms, 
+      y = efficacy) + 
+  geom_jitter(alpha = .5) + 
+  geom_smooth(method = "lm"
+  ) + 
+  labs(x = "Technical Terms",
+       y = "Words from Comment\nAdded to Final Rule") 
+
+p
+
+p +     geom_smooth(color = "light blue") + 
+  scale_y_log10() +
+  scale_x_log10()
+```
+
+
+---
+
+# Regressions
+
+```{r coef_mapping, cache=FALSE}
+# change knitr defaults 
+knitr::opts_chunk$set(fig.show="show",
+                      fig.height=1, 
+                      fig.width=5, 
+                      out.width = "80%")
+
+```
+
+
+## Sophistication
+
+> NOTE: I'm using OLS for now but will switch to Poisson or Negative Binomial. 
+
+### Bluebook
+
+```{r}
+b %>% drop_na(assets, Total_Legal_Citations) %>% 
+  arrange(-Total_Legal_Citations) %>% 
+  dplyr::select(assets, Total_Legal_Citations, comment_url) %>% 
+  kablebox()
+
+```
+
+
+These models have the prefix `mb_`. The dependent variable is a count of technical terms per comment.
+
+
+```{r mb}
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Sophistication",
+  `2` = "Sophistication",
+  `3` = "Sophistication"
+)
+
+attr(rows, 'position') <- c(0)
+
+
+mb_assets <- lm(Total_Legal_Citations ~ assets,  data = b  %>% mutate(assets = assets/10000000000))
+
+mb_opensecrets <- glm(Total_Legal_Citations ~ MeanContribAmount,
+           data = b %>% mutate(MeanContribAmount = MeanContribAmount/10000))
+
+mb_marketcap <- glm(Total_Legal_Citations ~ marketcap2,
+           data = b  %>% mutate(marketcap2 = marketcap2/10000000000))
+
+models <- list(mb_assets, mb_opensecrets, mb_marketcap)
+
+modelsummary(models)
+
+modelplot(mb_opensecrets) + theme(legend.position = "none") +  
+  labs(x = "Additional Legal Citations per Ten Thousand Dollars")
+
+modelplot(mb_marketcap) + theme(legend.position = "none") +  
+  labs(x = "Additional Legal Citations per Ten Billion Dollars")
+```
+
+### Technical Terms
+
+These models have the prefix `mt_`. The dependent variable is a count of technical terms per comment.
+
+```{r mt}
+t %>% drop_na(assets, dictionary_terms) %>% 
+  arrange(-dictionary_terms) %>% 
+  dplyr::select(assets, dictionary_terms, comment_url) %>% 
+  kablebox()
+
+# broken out by org type 
+
+mt_assets <- lm(dictionary_terms ~ assets,
+           data = t  %>% mutate(assets = assets/10000000000))
+
+mt_opensecrets <- glm(dictionary_terms ~ MeanContribAmount,
+           data = t %>% mutate(MeanContribAmount = MeanContribAmount/10000))
+
+mt_marketcap <- glm(dictionary_terms ~ marketcap2,
+           data = t  %>% mutate(marketcap2 = marketcap2/10000000000))
+
+models <- list(mt_assets, mt_marketcap)
+
+# FIXME 
+# modelsummary(models)
+
+modelplot( mt_opensecrets) + theme(legend.position = "none") +  
+  labs(x = "Additional Technical Terms per Ten Thousand Dollars")
+
+modelplot(mt_marketcap) + theme(legend.position = "none") + 
+  labs(x = "Additional Technical Terms per Ten Billion Dollars")
+```
+
+---
+
+## Efficacy
+
+### Efficacy by Assets 
+
+These models have the prefix `me_`. The dependent variable is the efficacy score.
+
+```{r mea}
+# broken out by org type 
+
+mea_assets <- lm(efficacy ~ assets,
+           data = e  %>% mutate(assets = assets/1000000))
+
+mea_opensecrets <- glm(efficacy ~ MeanContribAmount,
+           data = e %>% mutate(MeanContribAmount = MeanContribAmount/1000))
+
+mea_marketcap <- glm(efficacy ~ marketcap2,
+           data = e  %>% mutate(marketcap2 = marketcap2/1000000))
+
+models <- list(mea_assets, mea_opensecrets, mea_marketcap)
+
+# FIXME 
+#modelsummary(models)
+
+modelplot( mea_assets) + theme(legend.position = "none") +  
+  labs(x = "Words Added to Final Rule per Million Dollars")
+
+modelplot( mea_opensecrets) + theme(legend.position = "none") +  
+  labs(x = "Words Added to Final Rule per Thousand Dollars")
+
+modelplot(mea_marketcap) + theme(legend.position = "none") +  
+  labs(x = "Words Added to Final Rule per Million Dollars")
+```
+
+
+
+### Efficacy by Sophistication  
+
+These models have the prefix `mes_`. The dependent variable is the efficacy score.
+
+```{r mes}
+mes_bluebook <- lm(efficacy ~ Total_Legal_Citations,
+           data = d )
+
+mes_terms <- glm(efficacy ~ dictionary_terms,
+           data = d)
+
+mes_terms_bluebook <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations,
+           data = d )
+
+mes_bluebooklog <- lm(efficacy ~ log(Total_Legal_Citations +1),
+           data = d )
+
+mes_termslog <- glm(efficacy ~ log(dictionary_terms + 1),
+           data = d)
+
+mes_terms_bluebooklog <- glm(efficacy ~ log(dictionary_terms + 1) + log(Total_Legal_Citations + 1),
+           data = d )
+
+models <- list(#mes_terms , mes_bluebook ,
+  mes_terms_bluebook,
+               #mes_termslog , mes_bluebooklog,
+  mes_terms_bluebooklog)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Efficacy",
+   `2` = "Efficacy"#,
+#  `3` = "Efficacy",
+#  `4` = "Efficacy",
+#  `5` = "Efficacy",
+#  `6` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+save(models, rows,
+     file = here::here("models", "SEC", "mes.Rdata"))
+
+modelplot(mes_terms) + theme(legend.position = "none") +  
+  labs(x = "Words Added to Final Rule per Technical Term")
+
+modelplot( mes_bluebook ) + theme(legend.position = "none") +  
+  labs(x = "Words Added to Final Rule per Legal Citation")
+
+modelplot(mes_terms_bluebook ) + theme(legend.position = "none") +  
+  labs(x = "Words Added to Final Rule")
+
+modelplot(models) + theme(legend.position = "none") +  
+  labs(x = "Words Added to Final Rule")
+```
+
+Poisson
+
+```{r mes-poisson}
+mes_bluebook <- lm(efficacy ~ Total_Legal_Citations,
+           data = d )
+
+mes_terms <- glm(efficacy ~ dictionary_terms,
+           data = d, family = "poisson")
+
+mes_terms_bluebook <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations,
+           data = d, family = "poisson" )
+
+mes_bluebooklog <- lm(efficacy ~ log(Total_Legal_Citations +1),
+           data = d, family = "poisson" )
+
+mes_termslog <- glm(efficacy ~ log(dictionary_terms + 1),
+           data = d, family = "poisson")
+
+mes_terms_bluebooklog <- glm(efficacy ~ log(dictionary_terms + 1) + log(Total_Legal_Citations + 1),
+           data = d, family = "poisson" )
+
+models <- list(#mes_terms , mes_bluebook ,
+  mes_terms_bluebook,
+               #mes_termslog , mes_bluebooklog,
+  mes_terms_bluebooklog)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Efficacy",
+   `2` = "Efficacy"#,
+#  `3` = "Efficacy",
+#  `4` = "Efficacy",
+#  `5` = "Efficacy",
+#  `6` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+
+# FIXME 
+modelsummary(models)#, gof_map = gm)
+
+save(models, rows,
+     file = here::here("models", "SEC", "mes-pois.Rdata"))
+```
+
+---
+
+## Efficacy by Assets 
+
+### Mediated by Sophistication
+
+To assess sophistication as a mediator between wealth and the influence of public comments on rules (efficacy), we estimate the average conditional marginal effect (ACME, conditional on the number of technical terms or legal citations) and average direct effect (ADE) of wealth using mediation analysis. 
+
+
+These models have the prefix `mem_`. The dependent variable is the efficacy score. The mediator is technical terms.
+
+### Legal citations
+```{r mediation-assets-bluebook, fig.width=4.5, fig.height=3}
+library(mediation)
+b %>% count(is.na(efficacy))
+
+mediation_data <- b %>% 
+  drop_na(efficacy)
+
+mediation_data %>% drop_na(MeanLobbyingAmount) %>% select(assets, efficacy, contains("lobby"), contains("contrib")) %>% kablebox()
+
+b$org_type %>% unique
+
+mediation_data <- b  %<>% mutate(
+  assets = coalesce(assets, `Total Assets`, ASSET),
+  assets_m = assets/1000000) %>% 
+  drop_na(Total_Legal_Citations, efficacy, assets_m, org_type)
+
+
+# model predicting mediator, sophistication 
+model.m <- lm(Total_Legal_Citations ~ assets_m * org_type,  
+              data = mediation_data)
+
+# model predicting DV
+model.y <- glm(efficacy ~ Total_Legal_Citations + assets_m * org_type,  
+               data =mediation_data)
+
+models <- list(model.m, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Legal Citations",
+   `2` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+med.legal <- mediate(model.m, model.y, sims=1000, treat = "assets_m",
+mediator = "Total_Legal_Citations")
+
+summary(med.legal)
+
+plot(med.legal, main = "Legal Citations", 
+     xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
+#modelplot(med.cont) + labs()
+```
+
+### Campaign Expenditure and Lobbying Dollars 
+
+With Zeros 
+
+```{r, eval=FALSE}
+b %<>%
+  mutate(
+    assets_m = assets/1000000,
+    TotalLobbyingAmountNo0 = replace_na(MeanLobbyingAmount, 0)/1000, 
+    MeanContribAmountNo0 = replace_na(MeanContribAmount, 0)/1000,
+    TotalLobbyingAmountNo0 = replace_na(TotalLobbyingAmount, 0)/1000,
+    TotalContribAmountNo0 = replace_na(TotalContribAmount, 0)/1000 ) 
+
+mediation_data <- b %>% 
+  drop_na(efficacy)
+
+mediation_data %>% drop_na(MeanLobbyingAmount) %>% select(assets, efficacy, contains("lobby"), contains("contrib")) %>% kablebox()
+
+
+# WITH ZEROS 
+model.m.pac.contrib <- lm(TotalContribAmountNo0 ~ assets_m * org_type,
+              data = mediation_data )
+
+# model predicting DV
+model.y.pac.contrib <- lm(efficacy ~ TotalContribAmountNo0 + assets_m * org_type,
+               data = mediation_data)
+
+med.cont.pac <- mediate(model.m.pac.contrib,
+                        model.y.pac.contrib, 
+                        sims=1000, 
+                        treat = "assets_m", 
+                        mediator = "TotalContribAmountNo0",  
+                        control.value = 1, 
+                        treat.value = 10, 
+                        boot = T)
+
+summary(med.cont.pac)
+# plot(med.cont.pac, main = "Campaign (PAC) Spending",   xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
+
+
+model.m.lobby <- lm(TotalLobbyingAmountNo0 ~ assets_m * org_type,
+              data = mediation_data)
+
+# model predicting DV
+model.y.lobby <- lm(efficacy ~ TotalLobbyingAmountNo0 + assets_m * org_type,
+               data = mediation_data)
+
+mediation_data %>% 
+  dplyr::select(TotalLobbyingAmountNo0, assets) %>%
+  skimr::skim()
+
+# Going from 1 million to 10 million 
+med.cont.lobby <- mediate(model.m.lobby,
+                          model.y.lobby, 
+                          sims=1000, 
+                          treat = "assets_m", mediator = "TotalLobbyingAmountNo0",  
+                          control.value = 1, treat.value = 10, boot = T)
+
+summary(med.cont.lobby)
+#plot(med.cont.lobby, main = "Lobbying Expendature",  xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
+```
+
+### Without zeros 
+
+```{r mediation-assets-opensecrets, fig.width=4.5, fig.height=3}
+
+# WITHOUT ZEROS 
+model.m.pac.contrib <- lm(TotalContribAmount ~ assets_m * org_type,
+              data = mediation_data )
+
+# model predicting DV
+model.y.pac.contrib <- lm(efficacy ~ TotalContribAmount + assets_m * org_type,
+               data = mediation_data)
+
+# med.cont.pac <- mediate(model.m.pac.contrib, 
+#                         model.y.pac.contrib, 
+#                         sims=1000, treat = "assets_m", 
+#                         mediator = "TotalContribAmount",  control.value = 1, treat.value = 10, boot = T)
+# 
+# plot(med.cont.pac, main = "Campaign (PAC) Spending", 
+#      xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
+# 
+# summary(med.cont.pac)
+
+mediation_data %>% count(TotalLobbyingAmount)
+
+#WTF
+# model.m.lobby <- lm(TotalLobbyingAmount ~ assets_m * org_type, data = mediation_data)
+
+# # model predicting DV
+# model.y.lobby <- lm(efficacy ~ TotalLobbyingAmount + assets_m * org_type,  data = mediation_data)
+# 
+# mediation_data %>% 
+#   dplyr::select(TotalLobbyingAmount, assets_m) %>%
+#   skimr::skim()
+# 
+# # Going from 1 million to 10 million 
+# # "Since the treatment
+# # variable is a continuous variable, we use the values of 3 and 4 as the control and treatment
+# # values, respectively, and estimate the quantities of interest in terms of these values.""
+# med.cont.lobby <- mediate(model.m.lobby, 
+#                           model.y.lobby, 
+#                           sims=1000, 
+#                           treat = "assets_m", 
+#                           mediator = "TotalLobbyingAmount",  
+#                           control.value = 1, treat.value = 10, 
+#                           boot = T)
+# 
+# plot(med.cont.lobby, main = "Lobbying Expendature", 
+#      xlab = "Words From Comment Added to Final Rule\nPer Million Dollars in Assets")
+```
+
+
+### Assets x technical terms
+```{r mediation-assets-terms, fig.width=4.5, fig.height=3, eval=FALSE}
+mediation_data <- b %>% 
+  drop_na(efficacy, dictionary_terms)
+
+# model predicting mediator, sophistication 
+model.m <- lm(dictionary_terms ~ assets,  
+              data = mediation_data)
+
+# model predicting DV
+model.y <- glm(efficacy ~ dictionary_terms + assets,  
+               data = mediation_data)
+
+models <- list(model.m, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Technical Terms",
+   `2` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+med.cont <- mediate(model.m, model.y, sims=1000, treat = "assets",
+mediator = "dictionary_terms")
+
+summary(med.cont)
+
+plot(med.cont, 
+     main = "Technical Terms",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+```
+
+
+## Efficacy by Market Cap
+
+
+### Market cap x legal citations
+```{r mediation-marketcap-bluebook, fig.width=4.5, fig.height=3, eval=FALSE}
+b %<>% mutate(marketcap_b = marketcap2/1000000000)
+
+#b %>% count(commented, is.na(marketcap2))
+
+mediation_data <- b %>% 
+  drop_na(efficacy,
+    marketcap2)
+
+# model predicting mediator, sophistication 
+model.m <- lm(Total_Legal_Citations ~ marketcap_b,  
+              data = mediation_data )
+
+# model predicting DV
+model.y <- glm(efficacy ~ Total_Legal_Citations + marketcap_b,  
+               data = mediation_data)
+
+models <- list(model.m, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Legal Citations",
+   `2` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+med.cont.legal <- mediate(model.m, model.y, sims=1000, treat = "marketcap_b",
+mediator = "Total_Legal_Citations")
+
+summary(med.cont)
+
+plot(med.cont.legal, 
+     main = "Legal Citations",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+```
+
+
+### Market cap x technical terms 
+```{r mediation-marketcap-terms, fig.width=4.5, fig.height=3, eval=FALSE}
+#mediation-marketcap-terms
+
+# model predicting mediator, sophistication 
+model.m <- lm(dictionary_terms ~ marketcap_b,  
+              data = mediation_data)
+
+# model predicting DV
+model.y <- glm(efficacy ~ dictionary_terms + marketcap_b,  
+               data = mediation_data)
+
+models <- list(model.m, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Technical Terms",
+   `2` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+med.cont.terms <- mediate(model.m, model.y, sims=1000, treat = "marketcap_b",
+mediator = "dictionary_terms")
+
+summary(med.cont)
+
+plot(med.cont.terms, 
+     main = "Technical Terms",     
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+```
+
+### Market cap x technical terms  x legal citations 
+
+```{r, eval=FALSE, mediation-marketcap-terms-bluebook, fig.width=4.5, fig.height=3}
+# mediation-marketcap-terms-bluebook
+
+# model predicting mediator, sophistication 
+model.m1.terms <- lm(dictionary_terms ~ marketcap_b,  
+              data = mediation_data)
+
+model.m1.legal <- lm(Total_Legal_Citations ~ marketcap_b,  
+              data = mediation_data)
+
+# model predicting DV
+model.y <- glm(efficacy ~ dictionary_terms + Total_Legal_Citations +  marketcap_b,  
+               data = mediation_data)
+
+
+models.med1 <- list(model.m1.terms, model.m1.legal, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Technical Terms",
+    `2` = "Legal Citations",
+   `3` = "Efficacy",
+)
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models.med1)
+
+save(models.med1, rows, file = here::here("models", "SEC", "models.med2.Rdata"))
+
+med.terms <- mediate(model.m1.terms, model.y, sims=1000, treat = "marketcap_b",
+mediator = "dictionary_terms")
+
+plot(med.terms, main = "Technical Terms",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+med.legal <- mediate(model.m1.legal, model.y, sims=1000, treat = "marketcap_b",
+mediator = "Total_Legal_Citations")
+
+summary(med.legal)
+
+plot(med.legal, main = "Legal Citations",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+#FI
+# modelsummary::modelsummary(med.cont)
+```
+
+## Market Cap x Political Spending 
+```{r, eval = FALSE mediation-marketcap-lobbying, fig.width=4.5, fig.height=3}
+#mediation-marketcap-lobbying
+
+mediation_data %>% 
+  dplyr::select(marketcap_b, TotalContribAmount, TotalLobbyingAmount) %>% 
+  drop_na(marketcap_b) %>%
+  skimr::skim()
+
+# model predicting mediator, sophistication 
+model.cont <- lm(TotalContribAmount ~ marketcap_b,  
+              data = mediation_data  )
+
+# model predicting DV
+model.y.cont <- glm(efficacy ~ TotalContribAmount + marketcap_b,  
+               data = mediation_data  )
+
+med.cont <- mediate(model.cont, model.y.cont, sims=1000, treat = "marketcap_b", 
+                    mediator = "TotalContribAmount", robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+summary(med.cont)
+
+model.lob <- lm(TotalLobbyingAmount ~ marketcap_b,  
+              data = mediation_data  )
+
+model.y.lob <- glm(efficacy ~ TotalLobbyingAmount + marketcap_b,  
+               data = mediation_data)
+
+med.lob <- mediate(model.lob, model.y.lob, sims=1000, treat = "marketcap_b", 
+                   mediator = "TotalLobbyingAmount",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+summary(med.lob)
+
+model.y <- glm(efficacy ~ TotalLobbyingAmount + TotalContribAmount + marketcap_b,  
+               data = mediation_data )
+
+
+
+models.med.spending <- list(model.cont, model.lob, model.y.cont, model.y.lob, model.y)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "PAC Contributions",
+   `2` = "Lobbying",
+  `3` = "Efficacy",
+    `4` = "Efficacy",
+  `5` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models.med.spending)
+
+save(models.med.spending, rows, file = here::here("models", "SEC", "models.med.spending.Rdata"))
+
+plot(med.cont, main = "Political Contributions",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+plot(med.lob, main = "Lobbying Expenditure",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+
+
+#FI
+# modelsummary::modelsummary(med.cont)
+```
+
+
+## Market Cap mediated by Sophistication or Political Spending
+```{r, eval=FALSE, mediation-marketcap-terms-lobbying, fig.width=4.5, fig.height=3}
+#mediation-marketcap-terms-lobbying
+model.m2.lob <- lm(TotalLobbyingAmount ~ marketcap_b,  
+              data = mediation_data  )
+
+model.m2.terms <- lm(dictionary_terms ~ marketcap_b,  
+              data = mediation_data %>% drop_na(TotalLobbyingAmount))
+
+model.y2 <- glm(efficacy ~ TotalLobbyingAmount + marketcap_b+ dictionary_terms,  
+               data = mediation_data  )
+
+med.lob.2 <- mediate(model.m2.lob, model.y2, sims=1000, treat = "marketcap_b", 
+                   mediator = "TotalLobbyingAmount",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+med.terms.2 <- mediate(model.m2.terms, model.y2, sims=1000, treat = "marketcap_b", 
+                   mediator = "dictionary_terms",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+summary(med.lob.2)
+summary(med.terms.2)
+
+
+models.m2 <- list(model.m2.lob, model.m2.terms, model.y2)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+   `1` = "Lobbying",
+  `2` = "Technical Terms",
+    `3` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models.m2)
+
+
+
+
+plot(med.terms.2, main = "Technical Terms",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+plot(med.lob.2, main = "Lobbying Expenditure",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+
+
+#FI
+# modelsummary::modelsummary(med.cont)
+```
+
+
+
+### Testing 4 pathways to influence
+
+- PAC donations 
+- Lobbying spending (LDA data)
+- Technical Terms
+- Legal Citations
+
+```{r mediation-4way, fig.width=4.5, fig.height=3}
+# mediation-4way
+
+mediation_data4 <- mediation_data  %>% 
+                drop_na(efficacy,
+                        marketcap_b, 
+                        TotalLobbyingAmount, 
+                        TotalContribAmount,
+                        dictionary_terms,
+                        Total_Legal_Citations)
+
+model.m4.cont <- lm(TotalContribAmount ~ marketcap_b,  
+              data = mediation_data4)
+
+model.m4.lob <- lm(TotalLobbyingAmount ~ marketcap_b,  
+              data = mediation_data4)
+
+model.m4.terms <- lm(dictionary_terms ~ marketcap_b,  
+              data = mediation_data4)
+
+model.m4.legal <- lm(Total_Legal_Citations ~ marketcap_b,  
+              data = mediation_data4)
+
+
+model.y4 <- glm(efficacy ~ marketcap_b + TotalLobbyingAmount + TotalContribAmount + dictionary_terms + Total_Legal_Citations,  
+               data = mediation_data4 )
+
+med.cont.4 <- mediate(model.m4.cont, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "TotalContribAmount",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+med.lob.4 <- mediate(model.m4.lob, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "TotalLobbyingAmount",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+med.terms.4 <- mediate(model.m4.terms, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "dictionary_terms",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+med.legal.4 <- mediate(model.m4.legal, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "Total_Legal_Citations",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+
+
+models.m4 <- list(model.m4.cont, model.m4.lob, model.m4.terms, model.m4.legal, model.y4)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+   `1` = "Campaign (PAC) Spending",
+     `2` = "Lobbying (LDA) Spending",
+  `3` = "Technical Terms",
+     `4` = "Legal Citations",
+    `5` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models.m4)
+
+save(models.m4, rows, file = here::here("models", "SEC", "models.m4.Rdata"))
+
+
+plot(med.terms.4, main = "Technical Terms",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+
+plot(med.legal.4, 
+     main = "Legal Citations",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+plot(med.cont.4, main = "Political Spending",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+plot(med.lob.4, main = "Lobbying Expenditure",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+```
+
+### ACME 
+
+```{r mediation-4way-acme, fig.width=4, fig.height=1.65}
+#mediation-4way-acme
+extract_acme <- function(x){
+ tibble(  
+  term = x$mediator,
+  d0 = x$d0,
+  d0.ci_low = x$d0.ci[1],
+    d0.ci_high = x$d0.ci[2],
+  )
+}
+
+extract_acme(med.lob.4)
+
+#models <- list(med.cont, med.lob, med.terms, med.legal)
+
+models <- list(med.cont.4, med.lob.4, med.terms.4, med.legal.4)
+
+acme <- purrr::map_df(models, extract_acme)
+
+
+acme %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount", "Campaign (PAC) Spending") %>% 
+         str_replace( "TotalLobbyingAmount", "Lobbying (LDA) Spending") %>% 
+         str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
+         str_replace("dictionary_terms", " Technical Sophistication")) %>% 
+  ggplot() +
+  aes(x = d0, 
+      xmin = d0.ci_low, 
+      xmax = d0.ci_high, 
+      y = term) + 
+    geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
+  geom_pointrange() + 
+  labs(y = "Mediator", x = "ACME\nWords from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization") + 
+  theme(panel.grid.major.y = element_blank())
+
+
+```
+
+
+### Including 0-dollar PAC donors 
+
+```{r mediation-4wayNo0, fig.width=4.5, fig.height=3}
+ # mediation-4wayNo0
+
+mediation_data4 <- mediation_data  %>% 
+                drop_na(efficacy,
+                        marketcap_b, 
+                        TotalLobbyingAmountNo0, 
+                        TotalContribAmountNo0,
+                        dictionary_terms,
+                        Total_Legal_Citations)
+
+model.m4.cont <- lm(TotalContribAmountNo0 ~ marketcap_b,  
+              data = mediation_data4)
+
+model.m4.lob <- lm(TotalLobbyingAmountNo0 ~ marketcap_b,  
+              data = mediation_data4)
+
+model.m4.terms <- lm(dictionary_terms ~ marketcap_b,  
+              data = mediation_data4)
+
+model.m4.legal <- lm(Total_Legal_Citations ~ marketcap_b,  
+              data = mediation_data4)
+
+
+model.y4 <- glm(efficacy ~ marketcap_b + TotalLobbyingAmountNo0 + TotalContribAmountNo0 + dictionary_terms + Total_Legal_Citations,  
+               data = mediation_data4 )
+
+med.cont.4 <- mediate(model.m4.cont, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "TotalContribAmountNo0",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+
+med.lob.4 <- mediate(model.m4.lob, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "TotalLobbyingAmountNo0",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+summary(med.lob.4)
+
+med.terms.4 <- mediate(model.m4.terms, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "dictionary_terms",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+summary(med.terms.4)
+
+
+med.legal.4 <- mediate(model.m4.legal, model.y4, sims=1000, treat = "marketcap_b", 
+                   mediator = "Total_Legal_Citations",
+                   robustSE = T, boot = T, 
+                    control.value = 1, treat.value = 2)
+
+
+
+models.m4No0 <- list(model.m4.cont, 
+                     model.m4.lob, 
+                     model.m4.terms, 
+                     model.m4.legal, 
+                     model.y4)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+   `1` = "Campaign (PAC) Spending",
+     `2` = "Lobbying (LDA) Spending",
+  `3` = "Technical Terms",
+     `4` = "Legal Citations",
+    `5` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+
+save(models.m4No0, rows, file = here::here("models", "SEC", "models.m4No0.Rdata"))
+
+
+plot(med.terms.4, main = "Technical Terms",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+
+plot(med.legal.4, 
+     main = "Legal Citations",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+plot(med.cont.4, main = "Political Spending",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+
+plot(med.lob.4, main = "Lobbying Expenditure",       
+     xlab = "Words from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization")
+```
+
+
+
+### ACME including 0-dolar PAC 
+
+```{r mediation-4wayNo0-acme, fig.width=5.5, fig.height=1.75}
+#mediation-4way-acme
+
+extract_acme(med.lob.4)
+
+# single
+models <- list(med.cont, 
+               med.lob, 
+               med.cont.legal, 
+               med.cont.terms)
+
+acme <- purrr::map_df(models, extract_acme)
+
+acme$Model <- "Single Mediator"
+
+# multiple 
+models <- list(med.cont.4, 
+               med.lob.4, 
+               med.legal.4,
+               med.terms.4)
+
+acme.m <- purrr::map_df(models, extract_acme)
+
+acme.m$Model <- "Multiple Mediation"
+
+acme %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount.*", "Campaign (PAC) Spending") %>% 
+         str_replace( "TotalLobbyingAmount.*", "Lobbying (LDA) Spending") %>% 
+         str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
+         str_replace("dictionary_terms", " Technical Sophistication")) %>% 
+  ggplot() +
+  aes(x = d0, 
+      xmin = d0.ci_low, 
+      xmax = d0.ci_high, 
+      y = term, # color = Model
+      ) + 
+    geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
+  geom_pointrange(position = position_dodge(width = 0.30),
+                  alpha = .8) + 
+  labs(title = "(SEC Only) Mediation",
+       color = "Model Assumption",
+    y = "Mediator", 
+       x = "ACME\nWords from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization") + 
+  theme(panel.grid.major.y = element_blank()) + 
+  scale_color_viridis_d(begin = .8, end = .8, option = 2)
+
+
+acme.m %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount.*", "Campaign (PAC) Spending") %>% 
+         str_replace( "TotalLobbyingAmount.*", "Lobbying (LDA) Spending") %>% 
+         str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
+         str_replace("dictionary_terms", " Technical Sophistication")) %>% 
+  ggplot() +
+  aes(x = d0, 
+      xmin = d0.ci_low, 
+      xmax = d0.ci_high, 
+      y = term,
+      color = Model) + 
+    geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
+  geom_pointrange(position = position_dodge(width = 0.30),
+                  alpha = .8) + 
+  labs(color = "Model Assumption",
+    y = "Mediator", 
+       x = "ACME\nWords from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization") + 
+  theme(panel.grid.major.y = element_blank()) + 
+  scale_color_viridis_d(begin = .1, end = .8, option = 2)
+
+
+
+acme %>% full_join(acme.m) %>% 
+  mutate(term = term %>% str_replace("TotalContribAmount.*", "Campaign (PAC) Spending") %>% 
+         str_replace( "TotalLobbyingAmount.*", "Lobbying (LDA) Spending") %>% 
+         str_replace( "Total_Legal_Citations", " Legal Citations") %>% 
+         str_replace("dictionary_terms", " Technical Sophistication")) %>% 
+  ggplot() +
+  aes(x = d0, 
+      xmin = d0.ci_low, 
+      xmax = d0.ci_high, 
+      y = term,
+      color = Model) + 
+    geom_vline(xintercept = 0, linetype = 2, color = "grey") + 
+  geom_pointrange(position = position_dodge(width = 0.30),
+                  alpha = .8) + 
+  labs(color = "Model Assumption",
+    y = "Mediator", 
+       x = "ACME\nWords from Comment Added to Final Rule\nper Billion Dollars in Market Capitalization") + 
+  theme(panel.grid.major.y = element_blank()) + 
+  scale_color_viridis_d(begin = .1, end = .8, option = 2)
+```
+
+
+```{r, eval=FALSE}
+# single
+models <- list(med.cont, 
+               med.lob, 
+               med.cont.legal, 
+               med.cont.terms)
+
+models.m <- list(model.cont, model.y.cont, 
+                model.lob, model.y.lob,
+                model.legal,  model.y.legal, # TODO 
+                model.terms, model.y.terms# TODO RENAME THESE ABOVE TO FIT 
+                )
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+   `1` = "Campaign (PAC) Spending",
+     `2` = "Lobbying (LDA) Spending",
+  `3` = "Technical Terms",
+     `4` = "Legal Citations",
+    `5` = "Efficacy"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models.m)
+
+save(models.m, rows, file = here::here("models", "SEC", "models.m.Rdata"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Mediation with two mediators
+
+TotalContribAmount is PAC expenditure
+
+`multimed` can't do the sensitivity analysis with a continuous treatment variable
+
+In the case of a continuous treatment
+variable, the researcher would specify two values of the treatment to make the contrast (Imai
+et al. 2010a). 
+
+https://cran.r-project.org/web/packages/mediation/mediation.pdf page 40
+
+
+```{r mediation-multiple, eval = FALSE}
+#mediation-multiple
+
+#temp <- mediation_data  %>% mutate(assets = assets/10000000000) 
+                    # drop_na(efficacy, MeanContribAmount, TotalContribAmount, Total_Legal_Citations, assets,org_comments, MeanLobbyingAmount, TotalLobbyingAmount, NYearsLobbying) %>%
+
+temp <- mediation_data  %>% mutate(assets = as.numeric(assets > 1000000)) 
+temp <- mediation_data  %>% mutate(assets = assets/10000000000) 
+
+temp %<>% dplyr::select(efficacy, Total_Legal_Citations, assets,org_comments, TotalLobbyingAmount, TotalContribAmount) %>% drop_na(efficacy, Total_Legal_Citations, assets,org_comments, TotalLobbyingAmount) %>%
+  data.frame()
+
+temp %>%
+  skimr::skim()
+
+Xnames <- c("org_comments")
+
+m.med <- multimed(
+  outcome = "efficacy", med.main = "TotalContribAmount", med.alt = "TotalLobbyingAmount",
+  treat = "assets", covariates = Xnames,
+  data = temp, sims = 1000
+)
+
+m.med <- multimed(
+  outcome = "efficacy", med.main = "TotalContribAmount", med.alt = "TotalLobbyingAmount",
+  treat = "assets", covariates = 'org_comments',
+  data = temp, sims = 1000
+)
+
+# Sensitivity Analysis is blank b/c of some error, need to figure out why
+summary(m.med)
+
+plot(m.med, type = "point")
+
+plot(m.med, type = c("sigma", "R2-total"), tgroup = c("treated", "control"))
+
+summary(lm(formula = efficacy ~ TotalContribAmount + Total_Legal_Citations + assets + org_comments, data = b  %>% mutate(assets = assets/10000000000) %>%
+                    drop_na(efficacy, TotalContribAmount, Total_Legal_Citations, assets,org_comments)))
+
+```
+
+
+
+
+### Multimed
+
+```{r multi-mediation, eval=FALSE}
+mmed.terms.lobby <- multimed(outcome = "efficacy",#  model.y, 
+                             med.main = "dictionary_terms",# med.terms.4, 
+                             med.alt = "TotalLobbyingAmount",# med.cont.lobby,
+                             sims=1000, 
+                             treat = "marketcap_b", 
+                             data = as.data.frame(mediation_data4) 
+                             #robustSE = T, boot = T, 
+                             #control.value = 1, treat.value = 2
+                             )
+
+mmed.terms.lobby
+
+mmed.terms.lobby %>% plot(type = "point")
+
+```
+
+
+
+
+
+
+
+
+
+# Save data 
+
+```{r save}
+n_comments <- nrow(efficacyXsophistication)
+
+save(n_comments,
+     efficacyXsophistication, 
+     file = here::here("data", "efficacyXsophistication.Rdata"))
+```
+
+# TODO
+
+
+## Presentation 
+
+- [ ] Predicted probability plots for all models presented in the paper. These should replace all tables. All tables should appear in the appendix. 
+
+- [ ] Nonprofit and credit union plots for the correlation between assets and sophistication
+
+- [ ] `assets-tech-` figures should have x-axis scales in the millions or billions 
+
+## Analysis 
+
+- [ ] split out FDIC banks and nonprofits in asset mediation analysis? (at the moment, neither type of asset is correlated with efficacy, so mediation analysis is a low priority)
+
+## Data
+
+- [ ] check on the status of SEC comments (missing from the attachments table as of May 2022)
+
+- [ ] Try to get efficacy measures for key observations. For example, in cases where we have market cap: 
+
+Observations for which we have market cap and sophistication but are missing efficacy measures (POSSIBLY DUE TO THERE BEING NO FINAL RULE): 
+
+```{r}
+b %>% drop_na(marketcap, Total_Legal_Citations) %>% 
+  arrange(-Total_Legal_Citations) %>% 
+  filter(is.na(efficacy)) %>% 
+  dplyr::select(efficacy,marketcap, Total_Legal_Citations, org_name, comment_url) %>% 
+  kablebox()
+```

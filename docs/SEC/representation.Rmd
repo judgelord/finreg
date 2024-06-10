@@ -1,0 +1,162 @@
+---
+title: "Representation in SEC Rulemaking"
+#subtitle: "Appendix and Replication Code"
+output:
+    bookdown::html_document2:
+      highlight: zenburn
+      toc: true
+      toc_float: true
+      code_folding: hide
+      number_sections: false
+---
+
+```{r options, include=FALSE}
+source(here::here("code", "setup.R"))
+
+## Change defaults for R chunks
+knitr::opts_chunk$set(cache = FALSE,
+                      fig.path = "figs/",
+                      #fig.retina = 3, #6, #FIXME for publication-quality images 
+                      fig.height = 3,
+                      fig.width = 6)
+```
+
+
+## Assets 
+
+- see https://judgelord.github.io/finreg/participation
+
+- Nonprofit `assets` and `revenue` from 990 data from https://www.irs.gov/charities-non-profits/form-990-series-downloads: `finreg/data/nonprofit_resources.Rdata` or `finreg/data/merged_resources/nonprofit_resources.csv`
+
+```{r asset-data}
+#FIXME retain EIN in rdata 
+# load(here("data", "nonprofit_resources.Rdata"))
+nonprofit_resources <- read_csv(here::here("data", "merged_resources/nonprofits_resources.csv")) 
+
+# ALL OTHER ASSET DATA 
+load(here::here("data", "commenter_assets.Rdata"))
+
+d <- commenter_assets |>
+  filter(comment_agency == "SEC") 
+
+#FIXME MOVE TO TOP 
+d$comment_url %<>% str_replace("document\\?D=", "comment/")
+```
+
+
+## Employees and Volunteers 
+
+From 2015 IRS 990 
+
+```{r irs}
+irs <- read_csv(here::here("data", "irs_990_xmls_2015.csv")) %>% 
+  mutate(ein = as.numeric(EIN))
+
+irs %<>% distinct(ein, TotalVolunteersCnt, TotalEmployeeCnt, WebsiteAddressTxt) 
+
+irs %<>% group_by(ein) %>% arrange(-TotalEmployeeCnt) %>% arrange(-TotalVolunteersCnt) %>% slice_head(n = 1) %>% ungroup() 
+
+# irs %>%  count(EIN, TotalEmployeeCnt, TotalVolunteersCnt) %>% arrange(-n)
+
+```
+
+### All nonprofits
+```{r}
+nonprofit_resources %<>% full_join(irs) %>% 
+  mutate(commented = ein %in% commenter_assets$`nonprofits_resources-bestMatch:ein`,
+         Commented = ifelse(commented, "Commenter", "Non-commenter")) %>% 
+  filter(assets > 10)
+
+nonprofit_resources  %>% 
+  select(WebsiteAddressTxt, TotalVolunteersCnt, TotalEmployeeCnt, commented) %>%  arrange(-TotalVolunteersCnt) %>% kablebox()
+```
+
+
+### Nonprofits that commented on a Dodd-Frank rule
+```{r}
+nonprofit_resources %>% filter(commented) %>% 
+  select(WebsiteAddressTxt, TotalVolunteersCnt, TotalEmployeeCnt, commented) %>%  arrange(-TotalVolunteersCnt) %>% kablebox()
+```
+
+
+### Employees x Volunteers 
+```{r employee-vol}
+nonprofit_resources %>% 
+  ggplot() + 
+  aes(x = log(TotalEmployeeCnt), y = log(TotalVolunteersCnt), color = commented) + 
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm", color = "grey") + 
+  geom_smooth(color = "black") + 
+  facet_wrap("Commented") +
+  theme(legend.position = "none") +
+  labs(x = "Log(Employees)",
+       y = "Log(Volunteers)",
+       title = "Volunteers by Employees of Nonprofits\nthat Did and Did Not Comment on a SEC Rule")
+```
+
+
+### Assets x Volunteers 
+```{r assets-vol}
+nonprofit_resources %>% 
+  ggplot() + 
+  aes(x = log(assets), y = log(TotalVolunteersCnt), color = commented) + 
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm", color = "grey") + 
+  geom_smooth(color = "black") + 
+  facet_wrap("Commented") +
+  theme(legend.position = "none") +
+  labs(x = "Log(Assets)",
+       y = "Log(Volunteers)",
+       title = "Volunteers by Assets of Nonprofits\nthat Did and Did Not Comment on a SEC Rule")
+```
+
+
+# Probability of commenting, controlling for the number of volunteers
+
+Model 1 includes all nonprofits with asset data 
+
+Models 2-5 subset to nonprofits with volunteer data
+
+```{r mp-nonprofits-vol}
+nonprofit_resources %<>% mutate(Assets = assets/1000000000,
+                                log_assets = log(assets +1))
+
+mpNonprofit <- glm(commented ~ Assets,
+           data = nonprofit_resources , 
+             family=binomial(link="logit"))
+
+mpNonprofit_v <- glm(commented ~ Assets,
+           data = nonprofit_resources %>% filter(!is.na(TotalVolunteersCnt)), 
+             family=binomial(link="logit"))
+
+mpNonprofit_vol <- glm(commented ~ Assets + TotalVolunteersCnt,
+           data = nonprofit_resources, 
+             family=binomial(link="logit"))
+
+mpNonprofit_vol_log <- glm(commented ~ Assets + log(TotalVolunteersCnt + 1),
+           data = nonprofit_resources, 
+             family=binomial(link="logit"))
+
+mpNonprofit_vol_log_log <- glm(commented ~ log(assets + 1) + log(TotalVolunteersCnt + 1),
+           data = nonprofit_resources, 
+             family=binomial(link="logit"))
+
+models <- list(mpNonprofit, 
+               mpNonprofit_v,
+               mpNonprofit_vol_log_log,
+               mpNonprofit_vol,
+               mpNonprofit_vol_log)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Comment",
+  `2` = "Comment",  
+  `3` = "Comment",  
+  `4` = "Comment",  
+  `5` = "Comment"
+)
+
+#equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+```
