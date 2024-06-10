@@ -1,0 +1,205 @@
+---
+title: "Mediation"
+subtitle: FINREG
+author: "CTK"
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
+editor: source
+---
+
+For `Hypothesis 6`, we're focused on understanding the pathways of influence from wealth to efficacy. The four paths we study are summarized in the stylized DAG in @fig-paths.
+
+```{mermaid}
+%%| label: fig-paths
+%%| fig-cap: "Stylized pathways of influence from wealth to efficacious comments."
+flowchart LR
+  A[Market Cap] --> B[Efficacy]
+  A --> C(Lobbying) --> B
+  A --> D(PAC contributions) --> B
+  A --> E(Technical Expertise) --> B
+  A --> F(Legal Expertise) --> B
+```
+
+Lobbying and PAC contributions are both forms of political spending that would influence the rulemaking process in a direct financial way. Technical expertise and legal expertise are both measured using dictionary techniques, looking at banking terms and legal citations, respectively. The expertise pathways each come from a sense that large companies employ experts who have meaningful advice to give to agencies, whether it be on finer points of the law or nuance in how regulations should be enforced to capture the correct behaviors. 
+
+Of course, money itself can influence the efficacy, if there is a portion of efficacy that is purely a function of wealth. For example, if attention was driven by the wealth of a company, then this might be a direct relationship from the market cap of the company to the efficacy of their comments.
+
+To test the different pathways, we require some strong assumptions.
+
+1. There is a causal relationship from the market cap of a company to the efficacy of comments.
+2. The paths included in the analysis are the full enumeration of possible paths.
+3. The relationships can be described by linear models and binarized treatments.
+
+None of these are necessarily crazy. We are, however, a bit technologically limited by what we can do with [`mediation` in R](https://cran.r-project.org/package=mediation). We can only fit two mediators at any time, but we have proposed four.
+
+Combining the technical aspects of this with the limitations, we are doing the following:
+
+- Knowingly violating assumption 2 of the causal mediation analysis by excluding possible measures.
+  - We could pick a subset and approach these by pairing. We probably would not want to include the other measures in the models, as they are post-treatment for our analyses.[^posttreat]
+  - We can also consider these mediators as two classes of influence, (1) political spending (PAC and lobbying) and (2) expertise (legal and technical). This is detailed below.
+- We want to compare the sizes of the Average Causal Mediation Effects (ACME).
+  - To do this properly, we need the Total Effect (market cap $\to$ efficacy; including mediated effects) to be constant.
+    - This means the fitted models need to be the same and include all mediators.
+    - Otherwise everything changes, including the unmediated Average Direct Effect (ADE) (market cap $\to$ efficacy; no mediated effects).
+  
+[^posttreat]: CK: I am open to arguments against this framing. The timing is a bit fuzzy, so there's some reasonabe wiggle room as to how we should think about the timing of treatment.
+  
+  
+## Testing Classes of Influence
+
+Below demonstrates how we can view this as two classes of influence. Inferentially, *I think* this is consistent with a model where we think of expertise and spending as two quantities of interest, with each of the pathways as a measure of these classes. If that's the "correct" way to think about it, then we can view the paths in @fig-paths as measures, rather than paths themselves. The alternative measures for each class could then be used as robustness checks.
+
+Alternatively, we can say that spending is the simply the sum of spending through different sources. That is, if political spending is actually the pathway, then we want to know the total spending from a company on a rule, no matter the way that it is spent. In that case, we can reasonably use the sum of lobbying and PAC spending as our measure of political spending.
+
+For expertise, there is not necessarily a clear theory behind why or how we would combine them. They are both clearly related to expertise, but there's not a conversion rate between the types of expertise. We could do something like building an index, but then we probably lose all substantive interpretation. Instead, it seems reasonable to say that comments include signals of expertise and the two obvious ones are legal citations and technical banking terms.^[To Reviewer 3's sure-to-be helpful, but pessimistic comments, yes there are other ways we could measure this, such as academic citations or credentials in a comment. For the type of data we have though, comments in a legally mandated proceeding, these are likely the best ways to approach it.] As such, we would pick one measure (technical banking terms) for the main text and present the other (legal citations) as a robustness analysis.
+
+With that substantive grounding established, we now turn to the empirics of it all.  We can express the classes interpretation as a stylized DAG as in @fig-classes.
+
+```{mermaid}
+%%| label: fig-classes
+%%| fig-cap: "Stylized class-pathways of influence from wealth to efficacious comments."
+flowchart LR
+  A[Market Cap] --> B[Efficacy]
+  A --> C(Political Spending) --> B
+  A --> D(Expertise) --> B
+```
+
+Now we fit and interpret the model.
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+suppressPackageStartupMessages({
+  source(here::here('code/setup.R'))
+library(mediation)
+})
+mediation_data <- readRDS(here('data/mediation_data.rds'))
+```
+
+Each model is a linear model, so we can run the components and first understand the basic relationships.
+
+```{r}
+mediation_data_comb <- mediation_data %>%
+  drop_na(
+    efficacy,
+    marketcap_b,
+    TotalLobbyingAmount,
+    TotalContribAmount,
+    dictionary_terms,
+    Total_Legal_Citations
+  ) %>%
+  mutate(
+    political_spending = TotalContribAmount + TotalLobbyingAmount
+  )
+
+model_comb_poli <- lm(political_spending ~ marketcap_b,
+                      data = mediation_data_comb
+)
+
+model_comb_terms <- lm(dictionary_terms ~ marketcap_b,
+                     data = mediation_data_comb
+)
+
+model_y_comb <- glm(
+  efficacy ~ marketcap_b + political_spending + dictionary_terms,
+  data = mediation_data_comb
+)
+
+models_comb <- list(model_comb_poli, model_comb_terms, model_y_comb)
+rows <- tibble(
+  term = c('Dependent Variable'),
+  `1` = 'Political (PAC + LDA) Spending',
+  `2` = 'Technical Terms',
+  `3` = 'Efficacy'
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models_comb, rows = rows)
+```
+
+Then, we can fit the more full model and summarize it.
+
+```{r}
+# multiple mediators
+set.seed(02138)
+med_multi_comb <- multimed(
+  outcome = 'efficacy',
+  med.main = 'political_spending',
+  med.alt = 'dictionary_terms',
+  treat = 'marketcap_b',
+  data = as.data.frame(mediation_data_comb),
+  sims = 5000
+)
+summary(med_multi_comb)
+```
+$\delta$ corresponds to the first mediator, here political spending, and $\zeta$ corresponds to the direct effect of the market cap. Effect sizes are increases in efficacy per billion dollar market cap.
+
+```{r}
+#| fig-height: 5
+plot(med_multi_comb, type = 'point')
+```
+
+## Testing Pathways of Influence
+
+As before, we can fit the same models, but not aggregate the spending, if we want to test this as a four path approach. Here, we look at one pairing, PAC contributions and technical terms. This is most similar to what is currently done in the paper, up to the exclusion of variables in the model. This tries to fix the causal ordering problem, but causes issues in interpretation for how the underlying models are changing.
+
+```{r}
+
+model_path_cont <- lm(TotalContribAmount ~ marketcap_b,
+                      data = mediation_data_comb
+)
+
+model_path_terms <- lm(dictionary_terms ~ marketcap_b,
+                     data = mediation_data_comb
+)
+
+model_y_path <- glm(
+  efficacy ~ marketcap_b + TotalContribAmount + dictionary_terms,
+  data = mediation_data_comb
+)
+
+models_path <- list(model_path_cont, model_path_terms, model_y_path)
+rows <- tibble(
+  term = c('Dependent Variable'),
+  `1` = 'PAC Contributions',
+  `2` = 'Technical Terms',
+  `3` = 'Efficacy'
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models_path, rows = rows)
+```
+
+Again, we can fit the more full model and summarize it.
+
+```{r}
+# multiple mediators
+set.seed(02138)
+med_multi_path <- multimed(
+  outcome = 'efficacy',
+  med.main = 'TotalContribAmount',
+  med.alt = 'dictionary_terms',
+  treat = 'marketcap_b',
+  data = as.data.frame(mediation_data_comb),
+  sims = 5000
+)
+summary(med_multi_path)
+```
+
+We can graphically display this as well. $\delta$ corresponds to the first mediator, now total PAC spending, and $\zeta$ again corresponds to the direct effect of market cap. Effect sizes are increases in efficacy per billion dollar market cap.
+
+```{r}
+#| fig-height: 5
+plot(med_multi_path, type = 'point')
+```
+
+## Takeways
+
+- This is tricky! Causal mediation is the right tool *probably*, but the assumptions to get there are strong and we knowingly break them under some theories.
+- Results are pretty consistent across multiple ways of setting up the problem.
