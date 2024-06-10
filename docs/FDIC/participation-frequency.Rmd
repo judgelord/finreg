@@ -1,0 +1,778 @@
+---
+title: "Participation in FDIC Rulemaking"
+subtitle: "Frequency"
+output:
+    bookdown::html_document2:
+      highlight: zenburn
+      toc: true
+      toc_float: true
+      code_folding: hide
+      number_sections: false
+---
+
+```{r options, include=FALSE}
+library(marginaleffects)
+library(fixest)
+
+# rmarkdown::render("docs/participation.Rmd")
+source(here::here("code", "setup.R"))
+
+## Change defaults for R chunks
+knitr::opts_chunk$set(cache = TRUE,
+                      fig.path = "figs/",
+                      #fig.retina = 3, #6, #FIXME for publication-quality images 
+                      fig.height = 3,
+                      fig.width = 7)
+
+#Steve specific code - this is the secret sauce to make it work on my mac.  Why is this the key?  
+#setwd("/Users/stevenrashin/Dropbox/FINREGRULEMAKE2/finreg/")
+#here::i_am("code/setup.R")
+```
+
+
+# Data
+
+From judgelord.github.io/finreg/participation.html
+
+
+```{r}
+load(here::here("data", "commenter_assets.Rdata"))
+d <- commenter_assets |> 
+  filter(comment_agency == "FDIC") 
+
+#FIXME WE SHOULD NOT NEED THIS 
+# load IRS data with c3-c6 variable (this is large)
+# load(here::here("data", "IRS990-2012-2021.RData"))
+# 
+# IRS990_2012_2021 %<>% distinct(EIN, ORGANIZATION, SUBSECTION, .keep_all = T)
+```
+
+---
+
+# Frequency of participation among organizations that commented
+
+Among commenting organizations, how many rules did each comment on?
+
+WARNING: THIS IS A PROBLEMATIC MEAURE BECAUSE MARKET CAP AND NGO ASSETS ARE NOT AT ALL THE SAME 
+
+```{r asset-counts, fig.width=4, fig.height= 2, out.width= "50%"}
+
+asset_counts <- d %>% 
+  mutate(assets = org_resources) %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         assets_m = assets /1000000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n > nnp)
+
+rules_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+rules_t
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n,  fill = onepercent) + 
+  geom_bar() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Banks and Non-profits" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       y = "Number of Organizations",
+       fill = "Frequency of\nCommenting",
+       x = "Dodd-Frank Rules per Organization") #+ scale_y_log10()
+
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Banks and Non-profits" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", 
+       x = "Assets (Millions)")+
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Banks and Non-profits" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", 
+       x = "Assets (Millions)")+
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+
+
+m_asset_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Rules",
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(m_asset_count)
+```
+
+
+For every additional 10 billion in assets, an organization comments on about `r round(m_asset_count$coefficients[2]* 10,0) ` additional rules. 
+
+---
+
+## Among nonprofits that commented on a Dodd-Frank rule
+
+```{r nonprofit-rules, fig.width=4, fig.height= 2, out.width= "50%"}
+# ein_subsection <- IRS990_2012_2021 %>%
+#   dplyr::select(EIN,SUBSECTION) %>%
+#   mutate(ein = as.double(EIN)) %>%
+#   dplyr::select(-EIN) %>%
+#   distinct() #%>%
+#   #group_by(EIN) %>% tally() %>% arrange(desc(n))
+
+
+asset_counts <- d %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets, .keep_all = T) %>% 
+  #left_join(ein_subsection) %>% ### ADDED SUBSECTION HERE ## NOTE INCASE CODE GOES ROGUE
+  count(org_name, assets, ein, SUBSECTION) %>% # length stays at 6283 when ein added, so no change here!
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         assets_t = assets / 1000,
+         assets_m = assets_t /1000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n > nnp)
+
+rules_nonprofits_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+rules_ind_assoc_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+
+rules_nonprofits_t 
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Non-profits" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       y = "Number of Non-profits",
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") # + scale_y_log10()
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_t, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Non-profits" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_nonprofits_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_t, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Non-profits" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_nonprofits_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+### DO ABOVE BY SECTION OF IRS CODE TO SEPARATE OUT BUSINESS ASSNS
+anova_group_means  <- aov(assets_t ~ sub_group_comment, data =   asset_counts %>%
+    filter(assets > 10) %>%
+    filter(SUBSECTION %in% c("03","06")) %>%
+    mutate(
+      sub_group_comment = c(paste(onepercent, SUBSECTION))
+    ))
+
+# library(rstatix)
+# pwc <- asset_counts %>%
+#     filter(assets > 10) %>%
+#     filter(SUBSECTION %in% c("03","06")) %>%
+#     mutate(
+#       sub_group_comment = c(paste(onepercent, SUBSECTION))
+#     ) %>%
+#   rstatix::pairwise_t_test(assets_t ~ sub_group_comment, p.adjust.method = "bonferroni")
+# pwc %>% View()
+# None of the differences are statistically significant
+
+## Top 10% against Bottom 90%
+foc_top10_by_subsection <- asset_counts %>% 
+  filter(SUBSECTION %in% c("03","06")) %>%
+  mutate(
+    onepercentsubsection = c(paste(onepercent, SUBSECTION))
+  ) %>%
+  ggplot() + 
+  aes(x = assets_t, fill = onepercentsubsection) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Non-profits" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting by\nSubsection", y = "", x = "Assets (Thousands)",
+       caption = str_c("ANOVA test of difference in group means, p = ", summary(anova_group_means)[[1]][1,5]  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+# By 5 or more rules 
+anova_group_means_five  <- aov(assets_t ~ five, data =   asset_counts %>%
+    filter(SUBSECTION %in% c("03","06")) %>%
+    mutate(
+      five = c(paste(five, SUBSECTION))
+    ))
+
+foc_5more_by_subsection <- asset_counts %>% 
+  filter(SUBSECTION %in% c("03","06")) %>%
+  mutate(
+    five = c(paste(five, SUBSECTION))
+  ) %>%  
+  ggplot() + 
+  aes(x = assets_t, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Non-profits" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
+       caption = str_c("ANOVA test of difference in group means, p = ", summary(anova_group_means_five)[[1]][1,5]  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+foc_top10_by_subsection
+foc_5more_by_subsection
+
+m_nonprofit_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules",
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(m_nonprofit_count)
+```
+
+
+For every additional 10 billion in assets, a nonprofit comments on about `r round(m_nonprofit_count$coefficients[2]* 10,1) ` additional rules. 
+
+---
+
+## Among industry associations that commented on a Dodd-Frank rule
+
+```{r ind-assoc-rules, fig.width=4, fig.height= 2, out.width= "50%"}
+#ind-assoc-rules commented on 
+asset_counts <- d %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets, .keep_all = T) %>% 
+  #left_join(ein_subsection) %>% ### ADDED SUBSECTION HERE ## NOTE INCASE CODE GOES ROGUE
+  filter(SUBSECTION == "06") %>% 
+  count(org_name, assets, ein) %>% # length stays at 6283 when ein added, so no change here!
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         assets_t = assets / 1000,
+         assets_m = assets_t /1000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n > nnp)
+
+rules_ind_assoc_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+rules_ind_assoc_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+
+rules_ind_assoc_t 
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Industry Associations" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       y = "Number of Industry Associations",
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") # + scale_y_log10()
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_t, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Industry Associations" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_ind_assoc_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_t, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Industry Associations" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", y = "", x = "Assets (Thousands)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_ind_assoc_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+```
+
+
+
+---
+
+## Among  Banks that commented on a Dodd-Frank rule
+
+```{r fdic-rules, fig.width=4,  fig.height= 2,out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(assets = ASSET) %>% 
+  filter(assets > 10) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  filter(!is.na(assets)) %>% 
+  mutate(nnp = quantile(n, probs = .90),
+         assets_t = assets /1000,
+         assets_m = assets_t /1000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n>nnp)
+
+rules_fdic_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+rules_fdic_t 
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(y = "Number of Banks",
+       title = "Banks" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Banks" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", x = "Assets (Millions)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_fdic_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Banks" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", x = "Assets (Millions)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_fdic_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_fdic_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules"
+  )
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(list(m_fdic_count))
+```
+
+
+For every additional billion in assets, a bank comments on about `r round(m_fdic_count$coefficients[2]* 1,0) ` additional rules. 
+
+
+---
+
+
+
+## Among credit unions that commented on a Dodd-Frank rule
+
+```{r creditunion-rules, fig.width=4,  fig.height= 2,out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(assets = `Total Assets`) %>% # credit union call reports Total Assets
+  filter(assets > -1, !is.na(assets)) %>%
+  distinct(org_name, docket_id, assets) %>% 
+  count(org_name, assets) %>% 
+  mutate(nnp = quantile(n, probs = .5),
+         assets_t = assets /1000,
+         assets_m = assets_t /1000,
+         assets_b = assets_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 50%", "Bottom 50%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n>nnp)
+
+rules_creditunion_t <- t.test(asset_counts %>% filter(top) %>% pull(assets),
+                  asset_counts %>% filter(!top) %>% pull(assets),)
+
+rules_creditunion_t
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(y = "Number of Credit Unions",
+       title = "Credit Unions" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Credit Unions" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", x = "Assets (Millions)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_creditunion_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = assets_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Credit Unions" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       y = "", x = "Assets (Millions)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_creditunion_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_creditunion_count <- lm(n ~ assets_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules"
+  )
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(list(m_creditunion_count))
+```
+
+
+For every additional 10 billion in assets, a credit union comments on about `r round(m_creditunion_count$coefficients[2]* 10,0) ` additional rules. 
+
+
+---
+
+
+## Among publicly-traded companies that commented on a Dodd-Frank rule
+
+```{r compustat-rules, fig.width=4, fig.height= 2, out.width= "50%"}
+# compustat-rules
+d %>% count(org_name, marketcap, sort = T) %>% drop_na(marketcap) %>%  kablebox()
+
+d %>% count(org_name, organization, marketcap, sort = T) %>% drop_na(marketcap) %>%  kablebox()
+
+d %>% filter(org_name == "alternative asset management acquisition") %>% dplyr::select(marketcap, organization,contains("name")) %>% kablebox()
+
+# combine and count 
+asset_counts <- d %>% 
+  mutate(marketcap = marketcap2) %>% 
+  filter(marketcap > 10) %>%
+  distinct(org_name, docket_id, marketcap) %>% 
+  count(org_name, marketcap) %>% 
+  filter(!is.na(marketcap)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         marketcap_t = marketcap /1000,
+         marketcap_m = marketcap_t /1000,
+         marketcap_b = marketcap_m / 1000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n > nnp)
+
+asset_counts %>% filter(n > 5) %>% count(marketcap, sort = T)
+d %>% count(marketcap, sort = T)
+#compustat %>% count(marketcap, sort = T)
+d %>% filter(marketcap2 == 34297000000) %>% dplyr::select(marketcap, contains("name"), contains("cik"), contains("rssd")) %>% distinct() %>% kablebox()
+#compustat %>% filter(marketcap2 == 34297000000) 
+
+#FIXME we need to correct this to be a nonprofit, just dropping for now 
+asset_counts %<>% filter(org_name != "alternative asset management acquisition")
+
+
+rules_compustat_t <- t.test(asset_counts %>% filter(top) %>% pull(marketcap),
+                  asset_counts %>% filter(!top) %>% pull(marketcap),)
+
+rules_compustat_t 
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(y = "Number of Companies",
+       title = "Publicly-Traded Companies" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+asset_counts %>% 
+  filter(marketcap_b > .001) %>% 
+  ggplot() + 
+  aes(x = marketcap_b, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Publicly-Traded Companies" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_compustat_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = marketcap_b, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Publicly-Traded Companies" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       fill = "Frequency of\nCommenting", y = "", x = "Market Cap (Billions)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_compustat_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_compustat_count <- lm(n ~ marketcap_b, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules"
+  )
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(list(m_compustat_count))
+```
+
+
+For every additional 100 billion in market cap, a company comments on about `r round(m_compustat_count$coefficients[2]* 100,0) ` additional rules. 
+
+---
+
+## Among campaign donors that commented on a Dodd-Frank rule
+
+TODO: 
+- [ ] Lobbying expendature
+- [ ] Versions of PAC donations and lobbying expendature that replace NA with 0 (on the assumption that if they failed to match in CRP, they are not a PAC donor or registered with LDA)
+
+```{r opensecrets-rules, fig.width=4, fig.height= 2, out.width= "50%"}
+asset_counts <- d %>% 
+  mutate(donations = `MeanContribAmount`) %>% 
+   # mutate(donations = `MeanContribAmountPerYearContributed`) %>% 
+  filter(donations > 10) %>%
+  distinct(org_name, docket_id, donations) %>% 
+  count(org_name, donations) %>% 
+  filter(!is.na(donations)) %>% 
+  mutate(nnp = quantile(n, probs = .9),
+         donations_m = donations / 1000000,
+         onepercent = ifelse(n > nnp, "Top 10%", "Bottom 90%"),
+         five = ifelse(n < 5, "<5 Rules", "5 or More Rules"),
+         top = n>nnp)
+
+rules_pac_t <- t.test(asset_counts %>% filter(top) %>% pull(donations),
+                  asset_counts %>% filter(!top) %>% pull(donations),)
+
+rules_pac_t 
+
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = n, fill = onepercent) + 
+  geom_bar() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Campaign Donors" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+       y = "Number of Organizations",
+        fill = "Frequency of\nCommenting",
+       x = "Number of Dodd-Frank Rules") #+ scale_y_log10()
+  
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = donations_m, fill = five) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Campaign Donors" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", 
+       y = "", x = "PAC Donations (Thousands)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_pac_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+asset_counts %>% 
+  ggplot() + 
+  aes(x = donations_m, fill = onepercent) + 
+  geom_density(alpha = .5, color = NA) + 
+  scale_x_log10() + 
+  scale_fill_viridis_d(begin = .3, end = .9) +  
+  labs(title = "Campaign Donors" %>% str_c(", FDIC, N = ", nrow(asset_counts) %>% prettyNum(big.mark = ",")),
+        fill = "Frequency of\nCommenting", 
+       y = "", x = "PAC Donations (Thousands)",
+       caption = str_c("Welch t-test of difference in means, p = ", rules_pac_t$p.value  %>% round(20) %>% signif(1)))+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.y = element_blank())
+
+
+m_opensecrets_count <- lm(n ~ donations_m, data = asset_counts)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Number of Dodd-Frank Rules",
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(m_opensecrets_count)
+```
+
+
+For every additional 10 million in Political Action Committee campaign donations, an organization comments on about `r round(m_opensecrets_count$coefficients[2]* 10,0) ` additional rules. 
+
+---
+
+## All
+
+```{r all-rules}
+
+models <- list(#`All` = m_asset_count, 
+               `Non-profits` = m_nonprofit_count,
+               `Credit Unions`= m_creditunion_count,
+               `Public Companies` = m_compustat_count,
+               `Banks` = m_fdic_count,
+               `PAC Donors` = m_opensecrets_count)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  #`All` = "Number of Rules",
+      `Non-profits` = "Number of Rules",
+  `Credit Unions`= "Number of Rules",
+  `Public Companies` = "Number of Rules",
+  `Banks` = "Number of Rules",
+    `PAC Donors` = "Number of Rules",
+  )
+
+attr(rows, 'position') <- c(0)
+
+
+modelsummary(models)
+
+save(models, rows, 
+     file = here::here("models", "FDIC", "rules-by-assets.Rdata"))
+```
+
+---
+
+## Comments per rule
+
+### Percent of comments by each organization type on any one rule
+```{r}
+# comments 
+# of the matched sample 
+# 90% of credit union comments, half of the nonprofits, and 75% campaig
+d %>% 
+  mutate(docket_id = str_split(docket_id, ";")) %>% 
+  unnest(docket_id) %>% 
+    add_count(org_type2, name = "dataset_total") %>% 
+  count(org_type2, docket_id, dataset_total, sort = T) %>%
+  mutate(percent = percent( n / dataset_total , accuracy = 1)) %>% 
+  kablebox()
+```
+
+
+### Percent of each organization type on any one rule
+
+```{r}
+# orgs (15% of nonprofits on payday loan rule, 30% of opensecrets)
+d %>% 
+ mutate(docket_id = str_split(docket_id, ";")) %>% 
+  unnest(docket_id) %>% 
+  # org rather than comment level counts now
+  distinct(org_name, docket_id, org_type2) %>% 
+  # total orgs of each type  in the dataset 
+  add_count(org_type2, name = "dataset_total") %>% 
+  # number of each org type by docket 
+  count(org_type2, docket_id, `dataset_total`, sort = T) %>%
+  mutate(percent = percent( n / dataset_total , accuracy = 1)) %>% 
+  kablebox()
+```
+
+### Most Frequently Commenting Orgs
+```{r}
+# 
+d %>% 
+  # filter(comment_agency == "FDIC") %>% 
+  # mutate(docket_id = comment_url %>% str_extract("FDIC-[0-9]*-[0-9]*")) %>% 
+  count(best_match_name, org_type2, docket_id, sort = T) %>% kablebox()
+```
+
+      

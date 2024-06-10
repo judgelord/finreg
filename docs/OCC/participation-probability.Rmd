@@ -1,0 +1,1034 @@
+---
+title: "Participation in OCC Rulemaking"
+subtitle: "Probability of Commenting on an OCC Rule" 
+output:
+    bookdown::html_document2:
+      highlight: zenburn
+      toc: true
+      toc_float: true
+      code_folding: hide
+      number_sections: false
+---
+
+(Those that "did not comment" may have commented on non-OCC Dodd-Frank rules)
+
+```{r options, include=FALSE}
+library(marginaleffects)
+library(fixest)
+
+# rmarkdown::render("docs/participation.Rmd")
+source(here::here("code", "setup.R"))
+
+## Change defaults for R chunks
+knitr::opts_chunk$set(cache = TRUE,
+                      fig.path = "figs/",
+                      #fig.retina = 3, #6, #FIXME for publication-quality images 
+                      fig.height = 3,
+                      fig.width = 7)
+
+#Steve specific code - this is the secret sauce to make it work on my mac.  Why is this the key?  
+#setwd("/Users/stevenrashin/Dropbox/FINREGRULEMAKE2/finreg/")
+#here::i_am("code/setup.R")
+```
+
+
+# Data
+
+From judgelord.github.io/finreg/participation.html
+
+
+```{r}
+load(here::here("data", "commenter_assets.Rdata"))
+d <- commenter_assets |>
+  filter(comment_agency == "OCC") 
+
+load(here::here("data", "nonprofit_resources_clean.Rdata"))
+
+load(here::here("data", "fdic_resources_clean.Rdata"))
+#https://banks.data.fdic.gov/docs/#/
+
+load(here::here("data", "compustat_clean.Rdata"))
+
+load(here::here("data", "opensecrets_clean.Rdata"))
+
+load(here::here("data", "creditunions_clean.Rdata"))
+
+#FIXME WE SHOULD NOT NEED THIS 
+# load IRS data with c3-c6 variable (this is large)
+#load(here::here("data", "IRS990-2012-2021.RData"))
+
+#IRS990_2012_2021 %<>% distinct(EIN, ORGANIZATION, SUBSECTION, .keep_all = T)
+```
+
+---
+
+# Probability of Commenting
+
+These models have the prefix `mp_`. The dependent variable is the probability that the organization comments.
+
+### Banks
+
+SM = Comptroller of the Currency (OCC). National Charter and a Fed member.
+
+NM = Commercial Bank. The bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State charter and Fed non-member
+
+SB = Savings Bank. The bank is supervised by the Federal Deposit Insurance Corporation (FDIC). State Charter.
+
+OI = Bank is an insured United States branch of a foreign chartered institution (IBA)
+
+N = National Associations (Ommitted)
+
+Assets in hundreds of millions
+
+```{r cache=FALSE}
+# FDIC_resources %>% filter(BKCLASS == "NM")
+
+
+FDIC_resources %<>% mutate(
+  Class = str_c(" ", BKCLASS) %>% as.factor() ,
+  ASSETS_t = ASSET/1000,
+  ASSETS_m = ASSETS_t/1000,
+  ASSETS_b = ASSETS_m/1000) 
+
+# make savings associations the ref category 
+FDIC_resources$Class %<>% relevel(ref = " SA")
+# %>% 
+#   mutate(BKCLASS = BKCLASS %>% str_replace("^NM", "SBNM"))  %>% 
+#   mutate(BKCLASS = BKCLASS %>% str_replace("^NM", "SBNM"))
+
+unique(FDIC_resources$BKCLASS)
+unique(FDIC_resources$Class)
+
+
+```
+
+
+```{r mp-FDIC, cache=FALSE, fig.height=2, fig.width=6}
+#mpFDIC
+mpFDICbillions <- glm(commented ~ ASSETS_b,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDIC <- glm(commented ~ ASSETS_b,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDIC_BKCLASSonly <- glm(commented ~ Class,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDIC_BKCLASS <- glm(commented ~ ASSETS_b + Class,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDICxBKCLASS <- glm(commented ~ ASSETS_b*Class,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Comment",
+  `2` = "Comment",  
+  #`3` = "Comment"
+)
+
+attr(rows, 'position') <- c(0)
+
+models <- list(mpFDIC,# mpFDIC_BKCLASSonly,
+               mpFDIC_BKCLASS#,
+               #mpFDICxBKCLASS
+               )
+
+# equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+modelplot(models[1:2]) +
+  labs(title  = "Banks",
+x = "Change in Log Odds of Commenting",
+caption = "Reference Category = Savings Associations") +
+  theme(panel.grid.major.x =  element_blank(),
+        panel.grid.major.y =  element_blank()) + 
+  scale_color_viridis_d(end = .6)
+
+
+save(models, rows, 
+     file = here::here("models", "OCC", "mpFDIC.Rdata"))
+```
+
+
+#### Predicted probabibility of commenting by bank type
+
+```{r mp-FDIC-predict, fig.height=2.5, fig.width=6}
+# mp-FDIC-predict
+
+ # A data frame of values at which to estimate probabilities:
+values <- FDIC_resources %>% 
+  #filter(org_type == "Bank") %>% 
+  tidyr::expand(ASSETS_b = seq(0,100,20),
+                Class)#, org_type = "Bank") 
+
+predicted <- marginaleffects::predictions(mpFDICxBKCLASS,
+                         newdata = values) 
+
+names(predicted)
+
+
+# As a plot
+p <- predicted %>% 
+  mutate(Class = Class %>% 
+           str_replace("NM", "Commercial bank") %>% 
+      str_replace("SB", "Savings bank") %>% 
+      str_replace("OI", "Foreign chartered institution") %>% 
+      str_replace("N$", "National association") %>% 
+        str_replace("SA", "Savings association") %>% 
+        str_replace("SM", "State commercial bank")
+    ) %>% 
+  ggplot() + 
+  aes(x = ASSETS_b, y = estimate, shape = Class, color = Class
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), 
+                  alpha = .7,
+                  position = position_dodge(width = 10) 
+                  )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  #coord_flip() +
+  labs(y = 'Probability of Commenting', 
+       x = "Assets (Billions)",
+       color = "",
+       shape = "", 
+       title = "OCC Only ") + 
+  theme_minimal() + 
+  theme()+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  
+
+p 
+```
+
+
+```{r mp-FDIC2, cache=FALSE, fig.height=2, fig.width=6}
+FDIC_resources %<>% mutate(Class2 = ifelse(
+  str_detect(Class, "NM|SM"),
+  "Commercial bank",
+  "Non-commercial bank"
+), 
+ASSETS_b2 = ASSETS_b^2)
+
+#mpFDIC
+mpFDICbillions <- glm(commented ~ ASSETS_b,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDIC <- glm(commented ~ ASSETS_b,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDIC_BKCLASSonly <- glm(commented ~ Class2,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDIC_BKCLASS <- glm(commented ~ ASSETS_b + Class2,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDICxBKCLASS <- glm(commented ~ ASSETS_b*Class2,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDICxBKCLASSlog <- glm(commented ~ log(ASSETS_b)*Class2,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+mpFDICxBKCLASS2 <- glm(commented ~ ASSETS_b*Class2 + ASSETS_b2*Class2,
+           data = FDIC_resources, 
+             family=binomial(link="logit"))
+
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Comment",
+  `2` = "Comment",  
+    `3` = "Comment",  
+  `4` = "Comment"#,
+  #  `5` = "Comment"
+)
+
+attr(rows, 'position') <- c(0)
+
+models <- list(mpFDIC,# mpFDIC_BKCLASSonly,
+               mpFDIC_BKCLASS,
+               mpFDICxBKCLASS,
+                              mpFDICxBKCLASSlog#,
+               #mpFDICxBKCLASS2
+               )
+
+# equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+modelplot(models[1:2]) +
+  labs(title  = "Banks",
+x = "Change in Log Odds of Commenting",
+caption = "Reference Category = Commercial Bank") +
+  theme(panel.grid.major.x =  element_blank(),
+        panel.grid.major.y =  element_blank()) + 
+  scale_color_viridis_d(end = .6)
+
+
+save(models, rows,
+     file = here::here("models", "OCC", "mpFDIC2.Rdata"))
+```
+
+
+#### Predicted probabibility of commenting by bank type
+
+```{r mp-FDIC2-predict, fig.height=2.5, fig.width=3.5}
+ 
+ # A data frame of values at which to estimate probabilities:
+values <- FDIC_resources %>% 
+  #filter(org_type == "Bank") %>% 
+  tidyr::expand(ASSETS_b = c(1,10,100,1000), # seq(0,100,20),
+                Class2) %>% mutate(ASSETS_b2 = ASSETS_b^2)
+
+predicted <- marginaleffects::predictions(mpFDICxBKCLASSlog,
+                         newdata = values) 
+
+names(predicted)
+
+
+# As a plot
+p <- predicted %>% 
+  mutate(Class2 = str_replace(Class2, " ", "\n")) %>% 
+  ggplot() + 
+  aes(x = ASSETS_b, y = estimate, shape = Class2, color = Class2
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), 
+                  alpha = .7,
+                  position = position_dodge(width = .5) 
+                  )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  #coord_flip() +
+  labs(y = 'Probability of Commenting', 
+       x = "Assets (Billions)",
+       color = "",
+       shape = "", 
+       title = "OCC Only ") + 
+  theme_minimal() + 
+  theme(#axis.text.y = element_blank(),
+        #axis.ticks.y = element_blank(),
+        #panel.grid.major.y = element_blank()
+        )+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  +
+  scale_x_log10()
+
+p 
+```
+
+### Non-profits
+
+Assets in billions
+
+```{r mp-nonprofits}
+nonprofit_resources %<>% mutate(ASSETS_b = assets/1000000000)
+
+mpNonprofit <- glm(commented ~ ASSETS_b,
+           data = nonprofit_resources , 
+             family=binomial(link="logit"))
+
+mpNonprofit_revenue <- glm(commented ~ ASSETS_b + revenue,
+           data = nonprofit_resources, 
+             family=binomial(link="logit"))
+
+mpNonprofit_ind_assoc <- glm(commented ~ ASSETS_b + revenue + ind_assoc,
+           data = nonprofit_resources %>% mutate(ind_assoc = SUBSECTION == "06"), 
+             family=binomial(link="logit"))
+
+mpNonprofit_subsection <- glm(commented ~ ASSETS_b + revenue + SUBSECTION,
+           data = nonprofit_resources, 
+             family=binomial(link="logit"))
+
+models <- list(mpNonprofit, mpNonprofit_revenue, mpNonprofit_ind_assoc)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Comment",
+  `2` = "Comment",  
+  `3` = "Comment" 
+)
+
+# equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+modelplot(models)+ 
+  theme(panel.grid.major.x =  element_blank()) + 
+  labs(x = "Change in Log Odds of Commenting")
+```
+
+### Credit Unions
+
+ASSETS_b in billions
+
+ 
+```{r mp-credit-unions}
+creditunions %<>% mutate(ASSETS_b = assets/1000000000)
+
+
+mp_creditunions <- glm(commented ~ ASSETS_b,
+           data = creditunions, 
+             family=binomial(link="logit"))
+
+models <- list(mp_creditunions)
+
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+)
+
+attr(rows, 'position') <- c(0)
+
+# equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+modelplot(models)+ 
+  theme(panel.grid.major.x =  element_blank()) + 
+  labs(x = "Change in Log Odds of Commenting per Billion in Assets")
+```
+
+### Banks, Non-profits, Credit Unions Compared
+
+```{r mp-nonprofit-credit-unions}
+# nonprofit-credit-unions
+models <- list(mpFDICbillions, mpNonprofit, mp_creditunions)
+
+names(models) <- c("Banks", "Non-profits", "Credit Unions")
+
+
+modelplot(models) + 
+  theme(panel.grid.major.x =  element_blank()) + 
+  labs(x = "Change in Log Odds of Commenting per Billion in Assets") +
+  facet_wrap("model", scales = "free", ncol = 1) +
+  scale_color_viridis_d(option = "plasma", end = .7)
+
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+modelsummary(models)
+
+save(models, rows, 
+     file = here::here("models", "OCC", "pr-of-comment.Rdata"))
+```
+
+### Campaign Donors
+
+```{r mp-opensecrets-predict, fig.height=2.5, fig.width=2.5}
+# TODO JOIN org_type2 and lobbying expend
+
+opensecrets %<>% mutate(MeanContribAmount_t = MeanContribAmount/1000,
+                        TotalContribAmount_t = TotalContribAmount/1000,
+                        MeanContribAmount_m = MeanContribAmount/1000000,
+                        TotalContribAmount_m = TotalContribAmount/1000000)
+
+mpOpensecrets <- glm(commented ~ MeanContribAmount_t,
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+mpOpensecrets_total <- glm(commented ~ TotalContribAmount_t,
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+
+mpOpensecrets_log <- glm(commented ~ log(MeanContribAmount_t),
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+mpOpensecrets_total_log <- glm(commented ~ log(TotalContribAmount_t),
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+models <- list(mpOpensecrets, mpOpensecrets_total,
+               mpOpensecrets_log, mpOpensecrets_total_log)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented",
+  `4` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+
+# equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+save(models, rows, file =  here::here("models", "OCC", "mp-opensecrets.Rdata"))
+
+
+# A data frame of values at which to estimate probabilities:
+values <- opensecrets %>% 
+  #filter(org_type == "Bank") %>% 
+  tidyr::expand(MeanContribAmount_t = c(1,10,100) )#, org_type = "Bank") 
+
+predicted <- marginaleffects::predictions(mpOpensecrets_log,
+                         newdata = values) 
+
+names(predicted)
+
+
+# As a plot
+p <- predicted %>% 
+  ggplot() + 
+  aes(x = MeanContribAmount_t, y = estimate#, shape = org_type, color = org_type
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), alpha = .7, position = position_dodge(width = 0.010) )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  #coord_flip() +
+  labs(y = 'Probability of Commenting', 
+       x = "PAC Contributions ($1,000s)",
+       color = "",
+       shape = "", 
+       title = "OCC Only ") + 
+  theme_minimal() + 
+  theme(#axis.text.y = element_blank(),
+        #axis.ticks.y = element_blank(),
+        #panel.grid.major.y = element_blank()
+        )+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  +
+  scale_x_log10()
+
+p 
+```
+
+### Lobbying
+
+```{r mp-opensecrets-lobbying-predict, fig.height=2.5, fig.width=2.5}
+# TODO JOIN org_type2 and lobbying expend
+
+opensecrets %<>% mutate(MeanLobbyingAmount_t = MeanLobbyingAmount/1000,
+                        TotalLobbyingAmount_t = TotalLobbyingAmount/1000,
+                        MeanLobbyingAmount_m = MeanLobbyingAmount/1000000,
+                        TotalLobbyingAmount_m = TotalLobbyingAmount/1000000)
+
+mpOpensecrets <- glm(commented ~ MeanLobbyingAmount_t,
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+mpOpensecrets_total <- glm(commented ~ TotalLobbyingAmount_t,
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+
+mpOpensecrets_log <- glm(commented ~ log(MeanLobbyingAmount_t),
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+mpOpensecrets_total_log <- glm(commented ~ log(TotalLobbyingAmount_t),
+           data = opensecrets, 
+             family=binomial(link="logit"))
+
+models <- list(mpOpensecrets, mpOpensecrets_total,
+               mpOpensecrets_log, mpOpensecrets_total_log)
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+  `3` = "Commented",
+  `4` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+
+# equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+save(models, file =  here::here("models", "OCC", "mp-opensecrets-lobbying.Rdata"))
+
+# A data frame of values at which to estimate probabilities:
+values <- opensecrets %>% 
+  #filter(org_type == "Bank") %>% 
+  tidyr::expand(MeanLobbyingAmount_t = c(1,10,100) )#, org_type = "Bank") 
+
+predicted <- marginaleffects::predictions(mpOpensecrets_log,
+                         newdata = values) 
+
+names(predicted)
+
+
+# As a plot
+p <- predicted %>% 
+  ggplot() + 
+  aes(x = MeanLobbyingAmount_t, y = estimate#, shape = org_type, color = org_type
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), alpha = .7, position = position_dodge(width = 0.010) )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  #coord_flip() +
+  labs(y = 'Probability of Commenting', 
+       x = "PAC Contributions ($1,000s)",
+       color = "",
+       shape = "", 
+       title = "OCC Only ") + 
+  theme_minimal() + 
+  theme(#axis.text.y = element_blank(),
+        #axis.ticks.y = element_blank(),
+        #panel.grid.major.y = element_blank()
+        )+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  +
+  scale_x_log10()
+
+p 
+```
+
+---
+
+### By Market Cap
+
+```{r mp-compustat}
+compustat %<>% mutate(commented = Commented == "Commented",
+                      marketcap_b = marketcap2/1000000000,
+                      marketcap_b2 = marketcap_b^2)
+
+
+mpCompustat <- glm(commented ~ marketcap_b,
+           data = compustat, 
+             family=binomial(link="logit"))
+
+top_naics <- compustat %>% count(naics, sort = T) %>% 
+  drop_na(naics) %>% 
+  top_n(10, wt = n) %>% 
+  pull(naics)
+
+mpCompustat_naics <- glm(commented ~ NAICS_,
+           data = compustat %>% mutate(NAICS_ = ifelse(naics %in% top_naics, naics, "other")), 
+             family=binomial(link="logit"))
+
+models <- list(mpCompustat, mpCompustat_naics)
+
+# equatiomatic::extract_eq(models[[1]]) 
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented"#,
+  #`3` = "Commented"
+)
+
+modelsummary(models)
+
+
+# new table wiothout NAICS 
+mpCompustatlog <- glm(commented ~ log(marketcap_b),
+           data = compustat, 
+             family=binomial(link="logit"))
+
+mpCompustat2 <- glm(commented ~ marketcap_b2,
+           data = compustat, 
+             family=binomial(link="logit"))
+
+
+
+
+
+
+models <- list(mpCompustat, mpCompustatlog)#, mpCompustat2)
+
+# equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+#modelplot(models)
+
+ modelplot(mpCompustat)
+ 
+ # modelplot(mpCompustat_naics)
+
+save(models, rows, file = here::here("models", "OCC", "mpCompustat.Rdata"))
+```
+
+#### Predicted probabilites by market cap
+
+```{r mp-compustat-predict, fig.height=2.5, fig.width=2}
+ 
+ # A data frame of values at which to estimate probabilities:
+values <- compustat %>% 
+  #filter(org_type == "Bank") %>% 
+  tidyr::expand(marketcap_b = c(1,10,100,1000) ) %>% 
+  mutate(marketcap_b2 = marketcap_b^2)
+
+predicted <- marginaleffects::predictions(mpCompustatlog,
+                         newdata = values) 
+
+names(predicted)
+
+
+# As a plot
+p <- predicted %>% 
+  ggplot() + 
+  aes(x = marketcap_b, y = estimate#, shape = org_type, color = org_type
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), 
+                  alpha = .7,
+                  position = position_dodge(width = 0.010) 
+                  )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  #coord_flip() +
+  labs(y = 'Probability of Commenting', 
+       x = "Market Cap. (Billions)",
+       color = "",
+       shape = "", 
+       title = "OCC Only ") + 
+  theme_minimal() + 
+  theme(#axis.text.y = element_blank(),
+        #axis.ticks.y = element_blank(),
+        #panel.grid.major.y = element_blank()
+        )+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma") +
+  scale_x_log10()
+
+p 
+```
+
+## Together
+
+```{r mp-all}
+all <- full_join(
+  FDIC_resources %>% 
+    ungroup() %>% 
+    dplyr::select(assets = ASSET, 
+                  commented, 
+                  org_type2 = Class) %>% 
+    mutate(org_type = "Bank"),
+  nonprofit_resources %>% 
+    ungroup() %>% 
+    dplyr::select(assets, commented, SUBSECTION) %>% 
+    mutate(org_type = ifelse(SUBSECTION == "06",
+                             "Industry assoc.",  
+                             "Other non-profit") %>% replace_na("Other non-profit")) 
+) %>% 
+  full_join(
+  creditunions %>% 
+    ungroup() %>% 
+    dplyr::select(assets, commented) %>% mutate(org_type = "Credit union")
+  )
+
+distinct(all, commented, org_type)
+
+## ADD SECTIONS OF IRS CODE HERE
+
+all %<>% mutate(assets_b = assets  / 100000000,
+                assets_b2 = assets_b^2) # %>% filter(org_type != " SB", org_type != " SM")
+
+mpAll <- glm(commented ~ assets_b + org_type,
+           data = all, 
+             family=binomial(link="logit"))
+
+mpAlli <- glm(commented ~ assets_b * org_type,
+           data = all, 
+             family=binomial(link="logit"))
+
+# # business assns split out from non-profits
+# mpAlli_np_solo <- glm(commented ~ assets_b * org_type,
+#            data = all %>% 
+#              mutate(
+#                org_type = ifelse(org_type == "Non-profit", c(paste(org_type, SUBSECTION)), org_type)
+#              ) %>%
+#              filter(SUBSECTION %in% c("03","06")), 
+#              family=binomial(link="logit"))
+# 
+# # business assns split out from non-profits
+# `%!in%` <- base::Negate(`%in%`)
+# 
+# mpAlli_all_np_subsection <- glm(commented ~ assets_b * org_type,
+#            data = all,# %>% 
+#              # filter(
+#              #   !(org_type == "Non-profit" & SUBSECTION %!in% c("03","06"))
+#              #   ) %>%
+#              # mutate(
+#              #   org_type = ifelse(org_type == "Non-profit", c(paste(org_type, SUBSECTION)), org_type),
+#              # ),
+#              family=binomial(link="logit"))
+
+
+mpAlllog <- glm(commented ~ log(assets_b+1) + org_type,
+           data = all, 
+             family=binomial(link="logit"))
+
+mpAllilog <- glm(commented ~ log(assets_b+1) * org_type,
+           data = all, 
+             family=binomial(link="logit"))
+
+mpAllquad <- glm(commented ~ assets_b + assets_b2 + org_type,
+           data = all, 
+             family=binomial(link="logit"))
+
+mpAlliquad <- glm(commented ~ assets_b * org_type + assets_b2 * org_type ,
+           data = all, 
+             family=binomial(link="logit"))
+
+
+models <- list(mpAll, mpAlli,
+               mpAlllog, mpAllilog#,
+               #mpAllquad, mpAlliquad
+               )
+
+rows <- tibble(
+  term = c("Dependent Variable"),
+  `1` = "Commented",
+  `2` = "Commented",
+    `3` = "Commented",
+  `4` = "Commented"#,
+ # `5` = "Commented",
+ # `6` = "Commented"
+)
+
+attr(rows, 'position') <- c(0)
+
+#equatiomatic::extract_eq(models[[1]]) 
+
+modelsummary(models)
+
+# modelplot(models)
+
+save(models, rows,
+     file = here::here("models", "OCC", "mpAll.Rdata"))
+```
+
+
+### Predicted Probability of commenting by Non-Profit Type
+
+```{r mp-all-predict, fig.height=2.5, fig.width=3.5}
+values <- all %>% 
+  tidyr::expand(assets_b = seq(0,100,10), 
+                org_type) %>% 
+  mutate(assets_b2 = assets_b^2)
+
+
+predicted <- marginaleffects::predictions(
+  mpAll,
+  newdata = values) 
+
+p <- predicted %>% 
+  ggplot() + 
+  aes(x = assets_b, y = estimate, shape = org_type, color = org_type
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), alpha = .7, position = position_dodge(width = .5) )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  #coord_flip() +
+  labs(y = 'Probability of Commenting', 
+       x = "Assets (Billions)",
+       color = "",
+       shape = "", 
+       title = "OCC Only ") + 
+  theme_minimal() + 
+  theme(#axis.text.y = element_blank(),
+        #axis.ticks.y = element_blank(),
+        #panel.grid.major.y = element_blank()
+        )+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  
+
+p
+
+
+# 
+# predicted <- marginaleffects::predictions(mpAlli_np_solo,
+#                          newdata = values)
+# p <- predicted %>%
+#   ggplot() +
+#   aes(x = assets_b*1000, y = estimate#, shape = org_type, color = org_type
+#       ) +
+#   geom_pointrange(aes(ymin = conf.low,
+#                   ymax = conf.high), alpha = .7, position = position_dodge(width = 0.010) )  +
+#   geom_hline(yintercept = 0, linetype = 2) +
+#   #coord_flip() +
+#   labs(y = 'Probability of Commenting',
+#        x = "Assets (Millions)",
+#        color = "",
+#        shape = "",
+#        title = "OCC Only ") +
+#   theme_minimal() +
+#   theme(#axis.text.y = element_blank(),
+#         #axis.ticks.y = element_blank(),
+#         #panel.grid.major.y = element_blank()
+#         )+
+#     scale_color_viridis_d(begin = 0, end = .6, option = "plasma")
+# 
+# # predicted probability of commenting Bank, Credit Union, NP 3 and NP 6
+# only_np <- p  +  aes(color = org_type) + labs(color = "")
+# 
+# ggsave(plot = only_np, filename = "figs/only-np-sep-mp-all-predict-quad-1.png", bg="white")
+# 
+
+```
+
+
+###  Predicted probability of commenting by assets 
+
+```{r}
+# A data frame of values at which to estimate probabilities:
+values <- all %>% 
+  #filter(org_type == "Bank") %>% c(1,10,100)
+  tidyr::expand(assets_b = seq(0,100,10), org_type) %>% 
+  mutate(assets_b2 = assets_b^2)
+```
+
+
+
+### Base model with interactions (2) 
+
+```{r,  mp-alli-predict, fig.height=2.5, fig.width=3.5}
+predicted <- marginaleffects::predictions(mpAlli,
+                         newdata = values) 
+
+names(predicted)
+
+
+# As a plot
+p <- predicted %>% 
+  ggplot() + 
+  aes(x = assets_b, y = estimate, shape = org_type, color = org_type
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), alpha = .7, position = position_dodge(width = 0.010) )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  #coord_flip() +
+  labs(y = 'Probability of Commenting', 
+       x = "Assets (Billions)",
+       color = "",
+       shape = "", 
+       title = "OCC Only ") + 
+  theme_minimal() + 
+  theme(#axis.text.y = element_blank(),
+        #axis.ticks.y = element_blank(),
+        #panel.grid.major.y = element_blank()
+        )+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  
+
+p  +  aes(color = org_type) + labs(color = "")
+
+
+# p +   facet_wrap("org_type", ncol = 1) #+ ylim(0,.5) 
+```
+
+```{r,  mp-all-predict-faceted, fig.height=2.5, fig.width=5.5}
+p +  facet_wrap("org_type", ncol = 2, scales = "free") +  aes(color = org_type) + labs(color = "") # + ylim(0,.5) 
+```
+
+
+
+### Log model with interactions (2) 
+
+```{r}
+# A data frame of values at which to estimate probabilities:
+values <- all %>% 
+  tidyr::expand(assets_b = c(.1, 1,10,100), org_type) %>% 
+  mutate(assets_b2 = assets_b^2)
+```
+
+```{r,  mp-all-predict-log, fig.height=2.5, fig.width=3.5}
+predicted <- marginaleffects::predictions(mpAllilog,
+                         newdata = values)
+
+# As a plot
+p <- predicted %>% 
+  ggplot() + 
+  aes(x = assets_b, y = estimate, shape = org_type, color = org_type
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), alpha = .7, position = position_dodge(width = 0.5) )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  labs(y = 'Probability of Commenting', 
+       x = "Assets (Billions)",
+       color = "",
+       shape = "", 
+       title = "OCC Only ") + 
+  theme_minimal() + 
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  +
+  scale_x_log10()
+
+p + aes(color = org_type) + labs(color = "")  
+```
+
+### Quadratic model with interactions (6) 
+
+```{r,  mp-all-predict-quad, fig.height=2.5, fig.width=3.5}
+predicted <- marginaleffects::predictions(mpAlliquad,
+                         newdata = values) # %>%  filter(org_type != "Industry assoc.")
+
+
+# As a plot
+p <- predicted %>% 
+  ggplot() + 
+  aes(x = assets_b, y = estimate, shape = org_type, color = org_type
+      ) + 
+  geom_pointrange(aes(ymin = conf.low,
+                  ymax = conf.high), alpha = .7, position = position_dodge(width = 0.50) )  + 
+  geom_hline(yintercept = 0, linetype = 2) +
+  #coord_flip() +
+  labs(y = 'Probability of Commenting', 
+       x = "Assets (Billions)",
+       color = "",
+       shape = "", 
+       title = "OCC Only ") + 
+  theme_minimal() + 
+  theme()+
+    scale_color_viridis_d(begin = 0, end = .6, option = "plasma")  +
+  scale_x_log10()
+
+#p+ aes(color = org_type) + labs(color = "") 
+```
+
+```{r mp-all-predict-blank, fig.height=2.5, fig.width=3}
+p$layers[1] <- NULL +   facet_wrap("org_type", ncol = 1) 
+
+
+p  + ylim(0,1) 
+```
+
+# TODO 
+
+Priorities for matching that will give us the most leverage:
+
+- [ ] Best match in *each* dataset rather than best match in *one* dataset: https://finreggroup.slack.com/archives/C027MRLQFLJ/p1650733175102459
+
+- [ ] Comments on dockets with 0 comments matched: https://judgelord.github.io/finreg/participation#Asset_data
+
+- [ ] Underpowered subsets, especially marketcap (hopefully matching both compustat and CIK will help with this): https://judgelord.github.io/finreg/participation#By_Market_Cap
+
+- [ ] FDIC `BKCLASS` == "national associations" that we are currently dropping: https://judgelord.github.io/finreg/participation#FDIC_instituttions  https://finreggroup.slack.com/archives/C027MRLQFLJ/p1653322086231879
+
+- [ ] False positives that I am currently dropping https://finreggroup.slack.com/archives/C027MRLQFLJ/p1650658969445029
+
+Analyses to clean up and add to the paper 
+
+- [ ] Lobbying expenditures from CRP (replication of all PAC figures and models)
+
+- [ ] Non-profit revenue (maybe just add the revenue figures and models to the appendix)
+
+- [ ] the full (best-ish) model includes nonprofits, credit unions, and each type of bank as separate org_types. This model is run above but needs to be investigated 
+
+Presentation 
+
+- [ ] Predicted probability plots for all models presented in the paper. These should replace all tables. All tables should appear in the appendix. 
+
+- [ ] Non-profit and credit union plots for the correlation between assets and sophistication
