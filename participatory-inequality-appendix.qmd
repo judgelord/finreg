@@ -492,37 +492,37 @@ This algorithm has a few notable strengths. First, it focuses on text that is bo
 
 Below, we shed light on why several comments have efficacy values that are particularly high.
 
-1)  https://www.sec.gov/comments/s7-33-10/s73310-110.pdf, Efficacy score = 10131
+1)  <https://www.sec.gov/comments/s7-33-10/s73310-110.pdf>, Efficacy score = 10131
 
 This letter is unusual in that its members (Americans for Limited Government, Ryder Systems, Inc., Financial Services Institute, Inc., U.S. Chamber of Commerce, Verizon, and White & Case, LLP) are all part of multiple coalitions and submitted multiple comments. The Chamber of Commerce, for example, submitted five comments and attended seven meetings and was a part of two separate coalitions.
 
-2)  https://www.sec.gov/comments/s7-33-10/s73310-35.pdf, Efficacy score = 10131
+2)  <https://www.sec.gov/comments/s7-33-10/s73310-35.pdf>, Efficacy score = 10131
 
 This is the same letter as above, submitted twice to the SEC although recorded by the SEC as a separate comment. Reassuringly it has the same efficacy!
 
-3)  https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275, Efficacy score = 7593
+3)  <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275>, Efficacy score = 7593
 
-4)  https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205, Efficacy score = 7411
+4)  <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205>, Efficacy score = 7411
 
-5)  https://www.sec.gov/comments/s7-41-11/s74111-230.pdf, Efficacy score = 7312
+5)  <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf>, Efficacy score = 7312
 
-The following three comments (https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275, https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205, https://www.sec.gov/comments/s7-41-11/s74111-230.pdf) are all related. The CFTC, OCC, FRB, FDIC, and SEC all worked together to develop rules to prohibit banking companies from engaging in proprietary trading (trading securities with their own money instead of clients'). While all five agencies worked together to write a final rule, in the end the CFTC wrote one rule and the OCC, FRB, FDIC, and SEC wrote another. Despite the different final rules, the agencies "the CFTC and the other agencies have worked closely together to develop the same rule text and supplementary information, except for information specific to the CFTC or the other agencies, as applicable."
+The following three comments (<https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275>, <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205>, <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf>) are all related. The CFTC, OCC, FRB, FDIC, and SEC all worked together to develop rules to prohibit banking companies from engaging in proprietary trading (trading securities with their own money instead of clients'). While all five agencies worked together to write a final rule, in the end the CFTC wrote one rule and the OCC, FRB, FDIC, and SEC wrote another. Despite the different final rules, the agencies "the CFTC and the other agencies have worked closely together to develop the same rule text and supplementary information, except for information specific to the CFTC or the other agencies, as applicable."
 
-The comment https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275 is a 340-page letter from Occupy the SEC, a group affiliated with Occupy Wall Street, submitted on the CFTC's version of the final rule. It was cited 285 times in the preamble to the final rule.
+The comment <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275> is a 340-page letter from Occupy the SEC, a group affiliated with Occupy Wall Street, submitted on the CFTC's version of the final rule. It was cited 285 times in the preamble to the final rule.
 
-The comment https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205 is a 325-page letter from Occupy the SEC and was submitted on the CFTC's version of the final rule. It was cited 284 times in the preamble to the final rule.
+The comment <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205> is a 325-page letter from Occupy the SEC and was submitted on the CFTC's version of the final rule. It was cited 284 times in the preamble to the final rule.
 
-The comment https://www.sec.gov/comments/s7-41-11/s74111-230.pdf is a 325-page letter from Occupy the SEC and was submitted to the OCC, FRB, FDIC, and SEC's version of the rule. It was cited 284 times in the preamble to the final rule.
+The comment <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf> is a 325-page letter from Occupy the SEC and was submitted to the OCC, FRB, FDIC, and SEC's version of the rule. It was cited 284 times in the preamble to the final rule.
 
-6)  https://www.sec.gov/comments/s7-25-11/s72511-55.pdf, Efficacy score = 5809
+6)  <https://www.sec.gov/comments/s7-25-11/s72511-55.pdf>, Efficacy score = 5809
 
 SIFMA is cited over 500 times by the CFTC in the preamble to the final rule.
 
-7)  https://www.sec.gov/comments/s7-18-11/s71811-32.pdf, Efficacy score = 5563
+7)  <https://www.sec.gov/comments/s7-18-11/s71811-32.pdf>, Efficacy score = 5563
 
 Standard & Poors's letter to the SEC is cited over 200 times by the SEC in the preamble to the final rule.
 
-8)  https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=25016, Efficacy score = 4965
+8)  <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=25016>, Efficacy score = 4965
 
 Not only did the FIA help develop the guidelines that were codified into the final rule, the FIA's letter was cited 98 separate times by the CFTC in the preamble to the final rule.
 
@@ -573,6 +573,7 @@ Coalitions|6|7|14|0
 Corporations|11|16|5.1|0
 Law Firms|22|29|4.4|8
 
+: Citations to Comments on the Whistleblower Rule {#tbl-whistleblower}
 
 
 

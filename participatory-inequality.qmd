@@ -493,7 +493,7 @@ knitr::include_graphics(here::here(c(
 
 ### Wealthier commenters have greater lobbying success 
 
-The final three hypotheses focus on the association between wealth inequality and lobbying success: The *Differential Lobbying Success* Hypothesis (H4)  posits that wealthy organizations will be more successful in their regulatory lobbying. The final two hypotheses address why we may see this pattern emerge. For instance, is it because wealthy organizations spend more on political campaigns and lobbying targeting Congress or because they employ more legal and technical expertise when they comment on proposed rules?
+The final three hypotheses focus on the association between wealth inequality and lobbying success: The *Differential Lobbying Success* Hypothesis (H4)  posits that wealthy organizations will be more successful in their regulatory lobbying. The final two hypotheses address why we may see this pattern emerge. For instance, is it because wealthy organizations spend more on political campaigns and lobbying targeting Congress? Or because they employ more legal and technical expertise when they comment on proposed rules?
 
 <!--model?--> 
 @fig-repeated-text-assets provides descriptive support for Hypothesis 4. For banks and other companies, we see a positive correlation between an organization’s wealth and its lobbying success. The pattern is less clear for non-profits. In other words, wealthier companies appear to be more successful in shifting the content of final rules than similar---but less wealthy---companies. The y-axes of plots in  @fig-repeated-text-assets indicate the number of words that appear in 10-word phrases in both an organization's comment and the final rule (but were not present in the proposed rule). The x-axes of each plot in @fig-repeated-text-assets represent different indicators of wealth binned on a log scale. 
@@ -501,7 +501,7 @@ The differences in means capture the extent to which wealth is correlated with l
 
 ```{r}
 #| label: fig-repeated-text-assets
-#| fig-cap: "Amount of Text Repeated in Final Rules by Commenter Resources"
+#| fig-cap: "Amount of Text Repeated in Final Rules by Commenter Resources. Each point represents a comment. The horizontal axis bins comments by the order of magnitude of the assets of the commenting organization in millions of dollars."
 #| layout-ncol: 2
 #| fig-subcap: 
 #| - "Non-profits"
@@ -525,7 +525,7 @@ The *Differential Sophistication* Hypothesis  (H5) suggests wealthier organizati
 
 ```{r}
 #| label: fig-assets-terms
-#| fig-cap: "Amount of Technical Language by Assets"
+#| fig-cap: "Amount of Technical Language by Assets. Each point represents a comment. The horizontal axis bins comments by the order of mangitude of the assets of the commenting organization in millions of dollars."
 #| layout-ncol: 2
 #| fig-subcap: 
 #| - "Non-profits"
@@ -553,7 +553,7 @@ knitr::include_graphics(here::here(c(
 We theorize in the *Dividends of Sophistication* Hypothesis (H6) that comments from wealthier organizations are more successful in shifting the content of financial rules *because* wealthier organizations submit more sophisticated comments.
 We investigate this proposed mechanism for unequal influence by assessing the relationship between legal and technical sophistication and lobbying success.
 
-@tbl-efficacy-sophistication shows that comments that use more sophisticated technical language are more likely to contain text that was added to the final rule. @tbl-efficacy-sophistication shows estimates of lobbying success from regression models where the key predictor variable is the number of technical terms or legal citations in a comment. Both models suggest a statistically significant relationship. Substantively, the use of 10 additional technical finance or banking terms in an organization's comment is associated with an additional word being added to the text of the final rule. Each additional legal citation in a comment is associated with about 14 additional words from that comment added to the final rule. By "additional words," we mean words from a 10-word phrase that appears in the organization's comment and in the final rule but was not present in the draft rule. 
+@tbl-efficacy-sophistication shows that comments that use more sophisticated technical language are more likely to contain text that was added to the final rule. @tbl-efficacy-sophistication shows estimates of lobbying success from regression models where the key predictor variable is the number of technical terms or legal citations in a comment. Both models suggest a statistically significant relationship. Substantively, the use of 10 additional technical finance or banking terms in an organization's comment is associated with an additional word being added to the text of the final rule. Each legal citation in a comment is associated with about 14 additional words from that comment added to the final rule. By "additional words," we mean words from a 10-word phrase that appears in the organization's comment and in the final rule but was not present in the draft rule. 
 
 ```{r}
 #| label: tbl-efficacy-sophistication
@@ -572,7 +572,7 @@ modelsummary(models, notes = "Poisson regression yields similar results (see app
 
   
 
-Finally, to further evaluate the *Dividends of Sophistication* Hypothesis (H6), we use mediation analysis to examine the extent to which the sophistication of the comments may explain the relationship between wealth and lobbying success. Mediation analysis can take various forms, from structural equation models and sequential testing of additional variables to more modern techniques rooted in causal inference [@mackinnon2012introduction]. As recent work has shown [@imai2011unpacking], causal analysis of mediator variables requires strong assumptions that are unlikely to be satisfied in the complex observational setting of this study. Still, we consider observational analysis of mediation hypotheses worthwhile for the same reason we regard other non-identified, descriptive studies as valuable: they permit the repeated testing of hypotheses that can inform important scholarly and policy debates where randomized studies are problematic or unlikely.  
+Finally, to further evaluate the *Dividends of Sophistication* Hypothesis (H6), we apply mediation analysis to examine the extent to which the sophistication of the comments may explain the relationship between wealth and lobbying success. Mediation analysis can take various forms, from structural equation models and sequential testing of additional variables to more modern techniques rooted in causal inference [@mackinnon2012introduction]. As recent work has shown [@imai2011unpacking], causal analysis of mediator variables requires strong assumptions that are unlikely to be satisfied in the complex observational setting of this study. Still, we consider observational analysis of mediation hypotheses worthwhile for the same reason we regard other non-identified, descriptive studies as valuable: they permit the repeated, principled testing of hypotheses that can inform important scholarly and policy debates where randomized studies are problematic or unlikely.  
 
 We follow the estimation strategy and approach of the more modern literature in causal inference and conduct this analysis through the mediation package in R [@tingley2014mediation]. In this literature, causal mediation analysis aims to decompose an average treatment effect into its parts. The treatment effect is also called the total effect, meaning the effect of a treatment on an outcome. This total effect is the sum of the direct effect, the effect that a treatment has directly, and the indirect effect, which is the effect through some mediator. The mediator is often thought of as a mechanism by which a treatment transforms into an outcome. Hypothetically, an effect may have multiple, potentially interrelated mediators, making the analysis more complex and challenging. 
 
@@ -633,7 +633,7 @@ Mediation analysis suggests that much of the strong association between organiza
 Our empirical study also provides stylized facts that address some of the formal literature on administrative policymaking. Of the literature summarized in @Schnakenberg2024, our results cohere most with subsidy-based theories of special interest influence [@Hall2006] and with models of policy development monopolies [@Hirsch2018]. Specifically, there may be a rationale for agencies to follow Hirsch and Shotts’ recommendation that agencies induce information provision (competition) by policy developers with different preferences. Meanwhile, our findings that larger and wealthier organizations are more likely to participate and, conditional on participating, more likely to see their comments incorporated in final rule generation, provide the basis for further theoretical work. Our novel measures of comment sophistication also permit those interested in formal modeling to perform tests of hypotheses on commenting strategy, costly signaling and the mobilization of expertise. That said, this is primarily a descriptive, large-sample empirical study and we do not claim to decisively adjudicate among claims in the formal literature. In focusing on rulemaking, our analysis also leaves aside important issues about venue choice raised in @BoehmkeJPP2013 and other works. A richer empirical study might consider the simultaneous empirical modeling of legislative lobbying and commenting as potential complements or substitutes.
 
 <!--POLICY IMPLICATIONS --> 
-These results hold important implications for reform efforts aimed at ameliorating the effects of wealth inequality on government policy [@OIRA2023]. For instance, reforms that provide resources to select organizations to develop more sophisticated comments and policy recommendations may be an effective means to level the playing field between differentially resourced lobbying entities. Such a strategy would resemble subsidized legal representation used in other kinds of policies. The novel feature is that this would be aimed at reducing inequality in administrative policymaking---i.e., rulemaking. Efforts similar to this are already underway at some agencies, including at the U.S. Federal Energy Regulatory Commission.^[See: https://www.ferc.gov/equity] This article’s findings suggest that such reforms merit close study. 
+These results hold important implications for reform efforts aimed at ameliorating the effects of wealth inequality on government policy [@OIRA2023]. For instance, reforms that provide resources to select organizations to develop more sophisticated comments and policy recommendations may be an effective means to level the playing field between differentially resourced lobbying entities. Such a strategy would resemble subsidized legal representation used in other kinds of policies. The novel feature is that this would be aimed at reducing inequality in administrative policymaking---i.e., rulemaking. Efforts similar to this are already underway at some agencies, including at the U.S. Federal Energy Regulatory Commission.^[See: <https://www.ferc.gov/equity>] This article’s findings suggest that such reforms merit close study. 
  
 Future work is needed to extend this article’s findings. For instance, following @Ban2019, additional research is needed to make explicit comparisons between the legislative and regulatory policymaking processes to provide a more complete picture of how inequality may manifest across policymaking in America’s key political institutions. Future work could also assess the relationship between wealth inequality in other areas of agency decision-making, such as spending, permitting, and enforcement decisions. 
 
@@ -654,8 +654,20 @@ With the rise of the administrative state, scholars have documented the importan
 
 \clearpage
 
-{{< include participatory-inequality-appendix.qmd >}}
+## References
+
+::: {#refs}
+:::
 
 \clearpage
 
-## References
+\setcounter{section}{0}
+\renewcommand{\thesection}{\Alph{section}}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+{{< include participatory-inequality-appendix.qmd >}}

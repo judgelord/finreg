@@ -20,7 +20,7 @@ contributes:
       margin-right: 1in
       margin-bottom: 1in
       filters:
-        - refs.lua
+      #  - refs.lua
         - wordcount.lua
       execute:
         echo: false
