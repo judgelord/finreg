@@ -1,18 +1,18 @@
 ---
 title: "Inequality in Agency Rulemaking"
 format: 
-  docx
-  # cmc-article-pdf:
-  #   fig-pos: 'h'
-  #   fig-env: "figure"
-  #   keep-tex: false
-  #   filters: [citeproc.lua, wordcount.lua] # https://github.com/andrewheiss/quarto-wordcount
-  # # Below indented is Steve's attempt to get a sideways table. Will delete it if it doesn't work
-  #   include-in-header:
-  #       text: |
-  #         \usepackage{lscape}
-  #         \newcommand{\blandscape}{\begin{landscape}}
-  #         \newcommand{\elandscape}{\end{landscape}}
+  #docx
+  cmc-article-pdf:
+    fig-pos: 'h'
+    fig-env: "figure"
+    keep-tex: false
+    filters: [citeproc.lua, wordcount.lua] # https://github.com/andrewheiss/quarto-wordcount
+  # Below indented is Steve's attempt to get a sideways table. Will delete it if it doesn't work
+    include-in-header:
+        text: |
+          \usepackage{lscape}
+          \newcommand{\blandscape}{\begin{landscape}}
+          \newcommand{\elandscape}{\end{landscape}}
 linestretch: 1.5
 indent: true
 number-sections: true
@@ -397,7 +397,13 @@ knitr::include_graphics(here::here("figs/boxplot-efficacyXsophistication-2.png")
 
 Descriptively, our measures of lobbying sophistication and lobbying success are highly correlated. Our measure of commenter lobbying success increases with the wealth of the commenting organization. @fig-efficacyXsophistication shows that the number of words from the comment added to the final rule (the y-axis) correlates with the number of technical words in the comment (the x-axis, binned on a log scale). Box plots show the middle two (25%-75%) quartiles and whiskers extending to 1.5 times the inter-quartile range (the distance between the first and third quartiles).
 
-@fig-efficacyXsophistication highlights the comment with the highest score on our measure of lobbying success, a comment to the SEC prepared by the law firm White & Case, LLP for the U.S. Chamber of Commerce, Americans for Limited Government, Ryder Systems, Inc., the Financial Services Institute, Inc., and Verizon. This highly-sophisticated comment included a 19-page cover letter with many technical citations underscoring the Chamber's "very serious concerns on the impact [that the rule's] whistleblower requirements will have on... companies' responsibilities to act in the best interests of their shareholders." This comment also included a marked-up draft of the SEC's proposed rule, suggesting specific changes, several of which were adopted by the SEC.^[See more details on this and other comments that score high on our measure of lobbying success in the appendix.] 
+In Appendix [Section Z], we validate our measure by examining the comments that scored highest on our efficacy measure. In each case, the text re-use measure picks up text that shows the agency officials taking commenter concerns seriously as they revised regulations, often leading to substantive policy change in the final text of the rule as well as significant engagement with commenters' arguments over statutory interpretation and legislative intent in the preamble to the final rule.^[Case C in particular shows that our measure picks up the case of policy deletion from proposed to final rule, which is difficult for text re-use approaches to capture.]  The top five highest-scoring commenters include: 
+
+- a comment from a consumer rights advocacy organization, Occupy the SEC, that proposed closing an insider-trading loophole by applying regulations not only to banks’ investments but also to the investments of their top employees. The SEC modified the rule to extend regulations to employees exactly as the commenter suggested (Case A in the Appendix);
+- a comment from the Securities Industry and financial Markets Association (SIFMA) that directed the agency to harmonize the regulation of swaps across two agencies, followed by the agency’s agreement to harmonize treatment, in which the agency expressly used the SIFMA comment’s phrase in the final rule text (Case B);
+- a comment from Standard and Poor’s calling for the SEC to drop a requirement for securities raters to track whether debts are paid off, particularly in the case of securities that had had their ratings withdrawn, followed by the SEC’s decision to drop this requirement and the SEC’s specific citation of the comment in justifying its deletion.
+
+@fig-efficacyXsophistication highlights the very highest-scoring comment: a comment to the SEC prepared by the law firm White & Case, LLP for the U.S. Chamber of Commerce, Americans for Limited Government, Ryder Systems, Inc., the Financial Services Institute, Inc., and Verizon. This highly-sophisticated comment included a 19-page cover letter with many technical citations underscoring the Chamber's "very serious concerns on the impact [that the rule's] whistleblower requirements will have on... companies' responsibilities to act in the best interests of their shareholders." This comment also included a marked-up draft of the SEC's proposed rule, suggesting specific changes, several of which were adopted by the SEC.^[See more details on this and other comments that score high on our measure of lobbying success in the appendix.] 
 
 Other comments with high lobbying success scores include an 84-page comment from Standard & Poor's Global Ratings credit rating agency to the SEC, a 59-page comment from the Futures Industry Association to the CFTC, and several marked-up versions of proposed SEC rules from investment companies.
 Overall, @fig-efficacyXsophistication shows a positive correlation between the number of technical banking terms in a comment and the amount of text it shares with the final rule. 
@@ -749,6 +755,9 @@ With the rise of the administrative state, scholars have documented the importan
 
 \clearpage
 
+\singlespacing
+\small
+
 ## References
 
 ::: {#refs}
@@ -766,3 +775,8 @@ With the rise of the administrative state, scholars have documented the importan
 \renewcommand{\thefigure}{A\arabic{figure}}
 
 {{< include participatory-inequality-appendix.qmd >}}
+
+
+{{< include efficacy_appendix.txt >}}
+
+

@@ -1,6 +1,6 @@
 # Appendix {.unnumbered}
 
-# Data collection and processing {#collection}
+# Data Collection and Processing {#collection}
 
 @tbl-master-table and @fig-docket-table show the number of rulemaking processes (dockets) and comments in our data by agency. Identifying comments from organizations and matching those organizations to metadata about their resources required significant effort. To match comments to organizations found in various databases, we first extract entity names from the text or from comment metadata where available. We then use a custom probabilistic matching algorithm that was iteratively built to correctly match organizations in these data using a combination of term-frequency times inverse document frequency (TF-IDF) and Jaccard distance. For each commenter, we start with the most uncommon token (word) in the entity name string and search for names in each dataset that have that token. For example, if Klamath First Federal Bank submitted a comment, the algorithm first looks for names with the token "Klamath." We then rank the resulting candidate matches using a modified Jaccard index that scores each token in the commenter's name that matches a token in the candidate name in inverse proportion to the token's frequency in the commenter dataset (normalizing by the sum of the inverse frequencies of all the tokens in the commenter's name, matching or otherwise) so that 'more informative' words contribute more to the match score. We then set a threshold match score that, upon inspection, yields correct matches. Finally, we then hand-validated over 30,000 comments, including all matches that occurred ten times or more and a sample of others and implement a custom set of corrections based on this validated set.
 
@@ -8,6 +8,7 @@
 <!--As noted, the data we use in our analysis is the subset of all comments that match an organization with one or more types of wealth data.
 Practically, acquiring wealth information for all commenters---including thousands of individuals who submit form comments as part of mass comment campaigns (with no little identifying information)---would have been impossible. Moreover, because nearly all individual commenters are mobilized by an organization, form comments are best conceptualized as supporting the more sophisticated comments we focus on in our analysis here [@JudgeLord2021].-->
 ```
+
 ```{r}
 #| label: "tbl-master-table"
 #| tbl-cap: "Comments, Comment Attachments, Comment Sophistication, Comment Lobbying Success, and Commenter Wealth Data on Rules Implementing the Dodd-Frank Act"
@@ -37,6 +38,7 @@ read_csv(here::here("data", "master_tables_status.csv")) %>%
     linesep = "\\addlinespace")
 ```
 
+<!-- CUT FOR AJPS 20-PAGE LIMIT 
 \clearpage
 
 ## Entity extraction and matching {#matching}
@@ -52,10 +54,10 @@ knitr::include_graphics(here::here("figs/docket-table-1.png"))
 
 <!-- TODO: PAGE DESCRIBING MATCHING METHOD-->
 
-\clearpage
 
-# Additional descriptives {#descriptives}
+# Additional Descriptives {#descriptives}
 
+<!-- CUT FOR AJPS 
 ## Types of Non-Profits
 
 @fig-commenters-noncommenters-section shows that the relationship between assets and commenting shown in @fig-commenters-noncommenters also appears when we look at different types of non-profits. Specifically, we focus on the difference between business leagues --- 501(c)(6)s --- and charities --- 501(c)(3)s. The difference between the groups means are statistically significant using a one-way ANOVA, although we note that in the six pairwise t-tests between all the groups the differences between the 501(c)(6)s that commented and the 501(c)(3) that did not and the 501(c)(6)s that commented and those that did not were not statistically significant.
@@ -66,6 +68,7 @@ knitr::include_graphics(here::here("figs/docket-table-1.png"))
 #| out-width: "100%"
 knitr::include_graphics(here::here("figs/nonprofit-density-by-section-1.png"))
 ```
+--> 
 
 ## Non-profit revenue
 
@@ -90,7 +93,7 @@ knitr::include_graphics(here::here(c(
 ```{r}
 #| label: "fig-assets-vol"
 #| fig-cap: "Volunteers of Non-profits that Did and Did Not Comment"
-#| out-width: "100%"
+#| out-width: "70%"
 knitr::include_graphics(here::here("figs/assets-vol-1.png"))
 ```
 
@@ -98,11 +101,13 @@ knitr::include_graphics(here::here("figs/assets-vol-1.png"))
 
 ```{r}
 #| label: "fig-efficacyXvol"
-#| out-width: "80%"
+#| out-width: "70%"
 #| fig-cap: "Efficacy by Number of Volunteers"
 knitr::include_graphics(here::here("figs/efficacyXvol-2.png"))
 ```
 
+
+<!---Cut for AJPS 20 page limit 
 ## Histograms
 
 Figures [-@fig-commenters-noncommenters-counts], [-@fig-FDIC-density-by-class], and [-@fig-opensecrets-count] present histograms of wealth distributions by whether an organization commented on a Dodd-Frank rule.
@@ -125,11 +130,8 @@ knitr::include_graphics(here::here(c(
 
 ### Variation within classes of banks
 
-When we look within categories of banks, we see that the wealthier banks within each class are also more likely to submit comments on financial rules than similar banks with less wealth. @fig-FDIC-density-by-class shows that, within each class of bank (i.e., commercial banks, commercial banks, state banks, and savings associations), wealthier banks participate in financial rulemaking more than less wealthy banks. <!--
-^[There are over seventeen different categories of banks (see <https://www.ffiec.gov/npw/Help/InstitutionTypes>). This paper focuses on commercial banks, commercial banks, state banks, savings associations, and Credit Unions because they are among the most prominent types of banks. commercial banks are publicly-traded corporations that make loans to businesses and individuals. Credit Unions are non-profit banks. savings associations are non-profits primarily involved in mortgages.]
---> While the differences within types of banks are fairly large, these differences in means only reach statistical significance at the 0.05 level for for-profit categories of banks.
+When we look within categories of banks, we see that the wealthier banks within each class are also more likely to submit comments on financial rules than similar banks with less wealth. @fig-FDIC-density-by-class shows that, within each class of bank (i.e., commercial banks, commercial banks, state banks, and savings associations), wealthier banks participate in financial rulemaking more than less wealthy banks.  While the differences within types of banks are fairly large, these differences in means only reach statistical significance at the 0.05 level for for-profit categories of banks.
 
-<!--Differences in means among for-profit commercial banks are significant at the .1 level in a Welch Two Sample t-test. -->
 
 @fig-FDIC-density-by-class shows wealth distributions for four prominent types of banks: commercial banks, commercial banks, state banks, and non-profit savings associations. The top-left panel of @fig-FDIC-density-by-class shows that commercial banks that comment are wealthier than those that did not comment. The modal commercial bank that commented has 40 percent more assets than the modal commercial bank that did not comment. The top-right panel of @fig-FDIC-density-by-class shows that commercial banks banks that comment are wealthier than those that did not comment. The modal commercial bank that commented has nearly twice the assets of the modal commercial bank that did not comment. Similarly, the bottom-left panel of @fig-FDIC-density-by-class shows that the average assets of state banks that commented were three times the average assets of the state banks that did not comment. While savings associations are less likely to comment than more profit-oriented banks, such as commercial banks (see @fig-mp-FDIC), the bottom-right panel of @fig-FDIC-density-by-class shows that when savings associations do comment, they tend to be the wealthier ones.
 
@@ -207,15 +209,19 @@ knitr::include_graphics(here::here(c(
     "figs/compustat-rules-2.png",
     "figs/opensecrets-rules-2.png")))
 ```
+--> 
 
-# Regression tables {#tables}
+\clearpage 
+
+# Regression Tables {#tables}
 
 ## The Odds of Commenting by Wealth
 
 @tbl-mp-all-table2 presents alternative specifications of the model shown in column 2 of @tbl-mp-all-table, using linear instead of logged terms and omitting interaction terms. In all specifications, the results are essentially the same. The only differences appear in the interaction terms between the linear and logged asset models. Banks remain more likely to comment than credit unions and other nonprofits across the distribution of support. In the linear models, this difference is larger at higher asset levels, whereas in the logged model this difference is smaller at higher (logged) asset levels.
 
-@fig-mp-assets (@tbl-mp-assets-table) shows the results of separate logit models predicting the log odds of commenting on a Dodd-Frank rule by assets for banks, credit unions, and non-profits. These models show that wealthier organizations of all three types are significantly more likely to comment. Of these three types of organizations, the marginal effect of assets on the log odds of commenting is the largest for banks.
+@tbl-mp-assets-table <!--(@fig-mp-assets)--> shows the results of separate logit models predicting the log odds of commenting on a Dodd-Frank rule by assets for banks, credit unions, and non-profits. These models show that wealthier organizations of all three types are significantly more likely to comment. Of these three types of organizations, the marginal effect of assets on the log odds of commenting is the largest for banks.
 
+\footnotesize
 ```{r}
 #| label: tbl-mp-all-table2
 #| tbl-cap: Log Odds of Commenting on Any Dodd-Frank Rule
@@ -225,16 +231,20 @@ load(here::here("models", "mpAll.Rdata"))
 modelsummary(models, notes = "Reference category = Banks")  #%>% kableExtra::kable_styling(latex_options="scale_down")
     #FIXME sometimes scale_down causes an error 
 ```
+\small
 
+<!--CUT FOR AJPS 
 ```{r}
 #| label: "fig-mp-assets"
 #| fig-cap: "Log Odds of Participating in Dodd-Frank Rulemaking by Assets"
 #| out-width: "90%"
 knitr::include_graphics(here::here("figs/mp-nonprofit-credit-unions-1.png"))
 ```
+--> 
 
 Column 1 of @tbl-mp-all-table presented a model that pooled data bank, credit union, and nonprofit assets. For robustness, @tbl-mp-assets-table presents regression tables estimating separate models for each type of organization.
 
+\footnotesize
 ```{r}
 #| label: "tbl-mp-assets-table"
 #| tbl-cap: "Log Odds of Commenting on Any Dodd-Frank Rule"
@@ -242,6 +252,7 @@ load(here::here("models", "pr-of-comment.Rdata"))
 
 modelsummary(models)#  %>% kableExtra::kable_styling(latex_options="scale_down") # %>% kableextra::kable_styling()
 ```
+\small
 
 @tbl-mp-FDIC and @tbl-mp-FDIC2 present alternative specifications to the model in column 3 of @tbl-mp-all-table. @tbl-mp-FDIC2 presents models without interactions and without logging assets. @tbl-mp-FDIC presents models that break out more categories of banks, rather than lumping them into commercial and non-commercial banks. @fig-mp-FDIC and @tbl-mp-FDIC show that commercial banks were disproportionately represented in Dodd-Frank rulemaking and non-commercial banks (e.g. savings associations) were less represented, even controlling for asset differences. This provides further support for the *Profit-motivated Participation* Hypothesis (H2).
 
@@ -250,14 +261,16 @@ Likewise, assets remain a significant predictor of whether an organization comme
 ```{r}
 #| label: "fig-mp-FDIC"
 #| fig-cap: "Predicted Probability of Participating in Dodd-Frank Rulemaking by Type of Bank"
-#| out-width: "100%"
+#| out-width: "80%"
 #TODO CREDIT UNIONS SHOULD BE IN THIS MODEL 
 knitr::include_graphics(here::here("figs/mp-FDIC-predict-1.png"))
 ```
 
+\footnotesize
 ```{r}
 #| label: tbl-mp-FDIC2
 #| tbl-cap: "Log Odds of Commenting on Any Dodd-Frank Rule by Bank Type"
+#| out-width: "80%"
 load(here::here("models", "mpFDIC2.Rdata"))
 
 modelsummary(models, notes = "Non-commercial banks include savings associations and national associations.") #%>% kableExtra::kable_styling(latex_options="scale_down")
@@ -270,6 +283,7 @@ load(here::here("models", "mpFDIC.Rdata"))
 
 modelsummary(models, notes = "Reference category = savings associations") # %>% kableextra::kable_styling()
 ```
+\small
 
 ## The Odds of Commenting by Political Spending
 
@@ -278,7 +292,7 @@ modelsummary(models, notes = "Reference category = savings associations") # %>% 
 ```{r}
 #| label: "fig-mp-opensecrets"
 #| fig-cap: "Predicted Probability of Participating in Dodd-Frank Rulemaking by Political Spending"
-#| out-width: "40%"
+#| out-width: "30%"
 knitr::include_graphics(here::here("figs/mp-opensecrets-predict-1.png"))
 ```
 
@@ -318,7 +332,7 @@ knitr::include_graphics(here::here("figs/np-sep-mp-all-predict-log-1.png.png"))
 
 \clearpage
 
-# Measuring comment sophistication with legal citations {#legal}
+# Measuring Comment Sophistication with Legal Citations {#legal}
 
 Our analyses investigating the *Differential Sophistication* (H5) and *Dividends of Sophistication* (H6) hypotheses rely on a measure of comment sophistication based on the number of technical terms used in a given comment. However, using technical terms is only one way to gauge sophistication. An alternate measure would be the number of legal citations in the comment. Wealthier organizations may be more influential by using sophistical legal arguments in commenting.
 
@@ -327,7 +341,7 @@ This section replicates the descriptive and regression analyses conducted in sec
 ```{r}
 #| label: "fig-efficacyXsophistication-legal"
 #| fig-cap: "Lobbying Success by Comment Sophistication"
-#| out-width: "80%"
+#| out-width: "70%"
 knitr::include_graphics(here::here("figs/boxplot-efficacyXsophistication-legal-1.png"))
 ```
 
@@ -420,6 +434,8 @@ Money itself can influence the efficacy, if there is a portion of efficacy that 
 ```{mermaid}
 %%| label: fig-paths
 %%| fig-cap: "Stylized pathways of influence from wealth to efficacious comments."
+%%| fig-width: 3
+%%| out-width: 100%
 flowchart LR
   A[Market Cap] --> B[Efficacy]
   A --> C(Lobbying) --> B
@@ -441,6 +457,7 @@ Note that while these assumptions are possible, our estimation is not identified
 ```{r}
 #| label: "fig-mediation"
 #| layout-ncol: 2 
+#| out-width: 85%
 #| fig-subcap:
 #| - " "
 #| - " "
@@ -473,7 +490,7 @@ modelsummary(models.m4No0, notes = " ")
 
 \clearpage
 
-# Measuring change between draft and final rules
+# Measuring Change Between Draft and Final Rules
 
 In dealing with endogeneity, one methodological choice merits elaboration: we excluded text from the proposed rule when measuring lobbying success but not when measuring sophistication. This choice rests on the underlying concepts we are attempting to measure. In measuring text reuse, we aim to capture ideas that were not yet in the policy when the comment was submitted. Thus, text copied from the agency's proposal must be excluded. Indeed, text that appears in both the draft and final rule is what did *not* change. If a commenter attached a marked-up version of the proposed rule, we aim to exclude all but their suggested changes.
 
@@ -487,46 +504,8 @@ Re-tokenize both the proposed and final rules into 10-grams. Find the overlap be
 This algorithm has a few notable strengths. First, it focuses on text that is both legally binding and the explanation for why it is legally binding. Second, the results are easy to interpret: efficacy is simply the number of words in a comment and its corresponding final rule. There are, however, several drawbacks. Notably, not all sequences in both comments and final rules are equally influential. Second, when there are multiple proposed and final rules, the algorithm relies on the date a comment is submitted to match the comment to the right proposed-final pair. This is problematic when a comment is written about one proposed rule but submitted after a subsequent proposed rule is released.
 
 
-# Validation of text re-use as a measure of lobbying success
 
-
-Below, we shed light on why several comments have efficacy values that are particularly high.
-
-1)  <https://www.sec.gov/comments/s7-33-10/s73310-110.pdf>, Efficacy score = 10131
-
-This letter is unusual in that its members (Americans for Limited Government, Ryder Systems, Inc., Financial Services Institute, Inc., U.S. Chamber of Commerce, Verizon, and White & Case, LLP) are all part of multiple coalitions and submitted multiple comments. The Chamber of Commerce, for example, submitted five comments and attended seven meetings and was a part of two separate coalitions.
-
-2)  <https://www.sec.gov/comments/s7-33-10/s73310-35.pdf>, Efficacy score = 10131
-
-This is the same letter as above, submitted twice to the SEC although recorded by the SEC as a separate comment. Reassuringly it has the same efficacy!
-
-3)  <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275>, Efficacy score = 7593
-
-4)  <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205>, Efficacy score = 7411
-
-5)  <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf>, Efficacy score = 7312
-
-The following three comments (<https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275>, <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205>, <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf>) are all related. The CFTC, OCC, FRB, FDIC, and SEC all worked together to develop rules to prohibit banking companies from engaging in proprietary trading (trading securities with their own money instead of clients'). While all five agencies worked together to write a final rule, in the end the CFTC wrote one rule and the OCC, FRB, FDIC, and SEC wrote another. Despite the different final rules, the agencies "the CFTC and the other agencies have worked closely together to develop the same rule text and supplementary information, except for information specific to the CFTC or the other agencies, as applicable."
-
-The comment <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275> is a 340-page letter from Occupy the SEC, a group affiliated with Occupy Wall Street, submitted on the CFTC's version of the final rule. It was cited 285 times in the preamble to the final rule.
-
-The comment <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205> is a 325-page letter from Occupy the SEC and was submitted on the CFTC's version of the final rule. It was cited 284 times in the preamble to the final rule.
-
-The comment <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf> is a 325-page letter from Occupy the SEC and was submitted to the OCC, FRB, FDIC, and SEC's version of the rule. It was cited 284 times in the preamble to the final rule.
-
-6)  <https://www.sec.gov/comments/s7-25-11/s72511-55.pdf>, Efficacy score = 5809
-
-SIFMA is cited over 500 times by the CFTC in the preamble to the final rule.
-
-7)  <https://www.sec.gov/comments/s7-18-11/s71811-32.pdf>, Efficacy score = 5563
-
-Standard & Poors's letter to the SEC is cited over 200 times by the SEC in the preamble to the final rule.
-
-8)  <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=25016>, Efficacy score = 4965
-
-Not only did the FIA help develop the guidelines that were codified into the final rule, the FIA's letter was cited 98 separate times by the CFTC in the preamble to the final rule.
-
-## Case Study on the Whistleblower Rule
+# Case Study of the Whistleblower Rule
 
 As a part of the Dodd-Frank Act, Congress mandated that the SEC establish a whistleblower program to provide monetary incentives to individuals that report violations of securities laws. Eligible employees who provide “original, timely, and credible information that leads to a successful enforcement action” are eligible for awards ranging from 10-30% of the money collected when a fine exceeds \$1 million. Between 2012 and September 2018, the SEC received over 28,000 tips and disbursed \$326 million to 59 whistleblowers. Successful tips have halted frauds, Ponzi schemes, and accounting violations among other types of financial misconduct.
 
@@ -576,4 +555,45 @@ Law Firms|22|29|4.4|8
 : Citations to Comments on the Whistleblower Rule {#tbl-whistleblower}
 
 
+
+
+<!-- OLD # Validation of text re-use as a measure of lobbying success
+
+
+Below, we shed light on why several comments have efficacy values that are particularly high.
+
+1)  <https://www.sec.gov/comments/s7-33-10/s73310-110.pdf>, Efficacy score = 10131
+
+This letter is unusual in that its members (Americans for Limited Government, Ryder Systems, Inc., Financial Services Institute, Inc., U.S. Chamber of Commerce, Verizon, and White & Case, LLP) are all part of multiple coalitions and submitted multiple comments. The Chamber of Commerce, for example, submitted five comments and attended seven meetings and was a part of two separate coalitions.
+
+2)  <https://www.sec.gov/comments/s7-33-10/s73310-35.pdf>, Efficacy score = 10131
+
+This is the same letter as above, submitted twice to the SEC although recorded by the SEC as a separate comment. Reassuringly it has the same efficacy!
+
+3)  <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275>, Efficacy score = 7593
+
+4)  <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205>, Efficacy score = 7411
+
+5)  <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf>, Efficacy score = 7312
+
+The following three comments (<https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275>, <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205>, <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf>) are all related. The CFTC, OCC, FRB, FDIC, and SEC all worked together to develop rules to prohibit banking companies from engaging in proprietary trading (trading securities with their own money instead of clients'). While all five agencies worked together to write a final rule, in the end the CFTC wrote one rule and the OCC, FRB, FDIC, and SEC wrote another. Despite the different final rules, the agencies "the CFTC and the other agencies have worked closely together to develop the same rule text and supplementary information, except for information specific to the CFTC or the other agencies, as applicable."
+
+The comment <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24275> is a 340-page letter from Occupy the SEC, a group affiliated with Occupy Wall Street, submitted on the CFTC's version of the final rule. It was cited 285 times in the preamble to the final rule.
+
+The comment <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205> is a 325-page letter from Occupy the SEC and was submitted on the CFTC's version of the final rule. It was cited 284 times in the preamble to the final rule.
+
+The comment <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf> is a 325-page letter from Occupy the SEC and was submitted to the OCC, FRB, FDIC, and SEC's version of the rule. It was cited 284 times in the preamble to the final rule.
+
+6)  <https://www.sec.gov/comments/s7-25-11/s72511-55.pdf>, Efficacy score = 5809
+
+SIFMA is cited over 500 times by the CFTC in the preamble to the final rule.
+
+7)  <https://www.sec.gov/comments/s7-18-11/s71811-32.pdf>, Efficacy score = 5563
+
+Standard & Poors's letter to the SEC is cited over 200 times by the SEC in the preamble to the final rule.
+
+8)  <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=25016>, Efficacy score = 4965
+
+Not only did the FIA help develop the guidelines that were codified into the final rule, the FIA's letter was cited 98 separate times by the CFTC in the preamble to the final rule.
+-->
 
