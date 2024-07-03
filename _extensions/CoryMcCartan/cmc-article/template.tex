@@ -109,11 +109,11 @@ $endif$
 \renewcommand{\headrulewidth}{0pt}
 \fancyheadoffset{0pt}
 \lhead{\scshape \@shorttitle}
-\rhead{\scshape $date$}
+%\rhead{\scshape $date$}
 \cfoot{\thepage}
 \makeatother
 % abstract styling
-\renewenvironment{abstract}{ 
+\renewenvironment{abstract}{
   \centerline
   {\large\sffamily\bfseries Abstract}\vspace{-1em}
   \begin{quote}\small
@@ -170,8 +170,8 @@ $endfor$
 $endif$
 $endif$
 
-% Give it this name so that it works with ::: #refs 
-\newenvironment{CSLReferences}[2]{ 
+% Give it this name so that it works with ::: #refs
+\newenvironment{CSLReferences}[2]{
 $if(natbib)$
 $if(bibliography)$
 $if(biblio-title)$

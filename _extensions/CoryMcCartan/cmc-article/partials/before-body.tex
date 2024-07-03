@@ -11,5 +11,9 @@ $abstract$
 $endif$
 
 $if(keywords)$
-\textbf{\textit{Keywords}}\quad $for(keywords)$$keywords$$sep$~\textbullet~$endfor$
+\textbf{\textit{Keywords:}}\quad $for(keywords)$$keywords$$sep$~\textbullet~$endfor$
+$endif$
+
+$if(wordcount)$
+\textbf{\textit{Word count:}} $wordcount$
 $endif$

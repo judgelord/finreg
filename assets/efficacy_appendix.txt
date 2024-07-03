@@ -1,0 +1,461 @@
+﻿---
+
+
+# Validation of text re-use as a measure of lobbying success {#sec-efficacy}
+
+
+<!-- TABLE OF CONTENTS (will not appear in appendix)
+## High-Scoring Comments at a Glance
+## How High-Scoring Comments Affected Agency Rulemaking
+### 1) Comment from Occupy the SEC (April 2012)
+### 2) Comment from SIFMA to the SEC on Security-based Swaps
+### 3) Standard & Poor’s Comment Challenging SEC Definitions of Debt being "Paid Off"
+### 4) Occupy the SEC's April 2012 comment to CFTC
+### 5) Futures Industry Association Comment to CFTC
+### 6) U.S. Chamber of Commerce et al.'s comment to CFTC
+(Background for those who really want to get in the weeds, the bits of comment text added to the final rule/preamble for each of these comments are here)
+---> 
+
+
+In this section we provide qualitative evidence that the comments that score the highest on our influence measure correspond to cases in which the agency changed policy in response to the comment. For policy, we focus here not on the preamble but on the final rule text. We identify comments that score high on our quantitative efficacy measure and then ask whether there is evidence from the rulemaking process that the comment in question (a) proposed language or policy that was adopted in the final rule text (where adopted may mean copied verbatim), (b) suggested a change of course that resulted in different language being added to the final rule text, or (c) suggested deletion of a measure of of words, with the deletion being observed in the final rule text.
+
+
+Mechanisms. Comments seem to influence policy through five mechanisms: 
+
+
+* Quoting the original statute and making textual arguments about what it requires the agency do
+* Quoting other relevant statutes relevant to the agency's rule. 
+* Referencing legislators' intent to support particular interpretations of statutory text should inform rule text.
+* Original argument about policy impacts (e.g., closing loopholes)
+* Suggesting new legally operative language that the agency uses
+
+
+All of these mechanisms rely on legal sophistication to argue for policy changes. It is important to note that these mechanisms are not exclusive or exhaustive and that the mapping of language to changes in the legally operative text is not one-to-one. That is, often the new text is in the preamble in a discussion of the legally operative text. The repeated text is a signal the agency is taking the commenter's argument seriously. When there is a large amount of repeated text, it is usually the case that the commenter is helping to inform the policy discussion and set the agenda for the agency's proposed revisions. 
+
+
+## High-Scoring Comments at a Glance
+
+
+Here we present examples from the top comments of changes in the preamble mapping to changes in the legally operative text of the final rule. 
+
+
+\footnotesize
+```{r}
+read_csv("efficacy_appendix_table.csv") |> 
+  kable(format = "latex") |>
+  column_spec(1, width = "8em")|>
+    column_spec(2, width = "3em")|>
+    column_spec(3, width = "2em")|>
+    column_spec(4, width = "2em")|>
+  column_spec(5, width = "30em")
+```
+
+
+
+
+## Qualitative Evidence That High-Scoring Comments Correspond to Plausible Influence on Agency Rulemaking
+### Case A. Comment from Occupy the SEC (April 2012)
+
+
+- Comment: <https://www.sec.gov/comments/s7-41-11/s74111-230.pdf>
+- Proposed Rule: <https://www.federalregister.gov/d/2011-27184/p-1454>
+- Final Rule: <https://www.federalregister.gov/d/2013-31511/p-4685>
+
+
+This comment is from an attentive consumer watchdog group, Occupy the SEC. In a detailed 300-page comment, this group made several suggestions that were adopted in the final rule. These suggestions included closing loopholes on insider trading and framing how the SEC positioned the rule with respect to the statutory text and congressional intent as evidenced by citation to floor debates over the statute in the Congressional Record. 
+
+
+**Occupy the SEC, requested that the final rule state that if an employee (or director) of a bank invests in a fund, the money is treated as coming from the bank itself.** Their aim was to **prevent employees from getting around restrictions on insider trading** by doing with personal money rather than the bank's money. The agency changed the final rule to include employees. In the SEC's response to Occupy the SEC, the agency claimed that they "decided to retain" the requirement for employees. However, "employee" did not appear at all in that section of the proposed rule, suggesting that the SEC was minimizing the change by claiming that the loophole that Occupy the SEC pointed out never existed. Perhaps the agency had intended to cover employee investments all along, but **it does seem that the final rule changed because commenters called attention to this loophole.**
+
+
+This is just one example of how the Occupy the SEC extensively quotes statutory provisions of the Dodd-Frank Act that that agency did not reference in the proposed rule but then did specifically address in the preamble to the final rule. This shows how commenters use the authority of legislative language to demand the attention of regulators and shape the regulatory agenda set forth in policy documents like final rules. In this case, the legal text also changed in the direction suggested in Occupy the SEC's comment.
+
+
+
+
+Example repeated text:
+
+
+>
+* "...**to attribute any employee investments in a covered fund to the banking entity itself regardless of the source of funds**..."
+
+
+Organized interest comment:
+
+
+>
+* While personal investments in covered funds by banking entity employees acting as investment advisors is allowed by the statute, we urge the Agencies to utilize their authority as provided in BHC Section 13(d)(2)(A) **to attribute any employee investments in a covered fund to the banking entity itself, regardless of the source of funds,** as suggested in our answer to Question 216
+
+
+Agency Response:
+
+
+>
+* "A different commenter urged the Agencies **to attribute any employee investments in a covered fund to the banking entity itself, regardless of the source of funds.**[2350] 
+* After considering the comments and the language of the statute, the Agencies have determined to retain the requirement that all director or employee investments in a covered fund be attributed to the banking entity for purposes of the per-fund limitation and the aggregate funds limitation whenever the banking entity provides the employee or director funding for the purpose of acquiring the ownership interest.
+
+
+Final Rule: 12(b)(1)(iv):
+
+
+>
+* "(iv) Treatment of employee and director investments financed by the banking entity. For purposes of paragraph (b)(1)(i) of this section, an investment by a director or employee of a banking entity who acquires an ownership interest in his or her personal capacity in a covered fund sponsored by the banking entity will be attributed to the banking entity if the banking entity, directly or indirectly, extends financing for the purpose of enabling the director or employee to acquire the ownership interest in the fund and the financing is used to acquire such ownership interest in the covered fund.
+
+
+
+
+Proposed Rule: <https://www.federalregister.gov/d/2011-27184/p-1727>
+
+
+>
+* "(b) Limitations on investments in a single covered fund. For purposes of determining whether a covered banking entity is in compliance with the limitations and restrictions on permitted investments in covered funds contained in paragraph (a) of this section, a covered banking entity shall calculate its amount and value of a permitted investment in a single covered fund as follows:
+* (1) Attribution of ownership interests to a covered banking entity. The amount and value of a banking entity's permitted investment in any single covered fund shall include:
+* (i) Controlled investments. Any ownership interest held under § -.12 by any entity that is controlled, directly or indirectly, by the covered banking entity for purposes of this part; and
+* (ii) Noncontrolled investments. The pro rata share of any ownership interest held under § -.12 by any covered fund that is not controlled by the covered banking entity but in which the covered banking entity owns, controls, or holds with the power to vote more than 5 percent of the voting shares. 
+
+
+**Occupy the SEC also quotes sections of the congressional record as evidence for claims about congressional intent.** “In the Congressional Record, Senator Merkley stated that the intent behind Section 619 was to define proprietary trading to cover “a wide range of financial instruments, including securities, commodities, futures, options, derivatives, and any similar financial instruments.” This shows up in our measure of overlap because the agency then referenced the same speech by Senator Merkley in the final rule. Thus the following citation appears in both the comment and final rule but not in the proposed rule: 
+ 
+Example repeated text:
+
+
+>
+"...**to include loans that become financial instruments traded to capture the change in their market value...;;;...156 Cong Rec S5896 daily ed July 15 2010 statement of Sen Merkley.**
+
+
+Organized interest comment:
+
+
+>
+* "A review of the Congressional Record reveals that Congress did not intend the securitization rule of construction to **include loans that “become financial instruments traded to capture the change in their market value**.”103 Thus, in order to prevent a broad loophole allowing banks to have ownership interests in ABS issuers creating the same toxic products that caused the 2008 financial crisis, and in order to remain true to the statute, the Final Rule must remove both § -.13(d)(2) and § -.14(a)(2)(v)(B). If § -.13(d)(2) and § -.14(a)(2)(v)(B) are not removed, they must at a minimum be made more explicit, making it clear that credit default swaps, total return swaps and any form of repos are specifically excluded from the exemption for loan securitizations. 
+* **[103] 156 Cong. Rec. S5895 (daily ed. July 15, 2010) (statement of Sen. Merkley).**
+
+
+
+
+Agency Response:
+
+
+>
+   * "Another commenter, citing a statement made by Senator Merkley, asserted that Congress did not intend the rule of construction for the sale and securitization of loans in section 13(g)(2) to include **“loans that become financial instruments traded to capture the change in their market value.”** [1818]
+   * [1818.]   See Occupy (citing 156 Cong. Rec. S5895 (daily ed. July 15, 2010)).
+   * The final rule modifies the proposed definition and defines “loan” as “any loan, lease, extension of credit, or secured or unsecured receivable that is not a security or derivative.” [1829] The definition of loan in the final rule specifically excludes loans that are securities or derivatives because trading in these instruments is expressly included in the statute's definition of proprietary trading.[1830] In addition, the Agencies believe these instruments, if not excluded from the definition of loan, could be used to circumvent the restrictions on proprietary trading.
+
+
+Proposed Rule:
+
+
+> 
+* "(q) Loan means any loan, lease, extension of credit, or secured or unsecured receivable.
+
+
+Final Rule:
+
+
+> 
+* "(s) Loan means any loan, lease, extension of credit, or secured or unsecured receivable that is not a security or derivative.
+
+
+
+
+
+
+Example repeated text:
+
+
+> 
+* "...**unit could combine significantly unrelated trading desks which would impede detection of proprietary trading activity**..."
+
+
+Comment text: 
+
+
+> 
+* "The “trading desk” is the most fundamental, universally understood unit in every trading or market making operation. Risk exposure and related compensation are inextricably linked to the trading desk. While risk management also happens at higher levels with several trading desks combining to form a larger category of trading (e.g., Global Credit Derivatives, U.S. Equity Derivatives, etc.), we are concerned that the current definition may allow for inordinately large units. An oversized “trading unit” **could combine significantly unrelated trading desks, which would impede detection of proprietary trading activity.**
+
+
+Agency Response: 
+
+
+>
+* "The Agencies are concerned that this commenter's suggested approach, or any other approach applying the exemption's requirements to a higher level of organization than the trading desk, would impede monitoring of market making-related activity and detection of impermissible proprietary trading by combining a number of different trading strategies and aggregating a larger volume of trading activities.[703]
+[703] See,e.g., Occupy (expressing concern that, with respect to the proposed definition of “trading unit,” an “oversized” **unit could combine significantly unrelated trading desks, which would impede detection of proprietary trading activity**).
+* As explained below, the Agencies are applying certain requirements to a “trading desk” of a banking entity and adopting a definition of this term in the final rule.[705] The definition of “trading desk” is similar to the first prong of the proposed definition of “trading unit.” The Agencies are not adopting the proposed “or other organizational unit” language because the Agencies are concerned that approach would have provided banking entities with too much discretion to independently determine the organizational level at which the requirements should apply, including a more aggregated level of organization, which could lead to evasion of the general prohibition on proprietary trading and the other concerns noted above. 
+        
+Proposed Rule:
+
+
+* [trading desk not defined]
+
+
+Final Rule:
+
+
+>
+* "(13) Trading desk means the smallest discrete unit of organization of a banking entity that purchases or sells financial instruments for the trading account of the banking entity or an affiliate thereof."
+
+
+### Case B. Comment from SIFMA to the SEC on Security-based Swaps
+
+
+The Securities Industry and Financial Markets Association (SIFMA) is an industry trade group representing securities firms, banks, and asset management companies. This comment contained a marked-up version the proposed rule.
+
+
+- Comment: <https://www.sec.gov/comments/s7-25-11/s72511-55.pdf>
+- Proposed Rule: <https://www.federalregister.gov/documents/2011/07/18/2011-16758/business-conduct-standards-for-security-based-swap-dealers-and-major-security-based-swap>
+- Final Rule: <https://www.federalregister.gov/documents/2016/05/13/2016-10918/business-conduct-standards-for-security-based-swap-dealers-and-major-security-based-swap#footnote-522-p29999>
+
+
+SIFMA wanted to harmonize suitability requirements between the SEC and the CFTC for security-based swap dealers. Swaps are contracts where parties exchange (“swap”) payments with each other; Dealers are institutions that buy and sell securities for their own accounts; and Swaps Dealers are regulated by the SEC after Dodd-Frank. Suitability requirements are a set of rules that ensure that recommended transactions or securities are suitable for a customer (taking into account factors such as their financial situation and goals, etc). The SEC not only agreed with SIFMA, but they adopted their language wholesale in the final rule.
+
+
+Example repeated text:
+
+
+>
+"...would impose additional diligence and compliance requirements on the SBS...;;;...these requirements would not result in material costs because SBS...;;;...are already complying with the same requirements under the parallel CFTC...;;;...**to understand the potential risks and rewards associated with the recommended"**
+
+
+Comment text: 
+
+
+>
+"Although conforming to the CFTC EBC Rule **would impose additional diligence and compliance requirements on the SBS dealer, these requirements would not result in material costs because SBS dealers are already complying with the same requirements under the parallel CFTC** EBC Rule. In addition, harmonization would result in a lower likelihood of counterparty confusion.
+
+
+(i) Undertake reasonable diligence, that **to understand the potential risks and rewards associated with the recommended** security-based swap or trading strategy involving a security-based swap is suitable for at least some counterparties; and
+
+
+Agency Response: 
+
+
+>
+* "Third, in response to specific suggestions from a commenter, the Commission is making changes to harmonize the institutional and special entity suitability alternatives with the CFTC's parallel provisions.[519] Specifically, the Commission is eliminating the separate special entity suitability alternative. Accordingly, an SBS Dealer may satisfy its customer-specific suitability obligations in Rule 15Fh-3(f)(1)(ii) with respect to any institutional counterparty, including a special entity counterparty that meets the $50 million asset threshold described above, by complying with the requirements of the institutional suitability alternative in Rule 15Fh-3(f)(2). Having a single institutional suitability alternative will result in greater consistency with the CFTC's parallel rule, which will result in efficiencies for entities that have already established infrastructure to comply with the CFTC standard.[520] However, the Commission is not adopting the commenter's suggestion to add a new fourth prong to Rule 15Fh-3(f)(2) that requires an SBS Dealer to comply, in addition to the requirements of the first three prongs (as outlined below), with the requirements of Rule 15Fh-4(b) if the SBS Dealer's recommendation to a special entity would cause it to be acting as an advisor to the special entity.[521] The Commission is not making this change because the rules impose independent requirements, and the Commission believes that SBS Dealers should comply with each rule to the extent applicable.
+* 519.   See SIFMA (August 2015), supra note 5. See also CFTC Adopting Release, 77 FR at 9771-9774, supra note 21.
+* 520.   See SIFMA (August 2015), supra note 5 (noting that “[a]lthough conforming to the [parallel CFTC suitability rule] **would impose additional diligence and compliance requirements on the [SBS Dealer], these requirements would not result in material costs because [SBS Dealers] are already complying with the same requirements under the [parallel CFTC** rule]”). However, we note that the CFTC does not limit the availability of its institutional suitability alternative to recommendations to “institutional counterparties.” See Commodity Exchange Act Rule 23.434(b).
+* 521.   See SIFMA (August 2015), supra note 5. As discussed in Section II.H.2 below, Rule 15Fh-4(b) generally requires an SBS Dealer that acts as an advisor to a special entity to make a reasonable determination that any recommended security-based swap or trading strategy involving a security-based swap is in the best interests of the special entity.
+
+
+Proposed Rule: 
+
+
+>
+* "(i) Based on reasonable diligence, that the recommended security-based swap or trading strategy involving a security-based swap is suitable for at least some counterparties; and
+* (ii) That a recommended security-based swap or trading strategy involving a security-based swap is suitable for the counterparty. To establish a reasonable basis for a recommendation, a security-based swap dealer must have or obtain relevant information regarding the counterparty, including the counterparty's investment profile, trading objectives, and its ability to absorb potential losses associated with the recommended security-based swap or trading strategy.
+
+
+Final Rule: 
+
+
+>
+* "(i) Undertake reasonable diligence to understand the potential risks and rewards associated with the recommended security-based swap or trading strategy involving a security-based swap; and
+* (ii) Have a reasonable basis to believe that a recommended security-based swap or trading strategy involving a security-based swap is suitable for the counterparty. To establish a reasonable basis for a recommendation, a security-based swap dealer must have or obtain relevant information regarding the counterparty, including the counterparty’s investment profile, trading objectives, and its ability to absorb potential losses associated with the recommended security-based swap or trading strategy.
+
+
+### Case C. Standard & Poor’s Comment Challenging SEC Definitions of Debt being "Paid Off" 
+
+
+- Comment: <https://www.sec.gov/comments/s7-18-11/s71811-32.pdf>
+
+
+Standard & Poor’s (S&P) - a Nationally Recognized Statistical Rating Organization (an organization that rates securities or firms on their creditworthiness), submitted a comment that, among other complaints, challenged how the Securities and Exchange Commission defined the term “paid off” in the context of rating a security. S&P argued that the proposed definition was not practicable because it would be impossible to track whether all obligations are paid off. The SEC agreed and removed a prong of the definition relating to paying off all obligations.
+
+
+Example repeated text: 
+
+
+>
+* "...**would be difficult to track whether all obligations of an obligor are paid***...;;;...the proposed requirement to separately track rating withdrawals because of repayments and...;;;...that an NRSRO monitor an obligor security or money market instrument after"
+* "...**the proposed requirement to separately track rating withdrawals, because of repayments and** other reasons, likely would be impractical in many cases."
+
+
+Comment Text:
+
+
+>
+* "Response: Ratings Services believes that the notion of Paid Off as applied to obligors is not practicable. First, some rated obligors do not have rated debt. **It would be difficult to track whether all obligations of an obligor are paid** off—which in any case would be a very small percentage. In addition, even if a company has paid off its rated debt there is a possibility that they have unrated debt outstanding. 
+* As mentioned in our response to question E.1.a19, **the proposed requirement to separately track rating withdrawals, because of repayments, and for other reasons, likely would be impractical in many cases.** Ratings Services also believes that the Commission should not require, by rule, that an NRSRO monitor an obligor, security, or money market instrument after withdrawal in order to classify whether the obligor, security, or money market instrument went into default or paid off, chiefly because of the lack of information available to the NRSRO to perform such monitoring. After Ratings Services withdraws a rating in such a case, we may never learn whether the security was paid off or if the issuer retired its debts (however, whenever we learn of defaults, we include them in our published studies even if the rating was previously withdrawn.) 
+
+
+Agency Response:
+
+
+>
+* "The proposed rule prescribed a standard definition of paid off with two prongs: (1) One applicable to obligors; and (2) one applicable to securities and money market instruments.[730] One commenter stated that the paid off classification as applied to obligors “is not practicable” because some obligors do not have rated debt outstanding and it **would be difficult to track whether all obligations of an obligor are paid off.**[731] Further, as discussed above, the determination of the start-date cohorts for classes of credit ratings other than the issuer of asset-backed securities class will require—under the modifications to the proposal—that the applicant or NRSRO use the credit ratings of obligors as entities and exclude the credit ratings of securities issued by the obligor unless the obligor does not have an entity credit rating (in which case only the credit rating of the obligor's senior unsecured debt must be included). A credit rating of an obligor as an entity does not relate to a single obligation with a maturity date but rather to the obligor's overall ability to meet any obligations as they come due. Therefore, an obligor credit rating normally cannot be classified as paid off since it does not reference a specific obligation that will mature.
+* For these reasons, the Commission has modified the standard definition of paid off to eliminate the prong that applied to entity ratings of obligors.
+* Because the Commission has narrowed the scope of the types of credit ratings that will have to be included in the performance statistics for four of the five classes of credit ratings, this should substantially reduce the amount of historical information that will need to be analyzed. The Commission has also revised the standard definition of paid off, in response to comment,[2166] to eliminate the prong that applied to credit ratings of obligors as entities. The Commission has clarified that the rule does not require NRSROs to track the outcomes of obligors, securities, or money market instruments after the credit ratings assigned to them have been withdrawn, in response to comments from two NRSROs,[2167] one of which stated that **“the proposed requirement to separately track rating withdrawals, because of repayments and other reasons, likely would be impractical in many cases.”** [2168]
+2166.   See S&P Letter.
+2167.   See Moody's Letter;S&P Letter.
+2168.   See S&P Letter.
+
+
+Final Rule: 
+
+
+>
+* To determine this percent, Applicant/NRSRO must classify a credit rating as Paid Off if the issuer of the security or money market instrument assigned the credit rating extinguished its obligation with respect to the security or money market instrument during the applicable time period by paying in full all outstanding principal and interest due according to the terms of the security or money market instrument (for example, because the security or money market instrument matured, was called, or was prepaid); and the Applicant/NRSRO withdrew the credit rating for the security or money market instrument because the obligation was extinguished.
+
+
+Proposed rule: <https://www.federalregister.gov/d/2011-12659/p-2691>
+
+
+>
+* (iv) The Applicant/NRSRO must determine the number of obligors, securities, and money market instruments assigned a credit rating at that notch as of the period start date that Paid Off (see explanation below) at any time during the applicable time period. This number must be expressed as a percent of the total number of obligors, securities, and/or money market instruments assigned a credit rating at that notch as of the period start date and the percent must be entered in the Paid Off column. To determine this percent, the Applicant/NRSRO must classify an obligor, security, or money market instrument as Paid Off if the conditions in either (a) or (b) are met;
+* (a) The obligor extinguished the obligation during the applicable time period by paying in full all outstanding principal and interest due on the obligation according to the terms of the obligation (e.g., because the obligation matured, was called, or was prepaid); and the Applicant/NRSRO withdrew the credit rating because the obligation was extinguished; or
+* (b) The issuer of the security or money market instrument extinguished its obligation with respect to the security or money market instrument during the applicable time period by paying in full all outstanding principal and interest due according to the terms of the security or money market instrument (e.g., because the security or money market instrument matured, was called, or was prepaid); and the Applicant/NRSRO withdrew the credit rating for the security or money market instrument because the obligation was extinguished.
+
+
+### Case D. Occupy the SEC's April 2012 comment to CFTC
+
+
+- Comment: <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=24205>
+
+
+This comment is from an attentive consumer watchdog group, Occupy the SEC, requested that the final rule state that if an employee (or director) of a bank invests in a fund the money is treated as coming from the bank itself. Note that this is the CFTC’s version of the proprietary trading rule. 
+
+
+Their aim was to prevent employees from getting around restrictions on insider trading by doing with personal money rather than the bank's money. The agency changed the final rule to include employees. In the CFTC’s response to Occupy the SEC, the agency claimed that they "decided to retain" the requirement for employees. However, "employee" did not appear at all in the proposed rule, suggesting that the SEC was minimizing the change by claiming that the loophole that Occupy the SEC pointed out never existed. Perhaps the agency had intended to cover employee investments all along, but it does seem that the final rule changed because commenters called attention to this loophole.
+
+
+Example repeated text: 
+ 
+>
+"...to attribute any employee investments in a covered fund to the banking entity itself, regardless of the source of funds."
+
+
+Organized interest comment: 
+
+
+> "The allowances for bank employee investments in covered funds in § -.11(g) should also be amended. While personal investments in covered funds by banking entity employees acting as investment advisors is allowed by the statute, we urge the Agencies to utilize their authority as provided in BHC Section 13(d)(2)(A) **to attribute any employee investments in a covered fund to the banking entity itself, regardless of the source of funds,** as suggested in our answer to Question 216. Further, we find that the inclusion of “or other services” in the wording of § -.11(g) opens the Rule to excessive employee investments in covered funds that were never meant to be allowed by the statute. Thus, “or other services” must be removed from § -.11(g) in the Final Rule. Please see our answer to Question 254 for further discussion of this issue. 
+
+
+Agency Response:
+
+
+>
+* "A different commenter urged the Agencies **to attribute any employee investments in a covered fund to the banking entity itself, regardless of the source of funds**.[2355] Another commenter argued that the statute prohibits a banking entity from guaranteeing an investment by an employee or director.[2356]
+* After considering the comments and the language of the statute, the Agencies have determined to retain the requirement that all director or employee investments in a covered fund be attributed to the banking entity for purposes of the per-fund limitation and the aggregate funds limitation whenever the banking entity provides the employee or director funding for the purpose of acquiring the ownership interest. Specifically, under the final rule, an investment by a director or employee of a banking entity who acquires an ownership interest in his or her personal capacity in a covered fund sponsored by the banking entity will be attributed to the banking entity if the banking entity, directly or indirectly, extends financing for the purpose of enabling the director or employee to acquire the ownership interest in the fund and the financing is used to acquire such ownership interest in the covered fund.[2357] It is also important to note that the statute prohibits a banking entity from guaranteeing the obligations or performance of a covered fund in which it acts as investment adviser, investment manager or sponsor, or organizes and offers.[2358]
+
+
+
+
+Proposed Rule 
+
+
+>
+* "(b) Limitations on investments in a single covered fund. For purposes of determining whether a covered banking entity is in compliance with the limitations and restrictions on permitted investments in covered funds contained in paragraph (a) of this section, a covered banking entity shall calculate its amount and value of a permitted investment in a single covered fund as follows:
+* (1) Attribution of ownership interests to a covered banking entity. The amount and value of a banking entity's permitted investment in any single covered fund shall include:"
+* (i) Controlled investments. Any ownership interest held under § --.12 by any entity that is controlled, directly or indirectly, by the covered banking entity for purposes of this part; and
+* (ii) Noncontrolled investments. The pro rata share of any ownership interest held under § --.12 by any covered fund that is not controlled by the covered banking entity but in which the covered banking entity owns, controls, or holds with the power to vote more than 5 percent of the voting shares. 
+
+
+Final Rule
+
+
+>
+* (iv) Treatment of employee and director investments financed by the banking entity. For purposes of paragraph (b)(1)(i) of this section, an investment by a director or employee of a banking entity who acquires an ownership interest in his or her personal capacity in a covered fund sponsored by the banking entity will be attributed to the banking entity if the banking entity, directly or indirectly, extends financing for the purpose of enabling the director or employee to acquire the ownership interest in the fund and the financing is used to acquire such ownership interest in the covered fund.
+
+
+<!--COMMENTING THIS OUT UNTIL IT IS COMPLETE 
+### Case E. Futures Industry Association Comment to CFTC
+
+
+- Comment: <https://comments.cftc.gov/Handlers/PdfHandler.ashx?id=25016>
+
+
+Final rule section mentioned: https://www.federalregister.gov/d/2013-26665/p-399
+
+
+A futures commission merchant (FCM) is an entity that solicits or accepts orders to buy or sell futures contracts, options on futures, retail off-exchange forex contracts or swaps, and accepts money or other assets from customers to support such orders.
+
+
+
+
+
+
+Author
+	Length
+(pages)
+	Score
+	Cites
+	Why does this matter?
+	Future Industry of America
+	59
+	4965
+	98
+	
+
+	
+
+--> 
+
+
+### Case E. U.S. Chamber of Commerce et al.'s comment to CFTC
+
+
+- Comment: <https://www.sec.gov/comments/s7-33-10/s73310-110.pdf>
+
+
+This is a comment to the SEC prepared by the law firm White & Case, LLP for the U.S. Chamber of Commerce, Americans for Limited Government, Ryder Systems, Inc., the Financial Services Institute, Inc., and Verizon. This highly sophisticated comment included a 19-page cover letter with many technical citations underscoring the Chamber’s “very serious concerns on the impact [that the rule’s] whistleblower requirements will have on. . . companies’ responsibilities to act in the best interests of their shareholders.” 
+
+
+This comment also included a marked-up draft of the SEC’s proposed rule, suggesting specific changes, several of which were adopted by the SEC. 
+
+
+This letter is unusual in that its members (Americans for Limited Government, Ryder Systems, Inc., Financial Services Institute, Inc., U.S. Chamber of Commerce, Verizon, and White & Case, LLP) are all part of multiple coalitions and submitted multiple comments. The Chamber of Commerce, for example, submitted five comments and attended seven meetings and was a part of two separate coalitions. 
+
+
+Example repeated text:
+
+
+> "...**first reported the information to an entity's chief legal officer, chief compliance officer**..."
+
+
+Comment:
+
+
+>
+* Further, to provide guidance to potential whistleblowers who may be covered by the applicable exclusions, the rules should provide that any individual who has a legal, compliance, or similar function in a company will be ineligible for a whistleblower award unless he or she has first reported the information in question to an entity’s chief legal officer, chief compliance officer, and/or a member of the Board of Directors. 
+* Agency Response:
+
+
+>
+* Certain other commenters recommended that our rules provide that persons who have a legal, compliance, or similar function in a company would be ineligible for an award unless they have first reported the information to an entity's chief legal officer, chief compliance officer, or a member of the board of directors.[149]
+* [149] See joint letter from U.S. Chamber of Commerce, Americans for Limited Government, Ryder Systems, Inc. Financial Services Institute, Inc., Verizon, White & Case, LLP (“Chamber of Commerce Group”); letters from AT&T; National Association of Criminal Defense Lawyers and Apache Group; see also letter from DC Bar (suggesting that individuals in these categories be required to report violations internally first and wait 75 days for the entity to respond appropriately before they are eligible to become whistleblowers).
+* **(iii) Final Rules 21F-4(b)(4)(iii) and (v)**
+* After considering the comments, we are adopting the proposed rules with **substantial modifications.** These provisions have been combined and are now set forth in Rules 21F-4(b)(4)(iii) and (v).
+
+
+Proposed rule: 
+
+
+>
+(4) The Commission will not consider information to be derived from your independent knowledge or independent analysis if you obtained the knowledge or the information upon which your analysis is based:
+- …
+- (iii) Through the performance of an engagement required under the securities laws by an independent public accountant, if that information relates to a violation by the engagement client or the client's directors, officers or other employees;
+- (iv) Because you were a person with legal, compliance, audit, supervisory, or governance responsibilities for an entity, and the information was communicated to you with the reasonable expectation that you would take steps to cause the entity to respond appropriately to the violation, unless the entity did not disclose the information to the Commission within a reasonable time or proceeded in bad faith; or
+- (v) Otherwise from or through an entity's legal, compliance, audit or other similar functions or processes for identifying, reporting and addressing potential non-compliance with law, unless the entity did not disclose the information to the Commission within a reasonable time or proceeded in bad faith;
+- (vi) By a means or in a manner that violates applicable Federal or State criminal law; or
+- (vii) From any of the individuals described in paragraphs (b)(4)(i)-(vi) of this section.
+
+
+Final rule: 
+
+
+> (4) The Commission will not consider information to be derived from your independent knowledge or independent analysis in any of the following circumstances:
+
+
+- …
+- (iii) In circumstances not covered by paragraphs (b)(4)(i) or (b)(4)(ii) of this section, if you obtained the information because you were:
+- (A) An officer, director, trustee, or partner of an entity and another person informed you of allegations of misconduct, or you learned the information in connection with the entity's processes for identifying, reporting, and addressing possible violations of law;
+- (B) An employee whose principal duties involve compliance or internal audit responsibilities, or you were employed by or otherwise associated with a firm retained to perform compliance or internal audit functions for an entity;
+- (C) Employed by or otherwise associated with a firm retained to conduct an inquiry or investigation into possible violations of law; or
+
+
+
+
+### Case F. U.S. Chamber of Commerce et al.'s comment to CFTC (same comment same efficacy score)
+- Comment <https://www.sec.gov/comments/s7-33-10/s73310-35.pdf>
+
+
+This is the same letter as above, submitted twice to the SEC and recorded by the SEC as a separate comment. Reassuringly it has the same efficacy.

@@ -2,7 +2,7 @@
 
 # Data Collection and Processing {#collection}
 
-@tbl-master-table and @fig-docket-table show the number of rulemaking processes (dockets) and comments in our data by agency. Identifying comments from organizations and matching those organizations to metadata about their resources required significant effort. To match comments to organizations found in various databases, we first extract entity names from the text or from comment metadata where available. We then use a custom probabilistic matching algorithm that was iteratively built to correctly match organizations in these data using a combination of term-frequency times inverse document frequency (TF-IDF) and Jaccard distance. For each commenter, we start with the most uncommon token (word) in the entity name string and search for names in each dataset that have that token. For example, if Klamath First Federal Bank submitted a comment, the algorithm first looks for names with the token "Klamath." We then rank the resulting candidate matches using a modified Jaccard index that scores each token in the commenter's name that matches a token in the candidate name in inverse proportion to the token's frequency in the commenter dataset (normalizing by the sum of the inverse frequencies of all the tokens in the commenter's name, matching or otherwise) so that 'more informative' words contribute more to the match score. We then set a threshold match score that, upon inspection, yields correct matches. Finally, we then hand-validated over 30,000 comments, including all matches that occurred ten times or more and a sample of others and implement a custom set of corrections based on this validated set.
+@tbl-master-table <!--and @fig-docket-table--> shows the number of rulemaking processes (dockets) and comments in our data by agency. Identifying comments from organizations and matching those organizations to metadata about their resources required significant effort. To match comments to organizations found in various databases, we first extract entity names from the text or from comment metadata where available. We then use a custom probabilistic matching algorithm that was iteratively built to correctly match organizations in these data using a combination of term-frequency times inverse document frequency (TF-IDF) and Jaccard distance. For each commenter, we start with the most uncommon token (word) in the entity name string and search for names in each dataset that have that token. For example, if Klamath First Federal Bank submitted a comment, the algorithm first looks for names with the token "Klamath." We then rank the resulting candidate matches using a modified Jaccard index that scores each token in the commenter's name that matches a token in the candidate name in inverse proportion to the token's frequency in the commenter dataset (normalizing by the sum of the inverse frequencies of all the tokens in the commenter's name, matching or otherwise) so that 'more informative' words contribute more to the match score. We then set a threshold match score that, upon inspection, yields correct matches. Finally, we then hand-validated over 30,000 comments, including all matches that occurred ten times or more and a sample of others and implement a custom set of corrections based on this validated set.
 
 ```{=html}
 <!--As noted, the data we use in our analysis is the subset of all comments that match an organization with one or more types of wealth data.
@@ -101,7 +101,7 @@ knitr::include_graphics(here::here("figs/assets-vol-1.png"))
 
 ```{r}
 #| label: "fig-efficacyXvol"
-#| out-width: "70%"
+#| out-width: "60%"
 #| fig-cap: "Efficacy by Number of Volunteers"
 knitr::include_graphics(here::here("figs/efficacyXvol-2.png"))
 ```
@@ -328,6 +328,44 @@ knitr::include_graphics(here::here("figs/np-sep-mp-all-predict-log-1.png.png"))
 
 --->
 
+# Frequent participants are wealthier than those who participate less frequently
+
+
+We have shown that wealth is highly correlated with *whether* an organization comments. We also expect wealth inequalities in lobbying participation to persist even among those organizations that can pay the initial costs of rulemaking participation. Stated differently, when focused on those entities that have submitted at least one comment to a Dodd-Frank regulation, we argue that more wealthy organizations will, again, hold an advantage over less wealthy organizations by participating in *more* rulemaking processes. 
+
+> *Differential Frequency of Participation Hypothesis:* Among organizations commenting on rulemaking, organizations with greater wealth comment on more rules.
+
+We use Welch t-tests to assess differences between commenters and non-commenters frequent and infrequent commenters. We then use Poisson regression to model the count of rules on which an organization comments. 
+
+
+The *Differential Frequency of Participation* Hypothesis posits that, among commenters, wealthy organizations participate more frequently. To test this hypothesis, we count the number of Dodd-Frank rules on which each participating organization commented.
+@fig-dockets-percentile shows that organizations that comment on more rules tend to be wealthier. Given that most organizations comment on few rules, we sort commenters by the number of rules on which they comment and compare the wealth of the top 10% to the bottom 90%. In the appendix, we show similar results comparing organizations that commented on five or more rules to those that commented on fewer than five rules.
+
+<!--TODO: Check these numbers once the plots in Fig 10 are formatted like Fig 5, with means and medians-->
+Panel (a) of @fig-dockets-percentile shows that most of the non-profits in the top 10% of most frequent commenters had assets over \$1 million. In contrast, non-profits in the bottom 90% (i.e., low-frequency commenters) had assets under \$1 million.
+Panel (b) of @fig-dockets-percentile shows that most of the credit unions in the top 10% of most frequent commenters had greater assets than the average credit union in the bottom 90%. 
+Panel (c) of @fig-dockets-percentile shows that most of the industry associations in the top 10% of most frequent commenters had greater assets than the average industry association in the bottom 90%. Most of the industry associations in the top 10% of most frequent commenters had assets over \$10 million. In contrast, industry associations in the bottom 90% (i.e., low-frequency commenters) had assets under \$1 million.
+Panel (d) of @fig-dockets-percentile shows that, even among banks, a large share of the most frequent commenters had assets over \$1 billion. Yet, nearly all banks that were less frequent commenters---most of which only commented on one rule---had far less than \$1 billion in assets. 
+Panel (e) of @fig-dockets-percentile shows that, among publicly-traded companies, the majority of frequent commenters had market capitalization over \$10 billion. In contrast, most companies that were less frequent commenters had under \$10 billion in market capitalization.
+Overall, while these differences are only statistically significant for industry associations and publicly-traded companies, the general pattern is in the direction predicted by Hypothesis 3: frequent commenters also tend to be more wealthy organizations.
+
+```{r}
+#| label: fig-dockets-percentile
+#| fig-cap: "Frequent and Infrequent Commenters (By Percentile of the Number of Dockets on Which Each Organization Commented) by Resources (Log Scale)"
+#| layout-ncol: 2
+#| fig-subcap: 
+#| - "Non-profits"
+#| - "Credit Unions"
+#| - "Industry Associations"
+#| - "Banks"
+#| - "Publicly-traded Companies"
+knitr::include_graphics(here::here(c(
+  "figs/nonprofit-rules-3.png",
+  "figs/creditunion-rules-3.png",
+  "figs/ind-assoc-rules-3.png",
+    "figs/fdic-rules-3.png",
+  "figs/compustat-rules-3.png")))
+```
 
 
 \clearpage
@@ -379,6 +417,9 @@ Findings regarding the relationship between technical sophistication and the num
 #| tbl-cap: "Poisson Models of Lobbying Success by Comment Sophistication"
 
 load(here::here("models", "mes-pois.Rdata"))
+
+rows <- rows |> mutate(`1` = "Lobbying Success",
+                       `2` = "Lobbying Success")
 
 modelsummary(models, notes = " ")  #%>% kableExtra::kable_styling(latex_options="scale_down")
 ```
@@ -483,6 +524,7 @@ knitr::include_graphics(here::here(c(
 load(here::here("models", "models.m4No0.Rdata"))
 rows[,2] <- "PAC Spending"
 rows[,3] <- "LDA Spending"
+rows[,5] <- "Lobbying Success"
 modelsummary(models.m4No0, notes = " ")
 ```
 
@@ -596,4 +638,6 @@ Standard & Poors's letter to the SEC is cited over 200 times by the SEC in the p
 
 Not only did the FIA help develop the guidelines that were codified into the final rule, the FIA's letter was cited 98 separate times by the CFTC in the preamble to the final rule.
 -->
+
+{{< include assets/efficacy_appendix.txt >}}
 
