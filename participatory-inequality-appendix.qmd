@@ -88,6 +88,7 @@ knitr::include_graphics(here::here(c(
 
 ## Non-profit volunteers
 
+The most likely context for a wealth-membership correlation would be among non-profit organizations. To test these relationships, we examine the active membership base of non-profits.
 @fig-assets-vol shows that the a non-profit's assets and the number of volunteers it has are not especially correlated for the sample of organizations that commented on a Dodd-Frank rule. This offers further evidence that the relationship between wealth and lobbying success we observe should not be interpreted as larger membership organizations being more successful. Rather, it is wealthy organizations, regardless of membership that enjoy success rulemaking.
 
 ```{r}
