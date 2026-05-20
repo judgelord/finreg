@@ -3,6 +3,14 @@
 \PassOptionsToPackage{hyphens}{url}
 $doc-class.tex()$
 
+\usepackage{titletoc}
+\newcommand\DoToC{%
+  \startcontents
+  \printcontents{}{1}{\textbf{Online Supporting Information}\vskip3pt\hrule\vskip5pt}
+  \vskip3pt\hrule\vskip5pt
+}
+
+
 
 \usepackage{mathtools}
 \usepackage{amsmath}

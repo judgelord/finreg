@@ -1,4 +1,30 @@
+\clearpage
+
 # Appendix {.unnumbered}
+
+
+\small
+
+\setcounter{section}{0}
+\renewcommand{\thesection}{\Alph{section}}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+
+\pagenumbering{gobble}
+
+\DoToC
+
+\clearpage
+
+\pagenumbering{arabic}
+\renewcommand*{\thepage}{A\arabic{page}}
+
+
 
 # Data Collection and Processing {#collection}
 
@@ -473,18 +499,15 @@ Money itself can influence the efficacy, if there is a portion of efficacy that 
 
 @fig-paths formalizes these potential pathways into a basic DAG.
 
-```{mermaid}
-%%| label: fig-paths
-%%| fig-cap: "Stylized pathways of influence from wealth to efficacious comments."
-%%| fig-width: 3
-%%| out-width: 100%
-flowchart LR
-  A[Market Cap] --> B[Efficacy]
-  A --> C(Lobbying) --> B
-  A --> D(PAC contributions) --> B
-  A --> E(Technical Expertise) --> B
-  A --> F(Legal Expertise) --> B
+```{r}
+#| label: fig-paths
+#| fig-cap: "Stylized pathways of influence from wealth to efficacious comments."
+#| fig-width: 3
+#| out-width: 50%
+knitr::include_graphics("figs/dag.png")
+
 ```
+
 
 To test the different pathways, we require some strong assumptions.
 

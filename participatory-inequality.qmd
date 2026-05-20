@@ -16,7 +16,7 @@ format:
           \usepackage{lscape}
           \newcommand{\blandscape}{\begin{landscape}}
           \newcommand{\elandscape}{\end{landscape}}
-linestretch: 1.5
+linestretch: 2
 indent: true
 number-sections: true
 cap-location: top
@@ -106,37 +106,26 @@ https://link.springer.com/article/10.1007/s11149-019-09379-8
 -->
 
 To investigate the link between economic and political inequality, we focus on agency rules implementing the Dodd-Frank Wall Street Reform and Consumer Protection Act of 2010 (hereafter Dodd-Frank). Post-Dodd-Frank rulemaking is an ideal context to study inequality in administrative policymaking because the legislation delegated considerable authority to executive branch agencies to re-regulate the financial system.  The re-regulation sought changes to many important aspects of the financial system, such as ensuring the stability of systemically important banks and establishing new agencies and offices to protect consumers. The economic stakes were massive; agencies proposed rules that sought to increase compliance costs by billions of dollars.  Organized interests spent hundreds of millions on lobbyists and lawyers attempting to alter the proposed rules.  
-
-## Summary of Contributions
-
+This paper three contributions to the study of public participation and influence in policymaking.
 First, we create a new database of all `r n_comments` public comments on proposed rules implementing Dodd-Frank, focusing especially on comments from companies and other organizations. Our data cover over eight hundred regulatory actions (in `r n_rules` rulemaking processes) across seven agencies.
-
 <!-- Angelo 2024-06-14: R2 was concerned the paper is suggesting a contribution of new text analysis methods. "Way forward" suggests specifying what already existing methods are being used/combined, e.g., "dictionary-based methods". -->
-
 Second, we develop a suite of new measurement and analytic tools to study who lobbies during rulemaking, how sophisticated their lobbying efforts are, and which organizations have their concerns addressed in the final rules (and which do not).  
-
 Third, we leverage these data and tools to provide the first large-scale assessment of the effects of wealth inequality on agency policymaking. In doing so, we answer questions regarding inequality and lobbying participation which were, up to now, only answerable in the legislative process. Beyond prior studies showing differences between business and non-business groups, we can compare lobbying behavior among similar organizations. For example, we compare commenting behavior among banks. In doing so, we control for many known sources of variance in commenting behavior, which yields cleaner tests of the relationship between organizational wealth and policy influence.
 
-## Summary of Findings
-
 We find that wealthier and more profit-motivated organizations are more likely to participate in administrative policymaking, and even when the less wealthy organizations participate, wealthy organizations are more likely to have their concerns addressed.
-
-First, we find that wealthier organizations participate in agency rulemaking at higher rates than less wealthy organizations. We replicate this result within and across various types of for-profit firms and non-profit organizations.
-
-Second, we find that for-profit banks are more likely to participate than non-profit banks such as credit unions and savings associations.
-
-Third, we find that organizations that spend more money on political campaigns and legislative lobbying are also more likely to participate in rulemaking.
-
+Wealthier organizations participate in agency rulemaking at higher rates than less wealthy organizations. We replicate this result within and across various types of for-profit firms and non-profit organizations.
+For-profit banks are more likely to participate than non-profit banks such as credit unions and savings associations.
+Organizations that spend more money on political campaigns and legislative lobbying are also more likely to participate in rulemaking.
 <!--MOVED TO APPENDIX 
 Fourth, among organizations that participate in rulemaking, we show that organizations that participate frequently are wealthier than those that participate infrequently.
 -->
 
-Fourth, wealthier organizations marshal more technically and legally sophisticated comments than less wealthy organizations.
+We also find that the comments of wealthier organizes are significantly different from less wealthy organizations. Specifically, wealthier organizations marshal more technically and legally sophisticated comments than less wealthy organizations.
 
 <!-- Steve 6/17 merged the two paragraphs.  Before there was a break before "Using causal mediation analysis..."  That paragraph was related to the sixth finding, and it was weird that we had six findings and then a seventh paragraph that looked like a finding  
 -->
 
-Finally, text from the comments of wealthier organizations is more likely to be incorporated into final rule documents, suggesting that wealthier organizations' concerns are more salient to policymakers and more effective in shaping the policy agenda of the rulemaking process. Using causal mediation analysis, we find that the ability of wealthy organizations to marshal legal and technical expertise appears to be a key mechanism by which wealth leads to lobbying success. Lobbying sophistication explains much of the relationship between wealth and lobbying success. Money buys technical and legal sophistication, and sophistication appears to buy changes to policy documents. In contrast, campaign donations and total lobbying spending do not appear to explain a significant share of the relationship between wealth and lobbying success.
+Finally, we find that text from the comments of wealthier organizations is more likely to be incorporated into final rule documents, suggesting that wealthier organizations' concerns are more salient to policymakers and more effective in shaping the policy agenda of the rulemaking process. Using causal mediation analysis, we find that the ability of wealthy organizations to marshal legal and technical expertise appears to be a key mechanism by which wealth leads to lobbying success. Lobbying sophistication explains much of the relationship between wealth and lobbying success. Money buys technical and legal sophistication, and sophistication appears to buy changes to policy documents. In contrast, campaign donations and total lobbying spending do not appear to explain a significant share of the relationship between wealth and lobbying success.
 
 These results hold implications for our understanding of public participation and voice in the policymaking process and possible policy reforms. For example, scholars have long known that the high barriers to participation in agency rulemaking tended to amplify the voices of those who have resources over those who don’t. We show that this inequality runs much deeper than previously appreciated: our findings suggest that, even among organizations with some wealth and sophistication, those with the most wealth and sophistication tend to participate in agency rulemaking and enjoy more lobbying success. As a result, these findings imply a new understanding of privilege among interest groups and its impact on American policymaking.
 
@@ -749,18 +738,7 @@ With the rise of the administrative state, scholars have documented the importan
 ::: {#refs}
 :::
 
-\clearpage
 
-\small
-
-\setcounter{section}{0}
-\renewcommand{\thesection}{\Alph{section}}
-
-\setcounter{table}{0}
-\renewcommand{\thetable}{A\arabic{table}}
-
-\setcounter{figure}{0}
-\renewcommand{\thefigure}{A\arabic{figure}}
 
 {{< include participatory-inequality-appendix.qmd >}}
 
