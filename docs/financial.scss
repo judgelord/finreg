@@ -1,0 +1,160 @@
+/*-- scss:defaults --*/
+// importing fonts
+@import url(https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap);
+@import url(https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap);
+
+// fonts
+$font-family-sans-serif: 'OFL-1.1', sans-serif !default;
+
+// headings
+$presentation-heading-font: 'OFL-1.1', sans-serif  !default;
+$presentation-heading-color: #000000 !default;
+$h1-font-size: 1.6em !default;
+$h2-font-size: 1.3em !default;
+$h3-font-size: 1.15em !default;
+
+// general
+$body-bg: #FFCFB3;
+$body-color: #000000;
+$navbar-bg: $body-color;
+$link-color: #0D7680;
+$text-muted: #655A52;
+$background_color: #CFC096;
+$text_font_size: 1rem;
+
+// callouts
+$callout-color-note: #75988d;
+$callout-color-tip: #A5A508;
+$callout-color-warning: #9A3324;
+$callout-color-caution: #D86018;
+$callout-color-important: #FFCB05;
+
+// tables
+$table_row_even_background_color: #989C97;
+
+//code
+$code-color: #000000 !default;
+$font-family-monospace: 'Nunito Sans', monospace  !default;
+$code-bg: #FFCB05;
+$code_inline_background_color: #FFCB05;
+$code-highlight-color: $callout-color-important;
+$code-font-size: 1em;
+
+// code rounded edges
+code {
+  border-radius: 10px;
+  padding: 1px;
+}
+
+// make higlights the same as inline code
+mark {
+  background-color: $code_highlight_color;
+  color: $body-color;
+}
+
+
+
+// tiny transparent text
+.transparent {
+   Opacity:0;
+   font-size: 0.01em;
+}
+
+
+.center-x{
+    text-align: center;
+}
+
+// paragraph spacing
+p {
+    margin-top:-5px;
+}
+
+// quotes
+.blockquote {
+  border-left: 3px solid $text-muted;
+  padding-left: 1em;
+  font-style: italic;
+  color: $text-muted !important;
+}
+
+/*-- PRESENTATIONS --*/
+
+/*-- presentation block quotes (is this needed?) --*/
+.reveal blockquote {
+  border-left: 3px solid $text-muted;
+  padding-left: 1em;
+  font-style: italic;
+  color: $text-muted !important;
+}
+
+.reveal {
+  font-size: 35px;
+}
+
+
+
+/*-- make menue logo the block M --*/
+.reveal .slide-menu-button .fa-bars::before {
+  background-image: url('https://brand.umich.edu/assets/brand/downloads/um-logos/primary_logo_kit/black-logo/u-m_logo-black.png') !important;
+}
+
+
+
+/*-- more slide fonts and colors--*/
+.reveal .slide-number {
+  font-family: $presentation-heading-font;
+}
+
+.reveal .footer {
+    color: $text-muted;
+    font-family: $presentation-heading-font;
+}
+
+
+/*-- lists --*/
+ul li:first-child,
+ol li:first-child {
+  margin-top: 0; // No extra space at the end
+  margin-bottom: 0;
+}
+
+
+// Default list styling
+ul, ol {
+  li {
+    margin-bottom: 0.0em;
+    padding-bottom: 0.0em;
+    line-height: 1.5; // Default for normal pages
+    gap: 0.0em;
+  }
+}
+
+// Override for Reveal.js slides
+.reveal li { padding: 0px 0px; }
+
+.reveal {
+  ul, ol {
+    li {
+      line-height: 1 !important; // Override for slides; !important ensures it's not overridden by the default
+      margin-bottom: 0.2rem; // reduce space between items
+    }
+  }
+}
+
+
+// did I do this for accessiblity?
+.reveal .panel-tabset [role=tab] {
+    font-size: .8em;
+}
+
+/* FIX TO  https://github.com/quarto-dev/quarto-cli/issues/14411#issuecomment-4298849605 */
+.reveal .scrollable ol {
+  padding-inline-start: 2em;
+}
+
+/* override current rule in Quarto */
+.reveal .scrollable ol li:first-child:nth-last-child(n+10),
+.reveal .scrollable ol li:first-child:nth-last-child(n+10) ~ li {
+  margin-left: 0;
+}

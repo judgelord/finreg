@@ -15,32 +15,9 @@ embed-resources: true
 #     data-background-image: "https://fordschool.umich.edu/themes/custom/ford/images/og-image.png" # <-- background of title slide is different
 #     data-background-opacity: "0.5" # <-- background opacity of title slide
 echo: false
-footer: "Paper, slides, & data: [judgelord.github.io/research/finreg](https://judgelord.github.io/research/finreg)"
+# footer: "Paper, slides, & data: [judgelord.github.io/research/finreg](https://judgelord.github.io/research/finreg)"
 ---
 
-
-
-## Does wealth mean power in agency rulemaking? 
-
-::: {.notes}
-This is the first paper to come out of a project where we have spent years collecting data and now get to write papers. 
-
-Your feedback will be helpful in the directions we take this. 
-
-We start with a simple question that has received a lot of attention in the legislative context. With 90% of US law now made in the executive branch. 
-:::
-
-
-### If so, why? 
-
-- Are wealthy organizations structurally advantaged (i.e., do they always win)?
-- Or do they win *because* of their lobbying (i.e., because it is more sophisticated)?
-
-. . . 
-
-*not mutually exclusive. But _how much_ influence is due to lobbying?
-
-##
 
 ::: {layout="[[1,1]]"}
 
@@ -58,6 +35,25 @@ knitr::include_graphics("figs/clip-lobbying-info.png")
 ```
 
 :::
+
+## Does wealth mean power in agency rulemaking? 
+
+::: {.notes}
+This is the first paper to come out of a project where we have spent years collecting data and now get to write papers. 
+
+Your feedback will be helpful in the direction we take this. 
+
+We start with a simple question that has received a lot of attention in the legislative context. With 90% of US law now made in the executive branch. 
+:::
+
+
+### If so, why? 
+
+- Are wealthy organizations structurally advantaged (i.e., do they always win)?
+- Or do they win *because* of their lobbying (i.e., because it is more sophisticated)?
+  - not mutually exclusive. But _how much_ influence is due to lobbying?
+
+
 
 ## The Headlines
 
@@ -111,7 +107,7 @@ knitr::include_graphics(here::here("figs/org_count_type-2.png"))
 
 Number of Organizations by Type and Agency to which they Commented, Including the Consumer Financial Protection Bureau (CFPB), Commodity Futures Trading Commission (CFTC), Federal Reserve (FRS), National Credit Union Administration (NCUA), and Securities and Exchange Commission (SEC)
 
-First, we collect all policy documents coming out of dodd-frank and all comments on those proposed rules.
+First, we collect all policy documents coming out of Dodd-Frank and all comments on those proposed rules.
 Then, we link comments to organizations with various measures of wealth.
 :::
 
@@ -180,7 +176,7 @@ knitr::include_graphics(here::here("figs/mp-FDIC2-predict-1.png"))
 
 ## 💰 $\rightsquigarrow$ seat at the table, especially if profit-motivated
 
-> [Comercial banks]() were [four]() times more likely to comment on a Dodd-Frank rule than the average non-profit [aavings association](), [six]() times more likely to comment than the average [credit union]() and [60]() times more likely to comment than the average [non-profit](). 
+> [Commercial banks]() were [four]() times more likely to comment on a Dodd-Frank rule than the average nonprofit [aavings association](), [six]() times more likely to comment than the average [credit union](), and [60]() times more likely to comment than the average [nonprofit](). 
 
 
 ```{css, echo=FALSE}
@@ -270,48 +266,53 @@ knitr::include_graphics(here::here("figs/mediation-4wayNo0-acme-1.png"))
 
 
 
-## Alternative explanations 
+## Alternative (?) explanations 
 
-- sophistication is just stylistic emulation 
+- Sophistication is just stylistic emulation 
+- Comments from wealthy organizations are easier to accommodate
 
 . . . 
 
 (but sophisticated comments get cites)
 
-. . . 
 
-- sophisticated comments are just more "correct" (?)
 
 ## Alternative interpretations
 
-This is good, actually. Wealthier organizations "represent" more people (?)
+- sophisticated comments are just more "correct" (?)
 
-- Non-profit volunteers? members vs. memberless? (❌)
-- employees? customers? shareholders? 
-- regulated industry vs. consumers?
-- narrow private aims (US Chambers) vs. broad public aims (US PIRG)?
-- 501(c) 3 vs 4 vs 5 vs 6 (🔜)
+- the wealthy have greater stakes (?)
+
+- This is good, actually. Wealthier organizations "represent" more people (?)
+
+  - Nonprofit volunteers? members vs. memberless? (❌)
+  - employees? customers? shareholders? 
+  - regulated industry vs. consumers?
+  - narrow private aims (US Chambers) vs. broad public aims (US PIRG)?
+  - 501(c) 3 vs 4 vs 5 vs 6 (🔜)
+
 
 
 ::: {.notes}
 
 Wealthy organizations better internalize collective benefits (but these are often private gains [Libgober 2020])
 
-Large/wealthy orgs may create collective benefits. Libgober 2020 finds these are often private gains, so let's just say that. I don't know how else to address this in an easy way. Even if big firms are creating policy benefits for all firms in the industry, the small ones are still being ignored more often, so I think our finding holds. I think hand-coding is the only way to know if the small firms are really winning just as much as the big ones from the agency adopting the big firm's suggestions.
+Large/wealthy orgs may create collective benefits. Libgober 2020 finds these are often private gains, so let's just say that. I don't know how else to address this in an easy way. Even if big firms are creating policy benefits for all firms in the industry, the small ones are still being ignored more often, so I think our finding holds. I think hand-coding is the only way to know if the small firms are really winning just as much as the big ones, from the agency adopting the big firm's suggestions.
 
 :::
 
 # 🙏 Feedback 
 
-- Setup 
+- Setup & theoretical contribution
+- Thoughts on matching
+- Dealing with relevance/stakes conceptually
 - Omitted variables
 - [Validation](https://judgelord.github.io/finreg/validation)
 - Do we need to model a selection process? 
-- Thoughts on matching 
 
 ::: {.notes}
 
-Selection model --- I am not convinced that Heckman is what we want or that there is really even a problem here. It seems that a selection model would be right if we were trying to make inferences about lobbying success about the whole population of orgs but only observing some (or if we were making inferences about all commenters from only some selected comments). However, I think we only want to make claims about lobbying success *among those who lobby* and we observe *all* of this population. Happy to discuss that further, but perhaps we just need to clarify that we are making inferences about different populations in different parts of the paper. Perhaps I'm wrong.
+Selection model --- I am not convinced that Heckman is what we want or that there is really even a problem here. It seems that a selection model would be right if we were trying to make inferences about lobbying success about the whole population of orgs, but only observing some (or if we were making inferences about all commenters from only some selected comments). However, I think we only want to make claims about lobbying success *among those who lobby*, and we observe *all* of this population. Happy to discuss that further, but perhaps we just need to clarify that we are making inferences about different populations in different parts of the paper. Perhaps I'm wrong.
 :::
 
 ## Next: 
@@ -439,7 +440,7 @@ knitr::include_graphics("figs/mediation-marketcap-lobbying-1.png")
 #| out-width: 100%
 #| layout-ncol: 1
 #| fig-subcap: 
-#| - "Non-profits"
+#| - "Nonprofits"
 #| - "Credit Unions"
 #| - "Industry Associations"
 #| - "Banks"
@@ -482,5 +483,5 @@ knitr::include_graphics(here::here("figs/mediation-4wayNo0-acme-3.png"))
 
 TODO 
 - richest nonprofits 
-- 10k words adopted from chamber comment? On which rule? 
+- 10k words adopted from Chamber comment? On which rule? 
 :::

@@ -106,7 +106,8 @@ https://link.springer.com/article/10.1007/s11149-019-09379-8
 -->
 
 To investigate the link between economic and political inequality, we focus on agency rules implementing the Dodd-Frank Wall Street Reform and Consumer Protection Act of 2010 (hereafter Dodd-Frank). Post-Dodd-Frank rulemaking is an ideal context to study inequality in administrative policymaking because the legislation delegated considerable authority to executive branch agencies to re-regulate the financial system.  The re-regulation sought changes to many important aspects of the financial system, such as ensuring the stability of systemically important banks and establishing new agencies and offices to protect consumers. The economic stakes were massive; agencies proposed rules that sought to increase compliance costs by billions of dollars.  Organized interests spent hundreds of millions on lobbyists and lawyers attempting to alter the proposed rules.  
-This paper three contributions to the study of public participation and influence in policymaking.
+
+This paper makes three contributions to the study of public participation and influence in policymaking.
 First, we create a new database of all `r n_comments` public comments on proposed rules implementing Dodd-Frank, focusing especially on comments from companies and other organizations. Our data cover over eight hundred regulatory actions (in `r n_rules` rulemaking processes) across seven agencies.
 <!-- Angelo 2024-06-14: R2 was concerned the paper is suggesting a contribution of new text analysis methods. "Way forward" suggests specifying what already existing methods are being used/combined, e.g., "dictionary-based methods". -->
 Second, we develop a suite of new measurement and analytic tools to study who lobbies during rulemaking, how sophisticated their lobbying efforts are, and which organizations have their concerns addressed in the final rules (and which do not).  
@@ -569,6 +570,7 @@ Differences in means capture the extent to which wealth is correlated with lobby
 ```{r}
 #| label: fig-repeated-text-assets
 #| fig-cap: "Amount of Text Repeated in Final Rules by Commenter Resources. Each point represents a comment. The horizontal axis bins comments by the order of magnitude of the assets of the commenting organization in millions of dollars. Axis labels represent the lower bound of the bin."
+#| out-width: 100%
 #| layout-ncol: 2
 #| fig-subcap: 
 #| - "Non-profits"
@@ -597,6 +599,7 @@ The *Differential Sophistication* Hypothesis  (H4) suggests that wealthier organ
 ```{r}
 #| label: fig-assets-terms
 #| fig-cap: "Amount of Technical Language by Assets. Each point represents a comment. The horizontal axis bins comments by orders of magnitude of the assets of the commenting organization in millions of dollars. Axis labels represent the lower bound of the bin."
+#| out-width: 100%
 #| layout-ncol: 2
 #| fig-subcap: 
 #| - "Non-profits"
@@ -669,7 +672,7 @@ knitr::include_graphics(here::here("figs/mediation-4wayNo0-acme-1.png"))
 
 Mediation analysis allows us to compare alternative influence mechanisms. One alternative mechanism goes through campaign contributions and power in Congress. If organizational wealth enables greater political contributions, if political contributions buy power in Congress, and if agency officials are concerned about congressional sanction when revising rules, campaign contributions may drive lobbying success. This argument is similar to research by @Gordon2005 suggesting that large organizations exert influence through repeated political contributions. We use PAC contributions as the proposed mediator to test this pathway. 
 
-As a second alternative mechanism, we use lobbying expenditures as the mediator. Since disclosed lobbying expenditures target both Congress and agency officials, this causal pathway could operate via congressional sanction (as with the campaign spending via PACs) or more directly through lobbyists persuading agency officials to adopt their client's preferred policy language.   
+Lobbying expenditures could be another alternative mechanism, and we also test this proposed mediator. Since disclosed lobbying expenditures target both Congress and agency officials, this causal pathway could operate via congressional sanction (as with the campaign spending via PACs) or more directly through lobbyists persuading agency officials to adopt their client's preferred policy language.   
 
 In both cases, the ACME is small and not statistically significant. This implies that increasing a corporation’s wealth increases its spending on candidates and lobbyists, but this does not then explain lobbying success in changes between draft and final rules .^[This does not mean that political spending and lobbying do not have large effects on earlier stages of the policy process.] 
  
